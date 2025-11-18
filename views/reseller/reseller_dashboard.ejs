@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautyPro | Retailer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #c9a961;
+            --secondary-color: #b89446;
+            --accent-color: #e6c98c;
+            --light-color: #fefcf7;
+            --dark-color: #3a3526;
+            --success-color: #175507;
+            --warning-color: #972b1f;
+            --danger-color: #c97d6a;
+            --gray-light: #f5f1e8;
+            --gray-medium: #a59e8c;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fefcf7;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar-navigation {
+            width: 260px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brand-logo i {
+            font-size: 28px;
+            margin-right: 12px;
+        }
+
+        .brand-logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .nav-item {
+            padding: 14px 25px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background-color:white;
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item span {
+            font-weight: 500;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            z-index: 1100;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Main Content Area */
+        .main-content-area {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .page-title p {
+            color: var(--gray-medium);
+            margin-top: 5px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            overflow: hidden;
+            border: 2px solid var(--accent-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info h4 {
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            color: var(--gray-medium);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card-icon.primary {
+            background-color: rgba(201, 169, 97, 0.15);
+            color: var(--primary-color);
+        }
+
+        .card-icon.success {
+            background-color: rgba(138, 155, 110, 0.15);
+            color: var(--success-color);
+        }
+
+        .card-icon.warning {
+            background-color: rgba(212, 165, 116, 0.15);
+            color: var(--warning-color);
+        }
+
+        .card-icon.danger {
+            background-color: rgba(201, 125, 106, 0.15);
+            color: var(--danger-color);
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            color: var(--gray-medium);
+            font-size: 15px;
+        }
+
+        /* Dashboard Sections */
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        /* Section Cards */
+        .section-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .view-all-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .confirm-button {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .confirm-button:hover {
+            background-color: #7a8a5f;
+        }
+
+        .edit-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .edit-button:hover {
+            background-color: #b89446;
+        }
+
+        .secondary-button {
+            background-color: var(--gray-light);
+            color: var(--dark-color);
+        }
+
+        .secondary-button:hover {
+            background-color: #e8e2d3;
+        }
+
+        .add-button {
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .details-button {
+            background-color: #560c0c;
+            color: white;
+        }
+
+        .details-button:hover {
+            background-color: #992311;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-light);
+            color: black;
+            font-weight: 500;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: rgba(212, 165, 116, 0.15);
+            color: var(--warning-color);
+        }
+
+        .status-confirmed {
+            background-color: rgba(138, 155, 110, 0.15);
+            color: var(--success-color);
+        }
+
+        .status-completed {
+            background-color: rgba(201, 169, 97, 0.15);
+            color: var(--primary-color);
+        }
+
+        .status-cancelled {
+            background-color: rgba(201, 125, 106, 0.15);
+            color: var(--danger-color);
+        }
+
+        /* Table Responsive */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-responsive table {
+            width: 100%;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+        }
+
+        /* Image Upload Styles */
+        .image-upload-container {
+            margin-bottom: 20px;
+        }
+
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed var(--gray-medium);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background-color: var(--gray-light);
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .image-placeholder {
+            text-align: center;
+            color: var(--gray-medium);
+        }
+
+        .image-placeholder i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .upload-btn input {
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray-medium);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Order Details Styles */
+        .order-details-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .client-info-section, .order-items-section {
+            background-color: var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            border-bottom: 1px solid var(--gray-medium);
+            padding-bottom: 8px;
+        }
+
+        .client-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .client-field {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .client-field:last-child {
+            border-bottom: none;
+        }
+
+        .field-name {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .field-value {
+            color: var(--gray-medium);
+        }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-category {
+            color: var(--gray-medium);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-badge {
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .order-summary {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-medium);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .summary-total {
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--gray-medium);
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            height: 180px;
+            background-color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .product-category {
+            color: var(--gray-medium);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .product-stock {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--gray-medium);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Page Content */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* Enhanced Account Section Styles */
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .profile-field {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background-color: var(--gray-light);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .profile-field:hover {
+            background-color: #f0ebe0;
+        }
+
+        .profile-field.editing {
+            background-color: white;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(201, 169, 97, 0.2);
+        }
+
+        .field-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .field-value {
+            color: var(--gray-medium);
+        }
+
+        .profile-field input, .profile-field textarea {
+            border: 1px solid var(--gray-medium);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 15px;
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        .profile-field input:focus, .profile-field textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(201, 169, 97, 0.2);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .profile-actions button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .profile-actions .save-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .profile-actions .save-btn:hover {
+            background-color: #7a8a5f;
+        }
+
+        .profile-actions .cancel-btn {
+            background-color: var(--gray-medium);
+            color: white;
+        }
+
+        .profile-actions .cancel-btn:hover {
+            background-color: #8c8268;
+        }
+
+        .profile-actions .edit-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .profile-actions .edit-btn:hover {
+            background-color: #b89446;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--accent-color);
+            box-shadow: var(--box-shadow);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .profile-info p {
+            color: var(--gray-medium);
+            margin-bottom: 10px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .profile-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--gray-light);
+            border-radius: 8px;
+            min-width: 100px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-medium);
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            /* Collapse sidebar fully on tablets and below */
+            .sidebar-navigation {
+                width: 260px; /* full width when open */
+                transform: translateX(-100%);
+                position: fixed;
+                left: 0;
+                top: 0;
+            }
+            
+            .sidebar-navigation.mobile-hidden {
+                transform: translateX(-100%);
+            }
+            
+            /* When visible (remove mobile-hidden via JS), slide in */
+            .sidebar-navigation:not(.mobile-hidden) {
+                transform: translateX(0);
+            }
+            
+            .brand-logo h1, .nav-item span {
+                display: inline;
+            }
+            
+            .main-content-area {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .main-content-area.full-width {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .brand-logo {
+                justify-content: flex-start;
+                padding: 0 25px 25px;
+            }
+            
+            .nav-item {
+                justify-content: flex-start;
+                padding: 14px 25px;
+            }
+            
+            .nav-item i {
+                margin-right: 15px;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .order-details-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .user-profile {
+                align-self: flex-start;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            /* Make tables horizontally scrollable without breaking layout */
+            .data-table {
+                min-width: 100%;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .item-quantity {
+                align-self: flex-end;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content-area {
+                padding: 15px;
+            }
+            
+            .section-card {
+                padding: 15px;
+                width: 100%;
+                overflow: hidden;
+            }
+            
+            .dashboard-cards {
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .card-value {
+                font-size: 28px;
+            }
+            
+            .page-title h2 {
+                font-size: 24px;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-stats {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar-navigation" id="sidebarNavigation">
+            <div class="brand-logo">
+                <img style="background-color: white; padding: 5px; height: 56px; border-radius: 50px;" src="images/logo/blushley-png-without-shade.png" alt="">
+                <h1>BLUSHLEY</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-page="categories">
+                    <i class="fas fa-tags"></i>
+                    <span>Category Management</span>
+                </li>
+                <li class="nav-item" data-page="products">
+                    <i class="fas fa-box-open"></i>
+                    <span>Product Management</span>
+                </li>
+                <li class="nav-item" data-page="orders">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Order Management</span>
+                </li>
+                <li class="nav-item" data-page="account">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Account Details</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content-area" id="mainContentArea">
+            <!-- Header Bar -->
+            <div class="header-bar">
+                <div class="page-title">
+                    <h2 id="current-page-title">Retailer Dashboard</h2>
+                    <p id="current-page-description">Welcome back, Sarah! Here's your beauty products business overview.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah">
+                    </div>
+                    <div class="user-info">
+                        <h4>Sarah Johnson</h4>
+                        <p>Beauty Products Retailer</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboard-page">
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="stat-card">
+                        <div class="card-icon primary">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="card-value">142</div>
+                        <div class="card-label">Total Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="card-icon success">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="card-value">28</div>
+                        <div class="card-label">New Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="card-icon warning">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="card-value">12</div>
+                        <div class="card-label">Product Categories</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="card-icon danger">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="card-value">₹42,850</div>
+                        <div class="card-label">Revenue This Month</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Sections -->
+                <div class="dashboard-sections">
+                    <!-- Recent Orders -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">Recent Orders</h3>
+                            <a href="#" class="view-all-link">View All</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#ORD-7842</td>
+                                        <td>Emma Johnson</td>
+                                        <td>Oct 15, 2023</td>
+                                        <td>₹1,250</td>
+                                        <td><span class="status-badge status-pending">Pending</span></td>
+                                        <td><button class="action-button edit-button">Update</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-7839</td>
+                                        <td>Mia Williams</td>
+                                        <td>Oct 14, 2023</td>
+                                        <td>₹850</td>
+                                        <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                                        <td><button class="action-button edit-button">Update</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-7835</td>
+                                        <td>Olivia Brown</td>
+                                        <td>Oct 13, 2023</td>
+                                        <td>₹2,150</td>
+                                        <td><span class="status-badge status-completed">Shipped</span></td>
+                                        <td><button class="action-button edit-button">Track</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-7828</td>
+                                        <td>Ava Davis</td>
+                                        <td>Oct 12, 2023</td>
+                                        <td>₹650</td>
+                                        <td><span class="status-badge status-completed">Delivered</span></td>
+                                        <td><button class="action-button confirm-button" disabled>Completed</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Low Stock Products -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">Low Stock Products</h3>
+                            <a href="#" class="view-all-link">View All Products</a>
+                        </div>
+                        <div class="product-grid">
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="https://via.placeholder.com/300" alt="Vitamin C Serum">
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-name">Vitamin C Serum</div>
+                                    <div class="product-category">Skincare</div>
+                                    <div class="product-price">₹1,299</div>
+                                    <div class="product-stock">
+                                        <span>Stock:</span>
+                                        <span style="color: var(--warning-color);">8 units</span>
+                                    </div>
+                                    <div class="product-actions">
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0421">Edit</button>
+                                        <button class="action-button secondary-button">Restock</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="https://via.placeholder.com/300" alt="Matte Lipstick">
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-name">Matte Lipstick - Ruby</div>
+                                    <div class="product-category">Makeup</div>
+                                    <div class="product-price">₹599</div>
+                                    <div class="product-stock">
+                                        <span>Stock:</span>
+                                        <span style="color: var(--warning-color);">5 units</span>
+                                    </div>
+                                    <div class="product-actions">
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0387">Edit</button>
+                                        <button class="action-button secondary-button">Restock</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="https://via.placeholder.com/300" alt="Hair Growth Oil">
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-name">Hair Growth Oil</div>
+                                    <div class="product-category">Haircare</div>
+                                    <div class="product-price">₹899</div>
+                                    <div class="product-stock">
+                                        <span>Stock:</span>
+                                        <span style="color: var(--warning-color);">12 units</span>
+                                    </div>
+                                    <div class="product-actions">
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0256">Edit</button>
+                                        <button class="action-button secondary-button">Restock</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Page -->
+            <div class="page-content" id="categories-page">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Product Categories</h3>
+                        <button class="action-button add-button" id="add-category-btn">
+                            <i class="fas fa-plus"></i> Add Category
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category ID</th>
+                                    <th>Category Name</th>
+                                    <th>Description</th>
+                                    <th>Products</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CAT-001</td>
+                                    <td>Skincare</td>
+                                    <td>Face creams, serums, cleansers</td>
+                                    <td>42</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-001">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CAT-002</td>
+                                    <td>Makeup</td>
+                                    <td>Lipsticks, foundations, eyeshadows</td>
+                                    <td>38</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-002">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CAT-003</td>
+                                    <td>Haircare</td>
+                                    <td>Shampoos, conditioners, hair oils</td>
+                                    <td>25</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-003">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CAT-004</td>
+                                    <td>Fragrances</td>
+                                    <td>Perfumes, body mists</td>
+                                    <td>18</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-004">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CAT-005</td>
+                                    <td>Bath & Body</td>
+                                    <td>Body washes, lotions, scrubs</td>
+                                    <td>19</td>
+                                    <td><span class="status-badge status-pending">Inactive</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-005">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Page -->
+            <div class="page-content" id="products-page">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Product Management</h3>
+                        <button class="action-button add-button" id="add-product-btn">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Image</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PROD-0421</td>
+                                    <td>
+                                        <div style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden;">
+                                            <img src="https://via.placeholder.com/50" alt="Product" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </td>
+                                    <td>Vitamin C Serum</td>
+                                    <td>Skincare</td>
+                                    <td>₹1,299</td>
+                                    <td>42</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0421">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PROD-0387</td>
+                                    <td>
+                                        <div style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden;">
+                                            <img src="https://via.placeholder.com/50" alt="Product" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </td>
+                                    <td>Matte Lipstick - Ruby</td>
+                                    <td>Makeup</td>
+                                    <td>₹599</td>
+                                    <td>28</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0387">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PROD-0256</td>
+                                    <td>
+                                        <div style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden;">
+                                            <img src="https://via.placeholder.com/50" alt="Product" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </td>
+                                    <td>Hair Growth Oil</td>
+                                    <td>Haircare</td>
+                                    <td>₹899</td>
+                                    <td>35</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0256">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PROD-0184</td>
+                                    <td>
+                                        <div style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden;">
+                                            <img src="https://via.placeholder.com/50" alt="Product" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </td>
+                                    <td>Floral Perfume</td>
+                                    <td>Fragrances</td>
+                                    <td>₹1,599</td>
+                                    <td>15</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0184">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PROD-0192</td>
+                                    <td>
+                                        <div style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden;">
+                                            <img src="https://via.placeholder.com/50" alt="Product" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </td>
+                                    <td>Body Lotion</td>
+                                    <td>Bath & Body</td>
+                                    <td>₹449</td>
+                                    <td>0</td>
+                                    <td><span class="status-badge status-cancelled">Out of Stock</span></td>
+                                    <td>
+                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0192">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Page -->
+            <div class="page-content" id="orders-page">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Order Management</h3>
+                        <button class="action-button edit-button">Export Orders</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#ORD-7842</td>
+                                    <td>Emma Johnson</td>
+                                    <td>Oct 15, 2023</td>
+                                    <td>3</td>
+                                    <td>₹1,250</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="action-button edit-button update-order-btn" data-id="ORD-7842">Update</button>
+                                            <button class="action-button details-button view-order-details-btn" data-id="ORD-7842">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7839</td>
+                                    <td>Mia Williams</td>
+                                    <td>Oct 14, 2023</td>
+                                    <td>2</td>
+                                    <td>₹850</td>
+                                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="action-button edit-button update-order-btn" data-id="ORD-7839">Update</button>
+                                            <button class="action-button details-button view-order-details-btn" data-id="ORD-7839">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7835</td>
+                                    <td>Olivia Brown</td>
+                                    <td>Oct 13, 2023</td>
+                                    <td>5</td>
+                                    <td>₹2,150</td>
+                                    <td><span class="status-badge status-completed">Shipped</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="action-button edit-button update-order-btn" data-id="ORD-7835">Update</button>
+                                            <button class="action-button details-button view-order-details-btn" data-id="ORD-7835">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7828</td>
+                                    <td>Ava Davis</td>
+                                    <td>Oct 12, 2023</td>
+                                    <td>1</td>
+                                    <td>₹650</td>
+                                    <td><span class="status-badge status-completed">Delivered</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="action-button confirm-button" disabled>Completed</button>
+                                            <button class="action-button details-button view-order-details-btn" data-id="ORD-7828">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7815</td>
+                                    <td>Isabella Garcia</td>
+                                    <td>Oct 11, 2023</td>
+                                    <td>4</td>
+                                    <td>₹1,750</td>
+                                    <td><span class="status-badge status-cancelled">Cancelled</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="action-button secondary-button">View Details</button>
+                                            <button class="action-button details-button view-order-details-btn" data-id="ORD-7815">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Page -->
+            <div class="page-content" id="account-page">
+                <div class="dashboard-sections">
+                    <div class="section-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                            </div>
+                            <div class="profile-info">
+                                <h3>Sarah Johnson</h3>
+                                <p>Beauty Products Retailer</p>
+                                <p>Member since January 2020</p>
+                                <div class="profile-stats">
+                                    <div class="profile-stat">
+                                        <div class="stat-value">4.7</div>
+                                        <div class="stat-label">Customer Rating</div>
+                                    </div>
+                                    <div class="profile-stat">
+                                        <div class="stat-value">428</div>
+                                        <div class="stat-label">Total Orders</div>
+                                    </div>
+                                    <div class="profile-stat">
+                                        <div class="stat-value">₹42,850</div>
+                                        <div class="stat-label">Monthly Revenue</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-header">
+                            <h3 class="section-title">Account Information</h3>
+                            <button class="action-button edit-btn" id="edit-account-btn">Edit Account</button>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-field">
+                                <span class="field-label">Store Name</span>
+                                <span class="field-value" id="store-name">BeautyPro Retail</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Owner Name</span>
+                                <span class="field-value" id="owner-name">Sarah Johnson</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Email Address</span>
+                                <span class="field-value" id="email-address">sarah@beautyproretail.com</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Phone Number</span>
+                                <span class="field-value" id="phone-number">+91 98765 43210</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Business Address</span>
+                                <span class="field-value" id="business-address">123 Beauty Street, Cosmetics District, Mumbai, 400001</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">GST Number</span>
+                                <span class="field-value" id="gst-number">27ABCDE1234F1Z5</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Business Type</span>
+                                <span class="field-value" id="business-type">Beauty Products Retailer</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Member Since</span>
+                                <span class="field-value" id="member-since">January 2020</span>
+                            </div>
+                        </div>
+                        <div class="profile-actions" id="profile-actions" style="display: none;">
+                            <button class="cancel-btn" id="cancel-account-btn">Cancel</button>
+                            <button class="save-btn" id="save-account-btn">Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">Store Statistics</h3>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-field">
+                                <span class="field-label">Total Products</span>
+                                <span class="field-value">142</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Active Categories</span>
+                                <span class="field-value">12</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Total Orders</span>
+                                <span class="field-value">428</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Completed Orders</span>
+                                <span class="field-value">395</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Customer Rating</span>
+                                <span class="field-value">4.7/5.0</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Monthly Revenue</span>
+                                <span class="field-value">₹42,850</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="category-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="category-modal-title">Add Category</h3>
+                <button class="modal-close" id="close-category-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="category-form">
+                    <input type="hidden" id="category-id">
+                    <div class="form-group">
+                        <label class="form-label" for="category-name">Category Name</label>
+                        <input type="text" class="form-input" id="category-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="category-description">Description</label>
+                        <textarea class="form-input form-textarea" id="category-description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="category-status">Status</label>
+                        <select class="form-select" id="category-status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="action-button secondary-button" id="cancel-category-btn">Cancel</button>
+                <button class="action-button confirm-button" id="save-category-btn">Save Category</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="product-modal-title">Add Product</h3>
+                <button class="modal-close" id="close-product-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    
+                    <!-- Image Upload Section -->
+                    <div class="image-upload-container">
+                        <label class="form-label">Product Image</label>
+                        <div class="image-preview" id="image-preview">
+                            <div class="image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>No image selected</span>
+                            </div>
+                        </div>
+                        <label class="upload-btn">
+                            <i class="fas fa-upload"></i> Upload Image
+                            <input type="file" id="product-image" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="product-name">Product Name</label>
+                        <input type="text" class="form-input" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="product-category">Category</label>
+                        <select class="form-select" id="product-category" required>
+                            <option value="">Select Category</option>
+                            <option value="Skincare">Skincare</option>
+                            <option value="Makeup">Makeup</option>
+                            <option value="Haircare">Haircare</option>
+                            <option value="Fragrances">Fragrances</option>
+                            <option value="Bath & Body">Bath & Body</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="product-description">Description</label>
+                        <textarea class="form-input form-textarea" id="product-description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="product-price">Price (₹)</label>
+                        <input type="number" class="form-input" id="product-price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="product-stock">Stock Quantity</label>
+                        <input type="number" class="form-input" id="product-stock" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="product-status">Status</label>
+                        <select class="form-select" id="product-status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="action-button secondary-button" id="cancel-product-btn">Cancel</button>
+                <button class="action-button confirm-button" id="save-product-btn">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Modal -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Update Order Status</h3>
+                <button class="modal-close" id="close-order-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="order-form">
+                    <input type="hidden" id="order-id">
+                    <div class="form-group">
+                        <label class="form-label" for="order-status">Order Status</label>
+                        <select class="form-select" id="order-status">
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="order-notes">Notes (Optional)</label>
+                        <textarea class="form-input form-textarea" id="order-notes" placeholder="Add any notes about this order status update"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="action-button secondary-button" id="cancel-order-btn">Cancel</button>
+                <button class="action-button confirm-button" id="save-order-btn">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal-overlay" id="order-details-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Order Details - <span id="order-details-id"></span></h3>
+                <button class="modal-close" id="close-order-details-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-details-container">
+                    <div class="client-info-section">
+                        <h4 class="section-subtitle">Client Information</h4>
+                        <div class="client-details">
+                            <div class="client-field">
+                                <span class="field-name">Full Name:</span>
+                                <span class="field-value" id="client-name">Emma Johnson</span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Email:</span>
+                                <span class="field-value" id="client-email">emma.johnson@example.com</span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Phone:</span>
+                                <span class="field-value" id="client-phone">+91 98765 43210</span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Address:</span>
+                                <span class="field-value" id="client-address">123 Main Street, Apartment 4B, Mumbai, 400001</span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Order Date:</span>
+                                <span class="field-value" id="order-date">October 15, 2023</span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Order Status:</span>
+                                <span class="field-value"><span class="status-badge status-pending">Pending</span></span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Payment Method:</span>
+                                <span class="field-value" id="payment-method">UPI</span>
+                            </div>
+                            <div class="client-field">
+                                <span class="field-name">Payment Status:</span>
+                                <span class="field-value"><span class="status-badge status-confirmed">Paid</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-items-section">
+                        <h4 class="section-subtitle">Ordered Products</h4>
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="https://via.placeholder.com/60" alt="Vitamin C Serum">
+                                </div>
+                                <div class="item-details">
+                                    <div class="item-name">Vitamin C Serum</div>
+                                    <div class="item-category">Skincare</div>
+                                    <div class="item-price">₹1,299</div>
+                                </div>
+                                <div class="item-quantity">
+                                    <span class="quantity-badge">1</span>
+                                </div>
+                            </div>
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="https://via.placeholder.com/60" alt="Matte Lipstick">
+                                </div>
+                                <div class="item-details">
+                                    <div class="item-name">Matte Lipstick - Ruby</div>
+                                    <div class="item-category">Makeup</div>
+                                    <div class="item-price">₹599</div>
+                                </div>
+                                <div class="item-quantity">
+                                    <span class="quantity-badge">2</span>
+                                </div>
+                            </div>
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="https://via.placeholder.com/60" alt="Hair Growth Oil">
+                                </div>
+                                <div class="item-details">
+                                    <div class="item-name">Hair Growth Oil</div>
+                                    <div class="item-category">Haircare</div>
+                                    <div class="item-price">₹899</div>
+                                </div>
+                                <div class="item-quantity">
+                                    <span class="quantity-badge">1</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>₹3,396</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>₹50</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax (5%):</span>
+                                <span>₹169.80</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Total:</span>
+                                <span>₹3,615.80</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-button secondary-button" id="close-order-details-btn">Close</button>
+                <button class="action-button edit-button">Print Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebarNavigation = document.getElementById('sidebarNavigation');
+            const mainContentArea = document.getElementById('mainContentArea');
+            
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebarNavigation.classList.toggle('mobile-hidden');
+                mainContentArea.classList.toggle('full-width');
+                
+                // Change icon based on menu state
+                const icon = this.querySelector('i');
+                if (sidebarNavigation.classList.contains('mobile-hidden')) {
+                    icon.className = 'fas fa-bars';
+                } else {
+                    icon.className = 'fas fa-times';
+                }
+            });
+            
+            // Page Navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('current-page-title');
+            const pageDescription = document.getElementById('current-page-description');
+            
+            // Page titles and descriptions
+            const pageData = {
+                'dashboard': {
+                    title: 'Retailer Dashboard',
+                    description: 'Welcome back, Sarah! Here\'s your beauty products business overview.'
+                },
+                'categories': {
+                    title: 'Category Management',
+                    description: 'Manage your product categories and organization.'
+                },
+                'products': {
+                    title: 'Product Management',
+                    description: 'Add, edit, and manage your beauty products.'
+                },
+                'orders': {
+                    title: 'Order Management',
+                    description: 'View and manage customer orders and status.'
+                },
+                'account': {
+                    title: 'Account Details',
+                    description: 'Manage your retailer account and store information.'
+                }
+            };
+            
+            // Navigation click handler
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Update active nav item
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected page
+                    pageContents.forEach(page => page.classList.remove('active'));
+                    document.getElementById(`${pageId}-page`).classList.add('active');
+                    
+                    // Update page title and description
+                    pageTitle.textContent = pageData[pageId].title;
+                    pageDescription.textContent = pageData[pageId].description;
+                    
+                    // Close mobile menu on navigation
+                    if (window.innerWidth <= 992) {
+                        sidebarNavigation.classList.add('mobile-hidden');
+                        mainContentArea.classList.add('full-width');
+                        mobileMenuToggle.querySelector('i').className = 'fas fa-bars';
+                    }
+                });
+            });
+            
+            // Category Management
+            const categoryModal = document.getElementById('category-modal');
+            const addCategoryBtn = document.getElementById('add-category-btn');
+            const closeCategoryModal = document.getElementById('close-category-modal');
+            const cancelCategoryBtn = document.getElementById('cancel-category-btn');
+            const saveCategoryBtn = document.getElementById('save-category-btn');
+            const categoryForm = document.getElementById('category-form');
+            const categoryModalTitle = document.getElementById('category-modal-title');
+            const editCategoryBtns = document.querySelectorAll('.edit-category-btn');
+            
+            // Open category modal for adding
+            addCategoryBtn.addEventListener('click', function() {
+                categoryModalTitle.textContent = 'Add Category';
+                categoryForm.reset();
+                document.getElementById('category-id').value = '';
+                categoryModal.classList.add('active');
+            });
+            
+            // Open category modal for editing
+            editCategoryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const categoryId = this.getAttribute('data-id');
+                    // In a real app, you would fetch category data by ID
+                    // For demo, we'll set some placeholder values
+                    categoryModalTitle.textContent = 'Edit Category';
+                    document.getElementById('category-id').value = categoryId;
+                    document.getElementById('category-name').value = 'Skincare';
+                    document.getElementById('category-description').value = 'Face creams, serums, cleansers';
+                    document.getElementById('category-status').value = 'active';
+                    categoryModal.classList.add('active');
+                });
+            });
+            
+            // Close category modal
+            function closeCategoryModalFunc() {
+                categoryModal.classList.remove('active');
+            }
+            
+            closeCategoryModal.addEventListener('click', closeCategoryModalFunc);
+            cancelCategoryBtn.addEventListener('click', closeCategoryModalFunc);
+            
+            // Save category
+            saveCategoryBtn.addEventListener('click', function() {
+                // In a real app, you would save to a database
+                alert('Category saved successfully!');
+                closeCategoryModalFunc();
+            });
+            
+            // Product Management
+            const productModal = document.getElementById('product-modal');
+            const addProductBtn = document.getElementById('add-product-btn');
+            const closeProductModal = document.getElementById('close-product-modal');
+            const cancelProductBtn = document.getElementById('cancel-product-btn');
+            const saveProductBtn = document.getElementById('save-product-btn');
+            const productForm = document.getElementById('product-form');
+            const productModalTitle = document.getElementById('product-modal-title');
+            const editProductBtns = document.querySelectorAll('.edit-product-btn');
+            const productImageInput = document.getElementById('product-image');
+            const imagePreview = document.getElementById('image-preview');
+            
+            // Image upload preview
+            productImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', function() {
+                        imagePreview.innerHTML = `<img src="${reader.result}" alt="Product Preview">`;
+                    });
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Open product modal for adding
+            addProductBtn.addEventListener('click', function() {
+                productModalTitle.textContent = 'Add Product';
+                productForm.reset();
+                imagePreview.innerHTML = `
+                    <div class="image-placeholder">
+                        <i class="fas fa-image"></i>
+                        <span>No image selected</span>
+                    </div>
+                `;
+                document.getElementById('product-id').value = '';
+                productModal.classList.add('active');
+            });
+            
+            // Open product modal for editing
+            editProductBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    // In a real app, you would fetch product data by ID
+                    // For demo, we'll set some placeholder values
+                    productModalTitle.textContent = 'Edit Product';
+                    document.getElementById('product-id').value = productId;
+                    document.getElementById('product-name').value = 'Vitamin C Serum';
+                    document.getElementById('product-category').value = 'Skincare';
+                    document.getElementById('product-description').value = 'Antioxidant serum with Vitamin C for brightening and evening skin tone';
+                    document.getElementById('product-price').value = '1299';
+                    document.getElementById('product-stock').value = '42';
+                    document.getElementById('product-status').value = 'active';
+                    
+                    // Set image preview (in a real app, this would be the actual product image)
+                    imagePreview.innerHTML = `<img src="https://via.placeholder.com/300" alt="Product Preview">`;
+                    
+                    productModal.classList.add('active');
+                });
+            });
+            
+            // Close product modal
+            function closeProductModalFunc() {
+                productModal.classList.remove('active');
+            }
+            
+            closeProductModal.addEventListener('click', closeProductModalFunc);
+            cancelProductBtn.addEventListener('click', closeProductModalFunc);
+            
+            // Save product
+            saveProductBtn.addEventListener('click', function() {
+                // In a real app, you would save to a database
+                alert('Product saved successfully!');
+                closeProductModalFunc();
+            });
+            
+            // Order Management
+            const orderModal = document.getElementById('order-modal');
+            const closeOrderModal = document.getElementById('close-order-modal');
+            const cancelOrderBtn = document.getElementById('cancel-order-btn');
+            const saveOrderBtn = document.getElementById('save-order-btn');
+            const updateOrderBtns = document.querySelectorAll('.update-order-btn');
+            
+            // Open order modal
+            updateOrderBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    document.getElementById('order-id').value = orderId;
+                    // In a real app, you would fetch current order status
+                    orderModal.classList.add('active');
+                });
+            });
+            
+            // Close order modal
+            function closeOrderModalFunc() {
+                orderModal.classList.remove('active');
+            }
+            
+            closeOrderModal.addEventListener('click', closeOrderModalFunc);
+            cancelOrderBtn.addEventListener('click', closeOrderModalFunc);
+            
+            // Update order status
+            saveOrderBtn.addEventListener('click', function() {
+                const orderId = document.getElementById('order-id').value;
+                const newStatus = document.getElementById('order-status').value;
+                // In a real app, you would update the order in the database
+                alert(`Order ${orderId} status updated to ${newStatus}`);
+                closeOrderModalFunc();
+            });
+            
+            // Order Details Modal
+            const orderDetailsModal = document.getElementById('order-details-modal');
+            const closeOrderDetailsModal = document.getElementById('close-order-details-modal');
+            const closeOrderDetailsBtn = document.getElementById('close-order-details-btn');
+            const viewOrderDetailsBtns = document.querySelectorAll('.view-order-details-btn');
+            const orderDetailsId = document.getElementById('order-details-id');
+            
+            // Sample order data (in a real app, this would come from a database)
+            const orderDetailsData = {
+                'ORD-7842': {
+                    clientName: 'Emma Johnson',
+                    clientEmail: 'emma.johnson@example.com',
+                    clientPhone: '+91 98765 43210',
+                    clientAddress: '123 Main Street, Apartment 4B, Mumbai, 400001',
+                    orderDate: 'October 15, 2023',
+                    orderStatus: 'pending',
+                    paymentMethod: 'UPI',
+                    paymentStatus: 'paid',
+                    items: [
+                        { name: 'Vitamin C Serum', category: 'Skincare', price: 1299, quantity: 1, image: 'https://via.placeholder.com/60' },
+                        { name: 'Matte Lipstick - Ruby', category: 'Makeup', price: 599, quantity: 2, image: 'https://via.placeholder.com/60' },
+                        { name: 'Hair Growth Oil', category: 'Haircare', price: 899, quantity: 1, image: 'https://via.placeholder.com/60' }
+                    ],
+                    subtotal: 3396,
+                    shipping: 50,
+                    tax: 169.80,
+                    total: 3615.80
+                },
+                'ORD-7839': {
+                    clientName: 'Mia Williams',
+                    clientEmail: 'mia.williams@example.com',
+                    clientPhone: '+91 98765 43211',
+                    clientAddress: '456 Oak Avenue, Bangalore, 560001',
+                    orderDate: 'October 14, 2023',
+                    orderStatus: 'confirmed',
+                    paymentMethod: 'Credit Card',
+                    paymentStatus: 'paid',
+                    items: [
+                        { name: 'Floral Perfume', category: 'Fragrances', price: 1599, quantity: 1, image: 'https://via.placeholder.com/60' },
+                        { name: 'Body Lotion', category: 'Bath & Body', price: 449, quantity: 1, image: 'https://via.placeholder.com/60' }
+                    ],
+                    subtotal: 2048,
+                    shipping: 50,
+                    tax: 102.40,
+                    total: 2200.40
+                }
+            };
+            
+            // Open order details modal
+            viewOrderDetailsBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    const orderData = orderDetailsData[orderId] || orderDetailsData['ORD-7842'];
+                    
+                    // Update modal title
+                    orderDetailsId.textContent = orderId;
+                    
+                    // Update client information
+                    document.getElementById('client-name').textContent = orderData.clientName;
+                    document.getElementById('client-email').textContent = orderData.clientEmail;
+                    document.getElementById('client-phone').textContent = orderData.clientPhone;
+                    document.getElementById('client-address').textContent = orderData.clientAddress;
+                    document.getElementById('order-date').textContent = orderData.orderDate;
+                    document.getElementById('payment-method').textContent = orderData.paymentMethod;
+                    
+                    // Update order status
+                    const statusElement = document.querySelector('#order-details-modal .client-field:nth-child(6) .field-value');
+                    statusElement.innerHTML = `<span class="status-badge status-${orderData.orderStatus}">${orderData.orderStatus.charAt(0).toUpperCase() + orderData.orderStatus.slice(1)}</span>`;
+                    
+                    // Update payment status
+                    const paymentStatusElement = document.querySelector('#order-details-modal .client-field:nth-child(8) .field-value');
+                    paymentStatusElement.innerHTML = `<span class="status-badge status-${orderData.paymentStatus === 'paid' ? 'confirmed' : 'pending'}">${orderData.paymentStatus.charAt(0).toUpperCase() + orderData.paymentStatus.slice(1)}</span>`;
+                    
+                    // Update order items
+                    const orderItemsContainer = document.querySelector('.order-items');
+                    orderItemsContainer.innerHTML = '';
+                    
+                    orderData.items.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'order-item';
+                        itemElement.innerHTML = `
+                            <div class="item-image">
+                                <img src="${item.image}" alt="${item.name}">
+                            </div>
+                            <div class="item-details">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-category">${item.category}</div>
+                                <div class="item-price">₹${item.price}</div>
+                            </div>
+                            <div class="item-quantity">
+                                <span class="quantity-badge">${item.quantity}</span>
+                            </div>
+                        `;
+                        orderItemsContainer.appendChild(itemElement);
+                    });
+                    
+                    // Update order summary
+                    document.querySelector('.summary-row:nth-child(1) span:last-child').textContent = `₹${orderData.subtotal}`;
+                    document.querySelector('.summary-row:nth-child(2) span:last-child').textContent = `₹${orderData.shipping}`;
+                    document.querySelector('.summary-row:nth-child(3) span:last-child').textContent = `₹${orderData.tax}`;
+                    document.querySelector('.summary-total span:last-child').textContent = `₹${orderData.total}`;
+                    
+                    orderDetailsModal.classList.add('active');
+                });
+            });
+            
+            // Close order details modal
+            function closeOrderDetailsModalFunc() {
+                orderDetailsModal.classList.remove('active');
+            }
+            
+            closeOrderDetailsModal.addEventListener('click', closeOrderDetailsModalFunc);
+            closeOrderDetailsBtn.addEventListener('click', closeOrderDetailsModalFunc);
+            
+            // Account Management
+            const editAccountBtn = document.getElementById('edit-account-btn');
+            const saveAccountBtn = document.getElementById('save-account-btn');
+            const cancelAccountBtn = document.getElementById('cancel-account-btn');
+            const profileActions = document.getElementById('profile-actions');
+            const profileFields = document.querySelectorAll('.profile-field');
+            
+            let originalValues = {};
+            
+            // Enable editing for account details
+            editAccountBtn.addEventListener('click', function() {
+                // Store original values
+                originalValues = {
+                    storeName: document.getElementById('store-name').textContent,
+                    ownerName: document.getElementById('owner-name').textContent,
+                    emailAddress: document.getElementById('email-address').textContent,
+                    phoneNumber: document.getElementById('phone-number').textContent,
+                    businessAddress: document.getElementById('business-address').textContent,
+                    gstNumber: document.getElementById('gst-number').textContent,
+                    businessType: document.getElementById('business-type').textContent,
+                    memberSince: document.getElementById('member-since').textContent
+                };
+                
+                // Convert fields to editable inputs
+                profileFields.forEach(field => {
+                    const fieldValue = field.querySelector('.field-value');
+                    const fieldId = fieldValue.id;
+                    
+                    if (fieldId) {
+                        const currentValue = fieldValue.textContent;
+                        field.classList.add('editing');
+                        
+                        if (fieldId === 'business-address') {
+                            fieldValue.innerHTML = `<textarea style="width: 100%; min-height: 80px;">${currentValue}</textarea>`;
+                        } else {
+                            fieldValue.innerHTML = `<input type="text" value="${currentValue}" style="width: 100%;">`;
+                        }
+                    }
+                });
+                
+                // Show save/cancel buttons
+                profileActions.style.display = 'flex';
+                // Hide edit button
+                editAccountBtn.style.display = 'none';
+            });
+            
+            // Save account changes
+            saveAccountBtn.addEventListener('click', function() {
+                // Collect updated values
+                const updatedValues = {};
+                
+                profileFields.forEach(field => {
+                    const fieldValue = field.querySelector('.field-value');
+                    const fieldId = fieldValue.id;
+                    
+                    if (fieldId) {
+                        const input = fieldValue.querySelector('input, textarea');
+                        updatedValues[fieldId] = input.value;
+                    }
+                });
+                
+                // Update the displayed values
+                for (const [fieldId, value] of Object.entries(updatedValues)) {
+                    document.getElementById(fieldId).textContent = value;
+                }
+                
+                // In a real app, you would save to a database here
+                alert('Account details updated successfully!');
+                
+                // Exit edit mode
+                exitEditMode();
+            });
+            
+            // Cancel account editing
+            cancelAccountBtn.addEventListener('click', function() {
+                // Restore original values
+                for (const [fieldId, value] of Object.entries(originalValues)) {
+                    document.getElementById(fieldId).textContent = value;
+                }
+                
+                // Exit edit mode
+                exitEditMode();
+            });
+            
+            // Helper function to exit edit mode
+            function exitEditMode() {
+                profileFields.forEach(field => {
+                    field.classList.remove('editing');
+                });
+                
+                // Hide save/cancel buttons
+                profileActions.style.display = 'none';
+                // Show edit button
+                editAccountBtn.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
