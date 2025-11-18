@@ -3807,32 +3807,54 @@
 
 
         <script>
-            // Review Form Functionality
-            function openForm() {
-                document.getElementById('formContainer').style.display = 'block';
-            }
-
-            function closeForm() {
-                document.getElementById('formContainer').style.display = 'none';
-                document.getElementById('reviewForm').reset();
-                document.querySelectorAll('.rating-stars label').forEach(l => l.style.color = '#ddd');
-                document.getElementById('successMessage').style.display = 'none';
-            }
-
-            // Star rating interactive functionality
+           
             document.addEventListener('DOMContentLoaded', function () {
+         
+                var openFormBtn = document.getElementById('openReviewFormBtn') || document.querySelector('[data-open="reviewForm"]');
+                if (openFormBtn) {
+                    openFormBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        var formContainer = document.getElementById('formContainer');
+                        if (formContainer) {
+                            formContainer.style.display = 'block';
+                        }
+                    });
+                }
+
+                function closeForm() {
+                    var formContainer = document.getElementById('formContainer');
+                    if (formContainer) {
+                        formContainer.style.display = 'none';
+                    }
+                    var reviewForm = document.getElementById('reviewForm');
+                    if (reviewForm) {
+                        reviewForm.reset();
+                    }
+                    document.querySelectorAll('.rating-stars label').forEach(l => l.style.color = '#ddd');
+                    var sm = document.getElementById('successMessage');
+                    if (sm) sm.style.display = 'none';
+                }
+
+                var closeFormBtn = document.getElementById('closeReviewFormBtn') || document.querySelector('[data-close="reviewForm"]');
+                if (closeFormBtn) {
+                    closeFormBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        closeForm();
+                    });
+                }
+
                 const stars = document.querySelectorAll('.rating-stars input[type="radio"]');
                 const starLabels = document.querySelectorAll('.rating-stars label');
 
                 starLabels.forEach((label, index) => {
-                    // Click event
+   
                     label.addEventListener('click', function () {
                         starLabels.forEach((l, i) => {
                             l.style.color = (i <= index) ? '#FFB800' : '#ddd';
                         });
                     });
 
-                    // Hover event
+    
                     label.addEventListener('mouseover', function () {
                         starLabels.forEach((l, i) => {
                             l.style.color = (i <= index) ? '#FFB800' : '#ddd';
@@ -3840,7 +3862,7 @@
                     });
                 });
 
-                // Reset stars on mouse leave
+      
                 const ratingContainer = document.querySelector('.rating-stars');
                 if (ratingContainer) {
                     ratingContainer.addEventListener('mouseleave', function () {
@@ -3861,11 +3883,9 @@
                 if (reviewForm) {
                     reviewForm.addEventListener('submit', function (e) {
                         e.preventDefault();
+                        var sm = document.getElementById('successMessage');
+                        if (sm) sm.style.display = 'block';
 
-                        // Show success message
-                        document.getElementById('successMessage').style.display = 'block';
-
-                        // Close form after 2 seconds
                         setTimeout(() => {
                             closeForm();
                         }, 2000);
@@ -3928,13 +3948,12 @@
                 const mobileNav = document.getElementById('mobileNavWrapper');
                 const scrollThreshold = 5;
 
-                // Get hero section height dynamically for mobile
                 const heroSection = document.querySelector('.tf-slideshow') || document.querySelector('.slider-default');
-                let heroHeight = heroSection ? heroSection.offsetHeight : 400; // Default to 400 for mobile
+                let heroHeight = heroSection ? heroSection.offsetHeight : 400; 
 
-                // Adjust hero height for mobile - typically 50-70% of desktop height
+                
                 if (window.innerWidth <= 520) {
-                    heroHeight = heroHeight * 0.5; // Adjust this multiplier as needed (0.5 = 50%, 0.6 = 60%, etc.)
+                    heroHeight = heroHeight * 0.5;
                 }
 
                 let scrollTimer = null;
@@ -4064,7 +4083,7 @@
 
 
 
-<script>  if (document.querySelector("#sib-form")) { const script = document.createElement('script'); script.src = 'js/sibforms.js'; script.defer = true; document.body.appendChild(script); }</script>
+<script>  if (document.querySelector("#sib-form")) { const script = document.createElement('script'); script.src = '/js/sibforms.js'; script.defer = true; document.body.appendChild(script); }</script>
 </body>
 
 </html>

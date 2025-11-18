@@ -11,8 +11,8 @@ const { connectDB } = require('./config/db');
 
 const app = express();
 
-// Basic env checks
-const PORT = process.env.PORT || 3000;
+
+const PORT = process.env.PORT || 3059;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 if (!process.env.MONGO_URI) {
@@ -47,31 +47,43 @@ app.use(session({
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
     collectionName: 'sessions',
-    ttl: 60 * 60 * 24 // 1 day
+    ttl: 60 * 60 * 24 * 7 
   }),
   cookie: {
     httpOnly: true,
     secure: NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 1000 * 60 * 60 * 24 // 1 day
+    maxAge: 1000 * 60 * 60 * 24 * 7 
   }
 }));
 
-// Rate limiting (simple)
+
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
+  windowMs: 60 * 1000, 
   max: 100
 });
 app.use(limiter);
 
-// Simple middleware to expose session user to views
+
 app.use((req, res, next) => {
   res.locals.currentUser = req.session && req.session.user ? req.session.user : null;
   next();
 });
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const freelancerRoutes = require('./routes/freelanceRoutes');
+const salonRoutes = require('./routes/saloonRoutes');
+const resellerRoutes = require('./routes/resellerRoutes');
+const authRoutes = require('./routes/authRoutes');
+const staffRoutes = require('./routes/staffRoutes');
 
 app.use('/', userRoutes);
+app.use('/', authRoutes);
+app.use('/staff', staffRoutes);
+app.use('/admin', adminRoutes);
+app.use('/freelance', freelancerRoutes);
+app.use('/salon', salonRoutes);
+app.use('/reseller', resellerRoutes);
 
 // 404 handler
 app.use((req, res, next) => {

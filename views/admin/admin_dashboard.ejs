@@ -11,112 +11,111 @@
     <meta name="author" content="">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
     <!-- Theme Style -->
-    <link rel="stylesheet" type="text/css" href="admin-css/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="admin-css/animation.css">
-    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap-select.min.css">
-    <link rel="stylesheet" type="text/css" href="admin-css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Font -->
-    <link rel="stylesheet" href="admin-font/fonts.css">
+    <link rel="stylesheet" href="/admin-font/fonts.css">
 
     <!-- Icon -->
-    <link rel="stylesheet" href="admin-icon/style.css">
+    <link rel="stylesheet" href="/admin-icon/style.css">
 
     <!-- Favicon and Touch Icons  -->
-    <link rel="shortcut icon" href="images/logo/blushley-png-without-shade.png">
-    <link rel="apple-touch-icon-precomposed" href="images/surya-logo.png">
+    <link rel="shortcut icon" href="/images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="/images/logo/blushley-png-without-shade.png">
     <style>
         /* Grid Layout */
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
 
-/* Category Card */
-.category-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
+        /* Category Card */
+        .category-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
 
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
 
-.category-image {
-  height: 150px;
-  overflow: hidden;
-}
+        .category-image {
+            height: 150px;
+            overflow: hidden;
+        }
 
-.category-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.category-body {
-  padding: 15px;
-}
+        .category-body {
+            padding: 15px;
+        }
 
-.category-title {
-  margin: 0 0 10px 0;
-  font-size: 1.1rem;
-  color: #333;
-}
+        .category-title {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
 
-/* Subcategories Grid */
-.subcategories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
-}
+        /* Subcategories Grid */
+        .subcategories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-.subcategory-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
+        .subcategory-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
-.subcategory-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 5px;
-}
+        .subcategory-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
 
-.subcategory-name {
-  font-size: 0.8rem;
-  color: #666;
-}
+        .subcategory-name {
+            font-size: 0.8rem;
+            color: #666;
+        }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-  
-  .subcategories-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .category-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
 
-@media (max-width: 480px) {
-  .category-grid {
-    grid-template-columns: 1fr;
-  }
-}
+            .subcategories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -136,55 +135,57 @@
                 </div>
                 <!-- /preload -->
                 <!-- section-menu-left -->
-          <div class="section-menu-left">
-    <div class="box-logo">
-        <a href="/dashboard" id="site-logo-inner">
-            <img style="width:60px;" id="logo_header" alt="logo" src="images/logo/blushley-png-without-shade.png"
-                data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
-        </a>
-        <div class="button-show-hide">
-            <i class="icon-chevron-left"></i>
-        </div>
-    </div>
-    <div class="section-menu-left-wrap">
-        <div class="center">
-            <div class="center-item">
-                <ul>
-                    <li class="menu-item active">
-                        <a href="admin-dashboard.html">
-                            <div class="icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
-                                        fill="#111111" />
-                                </svg>
-                            </div>
-                            <div class="text">Admin Dashboard</div>
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo"
+                                src="/images/logo/blushley-png-without-shade.png"
+                                data-light="/images/logo/blushley-png-without-shade.png"
+                                data-dark="/images/logo/blushley-png-without-shade.png">
                         </a>
-                    </li>
-                    
-                    <li class="menu-item">
-                        <a href="admin-categories.html" class="menu-item-button">
-                            <div class="icon"><i class="icon-folder"></i></div>
-                            <div class="text">Category Management</div>
-                        </a>
-                    </li>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                                <ul>
+                                    <li class="menu-item active">
+                                        <a href="admin-dashboard.html">
+                                            <div class="icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Admin Dashboard</div>
+                                        </a>
+                                    </li>
 
-                    <li class="menu-item">
-                        <a href="admin-products.html" class="menu-item-button">
-                            <div class="icon"><i class="icon-shopping-bag"></i></div>
-                            <div class="text">Product Management</div>
-                        </a>
-                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-categories.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Category Management</div>
+                                        </a>
+                                    </li>
 
-                    <li class="menu-item">
-                        <a href="admin-shop.html" class="menu-item-button">
-                     <div class="icon"><i class="icon-heart"></i></div>
-                            <div class="text">Shop Management</div>
-                        </a>
-                    </li>
-<li class="menu-item">
+                                    <li class="menu-item">
+                                        <a href="admin-products.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">Product Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-shop.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-heart"></i></div>
+                                            <div class="text">Shop Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
                                         <a href="admin-orders.html" class="menu-item-button">
                                             <div class="icon"><i class="icon-shopping-cart"></i></div>
                                             <div class="text">Order Management</div>
@@ -197,709 +198,774 @@
                                             <div class="text">Booking Management</div>
                                         </a>
                                     </li>
-                    <li class="menu-item">
-                        <a href="admin-salons.html" class="menu-item-button">
-                            <div class="icon"><i class="icon-scissors"></i></div>
-                            <div class="text">Salons Management</div>
-                        </a>
-                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-salons.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-scissors"></i></div>
+                                            <div class="text">Salons Management</div>
+                                        </a>
+                                    </li>
 
-                    <li class="menu-item">
-                        <a href="admin-freelance.html" class="menu-item-button">
-                            <div class="icon"><i class="icon-users"></i></div>
-                            <div class="text">Freelance Management</div>
-                        </a>
-                    </li>
-    <li class="menu-item ">
+                                    <li class="menu-item">
+                                        <a href="admin-freelance.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Freelance Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item ">
                                         <a href="admin-users.html" class="menu-item-button">
                                             <div class="icon"><i class="icon-users"></i></div>
                                             <div class="text">User Management</div>
                                         </a>
                                     </li>
-                    <li class="menu-item">
-                        <a href="admin-banners.html" class="menu-item-button">
-                            <div class="icon"><i class="icon-image"></i></div>
-                            <div class="text">Banner Management</div>
-                        </a>
-                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-banners.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner Management</div>
+                                        </a>
+                                    </li>
 
-                    <li class="menu-item">
-                        <a href="admin-testimonials.html" class="menu-item-button">
-                            <div class="icon"><i class="fa fa-star-o"></i></div>
-                            <div class="text">Testimonials Management</div>
-                        </a>
-                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-testimonials.html" class="menu-item-button">
+                                            <div class="icon"><i class="fa fa-star-o"></i></div>
+                                            <div class="text">Testimonials Management</div>
+                                        </a>
+                                    </li>
 
-                    <li class="menu-item">
-                        <a href="admin-blogs.html" class="menu-item-button">
-                            <div class="icon"><i class="icon-book-open"></i></div>
-                            <div class="text">Blogs Management</div>
-                        </a>
-                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-blogs.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-book-open"></i></div>
+                                            <div class="text">Blogs Management</div>
+                                        </a>
+                                    </li>
 
-                    <li class="menu-item">
-                        <a href="/logout">
-                            <div class="icon">
-                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
-                                        fill="#111111" />
-                                </svg>
+                                    <li class="menu-item">
+                                        <a href="/logout">
+                                            <div class="icon">
+                                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Log out</div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="text">Log out</div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
+                        </div>
+                    </div>
+                </div>
                 <!-- /section-menu-left -->
                 <!-- section-content-right -->
-           <div class="section-content-right">
-    <!-- header-dashboard -->
-    <div class="header-dashboard">
-        <div class="wrap">
-            <div class="header-left">
-                <a href="index.html">
-                    <img class="" id="logo_header_mobile" alt="" src="images/logo/blushley-png-without-shade.png" data-light="images/logo/blushley-png-without-shade.png" data-dark="images/logo/blushley-png-without-shade.png" >
-                </a>
-                <div class="button-show-hide">
-                    <i class="icon-chevron-left"></i>
-                </div>
-            
-            </div>
-            <div class="header-grid">
-            
-                <div class="header-item button-dark-light">
-                    <i class="icon-moon"></i>
-                </div>
-                <div class="popup-wrap noti type-header">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="header-item">
-                                <span class="text-tiny">3</span>
-                                <i class="icon-bell"></i>
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end has-content" aria-labelledby="dropdownMenuButton1" >
-                            <li>
-                                <h6>Notifications</h6>
-                            </li>
-                            <li>
-                                <div class="noti-item w-full wg-user active">
-                                    <div class="image">
-                                        <img src="images/customers/customer-1.jpg" alt="">
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="index.html">
+                                    <img class="" id="logo_header_mobile" alt=""
+                                        src="images/logo/blushley-png-without-shade.png"
+                                        data-light="images/logo/blushley-png-without-shade.png"
+                                        data-dark="images/logo/blushley-png-without-shade.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+                                <div class="popup-wrap noti type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-item">
+                                                <span class="text-tiny">3</span>
+                                                <i class="icon-bell"></i>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton1">
+                                            <li>
+                                                <h6>Notifications</h6>
+                                            </li>
+                                            <li>
+                                                <div class="noti-item w-full wg-user active">
+                                                    <div class="image">
+                                                        <img src="images/customers/customer-1.jpg" alt="">
+                                                    </div>
+                                                    <div class="flex-grow">
+                                                        <div class="flex items-center justify-between">
+                                                            <a href="#" class="body-title">New Product Order</a>
+                                                            <div class="time">10:13 PM</div>
+                                                        </div>
+                                                        <div class="text-tiny">Skincare bundle ordered</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="noti-item w-full wg-user active">
+                                                    <div class="image">
+                                                        <img src="images/customers/customer-2.jpg" alt="">
+                                                    </div>
+                                                    <div class="flex-grow">
+                                                        <div class="flex items-center justify-between">
+                                                            <a href="#" class="body-title">Beautician Booking</a>
+                                                            <div class="time">10:13 PM</div>
+                                                        </div>
+                                                        <div class="text-tiny">Bridal makeup session booked</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="noti-item w-full wg-user active">
+                                                    <div class="image">
+                                                        <img src="images/customers/customer-3.jpg" alt="">
+                                                    </div>
+                                                    <div class="flex-grow">
+                                                        <div class="flex items-center justify-between">
+                                                            <a href="#" class="body-title">Product Review</a>
+                                                            <div class="time">10:13 PM</div>
+                                                        </div>
+                                                        <div class="text-tiny">5-star rating received</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="noti-item w-full wg-user active">
+                                                    <div class="image">
+                                                        <img src="images/customers/customer-1.jpg" alt="">
+                                                    </div>
+                                                    <div class="flex-grow">
+                                                        <div class="flex items-center justify-between">
+                                                            <a href="#" class="body-title">New Beautician</a>
+                                                            <div class="time">10:13 PM</div>
+                                                        </div>
+                                                        <div class="text-tiny">Professional joined platform</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li><a href="#" class="tf-button w-full">View all</a></li>
+                                        </ul>
                                     </div>
-                                    <div class="flex-grow">
+                                </div>
+                                <div class="popup-wrap message type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-item">
+                                                <span class="text-tiny">2</span>
+                                                <i class="icon-message-square"></i>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton2">
+                                            <li>
+                                                <h6>Messages</h6>
+                                            </li>
+                                            <li>
+                                                <div class="message-item item-1">
+                                                    <div class="image">
+                                                        <i class="icon-noti-1"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="body-title-2">Flash Sale Live</div>
+                                                        <div class="text-tiny">Summer skincare collection 30% off</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="message-item item-2">
+                                                    <div class="image">
+                                                        <i class="icon-noti-2"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="body-title-2">Beautician Available</div>
+                                                        <div class="text-tiny">5 new professionals joined this week
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="message-item item-3">
+                                                    <div class="image">
+                                                        <i class="icon-noti-3"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="body-title-2">Order Shipped</div>
+                                                        <div class="text-tiny">Makeup kit delivered successfully</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="message-item item-4">
+                                                    <div class="image">
+                                                        <i class="icon-noti-4"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="body-title-2">Booking Confirmed: <span>ID
+                                                                BKM2024</span></div>
+                                                        <div class="text-tiny">Bridal makeup session confirmed</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li><a href="#" class="tf-button w-full">View all</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="images/logo/Blushley-png-logo.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushley</span>
+                                                    <span class="text-tiny">Beauty Admin</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-user"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Account</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-mail"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Inbox</div>
+                                                    <div class="number">18</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-file-text"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Bookings</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="setting.html" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-settings"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Settings</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Beauty Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="login.html" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                                <div class="tf-section-4 mb-30">
+                                    <!-- chart-default -->
+                                    <div class="wg-chart-default">
+                                        <div class="top">
+                                            <div class="flex items-center gap14">
+                                                <div class="image type-white">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52"
+                                                        viewBox="0 0 48 52" fill="none">
+                                                        <path
+                                                            d="M19.1094 2.12943C22.2034 0.343099 26.0154 0.343099 29.1094 2.12943L42.4921 9.85592C45.5861 11.6423 47.4921 14.9435 47.4921 18.5162V33.9692C47.4921 37.5418 45.5861 40.8431 42.4921 42.6294L29.1094 50.3559C26.0154 52.1423 22.2034 52.1423 19.1094 50.3559L5.72669 42.6294C2.63268 40.8431 0.726688 37.5418 0.726688 33.9692V18.5162C0.726688 14.9435 2.63268 11.6423 5.72669 9.85592L19.1094 2.12943Z"
+                                                            fill="#22C55E" />
+                                                    </svg>
+                                                    <span class="icon">
+                                                        <svg width="19.5" height="19.5" viewBox="0 0 20 21" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M10 2.25C5.44365 2.25 1.75 5.94365 1.75 10.5C1.75 15.0563 5.44365 18.75 10 18.75C14.5563 18.75 18.25 15.0563 18.25 10.5C18.25 5.94365 14.5563 2.25 10 2.25ZM0.25 10.5C0.25 5.11522 4.61522 0.75 10 0.75C15.3848 0.75 19.75 5.11522 19.75 10.5C19.75 15.8848 15.3848 20.25 10 20.25C4.61522 20.25 0.25 15.8848 0.25 10.5ZM10 3.75C10.4142 3.75 10.75 4.08579 10.75 4.5V5.3157C11.3768 5.42679 11.9745 5.67882 12.4691 6.07178L12.884 6.40137C13.2084 6.65902 13.2624 7.13081 13.0048 7.45514C12.7471 7.77947 12.2753 7.83353 11.951 7.57588L11.5361 7.24629C11.309 7.06586 11.0392 6.93462 10.75 6.85259V9.80961C11.4021 9.91435 12.0381 10.1591 12.5714 10.559C13.3164 11.1178 13.75 11.9035 13.75 12.75C13.75 13.5965 13.3164 14.3822 12.5714 14.941C12.0381 15.3409 11.4021 15.5856 10.75 15.6904V16.5C10.75 16.9142 10.4142 17.25 10 17.25C9.58579 17.25 9.25 16.9142 9.25 16.5V15.6904C8.59794 15.5856 7.96206 15.3409 7.42886 14.941L6.54999 14.2818C6.21862 14.0333 6.15147 13.5632 6.40001 13.2318C6.64854 12.9004 7.11865 12.8333 7.45001 13.0818L8.32888 13.741C8.5864 13.9341 8.90284 14.0771 9.25 14.1616V11.1844C8.63267 11.075 8.03304 10.8274 7.53058 10.4283C6.81822 9.86237 6.41752 9.07872 6.41752 8.25003C6.41752 7.42133 6.81822 6.63768 7.53058 6.07178C8.02533 5.67876 8.6231 5.42672 9.25 5.31565V4.5C9.25 4.08579 9.58579 3.75 10 3.75ZM9.25 6.85252C8.96071 6.93454 8.69081 7.0658 8.46361 7.24629C8.06987 7.55907 7.91752 7.92707 7.91752 8.25003C7.91752 8.57298 8.06987 8.94098 8.46361 9.25376C8.68603 9.43046 8.95518 9.56376 9.25 9.64747V6.85252ZM10.75 11.3384V14.1616C11.0972 14.0772 11.4138 13.9342 11.6713 13.741C12.0978 13.4211 12.25 13.0551 12.25 12.75C12.25 12.4449 12.0978 12.0789 11.6713 11.759C11.4138 11.5658 11.0972 11.4228 10.75 11.3384Z"
+                                                                fill="white" />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div class="flex gap10 items-center">
+                                                        <div class="body-text mt-2 mb-4">Total Revenue</div>
+                                                        <div class="box-icon-trending up">
+                                                            <i class="icon-trending-up"></i>
+                                                            <div class="body-title number">2.34%</div>
+                                                        </div>
+                                                    </div>
+                                                    <h4>₹4,67,892</h4>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown default">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <span class="view-all">Weekly<i
+                                                            class="icon-chevron-down"></i></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a href="javascript:void(0);">Monthly</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">Yearly</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="wrap-chart">
+                                            <div class="wrap-line-chart" id="line-chart-1"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /chart-default -->
+                                    <!-- chart-default -->
+                                    <div class="wg-chart-default">
+                                        <div class="top">
+                                            <div class="flex items-center gap14">
+                                                <div class="image type-white">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52"
+                                                        viewBox="0 0 48 52" fill="none">
+                                                        <path
+                                                            d="M19.1094 2.12943C22.2034 0.343099 26.0154 0.343099 29.1094 2.12943L42.4921 9.85592C45.5861 11.6423 47.4921 14.9435 47.4921 18.5162V33.9692C47.4921 37.5418 45.5861 40.8431 42.4921 42.6294L29.1094 50.3559C26.0154 52.1423 22.2034 52.1423 19.1094 50.3559L5.72669 42.6294C2.63268 40.8431 0.726688 37.5418 0.726688 33.9692V18.5162C0.726688 14.9435 2.63268 11.6423 5.72669 9.85592L19.1094 2.12943Z"
+                                                            fill="#FF5200" />
+                                                    </svg>
+                                                    <span class="icon">
+                                                        <svg width="20" height="21" viewBox="0 0 20 21" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M9.99959 1.5C8.34273 1.5 6.99959 2.84315 6.99959 4.5V5.25H12.9996V4.5C12.9996 2.84315 11.6564 1.5 9.99959 1.5ZM14.4996 5.25V4.5C14.4996 2.01472 12.4849 0 9.99959 0C7.51431 0 5.49959 2.01472 5.49959 4.5V5.25H3.51238C2.55283 5.25 1.74813 5.97444 1.64768 6.92872L0.384527 18.9287C0.267993 20.0358 1.13603 21 2.24922 21H17.75C18.8631 21 19.7312 20.0358 19.6147 18.9287L18.3515 6.92872C18.251 5.97444 17.4463 5.25 16.4868 5.25H14.4996ZM12.9996 6.75H6.99959V8.16146C7.22974 8.36745 7.37459 8.66681 7.37459 9C7.37459 9.62132 6.87091 10.125 6.24959 10.125C5.62827 10.125 5.12459 9.62132 5.12459 9C5.12459 8.66681 5.26943 8.36745 5.49959 8.16146V6.75H3.51238C3.32047 6.75 3.15953 6.89489 3.13944 7.08574L1.87628 19.0857C1.85298 19.3072 2.02659 19.5 2.24922 19.5H17.75C17.9726 19.5 18.1462 19.3072 18.1229 19.0857L16.8597 7.08574C16.8396 6.89489 16.6787 6.75 16.4868 6.75H14.4996V8.16146C14.7297 8.36746 14.8746 8.66681 14.8746 9C14.8746 9.62132 14.3709 10.125 13.7496 10.125C13.1283 10.125 12.6246 9.62132 12.6246 9C12.6246 8.66681 12.7694 8.36745 12.9996 8.16146V6.75Z"
+                                                                fill="white" />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div class="flex gap15 items-center">
+                                                        <div class="body-text mt-2 mb-4">Product Orders</div>
+                                                        <div class="box-icon-trending down">
+                                                            <i class="icon-trending-down"></i>
+                                                            <div class="body-title number">0.89%</div>
+                                                        </div>
+                                                    </div>
+                                                    <h4>1,245</h4>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown default">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <span class="view-all">Monthly<i
+                                                            class="icon-chevron-down"></i></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a href="javascript:void(0);">Weekly</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">Yearly</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="wrap-chart">
+                                            <div class="wrap-line-chart" id="line-chart-2"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /chart-default -->
+                                    <!-- chart-default -->
+                                    <div class="wg-chart-default">
+                                        <div class="top">
+                                            <div class="flex items-center gap14">
+                                                <div class="image type-white">
+                                                    <svg width="52" height="52" viewBox="0 0 48 52" fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M19.1084 2.12894C22.2024 0.34261 26.0144 0.342611 29.1084 2.12894L42.4911 9.85544C45.5851 11.6418 47.4911 14.943 47.4911 18.5157V33.9687C47.4911 37.5413 45.5851 40.8426 42.4911 42.6289L29.1084 50.3554C26.0144 52.1418 22.2024 52.1418 19.1084 50.3554L5.72571 42.6289C2.6317 40.8426 0.725712 37.5413 0.725712 33.9687V18.5157C0.725712 14.943 2.6317 11.6418 5.72571 9.85544L19.1084 2.12894Z"
+                                                            fill="#8F77F3" />
+                                                    </svg>
+                                                    <span class="icon">
+                                                        <svg width="24" height="25" viewBox="0 0 24 25" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M4.61976 16.1198C5.51618 15.2233 6.73199 14.7197 7.99973 14.7197H15.9997C17.2675 14.7197 18.4833 15.2233 19.3797 16.1198C20.2761 17.0162 20.7797 18.232 20.7797 19.4997V21.4997C20.7797 21.9305 20.4305 22.2797 19.9997 22.2797C19.5689 22.2797 19.2197 21.9305 19.2197 21.4997V19.4997C19.2197 18.6457 18.8805 17.8267 18.2766 17.2228C17.6727 16.619 16.8537 16.2797 15.9997 16.2797H7.99973C7.14573 16.2797 6.32671 16.619 5.72284 17.2228C5.11898 17.8267 4.77973 18.6457 4.77973 19.4997V21.4997C4.77973 21.9305 4.43051 22.2797 3.99973 22.2797C3.56894 22.2797 3.21973 21.9305 3.21973 21.4997V19.4997C3.21973 18.232 3.72333 17.0162 4.61976 16.1198Z"
+                                                                fill="white" />
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M11.9997 4.27973C10.2214 4.27973 8.77973 5.72137 8.77973 7.49973C8.77973 9.27808 10.2214 10.7197 11.9997 10.7197C13.7781 10.7197 15.2197 9.27808 15.2197 7.49973C15.2197 5.72137 13.7781 4.27973 11.9997 4.27973ZM7.21973 7.49973C7.21973 4.85981 9.35981 2.71973 11.9997 2.71973C14.6396 2.71973 16.7797 4.85981 16.7797 7.49973C16.7797 10.1396 14.6396 12.2797 11.9997 12.2797C9.35981 12.2797 7.21973 10.1396 7.21973 7.49973Z"
+                                                                fill="white" />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div class="flex gap9 items-center">
+                                                        <div class="body-text mt-2 mb-4">Beauticians</div>
+                                                        <div class="box-icon-trending up color-violet">
+                                                            <i class="icon-trending-up"></i>
+                                                            <div class="body-title number">3.21%</div>
+                                                        </div>
+                                                    </div>
+                                                    <h4>156</h4>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown default">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <span class="view-all">Yearly<i
+                                                            class="icon-chevron-down"></i></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a href="javascript:void(0);">Monthly</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">Weekly</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="wrap-chart">
+                                            <div class="wrap-line-chart" id="line-chart-3"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /chart-default -->
+                                    <!-- chart-default -->
+                                    <div class="wg-chart-default">
+                                        <div class="top">
+                                            <div class="flex items-center gap14">
+                                                <div class="image type-white">
+                                                    <svg width="52" height="52" viewBox="0 0 48 52" fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M19.1084 2.12894C22.2024 0.34261 26.0144 0.342611 29.1084 2.12894L42.4911 9.85544C45.5851 11.6418 47.4911 14.943 47.4911 18.5157V33.9687C47.4911 37.5413 45.5851 40.8426 42.4911 42.6289L29.1084 50.3554C26.0144 52.1418 22.2024 52.1418 19.1084 50.3554L5.72571 42.6289C2.6317 40.8426 0.725712 37.5413 0.725712 33.9687V18.5157C0.725712 14.943 2.6317 11.6418 5.72571 9.85544L19.1084 2.12894Z"
+                                                            fill="#2377FC" />
+                                                    </svg>
+                                                    <span class="icon">
+                                                        <svg width="18" height="21" viewBox="0 0 18 21" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M10.5 1.5C9.82674 1.5 9.25525 1.94413 9.06623 2.55717C9.02336 2.69622 9 2.84469 9 3H13.5C13.5 2.84469 13.4766 2.69622 13.4338 2.55717C13.2448 1.94413 12.6733 1.5 12 1.5H10.5ZM7.83701 1.61765C8.33669 0.656928 9.3409 0 10.5 0H12C13.1591 0 14.1633 0.656928 14.663 1.61765C14.8877 1.63319 15.1121 1.65026 15.3359 1.66884C16.8752 1.7966 18 3.10282 18 4.60822V15C18 16.6569 16.6569 18 15 18H13.5V19.125C13.5 20.1605 12.6605 21 11.625 21H1.875C0.839466 21 0 20.1605 0 19.125V7.875C0 6.83947 0.839466 6 1.875 6H4.5V4.60822C4.5 3.10283 5.62475 1.7966 7.16405 1.66884C7.38795 1.65026 7.61227 1.63319 7.83701 1.61765ZM7.50702 3.14604C7.43401 3.15177 7.36104 3.15765 7.28812 3.1637C6.56523 3.2237 6 3.84365 6 4.60822V6H11.625C12.6605 6 13.5 6.83947 13.5 7.875V16.5H15C15.8284 16.5 16.5 15.8284 16.5 15V4.60822C16.5 3.84365 15.9348 3.2237 15.2119 3.1637C15.139 3.15765 15.066 3.15177 14.993 3.14604C14.9196 3.90594 14.2792 4.5 13.5 4.5H9C8.22085 4.5 7.58044 3.90594 7.50702 3.14604ZM12 7.875C12 7.66789 11.8321 7.5 11.625 7.5H1.875C1.66789 7.5 1.5 7.66789 1.5 7.875V19.125C1.5 19.3321 1.66789 19.5 1.875 19.5H11.625C11.8321 19.5 12 19.3321 12 19.125V7.875ZM3 10.5C3 10.0858 3.33579 9.75 3.75 9.75H3.7575C4.17171 9.75 4.5075 10.0858 4.5075 10.5V10.5075C4.5075 10.9217 4.17171 11.2575 3.7575 11.2575H3.75C3.33579 11.2575 3 10.9217 3 10.5075V10.5ZM5.25 10.5C5.25 10.0858 5.58579 9.75 6 9.75H9.75C10.1642 9.75 10.5 10.0858 10.5 10.5C10.5 10.9142 10.1642 11.25 9.75 11.25H6C5.58579 11.25 5.25 10.9142 5.25 10.5ZM3 13.5C3 13.0858 3.33579 12.75 3.75 12.75H3.7575C4.17171 12.75 4.5075 13.0858 4.5075 13.5V13.5075C4.5075 13.9217 4.17171 14.2575 3.7575 14.2575H3.75C3.33579 14.2575 3 13.9217 3 13.5075V13.5ZM5.25 13.5C5.25 13.0858 5.58579 12.75 6 12.75H9.75C10.1642 12.75 10.5 13.0858 10.5 13.5C10.5 13.9142 10.1642 14.25 9.75 14.25H6C5.58579 14.25 5.25 13.9142 5.25 13.5ZM3 16.5C3 16.0858 3.33579 15.75 3.75 15.75H3.7575C4.17171 15.75 4.5075 16.0858 4.5075 16.5V16.5075C4.5075 16.9217 4.17171 17.2575 3.7575 17.2575H3.75C3.33579 17.2575 3 16.9217 3 16.5075V16.5ZM5.25 16.5C5.25 16.0858 5.58579 15.75 6 15.75H9.75C10.1642 15.75 10.5 16.0858 10.5 16.5C10.5 16.9142 10.1642 17.25 9.75 17.25H6C5.58579 17.25 5.25 16.9142 5.25 16.5Z"
+                                                                fill="white" />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div class="flex gap10 items-center">
+                                                        <div class="body-text mt-2 mb-4">Service Bookings</div>
+                                                        <div class="box-icon-trending up color-blue">
+                                                            <i class="icon-trending-up"></i>
+                                                            <div class="body-title number">4.12%</div>
+                                                        </div>
+                                                    </div>
+                                                    <h4>289</h4>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown default">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <span class="view-all">Yearly<i
+                                                            class="icon-chevron-down"></i></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a href="javascript:void(0);">Monthly</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">Weekly</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="wrap-chart">
+                                            <div class="wrap-line-chart" id="line-chart-4"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /chart-default -->
+                                </div>
+                                <div class="tf-section-2 mb-30">
+                                    <!-- Revenue -->
+                                    <div class="wg-box">
                                         <div class="flex items-center justify-between">
-                                            <a href="#" class="body-title">New Product Order</a>
-                                            <div class="time">10:13 PM</div>
+                                            <h5>Revenue Analytics</h5>
+                                            <div class="dropdown default style-box">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <a href="job-list.html" class="view-all">Yearly<i
+                                                            class="icon-chevron-down"></i></a>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="javascript:void(0);">Weekly</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">Monthly</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <div class="text-tiny">Skincare bundle ordered</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="noti-item w-full wg-user active">
-                                    <div class="image">
-                                        <img src="images/customers/customer-2.jpg" alt="">
-                                    </div>
-                                    <div class="flex-grow">
-                                        <div class="flex items-center justify-between">
-                                            <a href="#" class="body-title">Beautician Booking</a>
-                                            <div class="time">10:13 PM</div>
+                                        <div class="flex flex-wrap gap40">
+                                            <div>
+                                                <div class="mb-1">
+                                                    <div class="block-legend">
+                                                        <div class="dot t3"></div>
+                                                        <div class="text-tiny">Product Sales</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap12">
+                                                    <h4>₹2,89,450</h4>
+                                                    <div class="box-icon-trending up">
+                                                        <i class="icon-trending-up"></i>
+                                                        <div class="body-title number text-grey">1.23%</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="mb-1">
+                                                    <div class="block-legend">
+                                                        <div class="dot t5"></div>
+                                                        <div class="text-tiny">Service Revenue</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap12">
+                                                    <h4>₹1,78,442</h4>
+                                                    <div class="box-icon-trending up">
+                                                        <i class="icon-trending-up"></i>
+                                                        <div class="body-title number text-grey">2.45%</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="text-tiny">Bridal makeup session booked</div>
+                                        <div id="line-chart-7"></div>
                                     </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="noti-item w-full wg-user active">
-                                    <div class="image">
-                                        <img src="images/customers/customer-3.jpg" alt="">
-                                    </div>
-                                    <div class="flex-grow">
-                                        <div class="flex items-center justify-between">
-                                            <a href="#" class="body-title">Product Review</a>
-                                            <div class="time">10:13 PM</div>
+                                    <!-- /Revenue -->
+                                    <div class="flex gap20 flex-wrap-mobile">
+                                        <!-- top-product -->
+                                        <div class="wg-box w-half">
+                                            <div class="flex items-center justify-between">
+                                                <h5>Sales Channels</h5>
+                                                <div class="dropdown default style-box">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false">
+                                                        <a href="job-list.html" class="view-all">Weekly<i
+                                                                class="icon-chevron-down"></i></a>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="javascript:void(0);">Yearly</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0);">Monthly</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-wrap gap40">
+                                                <div>
+                                                    <div class="mb-1">
+                                                        <div class="block-legend">
+                                                            <div class="text-tiny">Total Customers</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap10">
+                                                        <h4>8,567</h4>
+                                                        <div class="box-icon-trending up">
+                                                            <i class="icon-trending-up"></i>
+                                                            <div class="body-title number text-grey">3.78%</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="morris-donut-1" class="text-center"></div>
+                                            <div class="flex gap20">
+                                                <div class="block-legend style-1 w-full">
+                                                    <div class="dot t4"></div>
+                                                    <div class="text-tiny">Online Store</div>
+                                                </div>
+                                                <div class="block-legend style-1 w-full">
+                                                    <div class="dot t2"></div>
+                                                    <div class="text-tiny">Mobile App</div>
+                                                </div>
+                                                <div class="block-legend style-1 w-full">
+                                                    <div class="dot t3"></div>
+                                                    <div class="text-tiny">Beautician Services</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="text-tiny">5-star rating received</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="noti-item w-full wg-user active">
-                                    <div class="image">
-                                        <img src="images/customers/customer-1.jpg" alt="">
-                                    </div>
-                                    <div class="flex-grow">
-                                        <div class="flex items-center justify-between">
-                                            <a href="#" class="body-title">New Beautician</a>
-                                            <div class="time">10:13 PM</div>
-                                        </div>
-                                        <div class="text-tiny">Professional joined platform</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li><a href="#" class="tf-button w-full">View all</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="popup-wrap message type-header">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="header-item">
-                                <span class="text-tiny">2</span>
-                                <i class="icon-message-square"></i>
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end has-content" aria-labelledby="dropdownMenuButton2" >
-                            <li>
-                                <h6>Messages</h6>
-                            </li>
-                            <li>
-                                <div class="message-item item-1">
-                                    <div class="image">
-                                        <i class="icon-noti-1"></i>
-                                    </div>
-                                    <div>
-                                        <div class="body-title-2">Flash Sale Live</div>
-                                        <div class="text-tiny">Summer skincare collection 30% off</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="message-item item-2">
-                                    <div class="image">
-                                        <i class="icon-noti-2"></i>
-                                    </div>
-                                    <div>
-                                        <div class="body-title-2">Beautician Available</div>
-                                        <div class="text-tiny">5 new professionals joined this week</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="message-item item-3">
-                                    <div class="image">
-                                        <i class="icon-noti-3"></i>
-                                    </div>
-                                    <div>
-                                        <div class="body-title-2">Order Shipped</div>
-                                        <div class="text-tiny">Makeup kit delivered successfully</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="message-item item-4">
-                                    <div class="image">
-                                        <i class="icon-noti-4"></i>
-                                    </div>
-                                    <div>
-                                        <div class="body-title-2">Booking Confirmed: <span>ID BKM2024</span></div>
-                                        <div class="text-tiny">Bridal makeup session confirmed</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li><a href="#" class="tf-button w-full">View all</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="header-item button-zoom-maximize">
-                    <div class="">
-                        <i class="icon-maximize"></i>
-                    </div>
-                </div>
-             
-                <div class="popup-wrap user type-header">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="header-user wg-user">
-                                <span class="image">
-                                    <img src="images/logo/Blushley-png-logo.png" alt="">
-                                </span>
-                                <span class="flex flex-column">
-                                    <span class="body-text text-main-dark">Blushley</span>
-                                    <span class="text-tiny">Beauty Admin</span>
-                                </span>
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end has-content" aria-labelledby="dropdownMenuButton3" >
-                            <li>
-                                <a href="#" class="user-item">
-                                    <div class="icon">
-                                        <i class="icon-user"></i>
-                                    </div>
-                                    <div class="body-title-2">Account</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="user-item">
-                                    <div class="icon">
-                                        <i class="icon-mail"></i>
-                                    </div>
-                                    <div class="body-title-2">Inbox</div>
-                                    <div class="number">18</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="user-item">
-                                    <div class="icon">
-                                        <i class="icon-file-text"></i>
-                                    </div>
-                                    <div class="body-title-2">Bookings</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="setting.html" class="user-item">
-                                    <div class="icon">
-                                        <i class="icon-settings"></i>
-                                    </div>
-                                    <div class="body-title-2">Settings</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="user-item">
-                                    <div class="icon">
-                                        <i class="icon-headphones"></i>
-                                    </div>
-                                    <div class="body-title-2">Beauty Support</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="login.html" class="user-item">
-                                    <div class="icon">
-                                        <i class="icon-log-out"></i>
-                                    </div>
-                                    <div class="body-title-2">Log out</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /header-dashboard -->
-    <!-- main-content -->
-    <div class="main-content">
-        <!-- main-content-wrap -->
-        <div class="main-content-inner">
-            <!-- main-content-wrap -->
-            <div class="main-content-wrap">
-                <div class="tf-section-4 mb-30">
-                    <!-- chart-default -->
-                    <div class="wg-chart-default">
-                        <div class="top">
-                            <div class="flex items-center gap14">
-                                <div class="image type-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 48 52" fill="none">
-                                        <path d="M19.1094 2.12943C22.2034 0.343099 26.0154 0.343099 29.1094 2.12943L42.4921 9.85592C45.5861 11.6423 47.4921 14.9435 47.4921 18.5162V33.9692C47.4921 37.5418 45.5861 40.8431 42.4921 42.6294L29.1094 50.3559C26.0154 52.1423 22.2034 52.1423 19.1094 50.3559L5.72669 42.6294C2.63268 40.8431 0.726688 37.5418 0.726688 33.9692V18.5162C0.726688 14.9435 2.63268 11.6423 5.72669 9.85592L19.1094 2.12943Z" fill="#22C55E"/>
-                                    </svg>
-                                    <span class="icon">
-                                        <svg width="19.5" height="19.5" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2.25C5.44365 2.25 1.75 5.94365 1.75 10.5C1.75 15.0563 5.44365 18.75 10 18.75C14.5563 18.75 18.25 15.0563 18.25 10.5C18.25 5.94365 14.5563 2.25 10 2.25ZM0.25 10.5C0.25 5.11522 4.61522 0.75 10 0.75C15.3848 0.75 19.75 5.11522 19.75 10.5C19.75 15.8848 15.3848 20.25 10 20.25C4.61522 20.25 0.25 15.8848 0.25 10.5ZM10 3.75C10.4142 3.75 10.75 4.08579 10.75 4.5V5.3157C11.3768 5.42679 11.9745 5.67882 12.4691 6.07178L12.884 6.40137C13.2084 6.65902 13.2624 7.13081 13.0048 7.45514C12.7471 7.77947 12.2753 7.83353 11.951 7.57588L11.5361 7.24629C11.309 7.06586 11.0392 6.93462 10.75 6.85259V9.80961C11.4021 9.91435 12.0381 10.1591 12.5714 10.559C13.3164 11.1178 13.75 11.9035 13.75 12.75C13.75 13.5965 13.3164 14.3822 12.5714 14.941C12.0381 15.3409 11.4021 15.5856 10.75 15.6904V16.5C10.75 16.9142 10.4142 17.25 10 17.25C9.58579 17.25 9.25 16.9142 9.25 16.5V15.6904C8.59794 15.5856 7.96206 15.3409 7.42886 14.941L6.54999 14.2818C6.21862 14.0333 6.15147 13.5632 6.40001 13.2318C6.64854 12.9004 7.11865 12.8333 7.45001 13.0818L8.32888 13.741C8.5864 13.9341 8.90284 14.0771 9.25 14.1616V11.1844C8.63267 11.075 8.03304 10.8274 7.53058 10.4283C6.81822 9.86237 6.41752 9.07872 6.41752 8.25003C6.41752 7.42133 6.81822 6.63768 7.53058 6.07178C8.02533 5.67876 8.6231 5.42672 9.25 5.31565V4.5C9.25 4.08579 9.58579 3.75 10 3.75ZM9.25 6.85252C8.96071 6.93454 8.69081 7.0658 8.46361 7.24629C8.06987 7.55907 7.91752 7.92707 7.91752 8.25003C7.91752 8.57298 8.06987 8.94098 8.46361 9.25376C8.68603 9.43046 8.95518 9.56376 9.25 9.64747V6.85252ZM10.75 11.3384V14.1616C11.0972 14.0772 11.4138 13.9342 11.6713 13.741C12.0978 13.4211 12.25 13.0551 12.25 12.75C12.25 12.4449 12.0978 12.0789 11.6713 11.759C11.4138 11.5658 11.0972 11.4228 10.75 11.3384Z" fill="white"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div>
-                                    <div class="flex gap10 items-center">
-                                        <div class="body-text mt-2 mb-4">Total Revenue</div>
-                                        <div class="box-icon-trending up">
-                                            <i class="icon-trending-up"></i>
-                                            <div class="body-title number">2.34%</div>
-                                        </div>
-                                    </div>
-                                    <h4>₹4,67,892</h4>
-                                </div>
-                            </div>
-                            <div class="dropdown default">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="view-all">Weekly<i class="icon-chevron-down"></i></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>  
-                                        <a href="javascript:void(0);">Monthly</a>
-                                    </li>
-                                    <li>  
-                                        <a href="javascript:void(0);">Yearly</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="wrap-chart">
-                            <div class="wrap-line-chart" id="line-chart-1"></div>
-                        </div>
-                    </div>
-                    <!-- /chart-default -->
-                    <!-- chart-default -->
-                    <div class="wg-chart-default">
-                        <div class="top">
-                            <div class="flex items-center gap14">
-                                <div class="image type-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 48 52" fill="none">
-                                        <path d="M19.1094 2.12943C22.2034 0.343099 26.0154 0.343099 29.1094 2.12943L42.4921 9.85592C45.5861 11.6423 47.4921 14.9435 47.4921 18.5162V33.9692C47.4921 37.5418 45.5861 40.8431 42.4921 42.6294L29.1094 50.3559C26.0154 52.1423 22.2034 52.1423 19.1094 50.3559L5.72669 42.6294C2.63268 40.8431 0.726688 37.5418 0.726688 33.9692V18.5162C0.726688 14.9435 2.63268 11.6423 5.72669 9.85592L19.1094 2.12943Z" fill="#FF5200"/>
-                                    </svg>
-                                    <span class="icon">
-                                        <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.99959 1.5C8.34273 1.5 6.99959 2.84315 6.99959 4.5V5.25H12.9996V4.5C12.9996 2.84315 11.6564 1.5 9.99959 1.5ZM14.4996 5.25V4.5C14.4996 2.01472 12.4849 0 9.99959 0C7.51431 0 5.49959 2.01472 5.49959 4.5V5.25H3.51238C2.55283 5.25 1.74813 5.97444 1.64768 6.92872L0.384527 18.9287C0.267993 20.0358 1.13603 21 2.24922 21H17.75C18.8631 21 19.7312 20.0358 19.6147 18.9287L18.3515 6.92872C18.251 5.97444 17.4463 5.25 16.4868 5.25H14.4996ZM12.9996 6.75H6.99959V8.16146C7.22974 8.36745 7.37459 8.66681 7.37459 9C7.37459 9.62132 6.87091 10.125 6.24959 10.125C5.62827 10.125 5.12459 9.62132 5.12459 9C5.12459 8.66681 5.26943 8.36745 5.49959 8.16146V6.75H3.51238C3.32047 6.75 3.15953 6.89489 3.13944 7.08574L1.87628 19.0857C1.85298 19.3072 2.02659 19.5 2.24922 19.5H17.75C17.9726 19.5 18.1462 19.3072 18.1229 19.0857L16.8597 7.08574C16.8396 6.89489 16.6787 6.75 16.4868 6.75H14.4996V8.16146C14.7297 8.36746 14.8746 8.66681 14.8746 9C14.8746 9.62132 14.3709 10.125 13.7496 10.125C13.1283 10.125 12.6246 9.62132 12.6246 9C12.6246 8.66681 12.7694 8.36745 12.9996 8.16146V6.75Z" fill="white"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div>
-                                    <div class="flex gap15 items-center">
-                                        <div class="body-text mt-2 mb-4">Product Orders</div>
-                                        <div class="box-icon-trending down">
-                                            <i class="icon-trending-down"></i>
-                                            <div class="body-title number">0.89%</div>
-                                        </div>
-                                    </div>
-                                    <h4>1,245</h4>
-                                </div>
-                            </div>
-                            <div class="dropdown default">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="view-all">Monthly<i class="icon-chevron-down"></i></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>  
-                                        <a href="javascript:void(0);">Weekly</a>
-                                    </li>
-                                    <li>  
-                                        <a href="javascript:void(0);">Yearly</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="wrap-chart">
-                            <div class="wrap-line-chart" id="line-chart-2"></div>
-                        </div>
-                    </div>
-                    <!-- /chart-default -->
-                    <!-- chart-default -->
-                    <div class="wg-chart-default">
-                        <div class="top">
-                            <div class="flex items-center gap14">
-                                <div class="image type-white">
-                                    <svg width="52" height="52" viewBox="0 0 48 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M19.1084 2.12894C22.2024 0.34261 26.0144 0.342611 29.1084 2.12894L42.4911 9.85544C45.5851 11.6418 47.4911 14.943 47.4911 18.5157V33.9687C47.4911 37.5413 45.5851 40.8426 42.4911 42.6289L29.1084 50.3554C26.0144 52.1418 22.2024 52.1418 19.1084 50.3554L5.72571 42.6289C2.6317 40.8426 0.725712 37.5413 0.725712 33.9687V18.5157C0.725712 14.943 2.6317 11.6418 5.72571 9.85544L19.1084 2.12894Z" fill="#8F77F3"/>
-                                    </svg>
-                                    <span class="icon">
-                                        <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.61976 16.1198C5.51618 15.2233 6.73199 14.7197 7.99973 14.7197H15.9997C17.2675 14.7197 18.4833 15.2233 19.3797 16.1198C20.2761 17.0162 20.7797 18.232 20.7797 19.4997V21.4997C20.7797 21.9305 20.4305 22.2797 19.9997 22.2797C19.5689 22.2797 19.2197 21.9305 19.2197 21.4997V19.4997C19.2197 18.6457 18.8805 17.8267 18.2766 17.2228C17.6727 16.619 16.8537 16.2797 15.9997 16.2797H7.99973C7.14573 16.2797 6.32671 16.619 5.72284 17.2228C5.11898 17.8267 4.77973 18.6457 4.77973 19.4997V21.4997C4.77973 21.9305 4.43051 22.2797 3.99973 22.2797C3.56894 22.2797 3.21973 21.9305 3.21973 21.4997V19.4997C3.21973 18.232 3.72333 17.0162 4.61976 16.1198Z" fill="white"/>
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9997 4.27973C10.2214 4.27973 8.77973 5.72137 8.77973 7.49973C8.77973 9.27808 10.2214 10.7197 11.9997 10.7197C13.7781 10.7197 15.2197 9.27808 15.2197 7.49973C15.2197 5.72137 13.7781 4.27973 11.9997 4.27973ZM7.21973 7.49973C7.21973 4.85981 9.35981 2.71973 11.9997 2.71973C14.6396 2.71973 16.7797 4.85981 16.7797 7.49973C16.7797 10.1396 14.6396 12.2797 11.9997 12.2797C9.35981 12.2797 7.21973 10.1396 7.21973 7.49973Z" fill="white"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div>
-                                    <div class="flex gap9 items-center">
-                                        <div class="body-text mt-2 mb-4">Beauticians</div>
-                                        <div class="box-icon-trending up color-violet">
-                                            <i class="icon-trending-up"></i>
-                                            <div class="body-title number">3.21%</div>
-                                        </div>
-                                    </div>
-                                    <h4>156</h4>
-                                </div>
-                            </div>
-                            <div class="dropdown default">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="view-all">Yearly<i class="icon-chevron-down"></i></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>  
-                                        <a href="javascript:void(0);">Monthly</a>
-                                    </li>
-                                    <li>  
-                                        <a href="javascript:void(0);">Weekly</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="wrap-chart">
-                            <div class="wrap-line-chart" id="line-chart-3"></div>
-                        </div>
-                    </div>
-                    <!-- /chart-default -->
-                    <!-- chart-default -->
-                    <div class="wg-chart-default">
-                        <div class="top">
-                            <div class="flex items-center gap14">
-                                <div class="image type-white">
-                                    <svg width="52" height="52" viewBox="0 0 48 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M19.1084 2.12894C22.2024 0.34261 26.0144 0.342611 29.1084 2.12894L42.4911 9.85544C45.5851 11.6418 47.4911 14.943 47.4911 18.5157V33.9687C47.4911 37.5413 45.5851 40.8426 42.4911 42.6289L29.1084 50.3554C26.0144 52.1418 22.2024 52.1418 19.1084 50.3554L5.72571 42.6289C2.6317 40.8426 0.725712 37.5413 0.725712 33.9687V18.5157C0.725712 14.943 2.6317 11.6418 5.72571 9.85544L19.1084 2.12894Z" fill="#2377FC"/>
-                                    </svg>
-                                    <span class="icon">
-                                        <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 1.5C9.82674 1.5 9.25525 1.94413 9.06623 2.55717C9.02336 2.69622 9 2.84469 9 3H13.5C13.5 2.84469 13.4766 2.69622 13.4338 2.55717C13.2448 1.94413 12.6733 1.5 12 1.5H10.5ZM7.83701 1.61765C8.33669 0.656928 9.3409 0 10.5 0H12C13.1591 0 14.1633 0.656928 14.663 1.61765C14.8877 1.63319 15.1121 1.65026 15.3359 1.66884C16.8752 1.7966 18 3.10282 18 4.60822V15C18 16.6569 16.6569 18 15 18H13.5V19.125C13.5 20.1605 12.6605 21 11.625 21H1.875C0.839466 21 0 20.1605 0 19.125V7.875C0 6.83947 0.839466 6 1.875 6H4.5V4.60822C4.5 3.10283 5.62475 1.7966 7.16405 1.66884C7.38795 1.65026 7.61227 1.63319 7.83701 1.61765ZM7.50702 3.14604C7.43401 3.15177 7.36104 3.15765 7.28812 3.1637C6.56523 3.2237 6 3.84365 6 4.60822V6H11.625C12.6605 6 13.5 6.83947 13.5 7.875V16.5H15C15.8284 16.5 16.5 15.8284 16.5 15V4.60822C16.5 3.84365 15.9348 3.2237 15.2119 3.1637C15.139 3.15765 15.066 3.15177 14.993 3.14604C14.9196 3.90594 14.2792 4.5 13.5 4.5H9C8.22085 4.5 7.58044 3.90594 7.50702 3.14604ZM12 7.875C12 7.66789 11.8321 7.5 11.625 7.5H1.875C1.66789 7.5 1.5 7.66789 1.5 7.875V19.125C1.5 19.3321 1.66789 19.5 1.875 19.5H11.625C11.8321 19.5 12 19.3321 12 19.125V7.875ZM3 10.5C3 10.0858 3.33579 9.75 3.75 9.75H3.7575C4.17171 9.75 4.5075 10.0858 4.5075 10.5V10.5075C4.5075 10.9217 4.17171 11.2575 3.7575 11.2575H3.75C3.33579 11.2575 3 10.9217 3 10.5075V10.5ZM5.25 10.5C5.25 10.0858 5.58579 9.75 6 9.75H9.75C10.1642 9.75 10.5 10.0858 10.5 10.5C10.5 10.9142 10.1642 11.25 9.75 11.25H6C5.58579 11.25 5.25 10.9142 5.25 10.5ZM3 13.5C3 13.0858 3.33579 12.75 3.75 12.75H3.7575C4.17171 12.75 4.5075 13.0858 4.5075 13.5V13.5075C4.5075 13.9217 4.17171 14.2575 3.7575 14.2575H3.75C3.33579 14.2575 3 13.9217 3 13.5075V13.5ZM5.25 13.5C5.25 13.0858 5.58579 12.75 6 12.75H9.75C10.1642 12.75 10.5 13.0858 10.5 13.5C10.5 13.9142 10.1642 14.25 9.75 14.25H6C5.58579 14.25 5.25 13.9142 5.25 13.5ZM3 16.5C3 16.0858 3.33579 15.75 3.75 15.75H3.7575C4.17171 15.75 4.5075 16.0858 4.5075 16.5V16.5075C4.5075 16.9217 4.17171 17.2575 3.7575 17.2575H3.75C3.33579 17.2575 3 16.9217 3 16.5075V16.5ZM5.25 16.5C5.25 16.0858 5.58579 15.75 6 15.75H9.75C10.1642 15.75 10.5 16.0858 10.5 16.5C10.5 16.9142 10.1642 17.25 9.75 17.25H6C5.58579 17.25 5.25 16.9142 5.25 16.5Z" fill="white"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div>
-                                    <div class="flex gap10 items-center">
-                                        <div class="body-text mt-2 mb-4">Service Bookings</div>
-                                        <div class="box-icon-trending up color-blue">
-                                            <i class="icon-trending-up"></i>
-                                            <div class="body-title number">4.12%</div>
-                                        </div>
-                                    </div>
-                                    <h4>289</h4>
-                                </div>
-                            </div>
-                            <div class="dropdown default">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="view-all">Yearly<i class="icon-chevron-down"></i></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>  
-                                        <a href="javascript:void(0);">Monthly</a>
-                                    </li>
-                                    <li>  
-                                        <a href="javascript:void(0);">Weekly</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="wrap-chart">
-                            <div class="wrap-line-chart" id="line-chart-4"></div>
-                        </div>
-                    </div>
-                    <!-- /chart-default -->
-                </div>
-                <div class="tf-section-2 mb-30">
-                    <!-- Revenue -->
-                    <div class="wg-box">
-                        <div class="flex items-center justify-between">
-                            <h5>Revenue Analytics</h5>
-                            <div class="dropdown default style-box">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <a href="job-list.html" class="view-all">Yearly<i class="icon-chevron-down"></i></a>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>  
-                                        <a href="javascript:void(0);">Weekly</a>
-                                    </li>
-                                    <li>  
-                                        <a href="javascript:void(0);">Monthly</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap40">
-                            <div>
-                                <div class="mb-1">
-                                    <div class="block-legend">
-                                        <div class="dot t3"></div>
-                                        <div class="text-tiny">Product Sales</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap12">
-                                    <h4>₹2,89,450</h4>
-                                    <div class="box-icon-trending up">
-                                        <i class="icon-trending-up"></i>
-                                        <div class="body-title number text-grey">1.23%</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="mb-1">
-                                    <div class="block-legend">
-                                        <div class="dot t5"></div>
-                                        <div class="text-tiny">Service Revenue</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap12">
-                                    <h4>₹1,78,442</h4>
-                                    <div class="box-icon-trending up">
-                                        <i class="icon-trending-up"></i>
-                                        <div class="body-title number text-grey">2.45%</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="line-chart-7"></div>
-                    </div>
-                    <!-- /Revenue -->
-                    <div class="flex gap20 flex-wrap-mobile">
-                        <!-- top-product -->
-                        <div class="wg-box w-half">
-                            <div class="flex items-center justify-between">
-                                <h5>Sales Channels</h5>
-                                <div class="dropdown default style-box">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <a href="job-list.html" class="view-all">Weekly<i class="icon-chevron-down"></i></a>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>  
-                                            <a href="javascript:void(0);">Yearly</a>
-                                        </li>
-                                        <li>  
-                                            <a href="javascript:void(0);">Monthly</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap gap40">
-                                <div>
-                                    <div class="mb-1">
-                                        <div class="block-legend">
-                                            <div class="text-tiny">Total Customers</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap10">
-                                        <h4>8,567</h4>
-                                        <div class="box-icon-trending up">
-                                            <i class="icon-trending-up"></i>
-                                            <div class="body-title number text-grey">3.78%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="morris-donut-1" class="text-center"></div>
-                            <div class="flex gap20">
-                                <div class="block-legend style-1 w-full">
-                                    <div class="dot t4"></div>
-                                    <div class="text-tiny">Online Store</div>
-                                </div>
-                                <div class="block-legend style-1 w-full">
-                                    <div class="dot t2"></div>
-                                    <div class="text-tiny">Mobile App</div>
-                                </div>
-                                <div class="block-legend style-1 w-full">
-                                    <div class="dot t3"></div>
-                                    <div class="text-tiny">Beautician Services</div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /top-product -->
-                        <!-- top-countries -->
-                        <div class="wg-box w-half">
-                            <div class="flex items-center justify-content-center">
-                                <h5>Popular Beauty Services</h5>
-                                <div class="dropdown default style-box">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <a href="job-list.html" class="view-all">Weekly<i class="icon-chevron-down"></i></a>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>  
-                                            <a href="javascript:void(0);">Yearly</a>
-                                        </li>
-                                        <li>  
-                                            <a href="javascript:void(0);">Monthly</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                       <ul class="flex flex-column h-full has-divider-line">
-    <li class="wg-product">
-        <div class="name flex-grow">
-            <div class="image">
-                <img src="images/beautician/beautician1.png" alt="Bridal Makeup">
-            </div>
-            <div>
-                <div class="title">
-                    <a href="#" class="body-text">Bridal Makeup</a>
-                </div>
-                <div class="price text-tiny">₹8,500 / session</div>
-            </div>
-        </div>
-        <div class="sale body-text">Booked</div>
-    </li>
+                                        <!-- /top-product -->
+                                        <!-- top-countries -->
+                                        <div class="wg-box w-half">
+                                            <div class="flex items-center justify-content-center">
+                                                <h5>Popular Beauty Services</h5>
+                                                <div class="dropdown default style-box">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false">
+                                                        <a href="job-list.html" class="view-all">Weekly<i
+                                                                class="icon-chevron-down"></i></a>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="javascript:void(0);">Yearly</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0);">Monthly</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <ul class="flex flex-column h-full has-divider-line">
+                                                <li class="wg-product">
+                                                    <div class="name flex-grow">
+                                                        <div class="image">
+                                                            <img src="images/beautician/beautician1.png"
+                                                                alt="Bridal Makeup">
+                                                        </div>
+                                                        <div>
+                                                            <div class="title">
+                                                                <a href="#" class="body-text">Bridal Makeup</a>
+                                                            </div>
+                                                            <div class="price text-tiny">₹8,500 / session</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sale body-text">Booked</div>
+                                                </li>
 
-    <li class="wg-product">
-        <div class="name flex-grow">
-            <div class="image">
-                <img src="images/beautician/beautician1.png" alt="Luxury Facial">
-            </div>
-            <div>
-                <div class="title">
-                    <a href="#" class="body-text">Luxury Facial</a>
-                </div>
-                <div class="price text-tiny">₹2,800 / session</div>
-            </div>
-        </div>
-        <div class="sale body-text">Available</div>
-    </li>
+                                                <li class="wg-product">
+                                                    <div class="name flex-grow">
+                                                        <div class="image">
+                                                            <img src="images/beautician/beautician1.png"
+                                                                alt="Luxury Facial">
+                                                        </div>
+                                                        <div>
+                                                            <div class="title">
+                                                                <a href="#" class="body-text">Luxury Facial</a>
+                                                            </div>
+                                                            <div class="price text-tiny">₹2,800 / session</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sale body-text">Available</div>
+                                                </li>
 
-    <li class="wg-product">
-        <div class="name flex-grow">
-            <div class="image">
-                <img src="images/beautician/beautician1.png" alt="Hair Styling">
-            </div>
-            <div>
-                <div class="title">
-                    <a href="#" class="body-text">Hair Styling</a>
-                </div>
-                <div class="price text-tiny">₹1,500 / session</div>
-            </div>
-        </div>
-        <div class="sale body-text">Booked</div>
-    </li>
+                                                <li class="wg-product">
+                                                    <div class="name flex-grow">
+                                                        <div class="image">
+                                                            <img src="images/beautician/beautician1.png"
+                                                                alt="Hair Styling">
+                                                        </div>
+                                                        <div>
+                                                            <div class="title">
+                                                                <a href="#" class="body-text">Hair Styling</a>
+                                                            </div>
+                                                            <div class="price text-tiny">₹1,500 / session</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sale body-text">Booked</div>
+                                                </li>
 
-    <li class="wg-product">
-        <div class="name flex-grow">
-            <div class="image">
-                <img src="images/beautician/beautician1.png" alt="Makeup Lessons">
-            </div>
-            <div>
-                <div class="title">
-                    <a href="#" class="body-text">Makeup Lessons</a>
-                </div>
-                <div class="price text-tiny">₹3,200 / session</div>
-            </div>
-        </div>
-        <div class="sale body-text">Available</div>
-    </li>
+                                                <li class="wg-product">
+                                                    <div class="name flex-grow">
+                                                        <div class="image">
+                                                            <img src="images/beautician/beautician1.png"
+                                                                alt="Makeup Lessons">
+                                                        </div>
+                                                        <div>
+                                                            <div class="title">
+                                                                <a href="#" class="body-text">Makeup Lessons</a>
+                                                            </div>
+                                                            <div class="price text-tiny">₹3,200 / session</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sale body-text">Available</div>
+                                                </li>
 
-    <li class="wg-product">
-        <div class="name flex-grow">
-            <div class="image">
-                <img src="images/beautician/beautician1.png" alt="Skin Consultation">
-            </div>
-            <div>
-                <div class="title">
-                    <a href="#" class="body-text">Skin Consultation</a>
-                </div>
-                <div class="price text-tiny">₹1,200 / session</div>
-            </div>
-        </div>
-        <div class="sale body-text">Available</div>
-    </li>
+                                                <li class="wg-product">
+                                                    <div class="name flex-grow">
+                                                        <div class="image">
+                                                            <img src="images/beautician/beautician1.png"
+                                                                alt="Skin Consultation">
+                                                        </div>
+                                                        <div>
+                                                            <div class="title">
+                                                                <a href="#" class="body-text">Skin Consultation</a>
+                                                            </div>
+                                                            <div class="price text-tiny">₹1,200 / session</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sale body-text">Available</div>
+                                                </li>
 
-    <li class="wg-product">
-        <div class="name flex-grow">
-            <div class="image">
-                <img src="images/beautician/beautician1.png" alt="Party Makeup">
-            </div>
-            <div>
-                <div class="title">
-                    <a href="#" class="body-text">Party Makeup</a>
-                </div>
-                <div class="price text-tiny">₹3,500 / session</div>
-            </div>
-        </div>
-        <div class="sale body-text">Booked</div>
-    </li>
-</ul>
+                                                <li class="wg-product">
+                                                    <div class="name flex-grow">
+                                                        <div class="image">
+                                                            <img src="images/beautician/beautician1.png"
+                                                                alt="Party Makeup">
+                                                        </div>
+                                                        <div>
+                                                            <div class="title">
+                                                                <a href="#" class="body-text">Party Makeup</a>
+                                                            </div>
+                                                            <div class="price text-tiny">₹3,500 / session</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sale body-text">Booked</div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- /top-countries -->
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- /main-content-wrap -->
                         </div>
-                        <!-- /top-countries -->
+                        <!-- /main-content-wrap -->
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="https://trivlogic.com/">Trivlogic Private
+                                    Limited</a>. All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
                     </div>
+                    <!-- /main-content -->
                 </div>
-              
-            </div>
-            <!-- /main-content-wrap -->
-        </div>
-        <!-- /main-content-wrap -->
-        <!-- bottom-page -->
-        <div class="bottom-page">
-            <div class="body-text">Copyright © 2025 <a href="https://trivlogic.com/">Trivlogic Private Limited</a>. All rights reserved</div>
-        </div>
-        <!-- /bottom-page -->
-    </div>
-    <!-- /main-content -->
-</div>
                 <!-- /section-content-right -->
             </div>
             <!-- /layout-wrap -->
@@ -907,28 +973,28 @@
         <!-- /#page -->
     </div>
     <!-- /#wrapper -->
-  
-  
-    <!-- Javascript -->
-    <script src="admin-js/jquery.min.js"></script>
-    <script src="admin-js/bootstrap.min.js"></script>
-    <script src="admin-js/bootstrap-select.min.js"></script>
-    <script src="admin-js/zoom.js"></script>
-    <script src="admin-js/morris.min.js"></script>
-    <script src="admin-js/raphael.min.js"></script>
 
- 
-    <script src="admin-js/apexcharts/apexcharts.js"></script>
-    <script src="admin-js/apexcharts/line-chart-1.js"></script>
-    <script src="admin-js/apexcharts/line-chart-2.js"></script>
-    <script src="admin-js/apexcharts/line-chart-3.js"></script>
-    <script src="admin-js/apexcharts/line-chart-4.js"></script>
-    <script src="admin-js/apexcharts/line-chart-5.js"></script>
-    <script src="admin-js/apexcharts/line-chart-6.js"></script>
-    <script src="admin-js/apexcharts/line-chart-7.js"></script>
-    <script src="admin-js/switcher.js"></script>
-    <script defer src="admin-js/theme-settings.js"></script>
-    <script src="admin-js/main.js"></script>
+
+    <!-- Javascript -->
+    <script src="/admin-js/jquery.min.js"></script>
+    <script src="/admin-js/bootstrap.min.js"></script>
+    <script src="/admin-js/bootstrap-select.min.js"></script>
+    <script src="/admin-js/zoom.js"></script>
+    <script src="/admin-js/morris.min.js"></script>
+    <script src="/admin-js/raphael.min.js"></script>
+
+
+    <script src="/admin-js/apexcharts/apexcharts.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-1.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-2.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-3.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-4.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-5.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-6.js"></script>
+    <script src="/admin-js/apexcharts/line-chart-7.js"></script>
+    <script src="/admin-js/switcher.js"></script>
+    <script defer src="/admin-js/theme-settings.js"></script>
+    <script src="/admin-js/main.js"></script>
 
 </body>
 

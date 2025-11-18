@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Blushelys - Order Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="images/logo/blushley-png-without-shade.png">
+    
+    <style>
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background-color: #e6f7ee;
+            color: #10b759;
+        }
+
+        .status-badge.inactive {
+            background-color: #ffebeb;
+            color: #5c4d3b;
+        }
+
+        .status-badge.pending {
+            background-color: #fff4e6;
+            color: #fa8c16;
+        }
+
+        .status-badge.verified {
+            background-color: #e6f7ff;
+            color: #5c4d3b;
+        }
+
+        /* Order Status Badges */
+        .status-badge.confirmed {
+            background-color: #e6f7ee;
+            color: #10b759;
+        }
+
+        .status-badge.processing {
+            background-color: #e6f3ff;
+            color: #1890ff;
+        }
+
+        .status-badge.shipped {
+            background-color: #f0f7ff;
+            color: #722ed1;
+        }
+
+        .status-badge.delivered {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-badge.cancelled {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+
+        /* Modern Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modern-modal {
+            border: none;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #5c4d3b 0%, #764ba2 100%);
+            border-radius: 16px 16px 0 0;
+            color: white;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title i {
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .modal-title h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header i {
+            color: #5c4d3b;
+            font-size: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #5c4d3b;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5c4d3b;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: #5c4d3b;
+            background: #f1f5f9;
+        }
+
+        .file-upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-content i {
+            font-size: 48px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .upload-content p {
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .upload-content small {
+            color: #64748b;
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .image-preview-grid img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle-slider {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        input[type="checkbox"]:checked + .toggle-label .toggle-slider {
+            background: #10b981;
+        }
+
+        input[type="checkbox"]:checked + .toggle-label .toggle-slider::before {
+            transform: translateX(26px);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5c4d3b 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Product Cards */
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 1; /* Show only 1 line */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #666;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .card-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-actions .item {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .card-actions .item.edit {
+            background-color: #e3f2fd;
+            color: #5c4d3b;
+        }
+
+        .card-actions .item.edit:hover {
+            background-color: #bbdefb;
+        }
+
+        .card-actions .item.toggle {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .card-actions .item.toggle:hover {
+            background-color: #c8e6c9;
+        }
+
+        .card-actions .item.trash {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+
+        .card-actions .item.trash:hover {
+            background-color: #ffcdd2;
+        }
+
+        .card-actions .item.verify {
+            background-color: #e3f2fd;
+            color: #5c4d3b;
+        }
+
+        .card-actions .item.verify:hover {
+            background-color: #bbdefb;
+        }
+
+        .badges-1 {
+            display: flex;
+            gap: 10px;
+        }
+
+        .verified-badge {
+            background-color: #e8f5e9;
+            color: #388e3c;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Order Management Styles */
+        .orders-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .order-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .order-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-id {
+            font-weight: 600;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .order-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-body {
+            padding: 20px;
+        }
+
+        .order-customer {
+            margin-bottom: 20px;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .customer-contact {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-items {
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .item-quantity {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .order-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .order-shop-info {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .shop-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1890ff;
+        }
+
+        .shop-location {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Order Details Modal */
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .order-timeline {
+            margin-top: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: -15px;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item:last-child:before {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timeline-text {
+            font-weight: 500;
+        }
+
+        .timeline-item.active .timeline-icon {
+            background: #5c4d3b;
+            color: white;
+        }
+
+        .timeline-item.active .timeline-text {
+            color: #5c4d3b;
+            font-weight: 600;
+        }
+
+        /* Filter and Search */
+        .wg-filter {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-search {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .form-search input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .form-search button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .show select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Pagination */
+        .wg-pagination {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .wg-pagination li {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+
+        .wg-pagination li.active {
+            background: linear-gradient(135deg, #5c4d3b 0%, #764ba2 100%);
+        }
+
+        .wg-pagination li.active a {
+            color: white;
+        }
+
+        .wg-pagination li a {
+            text-decoration: none;
+            color: #333;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wg-pagination li:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .products-container {
+                grid-template-columns: 1fr;
+            }
+
+            .wg-filter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-search {
+                max-width: 100%;
+            }
+
+            .order-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-header, .order-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .order-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+
+            .modal-header {
+                border-radius: 0;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .card-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .order-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .order-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <!-- layout-wrap -->
+            <div class="layout-wrap loader-off">
+                <!-- preload -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
+                <!-- /preload -->
+                
+                <!-- section-menu-left -->
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo" src="images/logo/blushley-png-without-shade.png"
+                                data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                        </a>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                                <ul>
+                                    <li class="menu-item">
+                                        <a href="admin-dashboard.html">
+                                            <div class="icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Admin Dashboard</div>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="menu-item">
+                                        <a href="admin-categories.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Category Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-products.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">Product Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="admin-shop.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-heart"></i></div>
+                                            <div class="text">Shop Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item active">
+                                        <a href="admin-orders.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Order Management</div>
+                                        </a>
+                                    </li>
+    <li class="menu-item ">
+                                        <a href="admin-bookings.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-calendar"></i></div>
+                                            <div class="text">Booking Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-salons.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-scissors"></i></div>
+                                            <div class="text">Salons Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-freelance.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Freelance Management</div>
+                                        </a>
+                                    </li>
+    <li class="menu-item ">
+                                        <a href="admin-users.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">User Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-banners.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-testimonials.html" class="menu-item-button">
+                                            <div class="icon"><i class="fa fa-star-o"></i></div>
+                                            <div class="text">Testimonials Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-blogs.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-book-open"></i></div>
+                                            <div class="text">Blogs Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/logout">
+                                            <div class="icon">
+                                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Log out</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /section-menu-left -->
+                
+                <!-- section-content-right -->
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="/dashboard">
+                                    <img style="width: 50px;" id="logo_header_mobile" alt="" src="images/surya-logo.png"
+                                        data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="admin-images/avatar/user-1.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushelys</span>
+                                                    <span class="text-tiny">Admin</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/logout" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                                <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                                    <h3>Order Management</h3>
+                                    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                                        <li>
+                                            <a href="/dashboard">
+                                                <div class="text-tiny">Dashboard</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="text-tiny">Orders</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <div class="text-tiny">Order Management</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- order-list -->
+                                <div class="wg-box">
+                                    <div class="title-box">
+                                        <i class="icon-shopping-cart"></i>
+                                        <div class="body-text">Tip: Manage customer orders, update order status, and track order fulfillment. You can confirm orders, update shipping status, and view detailed order information.</div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap10 flex-wrap">
+                                        <div class="wg-filter flex-grow">
+                                            <div class="show">
+                                                <div class="text-tiny">Showing</div>
+                                                <div class="select">
+                                                    <select id="limit-select">
+                                                        <option value="10">10</option>
+                                                        <option value="20">20</option>
+                                                        <option value="30">30</option>
+                                                    </select>
+                                                </div>
+                                                <div class="text-tiny">entries</div>
+                                            </div>
+                                            <div class="form-search">
+                                                <input type="text" id="search-input"
+                                                    placeholder="Search by order ID, customer name, or product...">
+                                                <button id="search-btn"><i class="icon-search"></i></button>
+                                            </div>
+                                            <div class="show">
+                                                <div class="text-tiny">Filter by:</div>
+                                                <div class="select">
+                                                    <select id="status-filter">
+                                                        <option value="all">All Status</option>
+                                                        <option value="pending">Pending</option>
+                                                        <option value="confirmed">Confirmed</option>
+                                                        <option value="processing">Processing</option>
+                                                        <option value="shipped">Shipped</option>
+                                                        <option value="delivered">Delivered</option>
+                                                        <option value="cancelled">Cancelled</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="orders-container" id="orders-list">
+                                        <!-- Order cards will be dynamically inserted here -->
+                                    </div>
+
+                                    <div class="divider"></div>
+                                    <div class="flex items-center justify-between flex-wrap gap10">
+                                        <div class="text-tiny" id="showing-entries">Showing 0 entries</div>
+                                        <ul class="wg-pagination" id="pagination">
+                                            <!-- Pagination will be loaded here dynamically -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- /order-list -->
+
+                                <!-- Order Details Modal -->
+                                <div id="order-details-modal" class="modal">
+                                    <div class="modal-content modern-modal">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-file-text"></i>
+                                                <h3>Order Details</h3>
+                                            </div>
+                                            <button class="close-btn" onclick="closeModal('order-details-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <div class="order-details-grid">
+                                                <div class="form-section">
+                                                    <div class="section-header">
+                                                        <h4><i class="icon-user"></i> Customer Information</h4>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label>Customer Name</label>
+                                                            <div id="detail-customer-name" class="detail-value"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Email</label>
+                                                            <div id="detail-customer-email" class="detail-value"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label>Phone</label>
+                                                            <div id="detail-customer-phone" class="detail-value"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Order Date</label>
+                                                            <div id="detail-order-date" class="detail-value"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Shipping Address</label>
+                                                        <div id="detail-shipping-address" class="detail-value"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-section">
+                                                    <div class="section-header">
+                                                        <h4><i class="icon-shopping-bag"></i> Order Summary</h4>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label>Order ID</label>
+                                                            <div id="detail-order-id" class="detail-value"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Status</label>
+                                                            <div id="detail-order-status" class="detail-value"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label>Payment Method</label>
+                                                            <div id="detail-payment-method" class="detail-value"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Payment Status</label>
+                                                            <div id="detail-payment-status" class="detail-value"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Order Total</label>
+                                                        <div id="detail-order-total" class="detail-value" style="font-size: 18px; font-weight: 600; color: #5c4d3b;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-section">
+                                                <div class="section-header">
+                                                    <h4><i class="icon-package"></i> Order Items</h4>
+                                                </div>
+                                                <div id="detail-order-items" class="order-items">
+                                                    <!-- Order items will be dynamically inserted here -->
+                                                </div>
+                                            </div>
+
+                                            <div class="form-section">
+                                                <div class="section-header">
+                                                    <h4><i class="icon-truck"></i> Shop Information</h4>
+                                                </div>
+                                                <div id="detail-shop-info" class="order-shop-info">
+                                                    <!-- Shop information will be dynamically inserted here -->
+                                                </div>
+                                            </div>
+
+                                            <div class="form-section">
+                                                <div class="section-header">
+                                                    <h4><i class="icon-clock"></i> Order Timeline</h4>
+                                                </div>
+                                                <div id="detail-order-timeline" class="order-timeline">
+                                                    <!-- Order timeline will be dynamically inserted here -->
+                                                </div>
+                                            </div>
+
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-secondary" 
+                                                        onclick="closeModal('order-details-modal')">
+                                                    <i class="icon-x"></i> Close
+                                                </button>
+                                                <button type="button" class="btn btn-primary" id="print-order-btn">
+                                                    <i class="icon-printer"></i> Print Order
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Update Status Modal -->
+                                <div id="update-status-modal" class="modal">
+                                    <div class="modal-content modern-modal">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-edit-3"></i>
+                                                <h3>Update Order Status</h3>
+                                            </div>
+                                            <button class="close-btn" onclick="closeModal('update-status-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <form id="update-status-form">
+                                                <input type="hidden" id="update-order-id" name="orderId">
+                                                
+                                                <div class="form-section">
+                                                    <div class="form-group">
+                                                        <label for="update-order-status">Order Status</label>
+                                                        <select id="update-order-status" name="status" required>
+                                                            <option value="pending">Pending</option>
+                                                            <option value="confirmed">Confirmed</option>
+                                                            <option value="processing">Processing</option>
+                                                            <option value="shipped">Shipped</option>
+                                                            <option value="delivered">Delivered</option>
+                                                            <option value="cancelled">Cancelled</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="update-status-notes">Notes (Optional)</label>
+                                                        <textarea id="update-status-notes" name="notes" rows="3" placeholder="Add any notes about this status update..."></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-actions">
+                                                    <button type="button" class="btn btn-secondary" 
+                                                            onclick="closeModal('update-status-modal')">
+                                                        <i class="icon-x"></i> Cancel
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="icon-save"></i> Update Status
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    // Global variables
+                                    let currentPage = 1;
+                                    let limit = 10;
+                                    let searchQuery = '';
+                                    let statusFilter = 'all';
+                                    let orders = [];
+
+                                    // DOM Content Loaded
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Initialize
+                                        fetchOrders();
+
+                                        // Event listeners
+                                        document.getElementById('limit-select').addEventListener('change', function () {
+                                            limit = parseInt(this.value);
+                                            currentPage = 1;
+                                            fetchOrders();
+                                        });
+
+                                        document.getElementById('search-btn').addEventListener('click', function () {
+                                            searchQuery = document.getElementById('search-input').value;
+                                            currentPage = 1;
+                                            fetchOrders();
+                                        });
+
+                                        document.getElementById('status-filter').addEventListener('change', function () {
+                                            statusFilter = this.value;
+                                            currentPage = 1;
+                                            fetchOrders();
+                                        });
+
+                                        document.getElementById('update-status-form').addEventListener('submit', function (e) {
+                                            e.preventDefault();
+                                            updateOrderStatus();
+                                        });
+
+                                        document.getElementById('print-order-btn').addEventListener('click', function() {
+                                            window.print();
+                                        });
+                                    });
+
+                                    // Fetch orders from API
+                                    async function fetchOrders() {
+                                        try {
+                                            // In a real implementation, this would be an API call
+                                            // For demo purposes, we'll use mock data
+                                            orders = getMockOrders();
+                                            
+                                            // Filter by search query if provided
+                                            if (searchQuery) {
+                                                orders = orders.filter(order => 
+                                                    order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                    order.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                    order.items.some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                                                );
+                                            }
+                                            
+                                            // Filter by status if provided
+                                            if (statusFilter !== 'all') {
+                                                orders = orders.filter(order => order.status === statusFilter);
+                                            }
+                                            
+                                            renderOrders(orders);
+                                            renderPagination(Math.ceil(orders.length / limit), currentPage);
+                                            document.getElementById('showing-entries').textContent = `Showing ${Math.min(orders.length, limit)} of ${orders.length} entries`;
+                                        } catch (error) {
+                                            console.error('Error fetching orders:', error);
+                                            alert('Failed to load orders. Please try again later.');
+                                            document.getElementById('orders-list').innerHTML = '<div class="error-message">Failed to load orders</div>';
+                                        }
+                                    }
+
+                                    // Render order cards
+                                    function renderOrders(orders) {
+                                        const ordersList = document.getElementById('orders-list');
+                                        ordersList.innerHTML = '';
+
+                                        // Calculate pagination
+                                        const startIndex = (currentPage - 1) * limit;
+                                        const endIndex = startIndex + limit;
+                                        const paginatedOrders = orders.slice(startIndex, endIndex);
+
+                                        if (paginatedOrders.length === 0) {
+                                            ordersList.innerHTML = '<div class="no-orders">No orders found matching your criteria.</div>';
+                                            return;
+                                        }
+
+                                        paginatedOrders.forEach(order => {
+                                            const orderCard = document.createElement('div');
+                                            orderCard.className = 'order-card';
+                                            orderCard.id = `order-${order.id}`;
+
+                                            // Format date
+                                            const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            });
+
+                                            // Calculate total
+                                            const total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                                            // Status badge
+                                            const statusBadge = getStatusBadge(order.status);
+
+                                            // Shop info if available
+                                            let shopInfo = '';
+                                            if (order.shop) {
+                                                shopInfo = `
+                                                    <div class="order-shop-info">
+                                                        <div class="shop-name">${order.shop.name}</div>
+                                                        <div class="shop-location">${order.shop.location}</div>
+                                                    </div>
+                                                `;
+                                            }
+
+                                            // Order items
+                                            let orderItems = '';
+                                            order.items.forEach(item => {
+                                                const itemTotal = item.price * item.quantity;
+                                                orderItems += `
+                                                    <div class="order-item">
+                                                        <div class="item-image">
+                                                            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                                                        </div>
+                                                        <div class="item-details">
+                                                            <div class="item-name">${item.name}</div>
+                                                            <div class="item-price">₹${item.price} x ${item.quantity}</div>
+                                                        </div>
+                                                        <div class="item-total">₹${itemTotal.toFixed(2)}</div>
+                                                    </div>
+                                                `;
+                                            });
+
+                                            orderCard.innerHTML = `
+                                                <div class="order-header">
+                                                    <div>
+                                                        <div class="order-id">${order.id}</div>
+                                                        <div class="order-date">${orderDate}</div>
+                                                    </div>
+                                                    <div class="order-status">
+                                                        ${statusBadge}
+                                                    </div>
+                                                </div>
+                                                <div class="order-body">
+                                                    <div class="order-customer">
+                                                        <div class="customer-name">${order.customer.name}</div>
+                                                        <div class="customer-contact">${order.customer.email} • ${order.customer.phone}</div>
+                                                    </div>
+                                                    ${shopInfo}
+                                                    <div class="order-items">
+                                                        ${orderItems}
+                                                    </div>
+                                                    <div class="order-total">
+                                                        <span>Total Amount:</span>
+                                                        <span>₹${total.toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="order-footer">
+                                                    <div class="text-tiny">Payment: ${order.payment.method} • ${order.payment.status}</div>
+                                                    <div class="order-actions">
+                                                        <button class="btn btn-info btn-sm" onclick="showOrderDetails('${order.id}')">
+                                                            <i class="icon-eye"></i> View
+                                                        </button>
+                                                        ${order.status === 'pending' ? `
+                                                            <button class="btn btn-success btn-sm" onclick="confirmOrder('${order.id}')">
+                                                                <i class="icon-check"></i> Confirm
+                                                            </button>
+                                                        ` : ''}
+                                                        <button class="btn btn-primary btn-sm" onclick="showUpdateStatusModal('${order.id}')">
+                                                            <i class="icon-edit-3"></i> Update Status
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            `;
+
+                                            ordersList.appendChild(orderCard);
+                                        });
+                                    }
+
+                                    // Get status badge HTML
+                                    function getStatusBadge(status) {
+                                        const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+                                        return `<span class="status-badge ${status}">${statusText}</span>`;
+                                    }
+
+                                    // Show order details modal
+                                    function showOrderDetails(orderId) {
+                                        const order = orders.find(o => o.id === orderId);
+                                        if (!order) {
+                                            alert('Order not found');
+                                            return;
+                                        }
+
+                                        // Populate customer information
+                                        document.getElementById('detail-customer-name').textContent = order.customer.name;
+                                        document.getElementById('detail-customer-email').textContent = order.customer.email;
+                                        document.getElementById('detail-customer-phone').textContent = order.customer.phone;
+                                        document.getElementById('detail-shipping-address').textContent = order.shippingAddress;
+                                        
+                                        // Format date
+                                        const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        });
+                                        document.getElementById('detail-order-date').textContent = orderDate;
+
+                                        // Populate order summary
+                                        document.getElementById('detail-order-id').textContent = order.id;
+                                        document.getElementById('detail-order-status').innerHTML = getStatusBadge(order.status);
+                                        document.getElementById('detail-payment-method').textContent = order.payment.method;
+                                        document.getElementById('detail-payment-status').textContent = order.payment.status;
+                                        
+                                        // Calculate total
+                                        const total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                                        document.getElementById('detail-order-total').textContent = `₹${total.toFixed(2)}`;
+
+                                        // Populate order items
+                                        const orderItemsContainer = document.getElementById('detail-order-items');
+                                        orderItemsContainer.innerHTML = '';
+                                        
+                                        order.items.forEach(item => {
+                                            const itemTotal = item.price * item.quantity;
+                                            const itemElement = document.createElement('div');
+                                            itemElement.className = 'order-item';
+                                            itemElement.innerHTML = `
+                                                <div class="item-image">
+                                                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                                                </div>
+                                                <div class="item-details">
+                                                    <div class="item-name">${item.name}</div>
+                                                    <div class="item-price">₹${item.price} x ${item.quantity}</div>
+                                                    <div class="item-category">${item.category}</div>
+                                                </div>
+                                                <div class="item-total">₹${itemTotal.toFixed(2)}</div>
+                                            `;
+                                            orderItemsContainer.appendChild(itemElement);
+                                        });
+
+                                        // Populate shop information
+                                        const shopInfoContainer = document.getElementById('detail-shop-info');
+                                        if (order.shop) {
+                                            shopInfoContainer.innerHTML = `
+                                                <div class="shop-name">${order.shop.name}</div>
+                                                <div class="shop-location">${order.shop.location}</div>
+                                                <div class="shop-contact">${order.shop.contact || 'N/A'}</div>
+                                            `;
+                                        } else {
+                                            shopInfoContainer.innerHTML = '<div>No shop information available</div>';
+                                        }
+
+                                        // Populate order timeline
+                                        const timelineContainer = document.getElementById('detail-order-timeline');
+                                        timelineContainer.innerHTML = '';
+                                        
+                                        order.timeline.forEach((event, index) => {
+                                            const isActive = index === order.timeline.length - 1;
+                                            const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            });
+                                            
+                                            const eventElement = document.createElement('div');
+                                            eventElement.className = `timeline-item ${isActive ? 'active' : ''}`;
+                                            eventElement.innerHTML = `
+                                                <div class="timeline-icon">
+                                                    <i class="${getTimelineIcon(event.status)}"></i>
+                                                </div>
+                                                <div class="timeline-content">
+                                                    <div class="timeline-date">${eventDate}</div>
+                                                    <div class="timeline-text">${event.description}</div>
+                                                </div>
+                                            `;
+                                            timelineContainer.appendChild(eventElement);
+                                        });
+
+                                        // Show modal
+                                        document.getElementById('order-details-modal').style.display = 'block';
+                                    }
+
+                                    // Get timeline icon based on status
+                                    function getTimelineIcon(status) {
+                                        const icons = {
+                                            'pending': 'icon-clock',
+                                            'confirmed': 'icon-check',
+                                            'processing': 'icon-settings',
+                                            'shipped': 'icon-truck',
+                                            'delivered': 'icon-package',
+                                            'cancelled': 'icon-x'
+                                        };
+                                        return icons[status] || 'icon-circle';
+                                    }
+
+                                    // Show update status modal
+                                    function showUpdateStatusModal(orderId) {
+                                        const order = orders.find(o => o.id === orderId);
+                                        if (!order) {
+                                            alert('Order not found');
+                                            return;
+                                        }
+
+                                        document.getElementById('update-order-id').value = order.id;
+                                        document.getElementById('update-order-status').value = order.status;
+                                        document.getElementById('update-status-notes').value = '';
+
+                                        document.getElementById('update-status-modal').style.display = 'block';
+                                    }
+
+                                    // Update order status
+                                    async function updateOrderStatus() {
+                                        const form = document.getElementById('update-status-form');
+                                        const formData = new FormData(form);
+                                        const orderId = document.getElementById('update-order-id').value;
+                                        const newStatus = formData.get('status');
+                                        const notes = formData.get('notes');
+
+                                        try {
+                                            // In a real implementation, this would be an API call
+                                            console.log('Updating order status:', {
+                                                id: orderId,
+                                                status: newStatus,
+                                                notes: notes
+                                            });
+
+                                            // Simulate API call delay
+                                            await new Promise(resolve => setTimeout(resolve, 1000));
+
+                                            // Update the order in our mock data
+                                            const orderIndex = orders.findIndex(o => o.id === orderId);
+                                            if (orderIndex !== -1) {
+                                                orders[orderIndex].status = newStatus;
+                                                orders[orderIndex].timeline.push({
+                                                    status: newStatus,
+                                                    date: new Date().toISOString(),
+                                                    description: `Order status updated to ${newStatus}${notes ? `: ${notes}` : ''}`
+                                                });
+                                            }
+
+                                            alert('Order status updated successfully!');
+                                            closeModal('update-status-modal');
+                                            fetchOrders();
+                                        } catch (error) {
+                                            console.error('Error:', error);
+                                            alert('Error updating order status');
+                                        }
+                                    }
+
+                                    // Confirm order
+                                    function confirmOrder(orderId) {
+                                        if (!confirm('Are you sure you want to confirm this order?')) return;
+
+                                        // In a real implementation, this would be an API call
+                                        const orderIndex = orders.findIndex(o => o.id === orderId);
+                                        if (orderIndex !== -1) {
+                                            orders[orderIndex].status = 'confirmed';
+                                            orders[orderIndex].timeline.push({
+                                                status: 'confirmed',
+                                                date: new Date().toISOString(),
+                                                description: 'Order confirmed by admin'
+                                            });
+                                        }
+
+                                        alert('Order confirmed successfully!');
+                                        fetchOrders();
+                                    }
+
+                                    // Close modal
+                                    function closeModal(modalId) {
+                                        document.getElementById(modalId).style.display = 'none';
+                                    }
+
+                                    // Pagination functions
+                                    function renderPagination(totalPages, currentPage) {
+                                        const paginationContainer = document.getElementById('pagination');
+                                        paginationContainer.innerHTML = '';
+
+                                        // Always show first page button
+                                        addPageButton(paginationContainer, 1, currentPage);
+
+                                        // Show previous ellipsis if needed
+                                        if (currentPage > 3) {
+                                            const ellipsis = document.createElement('li');
+                                            ellipsis.innerHTML = '<span>...</span>';
+                                            paginationContainer.appendChild(ellipsis);
+                                        }
+
+                                        // Show pages around current page
+                                        const startPage = Math.max(2, currentPage - 1);
+                                        const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+                                        for (let i = startPage; i <= endPage; i++) {
+                                            addPageButton(paginationContainer, i, currentPage);
+                                        }
+
+                                        // Show next ellipsis if needed
+                                        if (currentPage < totalPages - 2) {
+                                            const ellipsis = document.createElement('li');
+                                            ellipsis.innerHTML = '<span>...</span>';
+                                            paginationContainer.appendChild(ellipsis);
+                                        }
+
+                                        // Always show last page button if there are multiple pages
+                                        if (totalPages > 1) {
+                                            addPageButton(paginationContainer, totalPages, currentPage);
+                                        }
+                                    }
+
+                                    function addPageButton(container, pageNumber, currentPage) {
+                                        const pageItem = document.createElement('li');
+                                        if (pageNumber === currentPage) {
+                                            pageItem.className = 'active';
+                                        }
+
+                                        const pageLink = document.createElement('a');
+                                        pageLink.href = '#';
+                                        pageLink.textContent = pageNumber;
+                                        pageLink.onclick = (e) => {
+                                            e.preventDefault();
+                                            currentPage = pageNumber;
+                                            fetchOrders();
+                                        };
+
+                                        pageItem.appendChild(pageLink);
+                                        container.appendChild(pageItem);
+                                    }
+
+                                    // Mock data for demonstration
+                                    function getMockOrders() {
+                                        return [
+                                            {
+                                                id: 'ORD-2023-001',
+                                                customer: {
+                                                    name: 'Priya Sharma',
+                                                    email: 'priya.sharma@example.com',
+                                                    phone: '+91 98765 43210'
+                                                },
+                                                orderDate: '2023-10-15T10:30:00Z',
+                                                status: 'pending',
+                                                shippingAddress: '123, Green Park, New Delhi, 110016',
+                                                payment: {
+                                                    method: 'Credit Card',
+                                                    status: 'Paid'
+                                                },
+                                                items: [
+                                                    {
+                                                        name: 'Vitamin C Serum',
+                                                        category: 'Skincare',
+                                                        price: 1299,
+                                                        quantity: 1,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    },
+                                                    {
+                                                        name: 'Matte Lipstick - Ruby Red',
+                                                        category: 'Makeup',
+                                                        price: 599,
+                                                        quantity: 2,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    }
+                                                ],
+                                                shop: {
+                                                    name: 'Glow Beauty Store',
+                                                    location: 'Mumbai',
+                                                    contact: '+91 98765 43210'
+                                                },
+                                                timeline: [
+                                                    {
+                                                        status: 'pending',
+                                                        date: '2023-10-15T10:30:00Z',
+                                                        description: 'Order placed by customer'
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                id: 'ORD-2023-002',
+                                                customer: {
+                                                    name: 'Rahul Verma',
+                                                    email: 'rahul.verma@example.com',
+                                                    phone: '+91 98765 43211'
+                                                },
+                                                orderDate: '2023-10-14T14:20:00Z',
+                                                status: 'confirmed',
+                                                shippingAddress: '456, Koramangala, Bangalore, 560034',
+                                                payment: {
+                                                    method: 'UPI',
+                                                    status: 'Paid'
+                                                },
+                                                items: [
+                                                    {
+                                                        name: 'Argan Oil Hair Treatment',
+                                                        category: 'Haircare',
+                                                        price: 899,
+                                                        quantity: 1,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    }
+                                                ],
+                                                shop: {
+                                                    name: 'Hair Haven',
+                                                    location: 'Bangalore',
+                                                    contact: '+91 98765 43212'
+                                                },
+                                                timeline: [
+                                                    {
+                                                        status: 'pending',
+                                                        date: '2023-10-14T14:20:00Z',
+                                                        description: 'Order placed by customer'
+                                                    },
+                                                    {
+                                                        status: 'confirmed',
+                                                        date: '2023-10-14T16:45:00Z',
+                                                        description: 'Order confirmed by admin'
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                id: 'ORD-2023-003',
+                                                customer: {
+                                                    name: 'Anjali Patel',
+                                                    email: 'anjali.patel@example.com',
+                                                    phone: '+91 98765 43213'
+                                                },
+                                                orderDate: '2023-10-13T09:15:00Z',
+                                                status: 'processing',
+                                                shippingAddress: '789, Jubilee Hills, Hyderabad, 500033',
+                                                payment: {
+                                                    method: 'Debit Card',
+                                                    status: 'Paid'
+                                                },
+                                                items: [
+                                                    {
+                                                        name: 'Floral Perfume - Bloom',
+                                                        category: 'Fragrance',
+                                                        price: 2499,
+                                                        quantity: 1,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    },
+                                                    {
+                                                        name: 'Charcoal Face Mask',
+                                                        category: 'Skincare',
+                                                        price: 499,
+                                                        quantity: 1,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    }
+                                                ],
+                                                shop: null, // No shop info for this order
+                                                timeline: [
+                                                    {
+                                                        status: 'pending',
+                                                        date: '2023-10-13T09:15:00Z',
+                                                        description: 'Order placed by customer'
+                                                    },
+                                                    {
+                                                        status: 'confirmed',
+                                                        date: '2023-10-13T11:30:00Z',
+                                                        description: 'Order confirmed by admin'
+                                                    },
+                                                    {
+                                                        status: 'processing',
+                                                        date: '2023-10-13T14:20:00Z',
+                                                        description: 'Order is being processed'
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                id: 'ORD-2023-004',
+                                                customer: {
+                                                    name: 'Sanjay Kumar',
+                                                    email: 'sanjay.kumar@example.com',
+                                                    phone: '+91 98765 43214'
+                                                },
+                                                orderDate: '2023-10-12T16:45:00Z',
+                                                status: 'shipped',
+                                                shippingAddress: '321, Salt Lake City, Kolkata, 700091',
+                                                payment: {
+                                                    method: 'Net Banking',
+                                                    status: 'Paid'
+                                                },
+                                                items: [
+                                                    {
+                                                        name: 'Matte Lipstick - Ruby Red',
+                                                        category: 'Makeup',
+                                                        price: 599,
+                                                        quantity: 3,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    }
+                                                ],
+                                                shop: {
+                                                    name: 'Cosmetics Corner',
+                                                    location: 'Delhi',
+                                                    contact: '+91 98765 43215'
+                                                },
+                                                timeline: [
+                                                    {
+                                                        status: 'pending',
+                                                        date: '2023-10-12T16:45:00Z',
+                                                        description: 'Order placed by customer'
+                                                    },
+                                                    {
+                                                        status: 'confirmed',
+                                                        date: '2023-10-12T18:20:00Z',
+                                                        description: 'Order confirmed by admin'
+                                                    },
+                                                    {
+                                                        status: 'processing',
+                                                        date: '2023-10-13T10:15:00Z',
+                                                        description: 'Order is being processed'
+                                                    },
+                                                    {
+                                                        status: 'shipped',
+                                                        date: '2023-10-13T14:30:00Z',
+                                                        description: 'Order shipped via Blue Dart'
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                id: 'ORD-2023-005',
+                                                customer: {
+                                                    name: 'Meera Nair',
+                                                    email: 'meera.nair@example.com',
+                                                    phone: '+91 98765 43216'
+                                                },
+                                                orderDate: '2023-10-10T11:20:00Z',
+                                                status: 'delivered',
+                                                shippingAddress: '654, Anna Nagar, Chennai, 600040',
+                                                payment: {
+                                                    method: 'Credit Card',
+                                                    status: 'Paid'
+                                                },
+                                                items: [
+                                                    {
+                                                        name: 'Vitamin C Serum',
+                                                        category: 'Skincare',
+                                                        price: 1299,
+                                                        quantity: 2,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    },
+                                                    {
+                                                        name: 'Argan Oil Hair Treatment',
+                                                        category: 'Haircare',
+                                                        price: 899,
+                                                        quantity: 1,
+                                                        image: 'images/makeup-products/makeup-p1.jpg'
+                                                    }
+                                                ],
+                                                shop: {
+                                                    name: 'Glow Beauty Store',
+                                                    location: 'Mumbai',
+                                                    contact: '+91 98765 43210'
+                                                },
+                                                timeline: [
+                                                    {
+                                                        status: 'pending',
+                                                        date: '2023-10-10T11:20:00Z',
+                                                        description: 'Order placed by customer'
+                                                    },
+                                                    {
+                                                        status: 'confirmed',
+                                                        date: '2023-10-10T13:45:00Z',
+                                                        description: 'Order confirmed by admin'
+                                                    },
+                                                    {
+                                                        status: 'processing',
+                                                        date: '2023-10-10T15:30:00Z',
+                                                        description: 'Order is being processed'
+                                                    },
+                                                    {
+                                                        status: 'shipped',
+                                                        date: '2023-10-11T09:15:00Z',
+                                                        description: 'Order shipped via DTDC'
+                                                    },
+                                                    {
+                                                        status: 'delivered',
+                                                        date: '2023-10-13T16:20:00Z',
+                                                        description: 'Order delivered to customer'
+                                                    }
+                                                ]
+                                            }
+                                        ];
+                                    }
+                                </script>
+
+                                <!-- /main-content-wrap -->
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="">Blushelys</a>.
+                                Design by Trivlogic Private Limited All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
+                    </div>
+                    <!-- /main-content -->
+                </div>
+                <!-- /section-content-right -->
+            </div>
+            <!-- /layout-wrap -->
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Javascript -->
+    <script src="admin-js/jquery.min.js"></script>
+    <script src="admin-js/bootstrap.min.js"></script>
+    <script src="admin-js/bootstrap-select.min.js"></script>
+    <script src="admin-js/zoom.js"></script>
+    <script src="admin-js/switcher.js"></script>
+    <script defer src="admin-js/theme-settings.js"></script>
+    <script defer src="admin-js/main.js"></script>
+
+</body>
+
+</html>
