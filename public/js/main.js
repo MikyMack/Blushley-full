@@ -1579,9 +1579,6 @@ function clearAllFilters() {
 }
 
 function applyFilters() {
-    console.log('Applied filters:', activeFilters);
-    // Add your filter logic here
-    // Example: filter products based on activeFilters.category and activeFilters.brand
 }
 
 
@@ -1758,21 +1755,16 @@ $(document).ready(function() {
     if (currentPage === '' || currentPage === '/') {
         currentPage = 'index.html';
     }
-    
-    console.log('Current Page:', currentPage); // Debug line
-    
+   
     // Remove active class from ALL li elements in navigation
     $('.box-nav-ul li').removeClass('active');
     
     // Add active class to matching menu item
     $('.box-nav-ul li').each(function() {
         var linkHref = $(this).find('.item-link').attr('href');
-        
-        console.log('Link href:', linkHref); // Debug line
-        
+
         if (linkHref === currentPage) {
             $(this).addClass('active');
-            console.log('Active class added to:', linkHref); // Debug line
         }
     });
 });

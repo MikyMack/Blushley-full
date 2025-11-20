@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLUSHLEY | Beautician Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #c9a961;
+            --secondary-color: #b89446;
+            --accent-color: #e6c98c;
+            --light-color: #fefcf7;
+            --dark-color: #3a3526;
+            --success-color: #175507;
+            --warning-color: #972b1f;
+            --danger-color: #c97d6a;
+            --gray-light: #f5f1e8;
+            --gray-medium: #a59e8c;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fefcf7;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar-navigation {
+            width: 260px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brand-logo i {
+            font-size: 28px;
+            margin-right: 12px;
+        }
+
+        .brand-logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .nav-item {
+            padding: 14px 25px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background-color:white;
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item span {
+            font-weight: 500;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            z-index: 1100;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Main Content Area */
+        .main-content-area {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .page-title p {
+            color: var(--gray-medium);
+            margin-top: 5px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            overflow: hidden;
+            border: 2px solid var(--accent-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info h4 {
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            color: var(--gray-medium);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card-icon.primary {
+            background-color: rgba(201, 169, 97, 0.15);
+            color: var(--primary-color);
+        }
+
+        .card-icon.success {
+            background-color: rgba(138, 155, 110, 0.15);
+            color: var(--success-color);
+        }
+
+        .card-icon.warning {
+            background-color: rgba(212, 165, 116, 0.15);
+            color: var(--warning-color);
+        }
+
+        .card-icon.danger {
+            background-color: rgba(201, 125, 106, 0.15);
+            color: var(--danger-color);
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            color: var(--gray-medium);
+            font-size: 15px;
+        }
+
+        /* Dashboard Sections */
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        /* Ensure columns expand properly */
+        .left-column, .right-column {
+            min-width: 0;
+        }
+
+        .section-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .view-all-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Bookings Table */
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bookings-table th {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-light);
+            color: black;
+            font-weight: 500;
+        }
+
+        .bookings-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .client-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: rgba(212, 165, 116, 0.15);
+            color: var(--warning-color);
+        }
+
+        .status-confirmed {
+            background-color: rgba(138, 155, 110, 0.15);
+            color: var(--success-color);
+        }
+
+        .status-completed {
+            background-color: rgba(201, 169, 97, 0.15);
+            color: var(--primary-color);
+        }
+
+        /* Buttons */
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .confirm-button {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .confirm-button:hover {
+            background-color: #7a8a5f;
+        }
+
+        .edit-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .edit-button:hover {
+            background-color: #b89446;
+        }
+
+        .secondary-button {
+            background-color: var(--gray-light);
+            color: var(--dark-color);
+        }
+
+        .secondary-button:hover {
+            background-color: #e8e2d3;
+        }
+
+        /* Payment Progress */
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+
+        .payment-info h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .payment-info p {
+            color: var(--gray-medium);
+            font-size: 14px;
+        }
+
+        .payment-amount {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Profile Section */
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-field {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .profile-field:last-child {
+            border-bottom: none;
+        }
+
+        .field-label {
+            color: var(--gray-medium);
+        }
+
+        .field-value {
+            font-weight: 500;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Service Styles */
+        .services-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .service-tag {
+            background-color: rgba(201, 169, 97, 0.1);
+            color: var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .service-price {
+            background-color: rgba(201, 169, 97, 0.3);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .service-tag i {
+            cursor: pointer;
+        }
+
+        .add-service-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: var(--gray-light);
+            border-radius: var(--border-radius);
+        }
+
+        .service-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .service-inputs input {
+            flex: 1;
+        }
+
+        .price-input-container {
+            position: relative;
+            width: 120px;
+        }
+
+        .price-input-container::before {
+            content: "₹";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-medium);
+            z-index: 1;
+        }
+
+        .price-input {
+            padding-left: 25px;
+        }
+
+        /* Page Content */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .profile-picture-container {
+            position: relative;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: var(--box-shadow);
+        }
+
+        .change-photo-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .profile-info h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: var(--gray-medium);
+            margin-bottom: 10px;
+        }
+
+        .rating {
+            color: var(--warning-color);
+            font-size: 14px;
+        }
+
+        /* Working Hours */
+        .working-hours {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .hour-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .hour-item:last-child {
+            border-bottom: none;
+        }
+
+        .hour-day {
+            font-weight: 500;
+        }
+
+        .hour-time {
+            color: var(--gray-medium);
+        }
+
+        /* Service Locations */
+        .locations-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .location-tag {
+            background-color: rgba(138, 155, 110, 0.1);
+            color: var(--success-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Edit Mode */
+        .edit-mode .field-value,
+        .edit-mode .hour-time,
+        .edit-mode .service-tag,
+        .edit-mode .location-tag {
+            display: none;
+        }
+
+        .edit-mode .form-input,
+        .edit-mode .form-select {
+            display: block;
+        }
+
+        .form-input,
+        .form-select {
+            display: none;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+        }
+
+        /* Table Responsive */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-responsive table {
+            width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+            /* Move right column below left on medium screens */
+            .right-column { order: 2; }
+            .left-column { order: 1; }
+        }
+
+        @media (max-width: 992px) {
+            /* Collapse sidebar fully on tablets and below */
+            .sidebar-navigation {
+                width: 260px; /* full width when open */
+                transform: translateX(-100%);
+                position: fixed;
+                left: 0;
+                top: 0;
+            }
+            
+            .sidebar-navigation.mobile-hidden {
+                transform: translateX(-100%);
+            }
+            
+            /* When visible (remove mobile-hidden via JS), slide in */
+            .sidebar-navigation:not(.mobile-hidden) {
+                transform: translateX(0);
+            }
+            
+            .brand-logo h1, .nav-item span {
+                display: inline;
+            }
+            
+            .main-content-area {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .main-content-area.full-width {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .brand-logo {
+                justify-content: flex-start;
+                padding: 0 25px 25px;
+            }
+            
+            .nav-item {
+                justify-content: flex-start;
+                padding: 14px 25px;
+            }
+            
+            .nav-item i {
+                margin-right: 15px;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .working-hours {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-inputs {
+                flex-direction: column;
+            }
+            
+            .price-input-container {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .user-profile {
+                align-self: flex-start;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            /* Make bookings table horizontally scrollable without breaking layout */
+            .bookings-table {
+                min-width: 600px;
+            }
+            
+            .client-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .profile-field {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .payment-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content-area {
+                padding: 15px;
+            }
+            
+            .section-card {
+                padding: 15px;
+            }
+            
+            .dashboard-cards {
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .card-value {
+                font-size: 28px;
+            }
+            
+            .page-title h2 {
+                font-size: 24px;
+            }
+            
+            .profile-info h2 {
+                font-size: 20px;
+            }
+            
+            .profile-picture {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar-navigation" id="sidebarNavigation">
+            <div class="brand-logo">
+                <img style="background-color: white; padding: 5px; height: 56px; border-radius: 50px;" src="images/logo/blushley-png-without-shade.png" alt="">
+                <h1>Blushley</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-page="bookings">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </li>
+                <li class="nav-item" data-page="profile">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My Profile</span>
+                </li>
+                <li class="nav-item" data-page="payments">
+                    <i class="fas fa-wallet"></i>
+                    <span>Payments</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content-area" id="mainContentArea">
+            <!-- Header Bar -->
+            <div class="header-bar">
+                <div class="page-title">
+                    <h2 id="current-page-title">Beautician Dashboard</h2>
+                    <p id="current-page-description">Welcome back, Sophia! Here's your beauty business overview.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h4>Sophia Martinez</h4>
+                        <p>Beauty Specialist</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboard-page">
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="stat-card">
+                        <div class="card-icon primary">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="card-value">8</div>
+                        <div class="card-label">Today's Appointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="card-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-value">42</div>
+                        <div class="card-label">Completed This Month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="card-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-value">5</div>
+                        <div class="card-label">Pending Confirmations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="card-icon danger">
+                            <i class="fas fa-indian-rupee"></i>
+                        </div>
+                        <div class="card-value">₹2,850</div>
+                        <div class="card-label">Earnings This Month</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Sections -->
+                <div class="dashboard-sections">
+                    <!-- Left Column -->
+                    <div class="left-column">
+                        <!-- Appointments Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Today's Appointments</h3>
+                                <a href="#" class="view-all-link">View All</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="bookings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Client</th>
+                                            <th>Service</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="client-info">
+                                                    <div class="client-avatar">EJ</div>
+                                                    <div>Emma Johnson</div>
+                                                </div>
+                                            </td>
+                                            <td>Bridal Makeup</td>
+                                            <td>10:00 AM</td>
+                                            <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                                            <td><button class="action-button confirm-button" disabled>Confirmed</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="client-info">
+                                                    <div class="client-avatar">MW</div>
+                                                    <div>Mia Williams</div>
+                                                </div>
+                                            </td>
+                                            <td>Facial Treatment</td>
+                                            <td>11:30 AM</td>
+                                            <td><span class="status-badge status-pending">Pending</span></td>
+                                            <td><button class="action-button confirm-button">Confirm</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="client-info">
+                                                    <div class="client-avatar">OB</div>
+                                                    <div>Olivia Brown</div>
+                                                </div>
+                                            </td>
+                                            <td>Hair Styling</td>
+                                            <td>2:00 PM</td>
+                                            <td><span class="status-badge status-pending">Pending</span></td>
+                                            <td><button class="action-button confirm-button">Confirm</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="client-info">
+                                                    <div class="client-avatar">AD</div>
+                                                    <div>Ava Davis</div>
+                                                </div>
+                                            </td>
+                                            <td>Manicure & Pedicure</td>
+                                            <td>4:30 PM</td>
+                                            <td><span class="status-badge status-completed">Completed</span></td>
+                                            <td><button class="action-button confirm-button" disabled>Completed</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Payment Dashboard -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Recent Payments</h3>
+                                <a href="#" class="view-all-link">View All</a>
+                            </div>
+                            <div class="payment-list">
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Emma Johnson</h4>
+                                        <p>Bridal Makeup</p>
+                                    </div>
+                                    <div class="payment-amount">₹120</div>
+                                </div>
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Mia Williams</h4>
+                                        <p>Facial Treatment</p>
+                                    </div>
+                                    <div class="payment-amount">₹85</div>
+                                </div>
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Olivia Brown</h4>
+                                        <p>Hair Styling</p>
+                                    </div>
+                                    <div class="payment-amount">₹65</div>
+                                </div>
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Ava Davis</h4>
+                                        <p>Manicure & Pedicure</p>
+                                    </div>
+                                    <div class="payment-amount">₹55</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="right-column">
+                        <!-- Profile Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Profile Overview</h3>
+                                <a href="#" class="view-all-link" id="edit-profile-link">Edit</a>
+                            </div>
+                            <div class="profile-details">
+                                <div class="profile-field">
+                                    <span class="field-label">Specialization</span>
+                                    <span class="field-value">Bridal Makeup & Skincare</span>
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Experience</span>
+                                    <span class="field-value">6 Years</span>
+                                </div>
+                               
+                                <div class="profile-field">
+                                    <span class="field-label">Response Time</span>
+                                    <span class="field-value">&lt; 1 hour</span>
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Client Rating</span>
+                                    <span class="field-value">4.9/5</span>
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Member Since</span>
+                                    <span class="field-value">Mar 2018</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Appointments -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Upcoming Appointments</h3>
+                                <a href="#" class="view-all-link">View Calendar</a>
+                            </div>
+                            <div class="deadline-list">
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Isabella Garcia</h4>
+                                        <p>Evening Makeup</p>
+                                    </div>
+                                    <div class="payment-amount">Tomorrow</div>
+                                </div>
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Sophia Martinez</h4>
+                                        <p>Skincare Consultation</p>
+                                    </div>
+                                    <div class="payment-amount">Oct 18</div>
+                                </div>
+                                <div class="payment-item">
+                                    <div class="payment-info">
+                                        <h4>Charlotte Wilson</h4>
+                                        <p>Bridal Trial</p>
+                                    </div>
+                                    <div class="payment-amount">Oct 20</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Page -->
+            <div class="page-content" id="bookings-page">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">All Appointments</h3>
+                        <div>
+                            <button class="action-button edit-button">Export</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="client-info">
+                                            <div class="client-avatar">EJ</div>
+                                            <div>Emma Johnson</div>
+                                        </div>
+                                    </td>
+                                    <td>Bridal Makeup</td>
+                                    <td>Oct 15, 2023</td>
+                                    <td>10:00 AM</td>
+                                    <td>2 hours</td>
+                                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                                    <td><button class="action-button confirm-button" disabled>Confirmed</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="client-info">
+                                            <div class="client-avatar">MW</div>
+                                            <div>Mia Williams</div>
+                                        </div>
+                                    </td>
+                                    <td>Facial Treatment</td>
+                                    <td>Oct 15, 2023</td>
+                                    <td>11:30 AM</td>
+                                    <td>1 hour</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td><button class="action-button confirm-button">Confirm</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="client-info">
+                                            <div class="client-avatar">OB</div>
+                                            <div>Olivia Brown</div>
+                                        </div>
+                                    </td>
+                                    <td>Hair Styling</td>
+                                    <td>Oct 15, 2023</td>
+                                    <td>2:00 PM</td>
+                                    <td>1.5 hours</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td><button class="action-button confirm-button">Confirm</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="client-info">
+                                            <div class="client-avatar">AD</div>
+                                            <div>Ava Davis</div>
+                                        </div>
+                                    </td>
+                                    <td>Manicure & Pedicure</td>
+                                    <td>Oct 15, 2023</td>
+                                    <td>4:30 PM</td>
+                                    <td>1 hour</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td><button class="action-button confirm-button" disabled>Completed</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="client-info">
+                                            <div class="client-avatar">IG</div>
+                                            <div>Isabella Garcia</div>
+                                        </div>
+                                    </td>
+                                    <td>Evening Makeup</td>
+                                    <td>Oct 16, 2023</td>
+                                    <td>6:00 PM</td>
+                                    <td>1.5 hours</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td><button class="action-button confirm-button">Confirm</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div class="page-content" id="profile-page">
+                <div class="profile-header">
+                    <div class="profile-picture-container">
+                        <div class="profile-picture" style="background-color: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <button class="change-photo-btn">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <h2>Sophia Martinez</h2>
+                        <p>Beauty Specialist | 6 years experience</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.9 (128 reviews)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-sections">
+                    <div class="left-column">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Profile Information</h3>
+                                <button class="action-button edit-button" id="toggle-edit-btn">Edit Profile</button>
+                            </div>
+                            <div class="profile-details" id="profile-info">
+                                <div class="profile-field">
+                                    <span class="field-label">Full Name</span>
+                                    <span class="field-value" id="field-name">Sophia Martinez</span>
+                                    <input type="text" class="form-input" id="input-name" value="Sophia Martinez">
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Professional Title</span>
+                                    <span class="field-value" id="field-title">Beauty Specialist</span>
+                                    <input type="text" class="form-input" id="input-title" value="Beauty Specialist">
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Bio</span>
+                                    <span class="field-value" id="field-bio">Certified beautician with 6+ years of experience specializing in bridal makeup, skincare, and beauty treatments. Passionate about enhancing natural beauty and providing personalized services.</span>
+                                    <textarea class="form-input form-textarea" id="input-bio">Certified beautician with 6+ years of experience specializing in bridal makeup, skincare, and beauty treatments. Passionate about enhancing natural beauty and providing personalized services.</textarea>
+                                </div>
+                           
+                                <div class="profile-field">
+                                    <span class="field-label">Experience</span>
+                                    <span class="field-value" id="field-experience">6 years</span>
+                                    <input type="text" class="form-input" id="input-experience" value="6 years">
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Contact Email</span>
+                                    <span class="field-value" id="field-email">sophia@glamcarepro.com</span>
+                                    <input type="email" class="form-input" id="input-email" value="sophia@glamcarepro.com">
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Phone Number</span>
+                                    <span class="field-value" id="field-phone">+1 (555) 123-4567</span>
+                                    <input type="tel" class="form-input" id="input-phone" value="+1 (555) 123-4567">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Working Hours</h3>
+                            </div>
+                            <div class="working-hours" id="working-hours">
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Monday</span>
+                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
+                                    <select class="form-select">
+                                        <option>9:00 AM - 6:00 PM</option>
+                                        <option>10:00 AM - 7:00 PM</option>
+                                        <option>Closed</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Tuesday</span>
+                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
+                                    <select class="form-select">
+                                        <option>9:00 AM - 6:00 PM</option>
+                                        <option>10:00 AM - 7:00 PM</option>
+                                        <option>Closed</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Wednesday</span>
+                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
+                                    <select class="form-select">
+                                        <option>9:00 AM - 6:00 PM</option>
+                                        <option>10:00 AM - 7:00 PM</option>
+                                        <option>Closed</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Thursday</span>
+                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
+                                    <select class="form-select">
+                                        <option>9:00 AM - 6:00 PM</option>
+                                        <option>10:00 AM - 7:00 PM</option>
+                                        <option>Closed</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Friday</span>
+                                    <span class="hour-time">9:00 AM - 8:00 PM</span>
+                                    <select class="form-select">
+                                        <option>9:00 AM - 8:00 PM</option>
+                                        <option>9:00 AM - 6:00 PM</option>
+                                        <option>Closed</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Saturday</span>
+                                    <span class="hour-time">10:00 AM - 4:00 PM</span>
+                                    <select class="form-select">
+                                        <option>10:00 AM - 4:00 PM</option>
+                                        <option>9:00 AM - 5:00 PM</option>
+                                        <option>Closed</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex;  align-items: center;" class="hour-item">
+                                    <span class="hour-day">Sunday</span>
+                                    <span class="hour-time">Closed</span>
+                                    <select class="form-select">
+                                        <option>Closed</option>
+                                        <option>10:00 AM - 4:00 PM</option>
+                                        <option>12:00 PM - 5:00 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-column">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Services & Pricing</h3>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Beauty Services</label>
+                                <div class="services-container" id="services-container">
+                                    <div class="service-tag">
+                                        Bridal Makeup 
+                                        <span class="service-price">₹120</span>
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="service-tag">
+                                        Skincare 
+                                        <span class="service-price">₹85</span>
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="service-tag">
+                                        Hair Styling 
+                                        <span class="service-price">₹65</span>
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="service-tag">
+                                        Manicure 
+                                        <span class="service-price">₹35</span>
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="service-tag">
+                                        Pedicure 
+                                        <span class="service-price">₹45</span>
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="service-tag">
+                                        Facial Treatments 
+                                        <span class="service-price">₹90</span>
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                </div>
+                                <div class="add-service-form">
+                                    <div class="service-inputs">
+                                        <input style="display: block;" type="text" class="form-input" id="new-service" placeholder="Service name">
+                                        <div class="price-input-container">
+                                            <input style="display: block;" type="number" class="form-input price-input" id="new-service-price" placeholder="Price">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="action-button edit-button" id="add-service-btn">Add Service</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Service Locations</h3>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Areas I Serve</label>
+                                <div class="locations-container" id="locations-container">
+                                    <div class="location-tag">Manhattan <i class="fas fa-times"></i></div>
+                                    <div class="location-tag">Brooklyn <i class="fas fa-times"></i></div>
+                                    <div class="location-tag">Queens <i class="fas fa-times"></i></div>
+                                </div>
+                                <div class="add-service-form">
+                                    <input type="text" class="form-input" id="new-location" placeholder="Add a new location">
+                                    <button type="button" class="action-button edit-button" id="add-location-btn">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3 class="section-title">Profile Preview</h3>
+                            </div>
+                            <div class="profile-details">
+                                <div class="profile-field">
+                                    <span class="field-label">Name</span>
+                                    <span class="field-value" id="preview-name">Sophia Martinez</span>
+                                </div>
+                                <div class="profile-field">
+                                    <span class="field-label">Title</span>
+                                    <span class="field-value" id="preview-title">Beauty Specialist</span>
+                                </div>
+                               
+                                <div class="profile-field">
+                                    <span class="field-label">Locations</span>
+                                    <span class="field-value" id="preview-locations">Manhattan, Brooklyn, Queens</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; text-align: center;">
+                                <button class="action-button edit-button" id="save-profile-btn" style="display: none;">Save Changes</button>
+                                <button class="action-button secondary-button" id="cancel-edit-btn" style="display: none; margin-top: 10px;">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Page -->
+            <div class="page-content" id="payments-page">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Payment History</h3>
+                        <button class="action-button edit-button">Download Report</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Oct 14, 2023</td>
+                                    <td>Emma Johnson</td>
+                                    <td>Bridal Makeup</td>
+                                    <td>₹120</td>
+                                    <td><span class="status-badge status-completed">Paid</span></td>
+                                    <td><button class="action-button edit-button">UPI</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 13, 2023</td>
+                                    <td>Mia Williams</td>
+                                    <td>Facial Treatment</td>
+                                    <td>₹85</td>
+                                    <td><span class="status-badge status-completed">Paid</span></td>
+                                    <td><button class="action-button edit-button">UPI</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 12, 2023</td>
+                                    <td>Olivia Brown</td>
+                                    <td>Hair Styling</td>
+                                    <td>₹65</td>
+                                    <td><span class="status-badge status-completed">Paid</span></td>
+                                    <td><button class="action-button edit-button">UPI</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 11, 2023</td>
+                                    <td>Ava Davis</td>
+                                    <td>Manicure & Pedicure</td>
+                                    <td>₹55</td>
+                                    <td><span class="status-badge status-completed">Paid</span></td>
+                                    <td><button class="action-button edit-button">UPI</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Oct 10, 2023</td>
+                                    <td>Isabella Garcia</td>
+                                    <td>Evening Makeup</td>
+                                    <td>₹75</td>
+                                    <td><span class="status-badge status-completed">Paid</span></td>
+                                    <td><button class="action-button edit-button">COD</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebarNavigation = document.getElementById('sidebarNavigation');
+            const mainContentArea = document.getElementById('mainContentArea');
+            
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebarNavigation.classList.toggle('mobile-hidden');
+                mainContentArea.classList.toggle('full-width');
+                
+                // Change icon based on menu state
+                const icon = this.querySelector('i');
+                if (sidebarNavigation.classList.contains('mobile-hidden')) {
+                    icon.className = 'fas fa-bars';
+                } else {
+                    icon.className = 'fas fa-times';
+                }
+            });
+            
+            // Page Navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('current-page-title');
+            const pageDescription = document.getElementById('current-page-description');
+            
+            // Page titles and descriptions
+            const pageData = {
+                'dashboard': {
+                    title: 'Beautician Dashboard',
+                    description: 'Welcome back, Sophia! Here\'s your beauty business overview.'
+                },
+                'bookings': {
+                    title: 'Appointment Management',
+                    description: 'Manage your current and upcoming beauty appointments.'
+                },
+                'profile': {
+                    title: 'My Profile',
+                    description: 'Update your profile information and services.'
+                },
+                'payments': {
+                    title: 'Payment Dashboard',
+                    description: 'View your earnings and payment history.'
+                }
+            };
+            
+            // Navigation click handler
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Update active nav item
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected page
+                    pageContents.forEach(page => page.classList.remove('active'));
+                    document.getElementById(`${pageId}-page`).classList.add('active');
+                    
+                    // Update page title and description
+                    pageTitle.textContent = pageData[pageId].title;
+                    pageDescription.textContent = pageData[pageId].description;
+                    
+                    // Close mobile menu on navigation
+                    if (window.innerWidth <= 992) {
+                        sidebarNavigation.classList.add('mobile-hidden');
+                        mainContentArea.classList.add('full-width');
+                        mobileMenuToggle.querySelector('i').className = 'fas fa-bars';
+                    }
+                });
+            });
+            
+            // Confirm appointment buttons
+            const confirmButtons = document.querySelectorAll('.confirm-button:not(:disabled)');
+            confirmButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const statusBadge = row.querySelector('.status-badge');
+                    
+                    // Update status
+                    statusBadge.textContent = 'Confirmed';
+                    statusBadge.className = 'status-badge status-confirmed';
+                    
+                    // Update button
+                    this.textContent = 'Confirmed';
+                    this.disabled = true;
+                    this.style.backgroundColor = '#a59e8c';
+                    
+                    // Show confirmation message
+                    alert('Appointment confirmed successfully!');
+                });
+            });
+            
+            // Profile editing functionality
+            const toggleEditBtn = document.getElementById('toggle-edit-btn');
+            const saveProfileBtn = document.getElementById('save-profile-btn');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const profileInfo = document.getElementById('profile-info');
+            const workingHours = document.getElementById('working-hours');
+            const servicesContainer = document.getElementById('services-container');
+            const locationsContainer = document.getElementById('locations-container');
+            const addServiceBtn = document.getElementById('add-service-btn');
+            const newServiceInput = document.getElementById('new-service');
+            const newServicePriceInput = document.getElementById('new-service-price');
+            const addLocationBtn = document.getElementById('add-location-btn');
+            const newLocationInput = document.getElementById('new-location');
+            
+            let isEditMode = false;
+            
+            // Toggle edit mode
+            toggleEditBtn.addEventListener('click', function() {
+                isEditMode = !isEditMode;
+                
+                if (isEditMode) {
+                    // Enter edit mode - show all form inputs
+                    enterEditMode();
+                } else {
+                    // Exit edit mode - hide all form inputs
+                    exitEditMode();
+                }
+            });
+            
+            // Enter edit mode function
+            function enterEditMode() {
+                // Add edit mode to all sections
+                profileInfo.classList.add('edit-mode');
+                workingHours.classList.add('edit-mode');
+                servicesContainer.classList.add('edit-mode');
+                locationsContainer.classList.add('edit-mode');
+                
+                // Show form inputs in Services & Skills section
+                const serviceInputs = document.querySelectorAll('#services-container .form-input');
+                serviceInputs.forEach(input => {
+                    input.style.display = 'block';
+                });
+                
+                // Show form inputs in Service Locations section
+                const locationInputs = document.querySelectorAll('#locations-container .form-input');
+                locationInputs.forEach(input => {
+                    input.style.display = 'block';
+                });
+                
+                toggleEditBtn.textContent = 'View Profile';
+                saveProfileBtn.style.display = 'inline-block';
+                cancelEditBtn.style.display = 'inline-block';
+            }
+            
+            // Exit edit mode function
+            function exitEditMode() {
+                // Remove edit mode from all sections
+                profileInfo.classList.remove('edit-mode');
+                workingHours.classList.remove('edit-mode');
+                servicesContainer.classList.remove('edit-mode');
+                locationsContainer.classList.remove('edit-mode');
+                
+                // Hide form inputs in Services & Skills section
+                const serviceInputs = document.querySelectorAll('#services-container .form-input');
+                serviceInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+                
+                // Hide form inputs in Service Locations section
+                const locationInputs = document.querySelectorAll('#locations-container .form-input');
+                locationInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+                
+                toggleEditBtn.textContent = 'Edit Profile';
+                saveProfileBtn.style.display = 'none';
+                cancelEditBtn.style.display = 'none';
+            }
+            
+            // Cancel edit
+            cancelEditBtn.addEventListener('click', function() {
+                isEditMode = false;
+                exitEditMode();
+                
+                // Reset form values (in a real app, you would revert to original values)
+                alert('Changes discarded');
+            });
+            
+            // Save profile
+            saveProfileBtn.addEventListener('click', function() {
+                // Update profile preview
+                updateProfilePreview();
+                
+                // Exit edit mode
+                isEditMode = false;
+                exitEditMode();
+                
+                alert('Profile updated successfully!');
+            });
+            
+            // Update profile preview
+            function updateProfilePreview() {
+                document.getElementById('preview-name').textContent = 
+                    document.getElementById('input-name').value;
+                document.getElementById('preview-title').textContent = 
+                    document.getElementById('input-title').value;
+                document.getElementById('preview-rate').textContent = '₹' + 
+                    document.getElementById('input-rate').value + '/hr';
+                
+                // Update locations preview
+                const locations = Array.from(locationsContainer.querySelectorAll('.location-tag'))
+                    .map(tag => tag.textContent.replace(' ×', ''));
+                document.getElementById('preview-locations').textContent = locations.join(', ');
+            }
+            
+            // Add service with price
+            addServiceBtn.addEventListener('click', function() {
+                const service = newServiceInput.value.trim();
+                const price = newServicePriceInput.value.trim();
+                
+                if (service && price) {
+                    const serviceTag = document.createElement('div');
+                    serviceTag.className = 'service-tag';
+                    serviceTag.innerHTML = `
+                        ${service} 
+                        <span class="service-price">₹${price}</span>
+                        <i class="fas fa-times"></i>
+                    `;
+                    
+                    // Add remove functionality
+                    serviceTag.querySelector('i').addEventListener('click', function() {
+                        serviceTag.remove();
+                    });
+                    
+                    servicesContainer.appendChild(serviceTag);
+                    newServiceInput.value = '';
+                    newServicePriceInput.value = '';
+                } else {
+                    alert('Please enter both service name and price');
+                }
+            });
+            
+            // Add location
+            addLocationBtn.addEventListener('click', function() {
+                const location = newLocationInput.value.trim();
+                if (location) {
+                    const locationTag = document.createElement('div');
+                    locationTag.className = 'location-tag';
+                    locationTag.innerHTML = `${location} <i class="fas fa-times"></i>`;
+                    
+                    // Add remove functionality
+                    locationTag.querySelector('i').addEventListener('click', function() {
+                        locationTag.remove();
+                        updateProfilePreview();
+                    });
+                    
+                    locationsContainer.appendChild(locationTag);
+                    newLocationInput.value = '';
+                    updateProfilePreview();
+                }
+            });
+            
+            // Remove service functionality for existing services
+            servicesContainer.querySelectorAll('.service-tag i').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    this.parentElement.remove();
+                });
+            });
+            
+            // Remove location functionality for existing locations
+            locationsContainer.querySelectorAll('.location-tag i').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    this.parentElement.remove();
+                    updateProfilePreview();
+                });
+            });
+            
+            // Edit profile link from dashboard
+            document.getElementById('edit-profile-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Switch to profile page
+                navItems.forEach(i => i.classList.remove('active'));
+                document.querySelector('.nav-item[data-page="profile"]').classList.add('active');
+                
+                pageContents.forEach(page => page.classList.remove('active'));
+                document.getElementById('profile-page').classList.add('active');
+                
+                // Update page title and description
+                pageTitle.textContent = pageData['profile'].title;
+                pageDescription.textContent = pageData['profile'].description;
+            });
+            
+            // Initialize profile preview
+            updateProfilePreview();
+        });
+    </script>
+</body>
+</html>
