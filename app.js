@@ -2,7 +2,6 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const helmet = require('helmet');
 const morgan = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -26,7 +25,6 @@ connectDB(process.env.MONGO_URI).catch(err => {
 });
 
 // Middlewares
-app.use(helmet());
 if (NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -77,6 +75,12 @@ const resellerRoutes = require('./routes/resellerRoutes');
 const authRoutes = require('./routes/authRoutes');
 const staffRoutes = require('./routes/staffRoutes');
 
+
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
+
 app.use('/', userRoutes);
 app.use('/', authRoutes);
 app.use('/staff', staffRoutes);
@@ -85,7 +89,9 @@ app.use('/freelance', freelancerRoutes);
 app.use('/salon', salonRoutes);
 app.use('/reseller', resellerRoutes);
 
-// 404 handler
+
+
+
 app.use((req, res, next) => {
   res.status(404);
   if (req.accepts('html')) return res.render('404', { url: req.originalUrl });
