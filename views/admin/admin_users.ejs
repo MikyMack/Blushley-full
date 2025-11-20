@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Blushelys - User Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="images/logo/blushley-png-without-shade.png">
+    
+    <style>
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge.active {
+            background-color: #e6f7ee;
+            color: #10b759;
+            border: 1px solid #10b759;
+        }
+
+        .status-badge.inactive {
+            background-color: #ffebeb;
+            color: #ff4d4f;
+            border: 1px solid #ff4d4f;
+        }
+
+        .status-badge.pending {
+            background-color: #fff4e6;
+            color: #fa8c16;
+            border: 1px solid #fa8c16;
+        }
+
+        .status-badge.verified {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #1890ff;
+        }
+
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-badge.admin {
+            background-color: #f0f7ff;
+            color: #1890ff;
+            border: 1px solid #1890ff;
+        }
+
+        .role-badge.user {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #52c41a;
+        }
+
+        .role-badge.vip {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #fa8c16;
+        }
+
+        /* Modern Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modern-modal {
+            border: none;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #5c4d3b 0%, #764ba2 100%);
+            border-radius: 16px 16px 0 0;
+            color: white;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title i {
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .modal-title h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header i {
+            color: #5c4d3b;
+            font-size: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #5c4d3b;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5c4d3b;
+            box-shadow: 0 0 0 3px rgba(92, 77, 59, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5c4d3b 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(92, 77, 59, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* User List Styles */
+        .users-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .user-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .user-card.premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+        }
+
+        .user-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-email {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-phone {
+            color: #718096;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .user-body {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .user-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: #5c4d3b;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .user-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .user-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .user-actions-footer {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Filter and Search */
+        .wg-filter {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-search {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .form-search input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .form-search button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .show select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-filter input {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Pagination */
+        .wg-pagination {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .wg-pagination li {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+
+        .wg-pagination li.active {
+            background: linear-gradient(135deg, #5c4d3b 0%, #764ba2 100%);
+        }
+
+        .wg-pagination li.active a {
+            color: white;
+        }
+
+        .wg-pagination li a {
+            text-decoration: none;
+            color: #333;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wg-pagination li:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+
+        /* Download Button */
+        .download-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        /* User Details Modal */
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+        }
+
+        .user-profile-image {
+            text-align: center;
+        }
+
+        .user-profile-image img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .info-item {
+            margin-bottom: 12px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .wg-filter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-search {
+                max-width: 100%;
+            }
+
+            .user-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-body {
+                grid-template-columns: 1fr;
+            }
+
+            .user-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-status {
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .user-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-actions-footer {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+
+            .modal-header {
+                border-radius: 0;
+            }
+
+            .user-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <!-- layout-wrap -->
+            <div class="layout-wrap loader-off">
+                <!-- preload -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
+                <!-- /preload -->
+                
+                <!-- section-menu-left -->
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo" src="images/logo/blushley-png-without-shade.png"
+                                data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                        </a>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                                <ul>
+                                    <li class="menu-item">
+                                        <a href="admin-dashboard.html">
+                                            <div class="icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Admin Dashboard</div>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="menu-item">
+                                        <a href="admin-categories.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Category Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-products.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">Product Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-shop.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-heart"></i></div>
+                                            <div class="text">Shop Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-orders.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Order Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="admin-bookings.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-calendar"></i></div>
+                                            <div class="text">Booking Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-salons.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-scissors"></i></div>
+                                            <div class="text">Salons Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-freelance.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Freelance Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item active">
+                                        <a href="admin-users.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">User Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-banners.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-testimonials.html" class="menu-item-button">
+                                            <div class="icon"><i class="fa fa-star-o"></i></div>
+                                            <div class="text">Testimonials Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-blogs.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-book-open"></i></div>
+                                            <div class="text">Blogs Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/logout">
+                                            <div class="icon">
+                                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Log out</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /section-menu-left -->
+                
+                <!-- section-content-right -->
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="/dashboard">
+                                    <img style="width: 50px;" id="logo_header_mobile" alt="" src="images/surya-logo.png"
+                                        data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="admin-images/avatar/user-1.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushelys</span>
+                                                    <span class="text-tiny">Admin</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/logout" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                                <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                                    <h3>User Management</h3>
+                                    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                                        <li>
+                                            <a href="/dashboard">
+                                                <div class="text-tiny">Dashboard</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="text-tiny">Users</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <div class="text-tiny">User Management</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- user-list -->
+                                <div class="wg-box">
+                                    <div class="title-box">
+                                        <i class="icon-users"></i>
+                                        <div class="body-text">Tip: Manage all users. You can view user details, make users admin, or block users as needed.</div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap10 flex-wrap">
+                                        <div class="wg-filter flex-grow">
+                                            <div class="show">
+                                                <div class="text-tiny">Showing</div>
+                                                <div class="select">
+                                                    <select id="limit-select">
+                                                        <option value="10">10</option>
+                                                        <option value="20">20</option>
+                                                        <option value="30">30</option>
+                                                    </select>
+                                                </div>
+                                                <div class="text-tiny">entries</div>
+                                            </div>
+                                            <div class="form-search">
+                                                <input type="text" id="search-input"
+                                                    placeholder="Search by name, email, or phone...">
+                                                <button id="search-btn"><i class="icon-search"></i></button>
+                                            </div>
+                                            <div class="date-filter">
+                                                <div class="text-tiny">From:</div>
+                                                <input type="date" id="start-date">
+                                                <div class="text-tiny">To:</div>
+                                                <input type="date" id="end-date">
+                                                <button class="btn btn-secondary" id="apply-date-filter">
+                                                    <i class="icon-filter"></i> Apply
+                                                </button>
+                                            </div>
+                                            <button class="download-btn" id="download-user-list">
+                                                <i class="icon-download"></i> Download List
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="users-container" id="users-list">
+                                        <!-- User cards will be dynamically inserted here -->
+                                    </div>
+
+                                    <div class="divider"></div>
+                                    <div class="flex items-center justify-between flex-wrap gap10">
+                                        <div class="text-tiny" id="showing-entries">Showing 0 entries</div>
+                                        <ul class="wg-pagination" id="pagination">
+                                            <!-- Pagination will be loaded here dynamically -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- /user-list -->
+
+                                <!-- User Details Modal -->
+                                <div id="user-details-modal" class="modal">
+                                    <div class="modal-content modern-modal">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-user"></i>
+                                                <h3>User Details</h3>
+                                            </div>
+                                            <button class="close-btn" onclick="closeModal('user-details-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <div class="user-details-grid">
+                                                <div class="user-profile-image">
+                                                    <img id="detail-user-image" src="https://i.pravatar.cc/150?img=1" alt="User Image">
+                                                    <h3 id="detail-user-name" class="mt-10">User Name</h3>
+                                                    <div class="badges-1 mt-10" id="detail-user-badges">
+                                                        <!-- Badges will be inserted here -->
+                                                    </div>
+                                                </div>
+                                                <div class="user-details">
+                                                    <div class="user-info-grid">
+                                                        <div class="info-item">
+                                                            <div class="info-label">Email</div>
+                                                            <div class="info-value" id="detail-user-email">user@example.com</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Phone</div>
+                                                            <div class="info-value" id="detail-user-phone">+91 98765 43210</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Wallet Balance</div>
+                                                            <div class="info-value" id="detail-user-wallet">₹0.00</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Role</div>
+                                                            <div class="info-value" id="detail-user-role">User</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Status</div>
+                                                            <div class="info-value" id="detail-user-status">Active</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Joined Date</div>
+                                                            <div class="info-value" id="detail-user-joined">Jan 1, 2023</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Last Login</div>
+                                                            <div class="info-value" id="detail-user-last-login">Today</div>
+                                                        </div>
+                                                        <div class="info-item">
+                                                            <div class="info-label">Total Orders</div>
+                                                            <div class="info-value" id="detail-user-orders">0</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-actions">
+                                                        <button class="btn btn-secondary" onclick="closeModal('user-details-modal')">
+                                                            <i class="icon-x"></i> Close
+                                                        </button>
+                                                        <button class="btn btn-primary" id="download-user-info">
+                                                            <i class="icon-download"></i> Download Info
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Make Admin Confirmation Modal -->
+                                <div id="make-admin-modal" class="modal">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-user-check"></i>
+                                                <h3>Make Admin</h3>
+                                            </div>
+                                            <button class="close-btn" onclick="closeModal('make-admin-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p id="make-admin-message">Are you sure you want to make this user an admin?</p>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-secondary"
+                                                    onclick="closeModal('make-admin-modal')">Cancel</button>
+                                                <button type="button" class="btn btn-success"
+                                                    id="confirm-make-admin-btn">Make Admin</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Block User Confirmation Modal -->
+                                <div id="block-user-modal" class="modal">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-user-x"></i>
+                                                <h3>Block User</h3>
+                                            </div>
+                                            <button class="close-btn" onclick="closeModal('block-user-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p id="block-user-message">Are you sure you want to block this user?</p>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-secondary"
+                                                    onclick="closeModal('block-user-modal')">Cancel</button>
+                                                <button type="button" class="btn btn-danger"
+                                                    id="confirm-block-user-btn">Block User</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    // Global variables
+                                    let currentPage = 1;
+                                    let limit = 10;
+                                    let searchQuery = '';
+                                    let startDate = '';
+                                    let endDate = '';
+                                    let users = [];
+                                    let userToMakeAdmin = null;
+                                    let userToBlock = null;
+
+                                    // DOM Content Loaded
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Initialize
+                                        fetchUsers();
+
+                                        // Event listeners
+                                        document.getElementById('limit-select').addEventListener('change', function () {
+                                            limit = parseInt(this.value);
+                                            currentPage = 1;
+                                            fetchUsers();
+                                        });
+
+                                        document.getElementById('search-btn').addEventListener('click', function () {
+                                            searchQuery = document.getElementById('search-input').value;
+                                            currentPage = 1;
+                                            fetchUsers();
+                                        });
+
+                                        document.getElementById('apply-date-filter').addEventListener('click', function () {
+                                            startDate = document.getElementById('start-date').value;
+                                            endDate = document.getElementById('end-date').value;
+                                            currentPage = 1;
+                                            fetchUsers();
+                                        });
+
+                                        document.getElementById('download-user-list').addEventListener('click', function () {
+                                            downloadUserList();
+                                        });
+
+                                        document.getElementById('download-user-info').addEventListener('click', function () {
+                                            downloadUserInfo();
+                                        });
+
+                                        document.getElementById('confirm-make-admin-btn').addEventListener('click', function () {
+                                            if (userToMakeAdmin) {
+                                                makeUserAdmin(userToMakeAdmin);
+                                                userToMakeAdmin = null;
+                                            }
+                                        });
+
+                                        document.getElementById('confirm-block-user-btn').addEventListener('click', function () {
+                                            if (userToBlock) {
+                                                blockUser(userToBlock);
+                                                userToBlock = null;
+                                            }
+                                        });
+                                    });
+
+                                    // Fetch users from API
+                                    async function fetchUsers() {
+                                        try {
+                                            // In a real implementation, this would be an API call
+                                            // For demo purposes, we'll use mock data
+                                            users = getMockUsers();
+                                            
+                                            // Filter by search query if provided
+                                            if (searchQuery) {
+                                                users = users.filter(user => 
+                                                    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                    user.phone.includes(searchQuery)
+                                                );
+                                            }
+                                            
+                                            // Filter by date range if provided
+                                            if (startDate && endDate) {
+                                                users = users.filter(user => {
+                                                    const userDate = new Date(user.joinedDate);
+                                                    const start = new Date(startDate);
+                                                    const end = new Date(endDate);
+                                                    return userDate >= start && userDate <= end;
+                                                });
+                                            }
+                                            
+                                            renderUsers(users);
+                                            renderPagination(Math.ceil(users.length / limit), currentPage);
+                                            document.getElementById('showing-entries').textContent = `Showing ${Math.min(users.length, limit)} of ${users.length} entries`;
+                                        } catch (error) {
+                                            console.error('Error fetching users:', error);
+                                            alert('Failed to load users. Please try again later.');
+                                            document.getElementById('users-list').innerHTML = '<div class="error-message">Failed to load users</div>';
+                                        }
+                                    }
+
+                                    // Render user cards
+                                    function renderUsers(users) {
+                                        const usersList = document.getElementById('users-list');
+                                        usersList.innerHTML = '';
+
+                                        // Calculate pagination
+                                        const startIndex = (currentPage - 1) * limit;
+                                        const endIndex = startIndex + limit;
+                                        const paginatedUsers = users.slice(startIndex, endIndex);
+
+                                        if (paginatedUsers.length === 0) {
+                                            usersList.innerHTML = '<div class="no-users">No users found matching your criteria.</div>';
+                                            return;
+                                        }
+
+                                        paginatedUsers.forEach(user => {
+                                            const userCard = document.createElement('div');
+                                            userCard.className = `user-card ${user.isPremium ? 'premium' : ''}`;
+                                            userCard.id = `user-${user.id}`;
+
+                                            const profileImage = user.image || 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70);
+
+                                            userCard.innerHTML = `
+                                                <div class="user-header">
+                                                    <div class="user-info-main">
+                                                        <div class="user-avatar">
+                                                            <img src="${profileImage}" alt="${user.name}">
+                                                        </div>
+                                                        <div class="user-details">
+                                                            <div class="user-name">
+                                                                ${user.name}
+                                                                ${user.isVerified ? '<i class="fa fa-check-circle" style="color: #1890ff;"></i>' : ''}
+                                                            </div>
+                                                            <div class="user-email">${user.email}</div>
+                                                            <div class="user-phone">
+                                                                <i class="icon-phone"></i> ${user.phone}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="user-status">
+                                                        <span class="role-badge ${user.role}">${user.role}</span>
+                                                        <span class="status-badge ${user.isActive ? 'active' : 'inactive'}">
+                                                            <i class="fa ${user.isActive ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                                            ${user.isActive ? 'Active' : 'Blocked'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="user-body">
+                                                    <div class="user-metrics">
+                                                        <div class="metric-item">
+                                                            <div class="metric-value">₹${user.wallet}</div>
+                                                            <div class="metric-label">Wallet</div>
+                                                        </div>
+                                                        <div class="metric-item">
+                                                            <div class="metric-value">${user.totalOrders}</div>
+                                                            <div class="metric-label">Orders</div>
+                                                        </div>
+                                                        <div class="metric-item">
+                                                            <div class="metric-value">${user.totalBookings}</div>
+                                                            <div class="metric-label">Bookings</div>
+                                                        </div>
+                                                        <div class="metric-item">
+                                                            <div class="metric-value">${user.joinedDate.split('-')[0]}</div>
+                                                            <div class="metric-label">Joined</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="user-actions">
+                                                        <button class="btn btn-info btn-sm" onclick="showUserDetails('${user.id}')">
+                                                            <i class="icon-eye"></i> View Details
+                                                        </button>
+                                                        ${user.role !== 'admin' ? `
+                                                            <button class="btn btn-success btn-sm" onclick="confirmMakeAdmin('${user.id}')">
+                                                                <i class="icon-user-plus"></i> Make Admin
+                                                            </button>
+                                                        ` : ''}
+                                                        <button class="btn ${user.isActive ? 'btn-warning' : 'btn-secondary'} btn-sm" onclick="confirmBlockUser('${user.id}')">
+                                                            <i class="icon-user-x"></i> ${user.isActive ? 'Block' : 'Unblock'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="user-footer">
+                                                    <div class="user-tags">
+                                                        ${user.isPremium ? '<span class="role-badge vip">Premium</span>' : ''}
+                                                        ${user.isVerified ? '<span class="status-badge verified"><i class="fa fa-check-circle"></i> Verified</span>' : ''}
+                                                        <span class="text-tiny">ID: ${user.id}</span>
+                                                    </div>
+                                                    <div class="user-actions-footer">
+                                                        <span class="text-tiny">Last login: ${user.lastLogin}</span>
+                                                    </div>
+                                                </div>
+                                            `;
+
+                                            usersList.appendChild(userCard);
+                                        });
+                                    }
+
+                                    // Show user details modal
+                                    function showUserDetails(userId) {
+                                        const user = users.find(u => u.id === userId);
+                                        if (!user) {
+                                            alert('User not found');
+                                            return;
+                                        }
+
+                                        // Populate user details
+                                        document.getElementById('detail-user-image').src = user.image || 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70);
+                                        document.getElementById('detail-user-name').textContent = user.name;
+                                        document.getElementById('detail-user-email').textContent = user.email;
+                                        document.getElementById('detail-user-phone').textContent = user.phone;
+                                        document.getElementById('detail-user-wallet').textContent = `₹${user.wallet}`;
+                                        document.getElementById('detail-user-role').textContent = user.role;
+                                        document.getElementById('detail-user-status').textContent = user.isActive ? 'Active' : 'Blocked';
+                                        document.getElementById('detail-user-joined').textContent = user.joinedDate;
+                                        document.getElementById('detail-user-last-login').textContent = user.lastLogin;
+                                        document.getElementById('detail-user-orders').textContent = user.totalOrders;
+
+                                        // Set badges
+                                        const badgesContainer = document.getElementById('detail-user-badges');
+                                        badgesContainer.innerHTML = '';
+                                        badgesContainer.innerHTML += `<span class="role-badge ${user.role}">${user.role}</span>`;
+                                        badgesContainer.innerHTML += `<span class="status-badge ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Active' : 'Blocked'}</span>`;
+                                        if (user.isVerified) {
+                                            badgesContainer.innerHTML += '<span class="status-badge verified">Verified</span>';
+                                        }
+                                        if (user.isPremium) {
+                                            badgesContainer.innerHTML += '<span class="role-badge vip">Premium</span>';
+                                        }
+
+                                        // Show modal
+                                        document.getElementById('user-details-modal').style.display = 'block';
+                                    }
+
+                                    // Confirm make admin
+                                    function confirmMakeAdmin(userId) {
+                                        const user = users.find(u => u.id === userId);
+                                        if (!user) {
+                                            alert('User not found');
+                                            return;
+                                        }
+
+                                        userToMakeAdmin = userId;
+                                        document.getElementById('make-admin-message').textContent = `Are you sure you want to make ${user.name} an admin?`;
+                                        document.getElementById('make-admin-modal').style.display = 'block';
+                                    }
+
+                                    // Make user admin
+                                    function makeUserAdmin(userId) {
+                                        // In a real implementation, this would be an API call
+                                        const userIndex = users.findIndex(u => u.id === userId);
+                                        if (userIndex !== -1) {
+                                            users[userIndex].role = 'admin';
+                                        }
+
+                                        alert('User has been made admin successfully!');
+                                        closeModal('make-admin-modal');
+                                        fetchUsers();
+                                    }
+
+                                    // Confirm block user
+                                    function confirmBlockUser(userId) {
+                                        const user = users.find(u => u.id === userId);
+                                        if (!user) {
+                                            alert('User not found');
+                                            return;
+                                        }
+
+                                        userToBlock = userId;
+                                        const action = user.isActive ? 'block' : 'unblock';
+                                        document.getElementById('block-user-message').textContent = `Are you sure you want to ${action} ${user.name}?`;
+                                        document.getElementById('confirm-block-user-btn').textContent = action === 'block' ? 'Block User' : 'Unblock User';
+                                        document.getElementById('block-user-modal').style.display = 'block';
+                                    }
+
+                                    // Block/unblock user
+                                    function blockUser(userId) {
+                                        // In a real implementation, this would be an API call
+                                        const userIndex = users.findIndex(u => u.id === userId);
+                                        if (userIndex !== -1) {
+                                            users[userIndex].isActive = !users[userIndex].isActive;
+                                        }
+
+                                        const action = users[userIndex].isActive ? 'unblocked' : 'blocked';
+                                        alert(`User has been ${action} successfully!`);
+                                        closeModal('block-user-modal');
+                                        fetchUsers();
+                                    }
+
+                                    // Download user list
+                                    function downloadUserList() {
+                                        // In a real implementation, this would generate a CSV or PDF
+                                        alert('User list download functionality would be implemented here. This would typically generate a CSV or PDF file with all user data.');
+                                    }
+
+                                    // Download user info
+                                    function downloadUserInfo() {
+                                        // In a real implementation, this would generate a PDF with user details
+                                        alert('User info download functionality would be implemented here. This would typically generate a PDF with the user details shown in the modal.');
+                                    }
+
+                                    // Close modal
+                                    function closeModal(modalId) {
+                                        document.getElementById(modalId).style.display = 'none';
+                                    }
+
+                                    // Pagination functions
+                                    function renderPagination(totalPages, currentPage) {
+                                        const paginationContainer = document.getElementById('pagination');
+                                        paginationContainer.innerHTML = '';
+
+                                        // Always show first page button
+                                        addPageButton(paginationContainer, 1, currentPage);
+
+                                        // Show previous ellipsis if needed
+                                        if (currentPage > 3) {
+                                            const ellipsis = document.createElement('li');
+                                            ellipsis.innerHTML = '<span>...</span>';
+                                            paginationContainer.appendChild(ellipsis);
+                                        }
+
+                                        // Show pages around current page
+                                        const startPage = Math.max(2, currentPage - 1);
+                                        const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+                                        for (let i = startPage; i <= endPage; i++) {
+                                            addPageButton(paginationContainer, i, currentPage);
+                                        }
+
+                                        // Show next ellipsis if needed
+                                        if (currentPage < totalPages - 2) {
+                                            const ellipsis = document.createElement('li');
+                                            ellipsis.innerHTML = '<span>...</span>';
+                                            paginationContainer.appendChild(ellipsis);
+                                        }
+
+                                        // Always show last page button if there are multiple pages
+                                        if (totalPages > 1) {
+                                            addPageButton(paginationContainer, totalPages, currentPage);
+                                        }
+                                    }
+
+                                    function addPageButton(container, pageNumber, currentPage) {
+                                        const pageItem = document.createElement('li');
+                                        if (pageNumber === currentPage) {
+                                            pageItem.className = 'active';
+                                        }
+
+                                        const pageLink = document.createElement('a');
+                                        pageLink.href = '#';
+                                        pageLink.textContent = pageNumber;
+                                        pageLink.onclick = (e) => {
+                                            e.preventDefault();
+                                            currentPage = pageNumber;
+                                            fetchUsers();
+                                        };
+
+                                        pageItem.appendChild(pageLink);
+                                        container.appendChild(pageItem);
+                                    }
+
+                                    // Mock data for demonstration
+                                    function getMockUsers() {
+                                        return [
+                                            {
+                                                id: 'USR001',
+                                                name: 'Emily Johnson',
+                                                email: 'emily.johnson@example.com',
+                                                phone: '+1 (555) 123-4567',
+                                                wallet: '1250.00',
+                                                role: 'user',
+                                                isActive: true,
+                                                isVerified: true,
+                                                isPremium: true,
+                                                image: 'https://i.pravatar.cc/150?img=1',
+                                                joinedDate: '2023-05-15',
+                                                lastLogin: 'Today, 9:24 AM',
+                                                totalOrders: 12,
+                                                totalBookings: 5
+                                            },
+                                            {
+                                                id: 'USR002',
+                                                name: 'Michael Brown',
+                                                email: 'michael.brown@example.com',
+                                                phone: '+1 (555) 987-6543',
+                                                wallet: '500.00',
+                                                role: 'admin',
+                                                isActive: true,
+                                                isVerified: true,
+                                                isPremium: false,
+                                                image: 'https://i.pravatar.cc/150?img=2',
+                                                joinedDate: '2023-03-10',
+                                                lastLogin: 'Yesterday, 4:15 PM',
+                                                totalOrders: 25,
+                                                totalBookings: 12
+                                            },
+                                            {
+                                                id: 'USR003',
+                                                name: 'Sophia Williams',
+                                                email: 'sophia.williams@example.com',
+                                                phone: '+1 (555) 456-7890',
+                                                wallet: '0.00',
+                                                role: 'user',
+                                                isActive: false,
+                                                isVerified: false,
+                                                isPremium: false,
+                                                image: 'https://i.pravatar.cc/150?img=3',
+                                                joinedDate: '2023-07-22',
+                                                lastLogin: '2 days ago',
+                                                totalOrders: 5,
+                                                totalBookings: 2
+                                            },
+                                            {
+                                                id: 'USR004',
+                                                name: 'James Miller',
+                                                email: 'james.miller@example.com',
+                                                phone: '+1 (555) 234-5678',
+                                                wallet: '3750.00',
+                                                role: 'user',
+                                                isActive: true,
+                                                isVerified: true,
+                                                isPremium: true,
+                                                image: 'https://i.pravatar.cc/150?img=4',
+                                                joinedDate: '2023-01-05',
+                                                lastLogin: 'Today, 11:05 AM',
+                                                totalOrders: 18,
+                                                totalBookings: 8
+                                            },
+                                            {
+                                                id: 'USR005',
+                                                name: 'Olivia Davis',
+                                                email: 'olivia.davis@example.com',
+                                                phone: '+1 (555) 876-5432',
+                                                wallet: '250.00',
+                                                role: 'user',
+                                                isActive: true,
+                                                isVerified: false,
+                                                isPremium: false,
+                                                image: 'https://i.pravatar.cc/150?img=5',
+                                                joinedDate: '2023-09-30',
+                                                lastLogin: 'Today, 8:45 AM',
+                                                totalOrders: 8,
+                                                totalBookings: 3
+                                            }
+                                        ];
+                                    }
+                                </script>
+
+                                <!-- /main-content-wrap -->
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="">Blushelys</a>.
+                                Design by Trivlogic Private Limited All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
+                    </div>
+                    <!-- /main-content -->
+                </div>
+                <!-- /section-content-right -->
+            </div>
+            <!-- /layout-wrap -->
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Javascript -->
+    <script src="admin-js/jquery.min.js"></script>
+    <script src="admin-js/bootstrap.min.js"></script>
+    <script src="admin-js/bootstrap-select.min.js"></script>
+    <script src="admin-js/zoom.js"></script>
+    <script src="admin-js/switcher.js"></script>
+    <script defer src="admin-js/theme-settings.js"></script>
+    <script defer src="admin-js/main.js"></script>
+
+</body>
+
+</html>

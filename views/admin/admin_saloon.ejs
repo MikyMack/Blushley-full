@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Blushelys - Salon Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="images/logo/blushley-png-without-shade.png">
+    
+    <style>
+        /* Salon Management Specific Styles */
+        .salon-management-container {
+            padding: 20px;
+        }
+        
+        .salon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .salon-header h3 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .salon-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .salon-search {
+            position: relative;
+            min-width: 250px;
+        }
+        
+        .salon-search input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .salon-search input:focus {
+            outline: none;
+            border-color: #5c4d3b;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+        
+        .salon-search i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        
+        .salon-add-btn {
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .salon-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .salon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .salon-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+        
+        .salon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .salon-image {
+            height: 180px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .salon-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .salon-card:hover .salon-image img {
+            transform: scale(1.05);
+        }
+        
+        .salon-content {
+            padding: 20px;
+        }
+        
+        .salon-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        .salon-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .salon-services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .service-tag {
+            background: #f0f4ff;
+            color: #5c4d3b;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .salon-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #e6f7ee;
+            color: #10b759;
+        }
+        
+        .status-inactive {
+            background: #ffebeb;
+            color: #ff4d4f;
+        }
+        
+        .salon-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .edit-btn {
+            background: #e6f3ff;
+            color: #5c4d3b;
+        }
+        
+        .edit-btn:hover {
+            background: #5c4d3b;
+            color: white;
+        }
+        
+        .toggle-btn {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .toggle-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .toggle-btn.active {
+            background: #e6f7ee;
+            color: #10b759;
+        }
+        
+        .delete-btn {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        .delete-btn:hover {
+            background: #f44336;
+            color: white;
+        }
+        
+        /* Salon Modal Styles */
+        .salon-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .salon-modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .salon-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+            border-radius: 16px 16px 0 0;
+            color: white;
+        }
+        
+        .salon-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .salon-modal-title i {
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .salon-modal-title h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .salon-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .salon-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .salon-modal-body {
+            padding: 32px;
+        }
+        
+        .salon-form-section {
+            margin-bottom: 32px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .salon-section-header {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .salon-section-header h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .salon-section-header i {
+            color: #667eea;
+            font-size: 20px;
+        }
+        
+        .salon-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .salon-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .salon-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        .salon-form-group input,
+        .salon-form-group select,
+        .salon-form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .salon-form-group input:focus,
+        .salon-form-group select:focus,
+        .salon-form-group textarea:focus {
+            outline: none;
+            border-color: #5c4d3b;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .salon-services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .salon-service-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .salon-service-item:hover {
+            border-color: #5c4d3b;
+            background: #f8fafc;
+        }
+        
+        .salon-service-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+        
+        .salon-service-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .salon-file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .salon-file-upload-area:hover {
+            border-color: #5c4d3b;
+            background: #f1f5f9;
+        }
+        
+        .salon-file-upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .salon-upload-content i {
+            font-size: 48px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+        
+        .salon-upload-content p {
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .salon-upload-content small {
+            color: #64748b;
+        }
+        
+        .salon-image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .salon-image-preview-grid img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .salon-status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .salon-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .salon-toggle-slider {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .salon-toggle-slider::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="checkbox"]:checked + .salon-toggle-label .salon-toggle-slider {
+            background: #10b981;
+        }
+        
+        input[type="checkbox"]:checked + .salon-toggle-label .salon-toggle-slider::before {
+            transform: translateX(26px);
+        }
+        
+        .salon-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 32px;
+        }
+        
+        .salon-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+        
+        .salon-btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .salon-btn-secondary:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        
+        .salon-btn-primary {
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+            color: white;
+        }
+        
+        .salon-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .salon-modal-content {
+                width: 95%;
+                margin: 5% auto;
+                max-height: 95vh;
+            }
+            
+            .salon-modal-header {
+                padding: 20px;
+            }
+            
+            .salon-modal-body {
+                padding: 20px;
+            }
+            
+            .salon-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .salon-services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .salon-form-actions {
+                flex-direction: column;
+            }
+            
+            .salon-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .salon-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .salon-controls {
+                width: 100%;
+            }
+            
+            .salon-search {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .salon-modal-content {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+            
+            .salon-modal-header {
+                border-radius: 0;
+            }
+            
+            .salon-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Empty state */
+        .salon-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .salon-empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .salon-empty-state h4 {
+            margin: 0 0 10px 0;
+            color: #888;
+        }
+        
+        .salon-empty-state p {
+            margin: 0;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <!-- layout-wrap -->
+            <div class="layout-wrap loader-off">
+                <!-- preload -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
+                <!-- /preload -->
+                <!-- section-menu-left -->
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo" src="images/logo/blushley-png-without-shade.png"
+                                data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                        </a>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                                <ul>
+                                    <li class="menu-item">
+                                        <a href="admin-dashboard.html">
+                                            <div class="icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Admin Dashboard</div>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="menu-item">
+                                        <a href="admin-categories.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Category Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-products.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">Product Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-shop.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-heart"></i></div>
+                                            <div class="text">Shop Management</div>
+                                        </a>
+                                    </li>
+<li class="menu-item">
+                                        <a href="admin-orders.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Order Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="admin-bookings.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-calendar"></i></div>
+                                            <div class="text">Booking Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item active">
+                                        <a href="admin-salons.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-scissors"></i></div>
+                                            <div class="text">Salons Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-freelance.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Freelance Management</div>
+                                        </a>
+                                    </li>
+    <li class="menu-item ">
+                                        <a href="admin-users.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">User Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-banners.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-testimonials.html" class="menu-item-button">
+                                            <div class="icon"><i class="fa fa-star-o"></i></div>
+                                            <div class="text">Testimonials Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-blogs.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-book-open"></i></div>
+                                            <div class="text">Blogs Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/logout">
+                                            <div class="icon">
+                                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Log out</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /section-menu-left -->
+                <!-- section-content-right -->
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="/dashboard">
+                                    <img style="width: 50px;" id="logo_header_mobile" alt="" src="images/surya-logo.png"
+                                        data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+
+
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="admin-images/avatar/user-1.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushelys</span>
+                                                    <span class="text-tiny">Admin</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/logout" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                                <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                                    <h3>Salon Management</h3>
+                                    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                                        <li>
+                                            <a href="/dashboard">
+                                                <div class="text-tiny">Dashboard</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="text-tiny">Services</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <div class="text-tiny">Salon Management</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Salon Management Content -->
+                                <div class="salon-management-container">
+                                    <div class="salon-header">
+                                        <h3>Manage Salons</h3>
+                                        <div class="salon-controls">
+                                            <div class="salon-search">
+                                                <i class="icon-search"></i>
+                                                <input type="text" id="salon-search-input" placeholder="Search salons by name, location...">
+                                            </div>
+                                            <button class="salon-add-btn" id="add-salon-btn">
+                                                <i class="icon-plus"></i> Add New Salon
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="salon-grid" id="salons-list">
+                                        <!-- Salon cards will be dynamically inserted here -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Add Salon Modal -->
+                                <div id="add-salon-modal" class="salon-modal">
+                                    <div class="salon-modal-content">
+                                        <div class="salon-modal-header">
+                                            <div class="salon-modal-title">
+                                                <i class="icon-scissors"></i>
+                                                <h3>Add New Salon</h3>
+                                            </div>
+                                            <button class="salon-close-btn" onclick="closeSalonModal('add-salon-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="salon-modal-body">
+                                            <form id="add-salon-form" enctype="multipart/form-data">
+                                                <!-- Salon Basic Information -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-info"></i> Salon Information</h4>
+                                                    </div>
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-name">Salon Name*</label>
+                                                            <input type="text" id="salon-name" name="salonName" 
+                                                                   placeholder="e.g., Glamour Salon & Spa" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-type">Salon Type*</label>
+                                                            <select id="salon-type" name="salonType" required>
+                                                                <option value="">Select Salon Type</option>
+                                                                <option value="Hair Salon">Hair Salon</option>
+                                                                <option value="Beauty Salon">Beauty Salon</option>
+                                                                <option value="Spa">Spa</option>
+                                                                <option value="Barbershop">Barbershop</option>
+                                                                <option value="Nail Salon">Nail Salon</option>
+                                                                <option value="Unisex Salon">Unisex Salon</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-owner">Owner Name*</label>
+                                                            <input type="text" id="salon-owner" name="ownerName" 
+                                                                   placeholder="e.g., John Smith" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-phone">Contact Number*</label>
+                                                            <input type="tel" id="salon-phone" name="contactNumber" 
+                                                                   placeholder="+91 98765 43210" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Location Information -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-map-pin"></i> Location</h4>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label for="salon-address">Full Address*</label>
+                                                        <textarea id="salon-address" name="address" rows="3"
+                                                                  placeholder="Enter complete salon address..."
+                                                                  required></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-city">City*</label>
+                                                            <input type="text" id="salon-city" name="city" 
+                                                                   placeholder="e.g., Mumbai" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-state">State*</label>
+                                                            <input type="text" id="salon-state" name="state" 
+                                                                   placeholder="e.g., Maharashtra" required>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-pincode">Pincode*</label>
+                                                            <input type="text" id="salon-pincode" name="pincode" 
+                                                                   placeholder="e.g., 400001" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-country">Country*</label>
+                                                            <input type="text" id="salon-country" name="country" 
+                                                                   value="India" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Services Offered -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-star"></i> Services Offered</h4>
+                                                    </div>
+                                                    <div class="salon-services-grid">
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="haircut" name="services" value="Haircut">
+                                                            <label for="haircut">Haircut</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="coloring" name="services" value="Hair Coloring">
+                                                            <label for="coloring">Hair Coloring</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="styling" name="services" value="Hair Styling">
+                                                            <label for="styling">Hair Styling</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="facial" name="services" value="Facial">
+                                                            <label for="facial">Facial</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="manicure" name="services" value="Manicure">
+                                                            <label for="manicure">Manicure</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="pedicure" name="services" value="Pedicure">
+                                                            <label for="pedicure">Pedicure</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="waxing" name="services" value="Waxing">
+                                                            <label for="waxing">Waxing</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="massage" name="services" value="Massage">
+                                                            <label for="massage">Massage</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Salon Description -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-file-text"></i> Description</h4>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label for="salon-description">Salon Description*</label>
+                                                        <textarea id="salon-description" name="description" rows="4"
+                                                                  placeholder="Describe your salon, specialties, and unique features..."
+                                                                  required></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Images -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-image"></i> Salon Images</h4>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label for="salon-images">Upload Images (3-6 required)*</label>
+                                                        <div class="salon-file-upload-area" id="salon-file-upload-area">
+                                                            <div class="salon-upload-content">
+                                                                <i class="icon-upload"></i>
+                                                                <p>Drag & drop images here or click to browse</p>
+                                                                <small>Select 3 to 6 high-quality images of your salon</small>
+                                                            </div>
+                                                            <input type="file" id="salon-images" name="images" multiple
+                                                                   accept="image/*" required>
+                                                        </div>
+                                                        <div class="salon-image-preview-grid" id="salon-image-preview-grid"></div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Availability -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-calendar"></i> Availability</h4>
+                                                    </div>
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-opening">Opening Time*</label>
+                                                            <input type="time" id="salon-opening" name="openingTime" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-closing">Closing Time*</label>
+                                                            <input type="time" id="salon-closing" name="closingTime" required>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="salon-status">Status</label>
+                                                            <div class="salon-status-toggle">
+                                                                <input type="checkbox" id="salon-status" name="isActive" checked>
+                                                                <label for="salon-status" class="salon-toggle-label">
+                                                                    <span class="toggle-text">Active</span>
+                                                                    <span class="salon-toggle-slider"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Form Actions -->
+                                                <div class="salon-form-actions">
+                                                    <button type="button" class="salon-btn salon-btn-secondary" 
+                                                            onclick="closeSalonModal('add-salon-modal')">
+                                                        <i class="icon-x"></i> Cancel
+                                                    </button>
+                                                    <button type="submit" class="salon-btn salon-btn-primary">
+                                                        <i class="icon-plus"></i> Create Salon
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Edit Salon Modal -->
+                                <div id="edit-salon-modal" class="salon-modal">
+                                    <div class="salon-modal-content">
+                                        <div class="salon-modal-header">
+                                            <div class="salon-modal-title">
+                                                <i class="icon-edit-3"></i>
+                                                <h3>Edit Salon</h3>
+                                            </div>
+                                            <button class="salon-close-btn" onclick="closeSalonModal('edit-salon-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="salon-modal-body">
+                                            <form id="edit-salon-form" enctype="multipart/form-data">
+                                                <input type="hidden" id="edit-salon-id" name="id">
+                                                
+                                                <!-- Salon Basic Information -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-info"></i> Salon Information</h4>
+                                                    </div>
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-name">Salon Name*</label>
+                                                            <input type="text" id="edit-salon-name" name="salonName" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-type">Salon Type*</label>
+                                                            <select id="edit-salon-type" name="salonType" required>
+                                                                <option value="">Select Salon Type</option>
+                                                                <option value="Hair Salon">Hair Salon</option>
+                                                                <option value="Beauty Salon">Beauty Salon</option>
+                                                                <option value="Spa">Spa</option>
+                                                                <option value="Barbershop">Barbershop</option>
+                                                                <option value="Nail Salon">Nail Salon</option>
+                                                                <option value="Unisex Salon">Unisex Salon</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-owner">Owner Name*</label>
+                                                            <input type="text" id="edit-salon-owner" name="ownerName" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-phone">Contact Number*</label>
+                                                            <input type="tel" id="edit-salon-phone" name="contactNumber" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Location Information -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-map-pin"></i> Location</h4>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label for="edit-salon-address">Full Address*</label>
+                                                        <textarea id="edit-salon-address" name="address" rows="3" required></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-city">City*</label>
+                                                            <input type="text" id="edit-salon-city" name="city" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-state">State*</label>
+                                                            <input type="text" id="edit-salon-state" name="state" required>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-pincode">Pincode*</label>
+                                                            <input type="text" id="edit-salon-pincode" name="pincode" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-country">Country*</label>
+                                                            <input type="text" id="edit-salon-country" name="country" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Services Offered -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-star"></i> Services Offered</h4>
+                                                    </div>
+                                                    <div class="salon-services-grid">
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-haircut" name="services" value="Haircut">
+                                                            <label for="edit-haircut">Haircut</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-coloring" name="services" value="Hair Coloring">
+                                                            <label for="edit-coloring">Hair Coloring</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-styling" name="services" value="Hair Styling">
+                                                            <label for="edit-styling">Hair Styling</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-facial" name="services" value="Facial">
+                                                            <label for="edit-facial">Facial</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-manicure" name="services" value="Manicure">
+                                                            <label for="edit-manicure">Manicure</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-pedicure" name="services" value="Pedicure">
+                                                            <label for="edit-pedicure">Pedicure</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-waxing" name="services" value="Waxing">
+                                                            <label for="edit-waxing">Waxing</label>
+                                                        </div>
+                                                        <div class="salon-service-item">
+                                                            <input type="checkbox" id="edit-massage" name="services" value="Massage">
+                                                            <label for="edit-massage">Massage</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Salon Description -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-file-text"></i> Description</h4>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label for="edit-salon-description">Salon Description*</label>
+                                                        <textarea id="edit-salon-description" name="description" rows="4" required></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Images -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-image"></i> Salon Images</h4>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label>Current Images</label>
+                                                        <div class="salon-image-preview-grid" id="edit-salon-current-images"></div>
+                                                    </div>
+                                                    <div class="salon-form-group">
+                                                        <label for="edit-salon-images">Add/Replace Images</label>
+                                                        <div class="salon-file-upload-area" id="edit-salon-file-upload-area">
+                                                            <div class="salon-upload-content">
+                                                                <i class="icon-upload"></i>
+                                                                <p>Drag & drop images here or click to browse</p>
+                                                                <small>Select new images to add or replace existing ones</small>
+                                                            </div>
+                                                            <input type="file" id="edit-salon-images" name="images" multiple
+                                                                   accept="image/*">
+                                                        </div>
+                                                        <div class="salon-image-preview-grid" id="edit-salon-image-preview-grid"></div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Availability -->
+                                                <div class="salon-form-section">
+                                                    <div class="salon-section-header">
+                                                        <h4><i class="icon-calendar"></i> Availability</h4>
+                                                    </div>
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-opening">Opening Time*</label>
+                                                            <input type="time" id="edit-salon-opening" name="openingTime" required>
+                                                        </div>
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-closing">Closing Time*</label>
+                                                            <input type="time" id="edit-salon-closing" name="closingTime" required>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="salon-form-grid">
+                                                        <div class="salon-form-group">
+                                                            <label for="edit-salon-status">Status</label>
+                                                            <div class="salon-status-toggle">
+                                                                <input type="checkbox" id="edit-salon-status" name="isActive">
+                                                                <label for="edit-salon-status" class="salon-toggle-label">
+                                                                    <span class="toggle-text">Active</span>
+                                                                    <span class="salon-toggle-slider"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Form Actions -->
+                                                <div class="salon-form-actions">
+                                                    <button type="button" class="salon-btn salon-btn-secondary" 
+                                                            onclick="closeSalonModal('edit-salon-modal')">
+                                                        <i class="icon-x"></i> Cancel
+                                                    </button>
+                                                    <button type="submit" class="salon-btn salon-btn-primary">
+                                                        <i class="icon-save"></i> Update Salon
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div id="delete-salon-modal" class="salon-modal">
+                                    <div class="salon-modal-content" style="max-width: 500px;">
+                                        <div class="salon-modal-header">
+                                            <div class="salon-modal-title">
+                                                <i class="icon-alert-triangle"></i>
+                                                <h3>Confirm Deletion</h3>
+                                            </div>
+                                            <button class="salon-close-btn" onclick="closeSalonModal('delete-salon-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="salon-modal-body">
+                                            <p>Are you sure you want to delete this salon? This action cannot be undone.</p>
+                                            <div class="salon-form-actions">
+                                                <button type="button" class="salon-btn salon-btn-secondary" 
+                                                        onclick="closeSalonModal('delete-salon-modal')">
+                                                    <i class="icon-x"></i> Cancel
+                                                </button>
+                                                <button type="button" class="salon-btn salon-btn-primary" id="confirm-salon-delete-btn">
+                                                    <i class="icon-trash-2"></i> Delete Salon
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="">Blushelys</a>.
+                                Design by Trivlogic Private Limited All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
+                    </div>
+                    <!-- /main-content -->
+                </div>
+                <!-- /section-content-right -->
+            </div>
+            <!-- /layout-wrap -->
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Javascript -->
+    <script src="admin-js/jquery.min.js"></script>
+    <script src="admin-js/bootstrap.min.js"></script>
+    <script src="admin-js/bootstrap-select.min.js"></script>
+    <script src="admin-js/zoom.js"></script>
+    <script src="admin-js/switcher.js"></script>
+    <script defer src="admin-js/theme-settings.js"></script>
+    <script defer src="admin-js/main.js"></script>
+
+    <script>
+        // Sample data for demonstration
+        let salons = [
+            {
+                id: '1',
+                name: 'Glamour Salon & Spa',
+                type: 'Beauty Salon',
+                owner: 'Priya Sharma',
+                phone: '+91 98765 43210',
+                address: '123 Fashion Street, Bandra West',
+                city: 'Mumbai',
+                state: 'Maharashtra',
+                pincode: '400050',
+                country: 'India',
+                services: ['Haircut', 'Hair Coloring', 'Facial', 'Manicure', 'Pedicure'],
+                description: 'Premium salon offering complete beauty and wellness services with experienced stylists.',
+                images: [
+                    'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                    'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                ],
+                openingTime: '09:00',
+                closingTime: '20:00',
+                isActive: true
+            },
+            {
+                id: '2',
+                name: 'Urban Cuts Barbershop',
+                type: 'Barbershop',
+                owner: 'Rahul Verma',
+                phone: '+91 87654 32109',
+                address: '45 MG Road, Connaught Place',
+                city: 'New Delhi',
+                state: 'Delhi',
+                pincode: '110001',
+                country: 'India',
+                services: ['Haircut', 'Beard Trim', 'Shaving', 'Hair Styling'],
+                description: 'Modern barbershop specializing in men\'s grooming with traditional and contemporary styles.',
+                images: [
+                    'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                    'https://images.unsplash.com/photo-1593705114312-a0ee03a3f7d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                ],
+                openingTime: '10:00',
+                closingTime: '21:00',
+                isActive: true
+            },
+            {
+                id: '3',
+                name: 'Serenity Spa & Wellness',
+                type: 'Spa',
+                owner: 'Anjali Mehta',
+                phone: '+91 76543 21098',
+                address: '78 Hill Road, Koregaon Park',
+                city: 'Pune',
+                state: 'Maharashtra',
+                pincode: '411001',
+                country: 'India',
+                services: ['Massage', 'Facial', 'Body Treatment', 'Aromatherapy'],
+                description: 'Luxury spa offering rejuvenating treatments for complete mind and body relaxation.',
+                images: [
+                    'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                ],
+                openingTime: '08:00',
+                closingTime: '22:00',
+                isActive: false
+            }
+        ];
+
+        let salonToDelete = null;
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize
+            renderSalons();
+            
+            // Event listeners
+            document.getElementById('add-salon-btn').addEventListener('click', function() {
+                showAddSalonModal();
+            });
+            
+            document.getElementById('add-salon-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createSalon();
+            });
+            
+            document.getElementById('edit-salon-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateSalon();
+            });
+            
+            document.getElementById('confirm-salon-delete-btn').addEventListener('click', function() {
+                deleteSalon();
+            });
+            
+            document.getElementById('salon-search-input').addEventListener('input', function() {
+                filterSalons(this.value);
+            });
+            
+            // Image preview functionality
+            document.getElementById('salon-images').addEventListener('change', function(e) {
+                previewImages(e.target.files, 'salon-image-preview-grid');
+            });
+            
+            document.getElementById('edit-salon-images').addEventListener('change', function(e) {
+                previewImages(e.target.files, 'edit-salon-image-preview-grid');
+            });
+        });
+        
+        // Render salons
+        function renderSalons(salonList = salons) {
+            const salonsList = document.getElementById('salons-list');
+            
+            if (salonList.length === 0) {
+                salonsList.innerHTML = `
+                    <div class="salon-empty-state">
+                        <i class="icon-scissors"></i>
+                        <h4>No Salons Found</h4>
+                        <p>Add your first salon to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            salonsList.innerHTML = '';
+            
+            salonList.forEach(salon => {
+                const salonCard = document.createElement('div');
+                salonCard.className = 'salon-card';
+                
+                const mainImage = salon.images && salon.images.length > 0 ? salon.images[0] : 'https://via.placeholder.com/300x180?text=Salon+Image';
+                
+                salonCard.innerHTML = `
+                    <div class="salon-image">
+                        <img src="${mainImage}" alt="${salon.name}">
+                    </div>
+                    <div class="salon-content">
+                        <h3 class="salon-name">${salon.name}</h3>
+                        <div class="salon-location">
+                            <i class="icon-map-pin"></i>
+                            <span>${salon.city}, ${salon.state}</span>
+                        </div>
+                        <div class="salon-services">
+                            ${salon.services.slice(0, 3).map(service => 
+                                `<span class="service-tag">${service}</span>`
+                            ).join('')}
+                            ${salon.services.length > 3 ? `<span class="service-tag">+${salon.services.length - 3} more</span>` : ''}
+                        </div>
+                        <div class="salon-status">
+                            <span class="status-badge ${salon.isActive ? 'status-active' : 'status-inactive'}">
+                                ${salon.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                            <div class="salon-actions">
+                                <button class="action-btn edit-btn" onclick="showEditSalonModal('${salon.id}')">
+                                    <i class="icon-edit-3"></i>
+                                </button>
+                                <button class="action-btn toggle-btn ${salon.isActive ? 'active' : ''}" onclick="toggleSalonStatus('${salon.id}')">
+                                    <i class="fa fa-toggle-${salon.isActive ? 'on' : 'off'}"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="confirmDeleteSalon('${salon.id}')">
+                                    <i class="icon-trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                salonsList.appendChild(salonCard);
+            });
+        }
+        
+        // Filter salons
+        function filterSalons(query) {
+            if (!query) {
+                renderSalons();
+                return;
+            }
+            
+            const filteredSalons = salons.filter(salon => 
+                salon.name.toLowerCase().includes(query.toLowerCase()) ||
+                salon.city.toLowerCase().includes(query.toLowerCase()) ||
+                salon.state.toLowerCase().includes(query.toLowerCase()) ||
+                salon.services.some(service => 
+                    service.toLowerCase().includes(query.toLowerCase())
+                )
+            );
+            
+            renderSalons(filteredSalons);
+        }
+        
+        // Show add salon modal
+        function showAddSalonModal() {
+            document.getElementById('add-salon-modal').style.display = 'block';
+            document.getElementById('add-salon-form').reset();
+            document.getElementById('salon-image-preview-grid').innerHTML = '';
+        }
+        
+        // Show edit salon modal
+        function showEditSalonModal(salonId) {
+            const salon = salons.find(s => s.id === salonId);
+            if (!salon) return;
+            
+            // Populate form fields
+            document.getElementById('edit-salon-id').value = salon.id;
+            document.getElementById('edit-salon-name').value = salon.name;
+            document.getElementById('edit-salon-type').value = salon.type;
+            document.getElementById('edit-salon-owner').value = salon.owner;
+            document.getElementById('edit-salon-phone').value = salon.phone;
+            document.getElementById('edit-salon-address').value = salon.address;
+            document.getElementById('edit-salon-city').value = salon.city;
+            document.getElementById('edit-salon-state').value = salon.state;
+            document.getElementById('edit-salon-pincode').value = salon.pincode;
+            document.getElementById('edit-salon-country').value = salon.country;
+            document.getElementById('edit-salon-description').value = salon.description;
+            document.getElementById('edit-salon-opening').value = salon.openingTime;
+            document.getElementById('edit-salon-closing').value = salon.closingTime;
+            document.getElementById('edit-salon-status').checked = salon.isActive;
+            
+            // Set services
+            document.querySelectorAll('#edit-salon-form input[name="services"]').forEach(checkbox => {
+                checkbox.checked = salon.services.includes(checkbox.value);
+            });
+            
+            // Display current images
+            const currentImagesContainer = document.getElementById('edit-salon-current-images');
+            currentImagesContainer.innerHTML = '';
+            
+            if (salon.images && salon.images.length > 0) {
+                salon.images.forEach(img => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = img;
+                    imgElement.alt = 'Salon image';
+                    currentImagesContainer.appendChild(imgElement);
+                });
+            }
+            
+            // Clear new image preview
+            document.getElementById('edit-salon-image-preview-grid').innerHTML = '';
+            
+            document.getElementById('edit-salon-modal').style.display = 'block';
+        }
+        
+        // Confirm delete salon
+        function confirmDeleteSalon(salonId) {
+            salonToDelete = salonId;
+            document.getElementById('delete-salon-modal').style.display = 'block';
+        }
+        
+        // Close salon modal
+        function closeSalonModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Create salon
+        function createSalon() {
+            const form = document.getElementById('add-salon-form');
+            const formData = new FormData(form);
+            
+            // Get selected services
+            const services = [];
+            document.querySelectorAll('#add-salon-form input[name="services"]:checked').forEach(checkbox => {
+                services.push(checkbox.value);
+            });
+            
+            // Create new salon object
+            const newSalon = {
+                id: (salons.length + 1).toString(),
+                name: formData.get('salonName'),
+                type: formData.get('salonType'),
+                owner: formData.get('ownerName'),
+                phone: formData.get('contactNumber'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                pincode: formData.get('pincode'),
+                country: formData.get('country'),
+                services: services,
+                description: formData.get('description'),
+                openingTime: formData.get('openingTime'),
+                closingTime: formData.get('closingTime'),
+                isActive: document.getElementById('salon-status').checked,
+                images: [
+                    'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                    'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                ]
+            };
+            
+            // Add to salons array
+            salons.push(newSalon);
+            
+            // Show success message
+            alert('Salon created successfully!');
+            
+            // Close modal and refresh list
+            closeSalonModal('add-salon-modal');
+            renderSalons();
+        }
+        
+        // Update salon
+        function updateSalon() {
+            const form = document.getElementById('edit-salon-form');
+            const formData = new FormData(form);
+            const salonId = document.getElementById('edit-salon-id').value;
+            
+            // Find salon index
+            const salonIndex = salons.findIndex(s => s.id === salonId);
+            if (salonIndex === -1) return;
+            
+            // Get selected services
+            const services = [];
+            document.querySelectorAll('#edit-salon-form input[name="services"]:checked').forEach(checkbox => {
+                services.push(checkbox.value);
+            });
+            
+            // Update salon
+            salons[salonIndex] = {
+                ...salons[salonIndex],
+                name: formData.get('salonName'),
+                type: formData.get('salonType'),
+                owner: formData.get('ownerName'),
+                phone: formData.get('contactNumber'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                pincode: formData.get('pincode'),
+                country: formData.get('country'),
+                services: services,
+                description: formData.get('description'),
+                openingTime: formData.get('openingTime'),
+                closingTime: formData.get('closingTime'),
+                isActive: document.getElementById('edit-salon-status').checked
+            };
+            
+            // Show success message
+            alert('Salon updated successfully!');
+            
+            // Close modal and refresh list
+            closeSalonModal('edit-salon-modal');
+            renderSalons();
+        }
+        
+        // Delete salon
+        function deleteSalon() {
+            if (!salonToDelete) return;
+            
+            // Remove salon from array
+            salons = salons.filter(s => s.id !== salonToDelete);
+            
+            // Show success message
+            alert('Salon deleted successfully!');
+            
+            // Close modal and refresh list
+            closeSalonModal('delete-salon-modal');
+            renderSalons();
+            
+            salonToDelete = null;
+        }
+        
+        // Toggle salon status
+        function toggleSalonStatus(salonId) {
+            const salonIndex = salons.findIndex(s => s.id === salonId);
+            if (salonIndex === -1) return;
+            
+            salons[salonIndex].isActive = !salons[salonIndex].isActive;
+            
+            // Show status message
+            alert(`Salon status updated to ${salons[salonIndex].isActive ? 'Active' : 'Inactive'}`);
+            
+            // Refresh list
+            renderSalons();
+        }
+        
+        // Preview images
+        function previewImages(files, previewContainerId) {
+            const previewContainer = document.getElementById(previewContainerId);
+            previewContainer.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'Preview image';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

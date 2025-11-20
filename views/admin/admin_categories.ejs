@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Blushely - Category Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="admin-css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="images/logo/blushley-png-without-shade.png">
+    
+    <style>
+        /* Category Management Styles */
+        .category-management-container {
+            padding: 20px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 200px);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .category-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-title i {
+            color: #b89875;
+            font-size: 32px;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .category-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-btn-primary {
+            background: #b89875;
+            color: white;
+        }
+
+        .category-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(184, 152, 117, 0.3);
+        }
+
+        .category-btn-outline {
+            background: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+        }
+
+        .category-btn-outline:hover {
+            background: #f5f5f5;
+            border-color: #b89875;
+            color: #b89875;
+        }
+
+        .category-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .category-stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .category-stat-icon.primary {
+            background: #b89875;
+        }
+
+        .category-stat-icon.success {
+            background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+        }
+
+        .category-stat-icon.warning {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+        }
+
+        .category-stat-icon.info {
+            background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+        }
+
+        .category-stat-content h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            color: #333;
+        }
+
+        .category-stat-content p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .category-list-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .category-list-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-list-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .category-search {
+            display: flex;
+            gap: 10px;
+        }
+
+        .category-search-input {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            width: 250px;
+            font-size: 14px;
+        }
+
+        .category-search-input:focus {
+            outline: none;
+            border-color: #b89875;
+        }
+
+        .category-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .category-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .category-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .category-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .category-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #b89875 0%, #d4b896 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .category-info h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verified-badge {
+            color: #1890ff;
+            font-size: 14px;
+        }
+
+        .category-info p {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .subcategory-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .subcategory-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-badge.inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-badge.verified {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #1890ff;
+        }
+
+        .status-badge.pending {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #fa8c16;
+        }
+
+        .category-actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .action-btn.edit {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-btn.edit:hover {
+            background: #bbdefb;
+        }
+
+        .action-btn.delete {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .action-btn.delete:hover {
+            background: #ffcdd2;
+        }
+
+        .action-btn.toggle {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .action-btn.toggle:hover {
+            background: #e1bee7;
+        }
+
+        .action-btn.verify {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .action-btn.verify:hover {
+            background: #bae7ff;
+        }
+
+        .action-btn.verified {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .action-btn.verified:hover {
+            background: #d9f7be;
+        }
+
+        /* Modal Styles */
+        .category-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .category-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .category-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-modal-title i {
+            color: #b89875;
+        }
+
+        .category-modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .category-modal-close:hover {
+            background: #f5f5f5;
+        }
+
+        .category-modal-body {
+            padding: 20px;
+        }
+
+        .category-form-group {
+            margin-bottom: 20px;
+        }
+
+        .category-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .category-form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .category-form-input:focus {
+            outline: none;
+            border-color: #b89875;
+        }
+
+        .category-form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s ease;
+        }
+
+        .category-form-textarea:focus {
+            outline: none;
+            border-color: #b89875;
+        }
+
+        .category-form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .category-form-select:focus {
+            outline: none;
+            border-color: #b89875;
+        }
+
+        .subcategory-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .subcategory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .subcategory-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .subcategory-add-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .subcategory-add-btn:hover {
+            background: #45a049;
+        }
+
+        .subcategory-list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .subcategory-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .subcategory-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .subcategory-remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .subcategory-remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .category-modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .category-modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-modal-btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .category-modal-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .category-modal-btn-save {
+            background: linear-gradient(135deg, #5c4d3b 0%, #b89875 100%);
+            color: white;
+        }
+
+        .category-modal-btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(184, 152, 117, 0.3);
+        }
+
+        /* Verification Modal */
+        .verification-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .verification-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .verification-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .verification-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verification-modal-title i {
+            color: #1890ff;
+        }
+
+        .verification-modal-body {
+            padding: 20px;
+        }
+
+        .verification-message {
+            margin-bottom: 20px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .verification-modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .verification-modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .verification-modal-btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .verification-modal-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .verification-modal-btn-confirm {
+            background: #1890ff;
+            color: white;
+        }
+
+        .verification-modal-btn-confirm:hover {
+            background: #096dd9;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .category-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .category-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .category-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .category-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .category-list-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .category-search {
+                width: 100%;
+            }
+
+            .category-search-input {
+                width: 100%;
+            }
+
+            .category-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .category-table th,
+            .category-table td {
+                white-space: nowrap;
+            }
+
+            .category-actions-cell {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .action-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-management-container {
+                padding: 15px;
+            }
+
+            .category-title {
+                font-size: 24px;
+            }
+
+            .category-stat-card {
+                padding: 15px;
+            }
+
+            .category-stat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .category-stat-content h3 {
+                font-size: 20px;
+            }
+
+            .category-modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <!-- layout-wrap -->
+            <div class="layout-wrap loader-off">
+                <!-- preload -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
+                <!-- /preload -->
+                <!-- section-menu-left -->
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo" src="images/logo/blushley-png-without-shade.png"
+                                data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                        </a>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                                <ul>
+                                    <li class="menu-item">
+                                        <a href="admin-dashboard.html">
+                                            <div class="icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Admin Dashboard</div>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="menu-item active">
+                                        <a href="admin-categories.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Category Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-products.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">Product Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-shop.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-heart"></i></div>
+                                            <div class="text">Shop Management</div>
+                                        </a>
+                                    </li>
+<li class="menu-item">
+                                        <a href="admin-orders.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Order Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="admin-bookings.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-calendar"></i></div>
+                                            <div class="text">Booking Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-salons.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-scissors"></i></div>
+                                            <div class="text">Salons Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-freelance.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Freelance Management</div>
+                                        </a>
+                                    </li>
+    <li class="menu-item ">
+                                        <a href="admin-users.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">User Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="admin-banners.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-testimonials.html" class="menu-item-button">
+                                            <div class="icon"><i class="fa fa-star-o"></i></div>
+                                            <div class="text">Testimonials Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="admin-blogs.html" class="menu-item-button">
+                                            <div class="icon"><i class="icon-book-open"></i></div>
+                                            <div class="text">Blogs Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/logout">
+                                            <div class="icon">
+                                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Log out</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /section-menu-left -->
+                <!-- section-content-right -->
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="/dashboard">
+                                    <img style="width: 50px;" id="logo_header_mobile" alt="" src="images/surya-logo.png"
+                                        data-light="images/surya-logo.png" data-dark="images/surya-logo.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+
+
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="admin-images/avatar/user-1.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushelys</span>
+                                                    <span class="text-tiny">Admin</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/logout" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                               
+                                <!-- Category Management Content -->
+                                <div class="category-management-container">
+                                    <div class="category-header">
+                                        <div class="category-title">
+                                            <i class="fas fa-tags"></i>
+                                            Category Management
+                                        </div>
+                                        <div class="category-actions">
+                                            <button class="category-btn category-btn-outline">
+                                                <i class="fas fa-download"></i>
+                                                Export
+                                            </button>
+                                            <button class="category-btn category-btn-primary" id="create-category-btn">
+                                                <i class="fas fa-plus"></i>
+                                                Create Category
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="category-stats">
+                                        <div class="category-stat-card">
+                                            <div class="category-stat-icon primary">
+                                                <i class="fas fa-tags"></i>
+                                            </div>
+                                            <div class="category-stat-content">
+                                                <h3>12</h3>
+                                                <p>Total Categories</p>
+                                            </div>
+                                        </div>
+                                        <div class="category-stat-card">
+                                            <div class="category-stat-icon success">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="category-stat-content">
+                                                <h3>8</h3>
+                                                <p>Active Categories</p>
+                                            </div>
+                                        </div>
+                                        <div class="category-stat-card">
+                                            <div class="category-stat-icon warning">
+                                                <i class="fas fa-pause-circle"></i>
+                                            </div>
+                                            <div class="category-stat-content">
+                                                <h3>4</h3>
+                                                <p>Inactive Categories</p>
+                                            </div>
+                                        </div>
+                                        <div class="category-stat-card">
+                                            <div class="category-stat-icon info">
+                                                <i class="fas fa-layer-group"></i>
+                                            </div>
+                                            <div class="category-stat-content">
+                                                <h3>28</h3>
+                                                <p>Total Subcategories</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="category-list-container">
+                                        <div class="category-list-header">
+                                            <div class="category-list-title">All Categories</div>
+                                            <div class="category-search">
+                                                <input type="text" class="category-search-input" placeholder="Search categories...">
+                                                <button class="category-btn category-btn-outline">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <table class="category-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Category</th>
+                                                    <th>Subcategories</th>
+                                                    <th>Products</th>
+                                                    <th>Status</th>
+                                                    <th>Verification</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr data-category-id="1">
+                                                    <td>
+                                                        <div class="category-name-cell">
+                                                            <div class="category-icon">
+                                                                <i class="fas fa-spa"></i>
+                                                            </div>
+                                                            <div class="category-info">
+                                                                <h4>Skincare
+                                                                    <i class="fas fa-check-circle verified-badge"></i>
+                                                                </h4>
+                                                                <p>Face care, body care, treatments</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="subcategory-list">
+                                                            <span class="subcategory-tag">Face Serums</span>
+                                                            <span class="subcategory-tag">Moisturizers</span>
+                                                            <span class="subcategory-tag">Cleansers</span>
+                                                            <span class="subcategory-tag">+2 more</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>45</td>
+                                                    <td>
+                                                        <span class="status-badge active">Active</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="status-badge verified">Verified</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="category-actions-cell">
+                                                            <button class="action-btn edit" title="Edit" data-category-id="1">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="action-btn toggle" title="Toggle Status">
+                                                                <i class="fas fa-toggle-on"></i>
+                                                            </button>
+                                                            <button class="action-btn verified" title="Unverify">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </button>
+                                                            <button class="action-btn delete" title="Delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr data-category-id="2">
+                                                    <td>
+                                                        <div class="category-name-cell">
+                                                            <div class="category-icon">
+                                                                <i class="fas fa-palette"></i>
+                                                            </div>
+                                                            <div class="category-info">
+                                                                <h4>Makeup</h4>
+                                                                <p>Cosmetics, beauty products</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="subcategory-list">
+                                                            <span class="subcategory-tag">Lipstick</span>
+                                                            <span class="subcategory-tag">Foundation</span>
+                                                            <span class="subcategory-tag">Eyeshadow</span>
+                                                            <span class="subcategory-tag">+3 more</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>32</td>
+                                                    <td>
+                                                        <span class="status-badge active">Active</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="status-badge pending">Pending</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="category-actions-cell">
+                                                            <button class="action-btn edit" title="Edit" data-category-id="2">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="action-btn toggle" title="Toggle Status">
+                                                                <i class="fas fa-toggle-on"></i>
+                                                            </button>
+                                                            <button class="action-btn verify" title="Verify">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </button>
+                                                            <button class="action-btn delete" title="Delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr data-category-id="3">
+                                                    <td>
+                                                        <div class="category-name-cell">
+                                                            <div class="category-icon">
+                                                                <i class="fas fa-air-freshener"></i>
+                                                            </div>
+                                                            <div class="category-info">
+                                                                <h4>Fragrance</h4>
+                                                                <p>Perfumes, body mists, oils</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="subcategory-list">
+                                                            <span class="subcategory-tag">Perfumes</span>
+                                                            <span class="subcategory-tag">Body Mists</span>
+                                                            <span class="subcategory-tag">Essential Oils</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>18</td>
+                                                    <td>
+                                                        <span class="status-badge inactive">Inactive</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="status-badge pending">Pending</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="category-actions-cell">
+                                                            <button class="action-btn edit" title="Edit" data-category-id="3">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="action-btn toggle" title="Toggle Status">
+                                                                <i class="fas fa-toggle-off"></i>
+                                                            </button>
+                                                            <button class="action-btn verify" title="Verify">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </button>
+                                                            <button class="action-btn delete" title="Delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr data-category-id="4">
+                                                    <td>
+                                                        <div class="category-name-cell">
+                                                            <div class="category-icon">
+                                                                <i class="fas fa-spray-can"></i>
+                                                            </div>
+                                                            <div class="category-info">
+                                                                <h4>Haircare
+                                                                    <i class="fas fa-check-circle verified-badge"></i>
+                                                                </h4>
+                                                                <p>Shampoos, conditioners, treatments</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="subcategory-list">
+                                                            <span class="subcategory-tag">Shampoo</span>
+                                                            <span class="subcategory-tag">Conditioner</span>
+                                                            <span class="subcategory-tag">Hair Masks</span>
+                                                            <span class="subcategory-tag">+2 more</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>27</td>
+                                                    <td>
+                                                        <span class="status-badge active">Active</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="status-badge verified">Verified</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="category-actions-cell">
+                                                            <button class="action-btn edit" title="Edit" data-category-id="4">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="action-btn toggle" title="Toggle Status">
+                                                                <i class="fas fa-toggle-on"></i>
+                                                            </button>
+                                                            <button class="action-btn verified" title="Unverify">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </button>
+                                                            <button class="action-btn delete" title="Delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Create Category Modal -->
+                                <div class="category-modal" id="create-category-modal">
+                                    <div class="category-modal-content">
+                                        <div class="category-modal-header">
+                                            <div class="category-modal-title">
+                                                <i class="fas fa-plus-circle"></i>
+                                                Create New Category
+                                            </div>
+                                            <button class="category-modal-close" id="close-category-modal">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="category-modal-body">
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Category Name</label>
+                                                <input type="text" class="category-form-input" id="category-name" placeholder="Enter category name">
+                                            </div>
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Description</label>
+                                                <textarea class="category-form-textarea" id="category-description" placeholder="Enter category description"></textarea>
+                                            </div>
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Category Icon</label>
+                                                <select class="category-form-select" id="category-icon">
+                                                    <option value="">Select an icon</option>
+                                                    <option value="spa">Skincare</option>
+                                                    <option value="palette">Makeup</option>
+                                                    <option value="air-freshener">Fragrance</option>
+                                                    <option value="spray-can">Haircare</option>
+                                                    <option value="hand-sparkles">Nail Care</option>
+                                                    <option value="bath">Body Care</option>
+                                                </select>
+                                            </div>
+                                            <div class="subcategory-section">
+                                                <div class="subcategory-header">
+                                                    <div class="subcategory-title">Subcategories</div>
+                                                    <button class="subcategory-add-btn" id="add-subcategory">
+                                                        <i class="fas fa-plus"></i>
+                                                        Add Subcategory
+                                                    </button>
+                                                </div>
+                                                <div class="subcategory-list-items" id="subcategory-list">
+                                                    <div class="subcategory-item">
+                                                        <input type="text" class="subcategory-input" placeholder="Enter subcategory name">
+                                                        <button class="subcategory-remove-btn">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="category-modal-footer">
+                                            <button class="category-modal-btn category-modal-btn-cancel" id="cancel-category">Cancel</button>
+                                            <button class="category-modal-btn category-modal-btn-save" id="save-category">Create Category</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Edit Category Modal -->
+                                <div class="category-modal" id="edit-category-modal">
+                                    <div class="category-modal-content">
+                                        <div class="category-modal-header">
+                                            <div class="category-modal-title">
+                                                <i class="fas fa-edit"></i>
+                                                Edit Category
+                                            </div>
+                                            <button class="category-modal-close" id="close-edit-category-modal">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="category-modal-body">
+                                            <input type="hidden" id="edit-category-id">
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Category Name</label>
+                                                <input type="text" class="category-form-input" id="edit-category-name" placeholder="Enter category name">
+                                            </div>
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Description</label>
+                                                <textarea class="category-form-textarea" id="edit-category-description" placeholder="Enter category description"></textarea>
+                                            </div>
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Category Icon</label>
+                                                <select class="category-form-select" id="edit-category-icon">
+                                                    <option value="">Select an icon</option>
+                                                    <option value="spa">Skincare</option>
+                                                    <option value="palette">Makeup</option>
+                                                    <option value="air-freshener">Fragrance</option>
+                                                    <option value="spray-can">Haircare</option>
+                                                    <option value="hand-sparkles">Nail Care</option>
+                                                    <option value="bath">Body Care</option>
+                                                </select>
+                                            </div>
+                                            <div class="category-form-group">
+                                                <label class="category-form-label">Status</label>
+                                                <select class="category-form-select" id="edit-category-status">
+                                                    <option value="active">Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
+                                            </div>
+                                            <div class="subcategory-section">
+                                                <div class="subcategory-header">
+                                                    <div class="subcategory-title">Subcategories</div>
+                                                    <button class="subcategory-add-btn" id="add-edit-subcategory">
+                                                        <i class="fas fa-plus"></i>
+                                                        Add Subcategory
+                                                    </button>
+                                                </div>
+                                                <div class="subcategory-list-items" id="edit-subcategory-list">
+                                                    <!-- Subcategories will be dynamically added here -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="category-modal-footer">
+                                            <button class="category-modal-btn category-modal-btn-cancel" id="cancel-edit-category">Cancel</button>
+                                            <button class="category-modal-btn category-modal-btn-save" id="update-category">Update Category</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Verification Modal -->
+                                <div class="verification-modal" id="verification-modal">
+                                    <div class="verification-modal-content">
+                                        <div class="verification-modal-header">
+                                            <div class="verification-modal-title">
+                                                <i class="fas fa-check-circle"></i>
+                                                Verify Category
+                                            </div>
+                                            <button class="category-modal-close" id="close-verification-modal">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="verification-modal-body">
+                                            <div class="verification-message" id="verification-message">
+                                                Are you sure you want to verify this category? Verified categories will be marked with a verification badge.
+                                            </div>
+                                        </div>
+                                        <div class="verification-modal-footer">
+                                            <button class="verification-modal-btn verification-modal-btn-cancel" id="cancel-verification">Cancel</button>
+                                            <button class="verification-modal-btn verification-modal-btn-confirm" id="confirm-verification">Verify Category</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Unverification Modal -->
+                                <div class="verification-modal" id="unverification-modal">
+                                    <div class="verification-modal-content">
+                                        <div class="verification-modal-header">
+                                            <div class="verification-modal-title">
+                                                <i class="fas fa-times-circle"></i>
+                                                Unverify Category
+                                            </div>
+                                            <button class="category-modal-close" id="close-unverification-modal">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="verification-modal-body">
+                                            <div class="verification-message" id="unverification-message">
+                                                Are you sure you want to remove verification from this category? The verification badge will be removed.
+                                            </div>
+                                        </div>
+                                        <div class="verification-modal-footer">
+                                            <button class="verification-modal-btn verification-modal-btn-cancel" id="cancel-unverification">Cancel</button>
+                                            <button class="verification-modal-btn verification-modal-btn-confirm" id="confirm-unverification">Unverify Category</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- /category-management -->
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="">Blushelys</a>.
+                                Design by Trivlogic Private Limited All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
+                    </div>
+                    <!-- /main-content -->
+                </div>
+                <!-- /section-content-right -->
+            </div>
+            <!-- /layout-wrap -->
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+    <script>
+        // Category Management JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const createCategoryBtn = document.getElementById('create-category-btn');
+            const createCategoryModal = document.getElementById('create-category-modal');
+            const closeCategoryModal = document.getElementById('close-category-modal');
+            const cancelCategory = document.getElementById('cancel-category');
+            const addSubcategoryBtn = document.getElementById('add-subcategory');
+            const subcategoryList = document.getElementById('subcategory-list');
+            
+            // Edit modal elements
+            const editCategoryModal = document.getElementById('edit-category-modal');
+            const closeEditCategoryModal = document.getElementById('close-edit-category-modal');
+            const cancelEditCategory = document.getElementById('cancel-edit-category');
+            const addEditSubcategoryBtn = document.getElementById('add-edit-subcategory');
+            const editSubcategoryList = document.getElementById('edit-subcategory-list');
+            const updateCategoryBtn = document.getElementById('update-category');
+
+            // Verification modal elements
+            const verificationModal = document.getElementById('verification-modal');
+            const closeVerificationModal = document.getElementById('close-verification-modal');
+            const cancelVerification = document.getElementById('cancel-verification');
+            const confirmVerification = document.getElementById('confirm-verification');
+
+            // Unverification modal elements
+            const unverificationModal = document.getElementById('unverification-modal');
+            const closeUnverificationModal = document.getElementById('close-unverification-modal');
+            const cancelUnverification = document.getElementById('cancel-unverification');
+            const confirmUnverification = document.getElementById('confirm-unverification');
+
+            // Sample category data (in a real app, this would come from a database)
+            const categoryData = {
+                1: {
+                    name: "Skincare",
+                    description: "Face care, body care, treatments",
+                    icon: "spa",
+                    status: "active",
+                    verified: true,
+                    subcategories: ["Face Serums", "Moisturizers", "Cleansers", "Toners", "Sunscreens"]
+                },
+                2: {
+                    name: "Makeup",
+                    description: "Cosmetics, beauty products",
+                    icon: "palette",
+                    status: "active",
+                    verified: false,
+                    subcategories: ["Lipstick", "Foundation", "Eyeshadow", "Mascara", "Blush", "Concealer"]
+                },
+                3: {
+                    name: "Fragrance",
+                    description: "Perfumes, body mists, oils",
+                    icon: "air-freshener",
+                    status: "inactive",
+                    verified: false,
+                    subcategories: ["Perfumes", "Body Mists", "Essential Oils"]
+                },
+                4: {
+                    name: "Haircare",
+                    description: "Shampoos, conditioners, treatments",
+                    icon: "spray-can",
+                    status: "active",
+                    verified: true,
+                    subcategories: ["Shampoo", "Conditioner", "Hair Masks", "Hair Oils", "Hair Serums"]
+                }
+            };
+
+            // Track which category is being verified/unverified
+            let currentVerificationCategoryId = null;
+
+            // Open create category modal
+            createCategoryBtn.addEventListener('click', function() {
+                createCategoryModal.style.display = 'flex';
+            });
+
+            // Close create category modal
+            closeCategoryModal.addEventListener('click', function() {
+                createCategoryModal.style.display = 'none';
+            });
+
+            cancelCategory.addEventListener('click', function() {
+                createCategoryModal.style.display = 'none';
+            });
+
+            // Add subcategory input for create modal
+            addSubcategoryBtn.addEventListener('click', function() {
+                addSubcategoryItem(subcategoryList);
+            });
+
+            // Add subcategory input for edit modal
+            addEditSubcategoryBtn.addEventListener('click', function() {
+                addSubcategoryItem(editSubcategoryList);
+            });
+
+            // Function to add subcategory input
+            function addSubcategoryItem(container) {
+                const subcategoryItem = document.createElement('div');
+                subcategoryItem.className = 'subcategory-item';
+                subcategoryItem.innerHTML = `
+                    <input type="text" class="subcategory-input" placeholder="Enter subcategory name">
+                    <button class="subcategory-remove-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(subcategoryItem);
+
+                // Add event listener to remove button
+                const removeBtn = subcategoryItem.querySelector('.subcategory-remove-btn');
+                removeBtn.addEventListener('click', function() {
+                    subcategoryItem.remove();
+                });
+            }
+
+            // Add event listeners to existing remove buttons in create modal
+            document.querySelectorAll('#subcategory-list .subcategory-remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.subcategory-item').remove();
+                });
+            });
+
+            // Edit category buttons
+            document.querySelectorAll('.action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const categoryId = this.getAttribute('data-category-id');
+                    openEditCategoryModal(categoryId);
+                });
+            });
+
+            // Function to open edit category modal with data
+            function openEditCategoryModal(categoryId) {
+                const category = categoryData[categoryId];
+                
+                if (category) {
+                    // Set form values
+                    document.getElementById('edit-category-id').value = categoryId;
+                    document.getElementById('edit-category-name').value = category.name;
+                    document.getElementById('edit-category-description').value = category.description;
+                    document.getElementById('edit-category-icon').value = category.icon;
+                    document.getElementById('edit-category-status').value = category.status;
+                    
+                    // Clear existing subcategories
+                    editSubcategoryList.innerHTML = '';
+                    
+                    // Add subcategories
+                    category.subcategories.forEach(subcategory => {
+                        const subcategoryItem = document.createElement('div');
+                        subcategoryItem.className = 'subcategory-item';
+                        subcategoryItem.innerHTML = `
+                            <input type="text" class="subcategory-input" value="${subcategory}">
+                            <button class="subcategory-remove-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        editSubcategoryList.appendChild(subcategoryItem);
+                        
+                        // Add event listener to remove button
+                        const removeBtn = subcategoryItem.querySelector('.subcategory-remove-btn');
+                        removeBtn.addEventListener('click', function() {
+                            subcategoryItem.remove();
+                        });
+                    });
+                    
+                    // Show the modal
+                    editCategoryModal.style.display = 'flex';
+                }
+            }
+
+            // Close edit category modal
+            closeEditCategoryModal.addEventListener('click', function() {
+                editCategoryModal.style.display = 'none';
+            });
+
+            cancelEditCategory.addEventListener('click', function() {
+                editCategoryModal.style.display = 'none';
+            });
+
+            // Update category
+            updateCategoryBtn.addEventListener('click', function() {
+                const categoryId = document.getElementById('edit-category-id').value;
+                const name = document.getElementById('edit-category-name').value;
+                const description = document.getElementById('edit-category-description').value;
+                const icon = document.getElementById('edit-category-icon').value;
+                const status = document.getElementById('edit-category-status').value;
+                
+                // Get subcategories
+                const subcategoryInputs = editSubcategoryList.querySelectorAll('.subcategory-input');
+                const subcategories = Array.from(subcategoryInputs).map(input => input.value).filter(value => value.trim() !== '');
+                
+                // Update the category data (in a real app, this would update the database)
+                categoryData[categoryId] = {
+                    ...categoryData[categoryId],
+                    name,
+                    description,
+                    icon,
+                    status,
+                    subcategories
+                };
+                
+                // Update the table row
+                updateCategoryRow(categoryId, categoryData[categoryId]);
+                
+                // Close the modal
+                editCategoryModal.style.display = 'none';
+                
+                // Show success message
+                alert('Category updated successfully!');
+            });
+
+            // Function to update the category row in the table
+            function updateCategoryRow(categoryId, category) {
+                const row = document.querySelector(`tr[data-category-id="${categoryId}"]`);
+                
+                if (row) {
+                    // Update category name and description
+                    const categoryInfo = row.querySelector('.category-info');
+                    const nameElement = categoryInfo.querySelector('h4');
+                    nameElement.innerHTML = category.name;
+                    
+                    // Add or remove verification badge
+                    if (category.verified) {
+                        if (!nameElement.querySelector('.verified-badge')) {
+                            nameElement.innerHTML += ' <i class="fas fa-check-circle verified-badge"></i>';
+                        }
+                    } else {
+                        const badge = nameElement.querySelector('.verified-badge');
+                        if (badge) {
+                            badge.remove();
+                        }
+                    }
+                    
+                    categoryInfo.querySelector('p').textContent = category.description;
+                    
+                    // Update category icon
+                    const categoryIcon = row.querySelector('.category-icon i');
+                    categoryIcon.className = `fas fa-${category.icon}`;
+                    
+                    // Update subcategories
+                    const subcategoryList = row.querySelector('.subcategory-list');
+                    subcategoryList.innerHTML = '';
+                    
+                    // Show first 3 subcategories and "+X more" if there are more
+                    const displaySubcategories = category.subcategories.slice(0, 3);
+                    displaySubcategories.forEach(subcategory => {
+                        const tag = document.createElement('span');
+                        tag.className = 'subcategory-tag';
+                        tag.textContent = subcategory;
+                        subcategoryList.appendChild(tag);
+                    });
+                    
+                    if (category.subcategories.length > 3) {
+                        const moreTag = document.createElement('span');
+                        moreTag.className = 'subcategory-tag';
+                        moreTag.textContent = `+${category.subcategories.length - 3} more`;
+                        subcategoryList.appendChild(moreTag);
+                    }
+                    
+                    // Update status
+                    const statusBadge = row.querySelector('.status-badge');
+                    statusBadge.textContent = category.status.charAt(0).toUpperCase() + category.status.slice(1);
+                    statusBadge.className = `status-badge ${category.status}`;
+                    
+                    // Update verification status
+                    const verificationBadge = row.querySelectorAll('.status-badge')[1];
+                    if (category.verified) {
+                        verificationBadge.textContent = 'Verified';
+                        verificationBadge.className = 'status-badge verified';
+                    } else {
+                        verificationBadge.textContent = 'Pending';
+                        verificationBadge.className = 'status-badge pending';
+                    }
+                    
+                    // Update toggle button icon
+                    const toggleBtn = row.querySelector('.action-btn.toggle i');
+                    toggleBtn.className = category.status === 'active' ? 'fas fa-toggle-on' : 'fas fa-toggle-off';
+                    
+                    // Update verification button
+                    const verifyBtn = row.querySelector('.action-btn.verify, .action-btn.verified');
+                    if (category.verified) {
+                        verifyBtn.className = 'action-btn verified';
+                        verifyBtn.title = 'Unverify';
+                    } else {
+                        verifyBtn.className = 'action-btn verify';
+                        verifyBtn.title = 'Verify';
+                    }
+                }
+            }
+
+            // Toggle status buttons
+            document.querySelectorAll('.action-btn.toggle').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const categoryId = row.getAttribute('data-category-id');
+                    const statusBadge = row.querySelector('.status-badge');
+                    const icon = this.querySelector('i');
+                    
+                    if (statusBadge.classList.contains('active')) {
+                        statusBadge.classList.remove('active');
+                        statusBadge.classList.add('inactive');
+                        statusBadge.textContent = 'Inactive';
+                        icon.classList.remove('fa-toggle-on');
+                        icon.classList.add('fa-toggle-off');
+                        
+                        // Update category data
+                        if (categoryData[categoryId]) {
+                            categoryData[categoryId].status = 'inactive';
+                        }
+                    } else {
+                        statusBadge.classList.remove('inactive');
+                        statusBadge.classList.add('active');
+                        statusBadge.textContent = 'Active';
+                        icon.classList.remove('fa-toggle-off');
+                        icon.classList.add('fa-toggle-on');
+                        
+                        // Update category data
+                        if (categoryData[categoryId]) {
+                            categoryData[categoryId].status = 'active';
+                        }
+                    }
+                });
+            });
+
+            // Verify category buttons
+            document.querySelectorAll('.action-btn.verify').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const categoryId = row.getAttribute('data-category-id');
+                    const categoryName = row.querySelector('h4').textContent.trim();
+                    
+                    currentVerificationCategoryId = categoryId;
+                    
+                    // Update verification message
+                    document.getElementById('verification-message').textContent = 
+                        `Are you sure you want to verify the category "${categoryName}"? Verified categories will be marked with a verification badge.`;
+                    
+                    // Show verification modal
+                    verificationModal.style.display = 'flex';
+                });
+            });
+
+            // Unverify category buttons
+            document.querySelectorAll('.action-btn.verified').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const categoryId = row.getAttribute('data-category-id');
+                    const categoryName = row.querySelector('h4').textContent.trim();
+                    
+                    currentVerificationCategoryId = categoryId;
+                    
+                    // Update unverification message
+                    document.getElementById('unverification-message').textContent = 
+                        `Are you sure you want to remove verification from the category "${categoryName}"? The verification badge will be removed.`;
+                    
+                    // Show unverification modal
+                    unverificationModal.style.display = 'flex';
+                });
+            });
+
+            // Confirm verification
+            confirmVerification.addEventListener('click', function() {
+                if (currentVerificationCategoryId && categoryData[currentVerificationCategoryId]) {
+                    categoryData[currentVerificationCategoryId].verified = true;
+                    updateCategoryRow(currentVerificationCategoryId, categoryData[currentVerificationCategoryId]);
+                    verificationModal.style.display = 'none';
+                    alert('Category verified successfully!');
+                }
+            });
+
+            // Confirm unverification
+            confirmUnverification.addEventListener('click', function() {
+                if (currentVerificationCategoryId && categoryData[currentVerificationCategoryId]) {
+                    categoryData[currentVerificationCategoryId].verified = false;
+                    updateCategoryRow(currentVerificationCategoryId, categoryData[currentVerificationCategoryId]);
+                    unverificationModal.style.display = 'none';
+                    alert('Category verification removed successfully!');
+                }
+            });
+
+            // Close verification modal
+            closeVerificationModal.addEventListener('click', function() {
+                verificationModal.style.display = 'none';
+            });
+
+            cancelVerification.addEventListener('click', function() {
+                verificationModal.style.display = 'none';
+            });
+
+            // Close unverification modal
+            closeUnverificationModal.addEventListener('click', function() {
+                unverificationModal.style.display = 'none';
+            });
+
+            cancelUnverification.addEventListener('click', function() {
+                unverificationModal.style.display = 'none';
+            });
+
+            // Delete category buttons
+            document.querySelectorAll('.action-btn.delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const categoryId = row.getAttribute('data-category-id');
+                    const categoryName = row.querySelector('h4').textContent.trim();
+                    
+                    if (confirm(`Are you sure you want to delete the category "${categoryName}"?`)) {
+                        // In a real application, this would delete the category from the database
+                        row.remove();
+                        
+                        // Remove from category data
+                        delete categoryData[categoryId];
+                        
+                        // Update stats (in a real app, this would be recalculated)
+                        updateCategoryStats();
+                    }
+                });
+            });
+
+            // Function to update category stats
+            function updateCategoryStats() {
+                // This would be calculated from actual data in a real application
+                const totalCategories = Object.keys(categoryData).length;
+                const activeCategories = Object.values(categoryData).filter(cat => cat.status === 'active').length;
+                const inactiveCategories = totalCategories - activeCategories;
+                const totalSubcategories = Object.values(categoryData).reduce((total, cat) => total + cat.subcategories.length, 0);
+                
+                // Update the stats cards
+                document.querySelector('.category-stat-content h3').textContent = totalCategories;
+                document.querySelectorAll('.category-stat-content h3')[1].textContent = activeCategories;
+                document.querySelectorAll('.category-stat-content h3')[2].textContent = inactiveCategories;
+                document.querySelectorAll('.category-stat-content h3')[3].textContent = totalSubcategories;
+            }
+
+            // Save new category
+            document.getElementById('save-category').addEventListener('click', function() {
+                const name = document.getElementById('category-name').value;
+                const description = document.getElementById('category-description').value;
+                const icon = document.getElementById('category-icon').value;
+                
+                // Get subcategories
+                const subcategoryInputs = subcategoryList.querySelectorAll('.subcategory-input');
+                const subcategories = Array.from(subcategoryInputs).map(input => input.value).filter(value => value.trim() !== '');
+                
+                if (name.trim() === '') {
+                    alert('Please enter a category name');
+                    return;
+                }
+                
+                // Generate a new category ID (in a real app, this would come from the database)
+                const newCategoryId = Math.max(...Object.keys(categoryData).map(Number)) + 1;
+                
+                // Add to category data
+                categoryData[newCategoryId] = {
+                    name,
+                    description,
+                    icon,
+                    status: 'active',
+                    verified: false,
+                    subcategories
+                };
+                
+                // Add to table
+                addCategoryToTable(newCategoryId, categoryData[newCategoryId]);
+                
+                // Close the modal
+                createCategoryModal.style.display = 'none';
+                
+                // Reset form
+                document.getElementById('category-name').value = '';
+                document.getElementById('category-description').value = '';
+                document.getElementById('category-icon').value = '';
+                subcategoryList.innerHTML = '<div class="subcategory-item"><input type="text" class="subcategory-input" placeholder="Enter subcategory name"><button class="subcategory-remove-btn"><i class="fas fa-times"></i></button></div>';
+                
+                // Update stats
+                updateCategoryStats();
+                
+                // Show success message
+                alert('Category created successfully!');
+            });
+
+            // Function to add a new category to the table
+            function addCategoryToTable(categoryId, category) {
+                const tbody = document.querySelector('.category-table tbody');
+                
+                const row = document.createElement('tr');
+                row.setAttribute('data-category-id', categoryId);
+                
+                // Create subcategory tags (show first 3 and "+X more")
+                const displaySubcategories = category.subcategories.slice(0, 3);
+                const subcategoryTags = displaySubcategories.map(sub => `<span class="subcategory-tag">${sub}</span>`).join('');
+                const moreTag = category.subcategories.length > 3 ? `<span class="subcategory-tag">+${category.subcategories.length - 3} more</span>` : '';
+                
+                // Create verification badge if verified
+                const verificationBadge = category.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : '';
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="category-name-cell">
+                            <div class="category-icon">
+                                <i class="fas fa-${category.icon}"></i>
+                            </div>
+                            <div class="category-info">
+                                <h4>${category.name}${verificationBadge}</h4>
+                                <p>${category.description}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="subcategory-list">
+                            ${subcategoryTags}
+                            ${moreTag}
+                        </div>
+                    </td>
+                    <td>0</td>
+                    <td>
+                        <span class="status-badge ${category.status}">${category.status.charAt(0).toUpperCase() + category.status.slice(1)}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${category.verified ? 'verified' : 'pending'}">${category.verified ? 'Verified' : 'Pending'}</span>
+                    </td>
+                    <td>
+                        <div class="category-actions-cell">
+                            <button class="action-btn edit" title="Edit" data-category-id="${categoryId}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn toggle" title="Toggle Status">
+                                <i class="fas fa-toggle-${category.status === 'active' ? 'on' : 'off'}"></i>
+                            </button>
+                            <button class="action-btn ${category.verified ? 'verified' : 'verify'}" title="${category.verified ? 'Unverify' : 'Verify'}">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            <button class="action-btn delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+                
+                // Add event listeners to the new buttons
+                const editBtn = row.querySelector('.action-btn.edit');
+                editBtn.addEventListener('click', function() {
+                    openEditCategoryModal(categoryId);
+                });
+                
+                const toggleBtn = row.querySelector('.action-btn.toggle');
+                toggleBtn.addEventListener('click', function() {
+                    const statusBadge = this.closest('tr').querySelector('.status-badge');
+                    const icon = this.querySelector('i');
+                    
+                    if (statusBadge.classList.contains('active')) {
+                        statusBadge.classList.remove('active');
+                        statusBadge.classList.add('inactive');
+                        statusBadge.textContent = 'Inactive';
+                        icon.classList.remove('fa-toggle-on');
+                        icon.classList.add('fa-toggle-off');
+                        
+                        // Update category data
+                        categoryData[categoryId].status = 'inactive';
+                    } else {
+                        statusBadge.classList.remove('inactive');
+                        statusBadge.classList.add('active');
+                        statusBadge.textContent = 'Active';
+                        icon.classList.remove('fa-toggle-off');
+                        icon.classList.add('fa-toggle-on');
+                        
+                        // Update category data
+                        categoryData[categoryId].status = 'active';
+                    }
+                    
+                    // Update stats
+                    updateCategoryStats();
+                });
+                
+                const verifyBtn = row.querySelector('.action-btn.verify, .action-btn.verified');
+                verifyBtn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const categoryId = row.getAttribute('data-category-id');
+                    const categoryName = row.querySelector('h4').textContent.trim();
+                    
+                    currentVerificationCategoryId = categoryId;
+                    
+                    if (this.classList.contains('verify')) {
+                        // Update verification message
+                        document.getElementById('verification-message').textContent = 
+                            `Are you sure you want to verify the category "${categoryName}"? Verified categories will be marked with a verification badge.`;
+                        
+                        // Show verification modal
+                        verificationModal.style.display = 'flex';
+                    } else {
+                        // Update unverification message
+                        document.getElementById('unverification-message').textContent = 
+                            `Are you sure you want to remove verification from the category "${categoryName}"? The verification badge will be removed.`;
+                        
+                        // Show unverification modal
+                        unverificationModal.style.display = 'flex';
+                    }
+                });
+                
+                const deleteBtn = row.querySelector('.action-btn.delete');
+                deleteBtn.addEventListener('click', function() {
+                    const categoryName = this.closest('tr').querySelector('h4').textContent.trim();
+                    if (confirm(`Are you sure you want to delete the category "${categoryName}"?`)) {
+                        row.remove();
+                        delete categoryData[categoryId];
+                        updateCategoryStats();
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Javascript -->
+    <script src="admin-js/jquery.min.js"></script>
+    <script src="admin-js/bootstrap.min.js"></script>
+    <script src="admin-js/bootstrap-select.min.js"></script>
+    <script src="admin-js/zoom.js"></script>
+    <script src="admin-js/switcher.js"></script>
+    <script defer src="admin-js/theme-settings.js"></script>
+    <script defer src="admin-js/main.js"></script>
+
+</body>
+
+</html>
