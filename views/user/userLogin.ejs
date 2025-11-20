@@ -10,20 +10,20 @@
     <meta name="description" content="Blushley - Beauty Marketplace & Beautician Booking Platform ">
 
     <!-- font -->
-    <link rel="stylesheet" href="fonts/fonts.css">
-    <link rel="stylesheet" href="fonts/font-icons.css">
+    <link rel="stylesheet" href="/fonts/fonts.css">
+    <link rel="stylesheet" href="/fonts/font-icons.css">
     <!-- css -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/swiper-bundle.min.css">
-    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
-    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="/css/styles.css" />
 
     <!-- Favicon and Touch Icons  -->
-    <link rel="shortcut" type="image/x-icon" href="images/logo/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/logo/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/logo/favicon-16x16.png">
-    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="images/logo/apple-touch-icon.png">
+    <link rel="shortcut" type="image/x-icon" href="/images/logo/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16x16.png">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/images/logo/apple-touch-icon.png">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -613,6 +613,9 @@
                                             Remember me
                                         </label>
                                     </div>
+                                    <a href="/freelance/beautician_register" class="font-2 text-button link" style="margin-left:10px;">
+                                        Register as Beautician
+                                    </a>
                                 </div>
                             </div>
                             <div class="button-submit">
@@ -2174,65 +2177,128 @@
         </div>
         <!-- /wishlist -->
 
-
-
-
-
-
-    <!-- Javascript -->
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
-    <script type="text/javascript" src="js/lazysize.min.js"></script>
-    <script type="text/javascript" src="js/wow.min.js"></script>
-    <script type="text/javascript" src="js/count-down.js"></script>
-    <script type="text/javascript" src="js/swiper-bundle.min.js"></script>
-    <script type="text/javascript" src="js/carousel.js"></script>
-    <script type="text/javascript" src="js/multiple-modal.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
-
-    <script>
-        // Login type selector functionality
-        document.addEventListener('DOMContentLoaded', function () {
-            const loginTypeBtns = document.querySelectorAll('.login-type-btn');
-            const loginForms = document.querySelectorAll('.login-form');
-            const sellerRegisterPanel = document.getElementById('seller-register-panel');
-            const sellerLoginForm = document.getElementById('seller-login');
-            const openSellerRegisterBtn = document.getElementById('openSellerRegister');
-            const backToSellerLoginBtn = document.getElementById('backToSellerLogin');
-
-            loginTypeBtns.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    // Remove active class from all buttons and forms
-                    loginTypeBtns.forEach(b => b.classList.remove('active'));
-                    loginForms.forEach(form => form.classList.remove('active'));
-
-                    // Add active class to clicked button
-                    this.classList.add('active');
-
-                    // Show corresponding form
-                    const loginType = this.getAttribute('data-type');
-                    document.getElementById(`${loginType}-login`).classList.add('active');
-
-                    // When switching type, ensure seller register panel is hidden and seller login is visible
-                    if (sellerRegisterPanel) {
+        <script>
+            // Login type selector functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                const loginTypeBtns = document.querySelectorAll('.login-type-btn');
+                const loginForms = document.querySelectorAll('.login-form');
+                const sellerRegisterPanel = document.getElementById('seller-register-panel');
+                const sellerLoginForm = document.getElementById('seller-login');
+                const openSellerRegisterBtn = document.getElementById('openSellerRegister');
+                const backToSellerLoginBtn = document.getElementById('backToSellerLogin');
+    
+                loginTypeBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        // Remove active class from all buttons and forms
+                        loginTypeBtns.forEach(b => b.classList.remove('active'));
+                        loginForms.forEach(form => form.classList.remove('active'));
+    
+                        // Add active class to clicked button
+                        this.classList.add('active');
+    
+                        // Show corresponding form
+                        const loginType = this.getAttribute('data-type');
+                        document.getElementById(`${loginType}-login`).classList.add('active');
+    
+                        // When switching type, ensure seller register panel is hidden and seller login is visible
+                        if (sellerRegisterPanel) {
+                            sellerRegisterPanel.classList.remove('active');
+                        }
+                        if (sellerLoginForm) {
+                            sellerLoginForm.style.display = '';
+                        }
+                    });
+                });
+    
+                // Form validation
+                document.querySelectorAll('.login-form').forEach(form => {
+                    form.addEventListener('submit', function (e) {
+                        e.preventDefault();
+    
+                        // Get all required inputs in this form
+                        const requiredInputs = this.querySelectorAll('input[required], select[required]');
+                        let isValid = true;
+    
+                        requiredInputs.forEach(input => {
+                            if (!input.value.trim()) {
+                                isValid = false;
+                                input.style.borderColor = 'red';
+                            } else {
+                                input.style.borderColor = '#e0e0e0';
+                            }
+                        });
+    
+                        if (isValid) {
+                            const formType = this.id.split('-')[0];
+                            alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} login successful!`);
+                            // In a real application, you would submit the form here
+                        } else {
+                            alert('Please fill in all required fields.');
+                        }
+                    });
+                });
+    
+                // Seller Register toggle
+                if (openSellerRegisterBtn && backToSellerLoginBtn && sellerRegisterPanel && sellerLoginForm) {
+                    openSellerRegisterBtn.addEventListener('click', function () {
+                        sellerRegisterPanel.classList.add('active');
+                        sellerLoginForm.style.display = 'none';
+                    });
+    
+                    backToSellerLoginBtn.addEventListener('click', function () {
                         sellerRegisterPanel.classList.remove('active');
-                    }
-                    if (sellerLoginForm) {
                         sellerLoginForm.style.display = '';
+                    });
+                }
+    
+                // Seller Categories chips
+                const categoryInput = document.getElementById('seller-category-input');
+                const addCategoryBtn = document.getElementById('addCategoryBtn');
+                const chipsWrap = document.getElementById('seller-category-chips');
+                const categories = new Set();
+    
+                function addCategoryFromInput() {
+                    const value = (categoryInput?.value || '').trim();
+                    if (!value) return;
+                    if (categories.has(value.toLowerCase())) {
+                        categoryInput.value = '';
+                        return;
+                    }
+                    categories.add(value.toLowerCase());
+    
+                    const chip = document.createElement('span');
+                    chip.className = 'seller-chip';
+                    chip.innerHTML = `${value} <span class="remove-chip" aria-label="Remove">×</span>`;
+                    chip.querySelector('.remove-chip').addEventListener('click', () => {
+                        categories.delete(value.toLowerCase());
+                        chip.remove();
+                    });
+                    chipsWrap?.appendChild(chip);
+    
+                    // also create hidden input to submit
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'product-categories[]';
+                    hidden.value = value;
+                    document.getElementById('seller-register-form')?.appendChild(hidden);
+    
+                    categoryInput.value = '';
+                }
+    
+                addCategoryBtn?.addEventListener('click', addCategoryFromInput);
+                categoryInput?.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter') {
+                        ev.preventDefault();
+                        addCategoryFromInput();
                     }
                 });
-            });
-
-            // Form validation
-            document.querySelectorAll('.login-form').forEach(form => {
-                form.addEventListener('submit', function (e) {
+    
+                // Seller Register form validation
+                const sellerRegisterForm = document.getElementById('seller-register-form');
+                sellerRegisterForm?.addEventListener('submit', function (e) {
                     e.preventDefault();
-
-                    // Get all required inputs in this form
-                    const requiredInputs = this.querySelectorAll('input[required], select[required]');
+                    const requiredInputs = this.querySelectorAll('input[required], select[required], textarea[required]');
                     let isValid = true;
-
                     requiredInputs.forEach(input => {
                         if (!input.value.trim()) {
                             isValid = false;
@@ -2241,122 +2307,56 @@
                             input.style.borderColor = '#e0e0e0';
                         }
                     });
-
                     if (isValid) {
-                        const formType = this.id.split('-')[0];
-                        alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} login successful!`);
-                        // In a real application, you would submit the form here
+                        alert('Seller registration submitted!');
                     } else {
-                        alert('Please fill in all required fields.');
+                        alert('Please complete all required fields in the registration form.');
                     }
                 });
             });
-
-            // Seller Register toggle
-            if (openSellerRegisterBtn && backToSellerLoginBtn && sellerRegisterPanel && sellerLoginForm) {
-                openSellerRegisterBtn.addEventListener('click', function () {
-                    sellerRegisterPanel.classList.add('active');
-                    sellerLoginForm.style.display = 'none';
-                });
-
-                backToSellerLoginBtn.addEventListener('click', function () {
-                    sellerRegisterPanel.classList.remove('active');
-                    sellerLoginForm.style.display = '';
-                });
-            }
-
-            // Seller Categories chips
-            const categoryInput = document.getElementById('seller-category-input');
-            const addCategoryBtn = document.getElementById('addCategoryBtn');
-            const chipsWrap = document.getElementById('seller-category-chips');
-            const categories = new Set();
-
-            function addCategoryFromInput() {
-                const value = (categoryInput?.value || '').trim();
-                if (!value) return;
-                if (categories.has(value.toLowerCase())) {
-                    categoryInput.value = '';
-                    return;
-                }
-                categories.add(value.toLowerCase());
-
-                const chip = document.createElement('span');
-                chip.className = 'seller-chip';
-                chip.innerHTML = `${value} <span class="remove-chip" aria-label="Remove">×</span>`;
-                chip.querySelector('.remove-chip').addEventListener('click', () => {
-                    categories.delete(value.toLowerCase());
-                    chip.remove();
-                });
-                chipsWrap?.appendChild(chip);
-
-                // also create hidden input to submit
-                const hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'product-categories[]';
-                hidden.value = value;
-                document.getElementById('seller-register-form')?.appendChild(hidden);
-
-                categoryInput.value = '';
-            }
-
-            addCategoryBtn?.addEventListener('click', addCategoryFromInput);
-            categoryInput?.addEventListener('keydown', function (ev) {
-                if (ev.key === 'Enter') {
-                    ev.preventDefault();
-                    addCategoryFromInput();
-                }
-            });
-
-            // Seller Register form validation
-            const sellerRegisterForm = document.getElementById('seller-register-form');
-            sellerRegisterForm?.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const requiredInputs = this.querySelectorAll('input[required], select[required], textarea[required]');
-                let isValid = true;
-                requiredInputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        isValid = false;
-                        input.style.borderColor = 'red';
-                    } else {
-                        input.style.borderColor = '#e0e0e0';
-                    }
-                });
-                if (isValid) {
-                    alert('Seller registration submitted!');
-                } else {
-                    alert('Please complete all required fields in the registration form.');
-                }
-            });
+        </script>
+    
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const navAccount = document.querySelector('.nav-account');
+        const navIconItem = navAccount.querySelector('.nav-icon-item');
+        
+        // Toggle dropdown on click
+        navIconItem.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            navAccount.classList.toggle('show-dropdown');
         });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navAccount.contains(e.target)) {
+                navAccount.classList.remove('show-dropdown');
+            }
+        });
+        
+        // Prevent dropdown from closing when clicking inside it
+        const dropdown = navAccount.querySelector('.dropdown-account');
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+    
     </script>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const navAccount = document.querySelector('.nav-account');
-    const navIconItem = navAccount.querySelector('.nav-icon-item');
-    
-    // Toggle dropdown on click
-    navIconItem.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        navAccount.classList.toggle('show-dropdown');
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!navAccount.contains(e.target)) {
-            navAccount.classList.remove('show-dropdown');
-        }
-    });
-    
-    // Prevent dropdown from closing when clicking inside it
-    const dropdown = navAccount.querySelector('.dropdown-account');
-    dropdown.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-});
+    <!-- Javascript -->
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="/js/lazysize.min.js"></script>
+    <script type="text/javascript" src="/js/wow.min.js"></script>
+    <script type="text/javascript" src="/js/count-down.js"></script>
+    <script type="text/javascript" src="/js/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="/js/carousel.js"></script>
+    <script type="text/javascript" src="/js/multiple-modal.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
 
-</script>
+    
 
 </body>
 
