@@ -24,7 +24,6 @@ function getSignedUploadUrl({ KeyPrefix = '', contentType = 'application/octet-s
     Key: key,
     Expires: expiresSeconds,
     ContentType: contentType,
-    ACL: 'public-read'
   };
   const url = s3.getSignedUrl('putObject', params);
   return { key, url, publicUrl: `https://${bucket}.s3.${region}.amazonaws.com/${key}` };
@@ -40,7 +39,6 @@ async function uploadBuffer(buffer, { KeyPrefix = '', contentType = 'application
     Bucket: bucket,
     Key: key,
     Body: buffer,
-    ACL: 'public-read',
     ContentType: contentType
   };
 

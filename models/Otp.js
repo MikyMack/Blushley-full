@@ -12,7 +12,8 @@ const OtpSchema = new mongoose.Schema({
     enum: [
       'login',              
       'reseller_verify',  
-      'freelancer_verify'   
+      'freelancer_verify' ,
+      'freelancer_login'  
     ], 
     required: true 
   },

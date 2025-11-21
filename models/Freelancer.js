@@ -1,37 +1,30 @@
-
 const mongoose = require('mongoose');
 
 const AvailabilitySchema = new mongoose.Schema({
   dayOfWeek: { type: Number, min: 0, max: 6 }, 
   slots: [{
     start: String,  
-    end: String   
+    end: String     
   }]
 }, { _id: true });
-
 
 const ServiceLocationSchema = new mongoose.Schema({
   city: String,
   state: String,
   pincode: String,
-  radius: Number
+  radius: { type: Number, default: 5 }
 }, { _id: true });
-
 
 const FreelancerServiceSchema = new mongoose.Schema({
   serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
 
   freelancerBasePrice: { type: Number, required: true },
-
-  adminPrice: { type: Number },
-
+  adminPrice: Number,
   adminCommissionPercent: { type: Number, default: 0 },
-
-  finalPrice: Number,   
+  finalPrice: Number,
 
   durationMinutes: Number,
-
-  images: [String], 
+  images: [String],
 
   status: { 
     type: String, 
@@ -41,21 +34,28 @@ const FreelancerServiceSchema = new mongoose.Schema({
 
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'AdminStaff' },
   approvedAt: Date
-}, { timestamps: true, _id: true });
+}, { timestamps: true });
+
 
 const FreelancerSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 
   fullName: String,
   phone: String,
   email: String,
 
   bio: String,
+
+  skills: [String],
+
+  proof: {
+    type: { type: String }, 
+    number: String
+  },
+
   profileImage: String,
-  portfolioImages: [String], 
-
-  documents: [String], 
-
+  portfolioImages: [String],
+  documents: [String],
 
   freelancerServices: [FreelancerServiceSchema],
 
@@ -70,7 +70,7 @@ const FreelancerSchema = new mongoose.Schema({
   },
 
   rating: { type: Number, default: 0 },
-  totalReviews: { type: Number, default: 0 },
+  totalReviews: { type: Number, default: 0 }
 
 }, { timestamps: true });
 

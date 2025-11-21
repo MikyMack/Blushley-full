@@ -954,63 +954,388 @@
                                 <div class="wg-box">
                                     <div class="title-box">
                                         <i class="icon-users"></i>
-                                        <div class="body-text">Tip: Manage freelance beauticians. You can verify freelancers, toggle their status, and edit their details.</div>
+                                        <div class="body-text">
+                                            Tip: Manage freelance beauticians. You can verify freelancers, toggle their status, and edit their details.
+                                        </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between gap10 flex-wrap">
-                                        <div class="wg-filter flex-grow">
-                                            <div class="show">
+                                    <div class="flex items-center justify-between gap-4 flex-nowrap" style="margin-bottom: 10px;">
+                                        <form id="list-filters" class="flex items-center gap-3 flex-nowrap" method="get" action="" style="flex-grow:1; min-width:0;">
+                                            <div class="flex items-center gap-2" style="white-space: nowrap;">
                                                 <div class="text-tiny">Showing</div>
-                                                <div class="select">
-                                                    <select id="limit-select">
-                                                        <option value="10">10</option>
-                                                        <option value="20">20</option>
-                                                        <option value="30">30</option>
+                                                <div class="select" style="min-width:70px;">
+                                                    <select id="limit-select" name="limit" style="width:100px;">
+                                                        <option value="10" <%= (query && query.limit == 10) || (!query.limit) ? 'selected' : '' %>>10</option>
+                                                        <option value="20" <%= (query && query.limit == 20) ? 'selected' : '' %>>20</option>
+                                                        <option value="30" <%= (query && query.limit == 30) ? 'selected' : '' %>>30</option>
                                                     </select>
                                                 </div>
                                                 <div class="text-tiny">entries</div>
                                             </div>
-                                            <div class="form-search">
-                                                <input type="text" id="search-input"
-                                                    placeholder="Search by name, skill, or location...">
-                                                <button id="search-btn"><i class="icon-search"></i></button>
+                                            <div class="form-search" style="min-width:200px; max-width:280px; margin-left: 14px;">
+                                                <input type="text" id="search-input" name="q"
+                                                    placeholder="Search by name, phone, or email..."
+                                                    value="<%= (query && query.q) ? query.q : '' %>"
+                                                    style="width:100%;">
+                                                <button id="search-btn" type="submit"><i class="icon-search"></i></button>
                                             </div>
-                                        </div>
-                                        <button class="add-freelancer-btn" onclick="showAddFreelancerModal()">
+                                            <div class="form-group ml-2" style="min-width:150px; margin-left: 14px;">
+                                                <select id="status-select" name="status" class="form-control" style="width:100%;" onchange="this.form.submit()">
+                                                    <option value="">All Statuses</option>
+                                                    <option value="pending" <%= query.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                                    <option value="approved" <%= query.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                                                    <option value="rejected" <%= query.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                                    <option value="inactive" <%= query.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                                                </select>
+                                            </div>
+                                            <input type="hidden" name="page" value="<%= page %>">
+                                        </form>
+                                        <button class="add-freelancer-btn" style="min-width:180px; margin-left:14px; white-space:nowrap;" onclick="showAddFreelancerModal()">
                                             <i class="icon-plus"></i> Add Freelancer
                                         </button>
                                     </div>
 
                                     <div class="freelancers-container" id="freelancers-list">
-                                        <!-- Freelancer cards will be dynamically inserted here -->
+                                        <% if (typeof error !== 'undefined' && error) { %>
+                                            <div class="error-message"><%= error %></div>
+                                        <% } else if (!freelancers || freelancers.length === 0) { %>
+                                            <div class="no-freelancers">No freelancers found matching your criteria.</div>
+                                        <% } else { %>
+                                            <% freelancers.forEach(function(freelancer) { %>
+                                                <div class="freelancer-card" id="freelancer-<%= freelancer._id %>">
+                                                    <div class="card-header">
+                                                        <h3><%= freelancer.fullName %></h3>
+                                                        <div class='badges-1'>
+                                                            <% if (freelancer.status === 'approved') { %>
+                                                                <span class="verified-badge">Verified</span>
+                                                            <% } else { %>
+                                                                <span class="status-badge <%= freelancer.status %>">
+                                                                    <%= freelancer.status.charAt(0).toUpperCase() + freelancer.status.slice(1) %>
+                                                                </span>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">ID:</span>
+                                                            <span class="detail-value"><%= freelancer._id %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">User ID:</span>
+                                                            <span class="detail-value"><%= freelancer.userId %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Full Name:</span>
+                                                            <span class="detail-value"><%= freelancer.fullName %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Email:</span>
+                                                            <span class="detail-value"><%= freelancer.email %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Phone:</span>
+                                                            <span class="detail-value"><%= freelancer.phone %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Profile Image:</span>
+                                                            <span class="detail-value">
+                                                                <% if (freelancer.profileImage) { %>
+                                                                    <img src="<%= freelancer.profileImage %>" alt="Profile" class="small-img" style="max-height:40px;">
+                                                                <% } else { %>
+                                                                    <span>-</span>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Portfolio Images:</span>
+                                                            <span class="detail-value">
+                                                                <% if (freelancer.portfolioImages && freelancer.portfolioImages.length) { %>
+                                                                    <% freelancer.portfolioImages.forEach(function(pic) { %>
+                                                                        <img src="<%= pic %>" alt="Portfolio" class="small-img" style="max-height:30px;">
+                                                                    <% }) %>
+                                                                <% } else { %>
+                                                                    <span>-</span>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Documents:</span>
+                                                            <span class="detail-value">
+                                                                <% if (freelancer.documents && freelancer.documents.length) { %>
+                                                                    <ul class="file-list tiny-list">
+                                                                        <% freelancer.documents.forEach(function(doc) { %>
+                                                                            <li><a href="<%= doc %>" target="_blank"><%= doc.split('/').pop() %></a></li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                <% } else { %>
+                                                                    <span>-</span>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                        <% if (freelancer.proof && (freelancer.proof.type || freelancer.proof.number)) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Proof:</span>
+                                                                <span class="detail-value">
+                                                                    Type: <%= freelancer.proof.type || '-' %><br>
+                                                                    Number: <%= freelancer.proof.number || '-' %>
+                                                                </span>
+                                                            </div>
+                                                        <% } %>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Bio:</span>
+                                                            <span class="detail-value"><%= freelancer.bio || '-' %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Skills:</span>
+                                                            <span class="detail-value">
+                                                                <div class="skills-container">
+                                                                    <% (freelancer.skills || []).forEach(function(skill) { %>
+                                                                        <span class="skill-tag"><%= skill %></span>
+                                                                    <% }) %>
+                                                                    <% if (!freelancer.skills || freelancer.skills.length === 0) { %>
+                                                                        <span>-</span>
+                                                                    <% } %>
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                        <% if (freelancer.locations && freelancer.locations.length > 0) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Locations:</span>
+                                                                <span class="detail-value">
+                                                                    <ul class="location-list tiny-list">
+                                                                        <% freelancer.locations.forEach(function(loc) { %>
+                                                                            <li>
+                                                                                <%= (loc.city || '') + (loc.state ? ', ' + loc.state : '') %>
+                                                                                <% if (loc.pincode) { %> | Pincode: <%= loc.pincode %><% } %>
+                                                                                <% if (typeof loc.radius !== 'undefined') { %> | Radius: <%= loc.radius %>km<% } %>
+                                                                            </li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Locations:</span>
+                                                                <span class="detail-value">-</span>
+                                                            </div>
+                                                        <% } %>
+                                                        <% if (typeof freelancer.experience !== 'undefined') { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Experience:</span>
+                                                                <span class="detail-value"><%= freelancer.experience %> years</span>
+                                                            </div>
+                                                        <% } %>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Status:</span>
+                                                            <span class="detail-value"><%= freelancer.status.charAt(0).toUpperCase() + freelancer.status.slice(1) %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Rating:</span>
+                                                            <span class="detail-value">
+                                                                <%= typeof freelancer.rating !== 'undefined' ? (freelancer.rating + ' / 5 (' + (freelancer.totalReviews || 0) + ' reviews)') : '-' %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Created At:</span>
+                                                            <span class="detail-value"><%= freelancer.createdAt ? freelancer.createdAt.toLocaleString() : '-' %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Updated At:</span>
+                                                            <span class="detail-value"><%= freelancer.updatedAt ? freelancer.updatedAt.toLocaleString() : '-' %></span>
+                                                        </div>
+                                                        <% if (freelancer.availability && freelancer.availability.length) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Availability:</span>
+                                                                <span class="detail-value">
+                                                                    <ul class="tiny-list">
+                                                                        <% const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; %>
+                                                                        <% freelancer.availability.forEach(function(a) { %>
+                                                                            <li>
+                                                                                <b><%= typeof a.dayOfWeek === "number" ? days[a.dayOfWeek] : '' %>:</b>
+                                                                                <% if (a.slots && a.slots.length) { %>
+                                                                                    <% a.slots.forEach(function(s,si) { %>
+                                                                                        <span>
+                                                                                            <%= s.start %> - <%= s.end %><%= (si < a.slots.length-1) ? ',' : '' %>
+                                                                                        </span>
+                                                                                    <% }) %>
+                                                                                <% } else { %>
+                                                                                    <span>No slots</span>
+                                                                                <% } %>
+                                                                            </li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+                                                        <% } %>
+                                                        <% if (freelancer.freelancerServices && freelancer.freelancerServices.length) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Services:</span>
+                                                                <span class="detail-value">
+                                                                    <div class="services-table-container" style="overflow-x:auto; max-width: 100%;">
+                                                                        <table class="services-table text-tiny">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Service ID</th>
+                                                                                    <th>Base Price</th>
+                                                                                    <th>Admin Price</th>
+                                                                                    <th>Commission %</th>
+                                                                                    <th>Final Price</th>
+                                                                                    <th>Duration (min)</th>
+                                                                                    <th>Status</th>
+                                                                                    <th>Approved By</th>
+                                                                                    <th>Approved At</th>
+                                                                                    <th>Images</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <% freelancer.freelancerServices.forEach(function(svc) { %>
+                                                                                    <tr>
+                                                                                        <td><%= svc.serviceId %></td>
+                                                                                        <td><%= typeof svc.freelancerBasePrice !== "undefined" ? svc.freelancerBasePrice : '-' %></td>
+                                                                                        <td><%= typeof svc.adminPrice !== "undefined" ? svc.adminPrice : '-' %></td>
+                                                                                        <td><%= typeof svc.adminCommissionPercent !== "undefined" ? svc.adminCommissionPercent : '-' %></td>
+                                                                                        <td><%= typeof svc.finalPrice !== "undefined" ? svc.finalPrice : '-' %></td>
+                                                                                        <td><%= typeof svc.durationMinutes !== "undefined" ? svc.durationMinutes : '-' %></td>
+                                                                                        <td><%= svc.status ? svc.status.charAt(0).toUpperCase() + svc.status.slice(1) : '-' %></td>
+                                                                                        <td><%= svc.approvedBy || '-' %></td>
+                                                                                        <td><%= svc.approvedAt ? svc.approvedAt.toLocaleString() : '-' %></td>
+                                                                                        <td>
+                                                                                            <% if (svc.images && svc.images.length) { %>
+                                                                                                <% svc.images.forEach(function(img) { %>
+                                                                                                    <img src="<%= img %>" alt="Service Img" style="max-height:20px;">
+                                                                                                <% }) %>
+                                                                                            <% } else { %>
+                                                                                                -
+                                                                                            <% } %>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                <% }) %>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </span>
+                                                            </div>
+                                                        <% } %>
+                                                    </div>
+                                                    <div class="card-footer">
+                                                        <div class="card-actions">
+                                                            <button class="item edit" onclick="showEditFreelancerModal('<%= freelancer._id %>')">
+                                                                <i class="icon-edit-3"></i>
+                                                            </button>
+                                                            <button class="item toggle" onclick="toggleFreelancerStatus('<%= freelancer._id %>','<%= freelancer.status %>')">
+                                                                <i class="fa fa-toggle-<%= freelancer.status === 'approved' ? 'on' : 'off' %>"></i>
+                                                            </button>
+                                                            <button class="item trash" onclick="confirmDeleteFreelancer('<%= freelancer._id %>')">
+                                                                <i class="icon-trash-2"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }) %>
+                                        <% } %>
                                     </div>
 
                                     <div class="divider"></div>
                                     <div class="flex items-center justify-between flex-wrap gap10">
-                                        <div class="text-tiny" id="showing-entries">Showing 0 entries</div>
+                                        <div class="text-tiny" id="showing-entries">
+                                            <% if (total > 0) { %>
+                                                Showing <%= ((page-1)*((query && query.limit) ? parseInt(query.limit) : 10)+1) %> to <%= Math.min(page*((query && query.limit) ? parseInt(query.limit) : 10), total) %> of <%= total %> entries
+                                            <% } else { %>
+                                                Showing 0 entries
+                                            <% } %>
+                                        </div>
                                         <ul class="wg-pagination" id="pagination">
-                                            <!-- Pagination will be loaded here dynamically -->
+                                            <% 
+                                                function pageQueryString(p) {
+                                                    let params = [];
+                                                    if (query && query.q) params.push('q=' + encodeURIComponent(query.q));
+                                                    if (query && query.status) params.push('status=' + encodeURIComponent(query.status));
+                                                    if (query && query.limit) params.push('limit=' + encodeURIComponent(query.limit));
+                                                    params.push('page=' + p);
+                                                    return '?' + params.join('&');
+                                                }
+                                                if (typeof totalPages !== 'undefined' && totalPages > 1 && typeof page !== 'undefined') {
+                                                    let showLimit = 2; // pages to show either side
+                                                    let firstPage = 1;
+                                                    let lastPage = totalPages;
+                                                    let start = Math.max(page - showLimit, firstPage + 1);
+                                                    let end = Math.min(page + showLimit, lastPage - 1);
+
+                                                    // First page/back shortcut
+                                                    if (page > (firstPage)) {
+                                                        %>
+                                                        <li>
+                                                            <a href="<%= pageQueryString(page - 1) %>">&laquo;</a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                    // Always show the first page number
+                                                    %>
+                                                    <li class="<%= page === firstPage ? 'active' : '' %>">
+                                                        <a href="<%= pageQueryString(firstPage) %>"><%= firstPage %></a>
+                                                    </li>
+                                                    <%
+
+                                                    if (start > firstPage + 1) {
+                                                        %>
+                                                        <li><span>...</span></li>
+                                                        <%
+                                                    }
+
+                                                    for (let i = start; i <= end; i++) {
+                                                        if (i > firstPage && i < lastPage) {
+                                                            %>
+                                                            <li class="<%= page === i ? 'active' : '' %>">
+                                                                <a href="<%= pageQueryString(i) %>"><%= i %></a>
+                                                            </li>
+                                                            <%
+                                                        }
+                                                    }
+
+                                                    if (end < lastPage - 1) {
+                                                        %>
+                                                        <li><span>...</span></li>
+                                                        <%
+                                                    }
+
+                                                    // Always show the last page number
+                                                    if (lastPage !== firstPage) {
+                                                        %>
+                                                        <li class="<%= page === lastPage ? 'active' : '' %>">
+                                                            <a href="<%= pageQueryString(lastPage) %>"><%= lastPage %></a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                    // Next page/forward shortcut
+                                                    if (page < lastPage) {
+                                                        %>
+                                                        <li>
+                                                            <a href="<%= pageQueryString(page + 1) %>">&raquo;</a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                }
+                                            %>
                                         </ul>
                                     </div>
                                 </div>
                                 <!-- /freelancer-list -->
 
                                 <!-- Add Freelancer Modal -->
-                                <div id="add-freelancer-modal" class="modal">
+                                <div id="add-freelancer-modal" class="modal" style="display:none">
                                     <div class="modal-content modern-modal">
                                         <div class="modal-header">
                                             <div class="modal-title">
                                                 <i class="icon-user-plus"></i>
                                                 <h3>Add New Freelancer</h3>
                                             </div>
-                                            <button class="close-btn" onclick="closeModal('add-freelancer-modal')">
+                                            <button class="close-btn" type="button" onclick="closeModal('add-freelancer-modal')">
                                                 <i class="icon-x"></i>
                                             </button>
                                         </div>
                                         
                                         <div class="modal-body">
-                                            <form id="add-freelancer-form" enctype="multipart/form-data">
-                                                <!-- Personal Information -->
+                                            <form id="add-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/add">
                                                 <div class="form-section">
                                                     <div class="section-header">
                                                         <h4><i class="icon-user"></i> Personal Information</h4>
@@ -1018,14 +1343,13 @@
                                                     <div class="form-grid">
                                                         <div class="form-group">
                                                             <label for="add-freelancer-name">Full Name*</label>
-                                                            <input type="text" id="add-freelancer-name" name="name" required>
+                                                            <input type="text" id="add-freelancer-name" name="fullName" required>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="add-freelancer-email">Email*</label>
                                                             <input type="email" id="add-freelancer-email" name="email" required>
                                                         </div>
                                                     </div>
-                                                    
                                                     <div class="form-grid">
                                                         <div class="form-group">
                                                             <label for="add-freelancer-phone">Phone Number*</label>
@@ -1036,14 +1360,11 @@
                                                             <input type="text" id="add-freelancer-location" name="location" required>
                                                         </div>
                                                     </div>
-                                                    
                                                     <div class="form-group">
                                                         <label for="add-freelancer-bio">Bio/Description*</label>
                                                         <textarea id="add-freelancer-bio" name="bio" rows="4" required></textarea>
                                                     </div>
                                                 </div>
-
-                                                <!-- Professional Information -->
                                                 <div class="form-section">
                                                     <div class="section-header">
                                                         <h4><i class="icon-briefcase"></i> Professional Information</h4>
@@ -1051,25 +1372,21 @@
                                                     <div class="form-group">
                                                         <label for="add-freelancer-skills">Skills*</label>
                                                         <input type="text" id="add-freelancer-skills" name="skills" 
-                                                               placeholder="Enter skills separated by commas (e.g., Makeup, Hair Styling, Nail Art)" required>
+                                                            placeholder="Enter skills separated by commas (e.g., Makeup, Hair Styling, Nail Art)" required>
                                                         <small class="text-tiny">Separate multiple skills with commas</small>
                                                     </div>
-                                                    
                                                     <div class="form-group">
                                                         <label for="add-freelancer-experience">Experience (Years)*</label>
                                                         <input type="number" id="add-freelancer-experience" name="experience" 
-                                                               min="0" max="50" required>
+                                                            min="0" max="50" required>
                                                     </div>
-                                                    
                                                     <div class="form-group">
                                                         <label for="add-freelancer-service-locations">Service Locations*</label>
                                                         <input type="text" id="add-freelancer-service-locations" name="serviceLocations" 
-                                                               placeholder="Enter service locations separated by commas" required>
+                                                            placeholder="Enter service locations separated by commas" required>
                                                         <small class="text-tiny">Separate multiple locations with commas</small>
                                                     </div>
                                                 </div>
-
-                                                <!-- Profile Image -->
                                                 <div class="form-section">
                                                     <div class="section-header">
                                                         <h4><i class="icon-image"></i> Profile Image</h4>
@@ -1081,46 +1398,32 @@
                                                                 <p>Drag & drop profile image here or click to browse</p>
                                                                 <small>Recommended: Square image, at least 300x300 pixels</small>
                                                             </div>
-                                                            <input type="file" id="add-freelancer-image" name="image" 
-                                                                   accept="image/*">
+                                                            <input type="file" id="add-freelancer-image" name="profileImage" 
+                                                                accept="image/*">
                                                         </div>
                                                         <div class="image-preview-grid" id="add-image-preview-grid"></div>
                                                     </div>
                                                 </div>
-
-                                                <!-- Status -->
                                                 <div class="form-section">
                                                     <div class="section-header">
                                                         <h4><i class="icon-toggle-right"></i> Status</h4>
                                                     </div>
                                                     <div class="form-grid">
                                                         <div class="form-group">
-                                                            <label for="add-freelancer-status">Active Status</label>
+                                                            <label for="add-freelancer-status">Status</label>
                                                             <div class="status-toggle">
-                                                                <input type="checkbox" id="add-freelancer-status" name="isActive" checked>
-                                                                <label for="add-freelancer-status" class="toggle-label">
-                                                                    <span class="toggle-text">Active</span>
-                                                                    <span class="toggle-slider"></span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="add-freelancer-verified">Verification Status</label>
-                                                            <div class="status-toggle">
-                                                                <input type="checkbox" id="add-freelancer-verified" name="isVerified">
-                                                                <label for="add-freelancer-verified" class="toggle-label">
-                                                                    <span class="toggle-text">Verified</span>
-                                                                    <span class="toggle-slider"></span>
-                                                                </label>
+                                                                <select id="add-freelancer-status" name="status" required>
+                                                                    <option value="pending">Pending</option>
+                                                                    <option value="approved">Approved</option>
+                                                                    <option value="rejected">Rejected</option>
+                                                                    <option value="inactive">Inactive</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <!-- Form Actions -->
                                                 <div class="form-actions">
-                                                    <button type="button" class="btn btn-secondary" 
-                                                            onclick="closeModal('add-freelancer-modal')">
+                                                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-freelancer-modal')">
                                                         <i class="icon-x"></i> Cancel
                                                     </button>
                                                     <button type="submit" class="btn btn-primary">
@@ -1133,138 +1436,23 @@
                                 </div>
 
                                 <!-- Edit Freelancer Modal -->
-                                <div id="edit-freelancer-modal" class="modal">
+                                <div id="edit-freelancer-modal" class="modal" style="display:none">
                                     <div class="modal-content modern-modal">
                                         <div class="modal-header">
                                             <div class="modal-title">
                                                 <i class="icon-edit-3"></i>
                                                 <h3>Edit Freelancer</h3>
                                             </div>
-                                            <button class="close-btn" onclick="closeModal('edit-freelancer-modal')">
+                                            <button class="close-btn" type="button" onclick="closeModal('edit-freelancer-modal')">
                                                 <i class="icon-x"></i>
                                             </button>
                                         </div>
-                                        
                                         <div class="modal-body">
-                                            <form id="edit-freelancer-form" enctype="multipart/form-data">
+                                            <form id="edit-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/edit">
                                                 <input type="hidden" id="edit-freelancer-id" name="id">
-                                                
-                                                <!-- Personal Information -->
-                                                <div class="form-section">
-                                                    <div class="section-header">
-                                                        <h4><i class="icon-user"></i> Personal Information</h4>
-                                                    </div>
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label for="edit-freelancer-name">Full Name*</label>
-                                                            <input type="text" id="edit-freelancer-name" name="name" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="edit-freelancer-email">Email*</label>
-                                                            <input type="email" id="edit-freelancer-email" name="email" required>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label for="edit-freelancer-phone">Phone Number*</label>
-                                                            <input type="tel" id="edit-freelancer-phone" name="phone" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="edit-freelancer-location">Location*</label>
-                                                            <input type="text" id="edit-freelancer-location" name="location" required>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                        <label for="edit-freelancer-bio">Bio/Description*</label>
-                                                        <textarea id="edit-freelancer-bio" name="bio" rows="4" required></textarea>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Professional Information -->
-                                                <div class="form-section">
-                                                    <div class="section-header">
-                                                        <h4><i class="icon-briefcase"></i> Professional Information</h4>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="edit-freelancer-skills">Skills*</label>
-                                                        <input type="text" id="edit-freelancer-skills" name="skills" 
-                                                               placeholder="Enter skills separated by commas" required>
-                                                        <small class="text-tiny">Separate multiple skills with commas</small>
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                        <label for="edit-freelancer-experience">Experience (Years)*</label>
-                                                        <input type="number" id="edit-freelancer-experience" name="experience" 
-                                                               min="0" max="50" required>
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                        <label for="edit-freelancer-service-locations">Service Locations*</label>
-                                                        <input type="text" id="edit-freelancer-service-locations" name="serviceLocations" 
-                                                               placeholder="Enter service locations separated by commas" required>
-                                                        <small class="text-tiny">Separate multiple locations with commas</small>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Profile Image -->
-                                                <div class="form-section">
-                                                    <div class="section-header">
-                                                        <h4><i class="icon-image"></i> Profile Image</h4>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Current Image</label>
-                                                        <div class="current-image" id="edit-current-image"></div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="edit-freelancer-image">Update Image</label>
-                                                        <div class="file-upload-area" id="edit-file-upload-area">
-                                                            <div class="upload-content">
-                                                                <i class="icon-upload"></i>
-                                                                <p>Drag & drop new profile image here or click to browse</p>
-                                                                <small>Recommended: Square image, at least 300x300 pixels</small>
-                                                            </div>
-                                                            <input type="file" id="edit-freelancer-image" name="image" 
-                                                                   accept="image/*">
-                                                        </div>
-                                                        <div class="image-preview-grid" id="edit-image-preview-grid"></div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Status -->
-                                                <div class="form-section">
-                                                    <div class="section-header">
-                                                        <h4><i class="icon-toggle-right"></i> Status</h4>
-                                                    </div>
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label for="edit-freelancer-status">Active Status</label>
-                                                            <div class="status-toggle">
-                                                                <input type="checkbox" id="edit-freelancer-status" name="isActive">
-                                                                <label for="edit-freelancer-status" class="toggle-label">
-                                                                    <span class="toggle-text">Active</span>
-                                                                    <span class="toggle-slider"></span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="edit-freelancer-verified">Verification Status</label>
-                                                            <div class="status-toggle">
-                                                                <input type="checkbox" id="edit-freelancer-verified" name="isVerified">
-                                                                <label for="edit-freelancer-verified" class="toggle-label">
-                                                                    <span class="toggle-text">Verified</span>
-                                                                    <span class="toggle-slider"></span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Form Actions -->
+                                                <div id="edit-freelancer-fields"><!-- Populated by JS --></div>
                                                 <div class="form-actions">
-                                                    <button type="button" class="btn btn-secondary" 
-                                                            onclick="closeModal('edit-freelancer-modal')">
+                                                    <button type="button" class="btn btn-secondary" onclick="closeModal('edit-freelancer-modal')">
                                                         <i class="icon-x"></i> Cancel
                                                     </button>
                                                     <button type="submit" class="btn btn-primary">
@@ -1277,14 +1465,14 @@
                                 </div>
 
                                 <!-- Delete Confirmation Modal -->
-                                <div id="delete-confirm-modal" class="modal">
+                                <div id="delete-confirm-modal" class="modal" style="display:none">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <div class="modal-title">
                                                 <i class="icon-alert-triangle"></i>
                                                 <h3>Confirm Deletion</h3>
                                             </div>
-                                            <button class="close-btn" onclick="closeModal('delete-confirm-modal')">
+                                            <button class="close-btn" type="button" onclick="closeModal('delete-confirm-modal')">
                                                 <i class="icon-x"></i>
                                             </button>
                                         </div>
@@ -1293,508 +1481,194 @@
                                             <div class="form-actions">
                                                 <button type="button" class="btn btn-secondary"
                                                     onclick="closeModal('delete-confirm-modal')">Cancel</button>
-                                                <button type="button" class="btn btn-primary"
-                                                    id="confirm-delete-btn">Delete</button>
+                                                <form method="POST" id="delete-freelancer-form" action="/freelance/delete" style="display:inline">
+                                                    <input type="hidden" id="delete-freelancer-id" name="id">
+                                                    <button type="submit" class="btn btn-primary" id="confirm-delete-btn">Delete</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <script>
-                                    // Global variables
-                                    let currentPage = 1;
-                                    let limit = 10;
-                                    let searchQuery = '';
-                                    let freelancers = [];
-                                    let freelancerToDelete = null;
+                                // On filter change
+                                document.getElementById('limit-select').addEventListener('change', function() {
+                                    document.getElementById('list-filters').submit();
+                                });
+                                document.getElementById('search-input').addEventListener('keydown', function(e) {
+                                    if (e.key === 'Enter') {
+                                        document.getElementById('list-filters').submit();
+                                    }
+                                });
 
-                                    // DOM Content Loaded
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Initialize
-                                        fetchFreelancers();
+                                function closeModal(modalId) {
+                                    document.getElementById(modalId).style.display = 'none';
+                                }
 
-                                        // Event listeners
-                                        document.getElementById('limit-select').addEventListener('change', function () {
-                                            limit = parseInt(this.value);
-                                            currentPage = 1;
-                                            fetchFreelancers();
-                                        });
-
-                                        document.getElementById('search-btn').addEventListener('click', function () {
-                                            searchQuery = document.getElementById('search-input').value;
-                                            currentPage = 1;
-                                            fetchFreelancers();
-                                        });
-
-                                        document.getElementById('add-freelancer-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            addFreelancer();
-                                        });
-
-                                        document.getElementById('edit-freelancer-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            updateFreelancer();
-                                        });
-
-                                        document.getElementById('confirm-delete-btn').addEventListener('click', function () {
-                                            if (freelancerToDelete) {
-                                                deleteFreelancer(freelancerToDelete);
-                                                freelancerToDelete = null;
+                                function showAddFreelancerModal() {
+                                    document.getElementById('add-freelancer-form').reset();
+                                    document.getElementById('add-freelancer-modal').style.display = 'block';
+                                }
+                                // Create (POST) /freelance/add
+                                document.getElementById('add-freelancer-form').onsubmit = function(e) {
+                                    e.preventDefault();
+                                    let form = this;
+                                    let data = new FormData(form);
+                                    fetch("/freelance/add", { method: 'POST', body: data })
+                                        .then(res => res.json())
+                                        .then(resp => {
+                                            if (resp.success) {
+                                                window.location.reload();
+                                            } else {
+                                                alert(resp.error || "Failed to add freelancer.");
                                             }
+                                        })
+                                        .catch(() => alert("Server error while adding freelancer."));
+                                };
+
+                                // Edit (fetch by ID) - GET /freelance/:id
+                                function showEditFreelancerModal(freelancerId) {
+                                    fetch('/freelance/freelancer/' + freelancerId)
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            // Fix: Try showing data in the form even if "success" is missing but structure is valid
+                                            let f = data.freelancer || (data._id && data); // fallback if not wrapped in .freelancer
+                                            if (f && f._id) {
+                                                let html = '';
+                                                // Personal Info
+                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-user"></i> Personal Info</h4></div><div class="form-grid">';
+                                                html += `<div class="form-group"><label>Full Name*</label><input type="text" name="fullName" value="` + (f.fullName|| (f.userId && f.userId.name) || '') + `" required></div>`;
+                                                html += `<div class="form-group"><label>Email*</label><input type="email" name="email" value="` + (f.email|| (f.userId && f.userId.email) || '') + `" required></div>`;
+                                                html += '</div><div class="form-grid">';
+                                                html += `<div class="form-group"><label>Phone Number*</label><input type="tel" name="phone" value="`+ (f.phone || (f.userId && f.userId.phone) || '') +`" required></div>`;
+                                                // Location - support f.location or f.locations
+                                                let loc = '';
+                                                if (f.location) loc = f.location;
+                                                else if (Array.isArray(f.locations) && f.locations.length)
+                                                    loc = f.locations.map(l => l.city).join(', ');
+                                                html += `<div class="form-group"><label>Location*</label><input type="text" name="location" value="`+ (loc || '') +`" required></div>`;
+                                                html += '</div>';
+                                                html += `<div class="form-group"><label>Bio*</label><textarea name="bio" rows="4" required>`+(f.bio||'')+`</textarea></div>`;
+                                                html += '</div>';
+                                                // Professional Info
+                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-briefcase"></i> Professional Info</h4></div>';
+                                                html += `<div class="form-group"><label>Skills*</label><input type="text" name="skills" value="`+((Array.isArray(f.skills) ? f.skills.join(', ') : (f.skills || '')))+`" required><small>Separate with commas</small></div>`;
+                                                html += `<div class="form-group"><label>Experience (Years)*</label><input type="number" name="experience" min="0" max="50" value="`+(f.experience||'')+`" required></div>`;
+                                                // For service locations - if f.locations exists, join cities, else use field
+                                                let svcLocs = '';
+                                                if (Array.isArray(f.locations) && f.locations.length)
+                                                    svcLocs = f.locations.map(l => l.city).join(', ');
+                                                else if (f.serviceLocations) svcLocs = f.serviceLocations;
+                                                html += `<div class="form-group"><label>Service Locations*</label><input type="text" name="serviceLocations" value="`+(svcLocs||'')+`" required><small>Separate with commas</small></div>`;
+                                                html += '</div>';
+                                                // Profile Image
+                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-image"></i> Profile Image</h4></div>';
+                                                html += `<div class="form-group"><input type="file" name="profileImage" accept="image/*">`;
+                                                if(f.profileImage){html+=`<br><img src="${f.profileImage}" style="max-width:80px">`;}
+                                                html+=`</div></div>`;
+                                                // Status
+                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-toggle-right"></i> Status</h4></div>';
+                                                html += `<div class="form-group"><select name="status" required>`;
+                                                ['pending','approved','rejected','inactive'].forEach(function(s){
+                                                    html+=`<option value="${s}"`+((f.status===s)?' selected':'')+`>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`;
+                                                });
+                                                html+='</select></div></div></div>';
+                                                // Proof (if available)
+                                                if (f.proof && (f.proof.type || f.proof.number)) {
+                                                    html += '<div class="form-section"><div class="section-header"><h4><i class="icon-id"></i> Proof</h4></div>';
+                                                    html += `<div class="form-group"><label>Proof Type</label><input type="text" name="proofType" value="${f.proof.type||''}" readonly></div>`;
+                                                    html += `<div class="form-group"><label>Proof Number</label><input type="text" name="proofNumber" value="${f.proof.number||''}" readonly></div>`;
+                                                    html += '</div>';
+                                                }
+                                                // Portfolio Images (if any)
+                                                if(Array.isArray(f.portfolioImages) && f.portfolioImages.length){
+                                                    html += '<div class="form-section"><div class="section-header"><h4><i class="icon-images"></i> Portfolio Images</h4></div>';
+                                                    html += '<div class="image-preview-grid">';
+                                                    f.portfolioImages.forEach(function(img){
+                                                        html += `<img src="${img}" style="max-width:70px;max-height:70px;margin:4px;border-radius:4px;">`;
+                                                    });
+                                                    html += '</div></div>';
+                                                }
+                                                // Availability (if any)
+                                                if(Array.isArray(f.availability) && f.availability.length){
+                                                    html += '<div class="form-section"><div class="section-header"><h4><i class="icon-clock"></i> Availability</h4></div>';
+                                                    html += '<table class="table table-bordered table-small" style="margin-bottom:0;background:#f8f8f8"><thead><tr><th>Day</th><th>Slots</th></tr></thead><tbody>';
+                                                    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                                                    f.availability.forEach(function(a){
+                                                        html += `<tr><td>${days[a.dayOfWeek%7]||a.dayOfWeek}</td><td>`;
+                                                        if(a.slots && a.slots.length) {
+                                                            html += a.slots.map(s=>`${s.start} - ${s.end}`).join(', ');
+                                                        } else {
+                                                            html += 'No Slots';
+                                                        }
+                                                        html += '</td></tr>';
+                                                    });
+                                                    html += '</tbody></table></div>';
+                                                }
+                                                document.getElementById('edit-freelancer-fields').innerHTML = html;
+                                                document.getElementById('edit-freelancer-id').value = f._id;
+                                                document.getElementById('edit-freelancer-modal').style.display = 'block';
+                                            } else {
+                                                // If server sent a proper object, show as fallback
+                                                console.error("Edit fetch response:", data);
+                                                alert((data && data.error) ? data.error : "Failed to load freelancer details.");
+                                            }
+                                        })
+                                        .catch((err)=>{
+                                            alert("Server error loading freelancer details.");
+                                            console.error("Fetch freelancer error:", err);
                                         });
+                                }
+                                // Edit (POST) /freelance/edit
+                                document.getElementById('edit-freelancer-form').onsubmit = function(e){
+                                    e.preventDefault();
+                                    let form = this;
+                                    let data = new FormData(form);
+                                    fetch("/freelance/edit", { method: 'POST', body: data })
+                                    .then(res=>res.json())
+                                    .then(resp=>{
+                                        if(resp.success){ window.location.reload();}
+                                        else{alert(resp.error||"Failed to update freelancer.");}
+                                    }).catch(()=>alert("Server error while updating freelancer."));
+                                };
 
-                                        // Image preview functionality for add modal
-                                        document.getElementById('add-freelancer-image').addEventListener('change', function(e) {
-                                            const file = e.target.files[0];
-                                            const previewGrid = document.getElementById('add-image-preview-grid');
-                                            previewGrid.innerHTML = '';
-
-                                            if (file && file.type.startsWith('image/')) {
-                                                const reader = new FileReader();
-                                                reader.onload = function(e) {
-                                                    const img = document.createElement('img');
-                                                    img.src = e.target.result;
-                                                    img.alt = 'Profile preview';
-                                                    previewGrid.appendChild(img);
-                                                };
-                                                reader.readAsDataURL(file);
+                                // Delete /freelance/delete
+                                function confirmDeleteFreelancer(freelancerId) {
+                                    document.getElementById('delete-freelancer-id').value = freelancerId;
+                                    document.getElementById('delete-confirm-modal').style.display = 'block';
+                                }
+                                document.getElementById('delete-freelancer-form').onsubmit = function(e){
+                                    e.preventDefault();
+                                    let form = this;
+                                    let data = new FormData(form);
+                                    fetch("/freelance/delete", { method: 'POST', body: data })
+                                        .then(res=>res.json())
+                                        .then(resp=>{
+                                            if(resp.success){
+                                                window.location.reload();
+                                            } else {
+                                                alert(resp.error||"Failed to delete freelancer.");
                                             }
-                                        });
+                                        })
+                                        .catch(()=>alert("Server error while deleting freelancer."));
+                                };
 
-                                        // Image preview functionality for edit modal
-                                        document.getElementById('edit-freelancer-image').addEventListener('change', function(e) {
-                                            const file = e.target.files[0];
-                                            const previewGrid = document.getElementById('edit-image-preview-grid');
-                                            previewGrid.innerHTML = '';
-
-                                            if (file && file.type.startsWith('image/')) {
-                                                const reader = new FileReader();
-                                                reader.onload = function(e) {
-                                                    const img = document.createElement('img');
-                                                    img.src = e.target.result;
-                                                    img.alt = 'Profile preview';
-                                                    previewGrid.appendChild(img);
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        });
-                                    });
-
-                                    // Fetch freelancers from API
-                                    async function fetchFreelancers() {
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            // For demo purposes, we'll use mock data
-                                            freelancers = getMockFreelancers();
-                                            
-                                            // Filter by search query if provided
-                                            if (searchQuery) {
-                                                freelancers = freelancers.filter(freelancer => 
-                                                    freelancer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                    freelancer.skills.some(skill => 
-                                                        skill.toLowerCase().includes(searchQuery.toLowerCase())
-                                                    ) ||
-                                                    freelancer.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                    freelancer.serviceLocations.some(location => 
-                                                        location.toLowerCase().includes(searchQuery.toLowerCase())
-                                                    )
-                                                );
-                                            }
-                                            
-                                            renderFreelancers(freelancers);
-                                            renderPagination(Math.ceil(freelancers.length / limit), currentPage);
-                                            document.getElementById('showing-entries').textContent = `Showing ${Math.min(freelancers.length, limit)} of ${freelancers.length} entries`;
-                                        } catch (error) {
-                                            console.error('Error fetching freelancers:', error);
-                                            alert('Failed to load freelancers. Please try again later.');
-                                            document.getElementById('freelancers-list').innerHTML = '<div class="error-message">Failed to load freelancers</div>';
-                                        }
-                                    }
-
-                                    // Render freelancer cards
-                                    function renderFreelancers(freelancers) {
-                                        const freelancersList = document.getElementById('freelancers-list');
-                                        freelancersList.innerHTML = '';
-
-                                        // Calculate pagination
-                                        const startIndex = (currentPage - 1) * limit;
-                                        const endIndex = startIndex + limit;
-                                        const paginatedFreelancers = freelancers.slice(startIndex, endIndex);
-
-                                        if (paginatedFreelancers.length === 0) {
-                                            freelancersList.innerHTML = '<div class="no-freelancers">No freelancers found matching your criteria.</div>';
-                                            return;
-                                        }
-
-                                        paginatedFreelancers.forEach(freelancer => {
-                                            const freelancerCard = document.createElement('div');
-                                            freelancerCard.className = 'freelancer-card';
-                                            freelancerCard.id = `freelancer-${freelancer.id}`;
-
-                                            const profileImage = freelancer.image || 'https://via.placeholder.com/300x200?text=No+Image';
-
-                                            freelancerCard.innerHTML = `
-                                                <div class="card-header">
-                                                    <h3>${freelancer.name}</h3>
-                                                    <div class='badges-1'>
-                                                        ${freelancer.isVerified ? '<span class="verified-badge">Verified</span>' : '<span class="status-badge pending">Pending</span>'}
-                                                        <span class="status-badge ${freelancer.isActive ? 'active' : 'inactive'}">
-                                                            ${freelancer.isActive ? 'Active' : 'Inactive'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            
-                                                <div class="card-body">
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Email:</span>
-                                                        <span class="detail-value">${freelancer.email}</span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Phone:</span>
-                                                        <span class="detail-value">${freelancer.phone}</span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Location:</span>
-                                                        <span class="detail-value">${freelancer.location}</span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Experience:</span>
-                                                        <span class="detail-value">${freelancer.experience} years</span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Skills:</span>
-                                                        <span class="detail-value">
-                                                            <div class="skills-container">
-                                                                ${freelancer.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
-                                                            </div>
-                                                        </span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Service Areas:</span>
-                                                        <span class="detail-value">
-                                                            <div class="service-locations">
-                                                                ${freelancer.serviceLocations.map(location => `<span class="location-tag">${location}</span>`).join('')}
-                                                            </div>
-                                                        </span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Bio:</span>
-                                                        <span class="detail-value">${freelancer.bio.substring(0, 100)}${freelancer.bio.length > 100 ? '...' : ''}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="card-footer">
-                                                    <div class="text-tiny">ID: ${freelancer.id}</div>
-                                                    <div class="card-actions">
-                                                        <button class="item edit" onclick="showEditFreelancerModal('${freelancer.id}')">
-                                                            <i class="icon-edit-3"></i>
-                                                        </button>
-                                                        <button class="item toggle" onclick="toggleFreelancer('${freelancer.id}')">
-                                                            <i class="fa fa-toggle-${freelancer.isActive ? 'on' : 'off'}"></i>
-                                                        </button>
-                                                        <button class="item trash" onclick="confirmDeleteFreelancer('${freelancer.id}')">
-                                                            <i class="icon-trash-2"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            `;
-
-                                            freelancersList.appendChild(freelancerCard);
-                                        });
-                                    }
-
-                                    // Show add freelancer modal
-                                    function showAddFreelancerModal() {
-                                        document.getElementById('add-freelancer-form').reset();
-                                        document.getElementById('add-image-preview-grid').innerHTML = '';
-                                        document.getElementById('add-freelancer-modal').style.display = 'block';
-                                    }
-
-                                    // Show edit freelancer modal
-                                    function showEditFreelancerModal(freelancerId) {
-                                        const freelancer = freelancers.find(f => f.id === freelancerId);
-                                        if (!freelancer) {
-                                            alert('Freelancer not found');
-                                            return;
-                                        }
-
-                                        // Populate form fields
-                                        document.getElementById('edit-freelancer-id').value = freelancer.id;
-                                        document.getElementById('edit-freelancer-name').value = freelancer.name;
-                                        document.getElementById('edit-freelancer-email').value = freelancer.email;
-                                        document.getElementById('edit-freelancer-phone').value = freelancer.phone;
-                                        document.getElementById('edit-freelancer-location').value = freelancer.location;
-                                        document.getElementById('edit-freelancer-bio').value = freelancer.bio;
-                                        document.getElementById('edit-freelancer-skills').value = freelancer.skills.join(', ');
-                                        document.getElementById('edit-freelancer-experience').value = freelancer.experience;
-                                        document.getElementById('edit-freelancer-service-locations').value = freelancer.serviceLocations.join(', ');
-                                        document.getElementById('edit-freelancer-status').checked = freelancer.isActive;
-                                        document.getElementById('edit-freelancer-verified').checked = freelancer.isVerified;
-
-                                        // Load current image
-                                        const imageContainer = document.getElementById('edit-current-image');
-                                        imageContainer.innerHTML = '';
-                                        if (freelancer.image) {
-                                            const imgDiv = document.createElement('div');
-                                            imgDiv.className = 'current-image';
-                                            imgDiv.innerHTML = `
-                                                <img src="${freelancer.image}" alt="Profile Image" onerror="this.src='https://via.placeholder.com/150'">
-                                            `;
-                                            imageContainer.appendChild(imgDiv);
-                                        }
-
-                                        // Clear image preview
-                                        document.getElementById('edit-image-preview-grid').innerHTML = '';
-
-                                        // Show modal
-                                        document.getElementById('edit-freelancer-modal').style.display = 'block';
-                                    }
-
-                                    // Add freelancer
-                                    async function addFreelancer() {
-                                        const form = document.getElementById('add-freelancer-form');
-                                        const formData = new FormData(form);
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            const newFreelancer = {
-                                                id: 'FL' + Date.now(),
-                                                name: formData.get('name'),
-                                                email: formData.get('email'),
-                                                phone: formData.get('phone'),
-                                                location: formData.get('location'),
-                                                bio: formData.get('bio'),
-                                                skills: formData.get('skills').split(',').map(skill => skill.trim()),
-                                                experience: parseInt(formData.get('experience')),
-                                                serviceLocations: formData.get('serviceLocations').split(',').map(location => location.trim()),
-                                                image: 'https://via.placeholder.com/300x200?text=Profile+Image',
-                                                isActive: formData.get('isActive') === 'on',
-                                                isVerified: formData.get('isVerified') === 'on'
-                                            };
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Add the freelancer to our mock data
-                                            freelancers.unshift(newFreelancer);
-
-                                            alert('Freelancer added successfully!');
-                                            closeModal('add-freelancer-modal');
-                                            fetchFreelancers();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error adding freelancer');
-                                        }
-                                    }
-
-                                    // Update freelancer
-                                    async function updateFreelancer() {
-                                        const form = document.getElementById('edit-freelancer-form');
-                                        const formData = new FormData(form);
-                                        const freelancerId = document.getElementById('edit-freelancer-id').value;
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            const updatedFreelancer = {
-                                                id: freelancerId,
-                                                name: formData.get('name'),
-                                                email: formData.get('email'),
-                                                phone: formData.get('phone'),
-                                                location: formData.get('location'),
-                                                bio: formData.get('bio'),
-                                                skills: formData.get('skills').split(',').map(skill => skill.trim()),
-                                                experience: parseInt(formData.get('experience')),
-                                                serviceLocations: formData.get('serviceLocations').split(',').map(location => location.trim()),
-                                                isActive: formData.get('isActive') === 'on',
-                                                isVerified: formData.get('isVerified') === 'on'
-                                            };
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Update the freelancer in our mock data
-                                            const freelancerIndex = freelancers.findIndex(f => f.id === freelancerId);
-                                            if (freelancerIndex !== -1) {
-                                                freelancers[freelancerIndex] = {
-                                                    ...freelancers[freelancerIndex],
-                                                    ...updatedFreelancer
-                                                };
-                                            }
-
-                                            alert('Freelancer updated successfully!');
-                                            closeModal('edit-freelancer-modal');
-                                            fetchFreelancers();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error updating freelancer');
-                                        }
-                                    }
-
-                                    // Toggle freelancer status
-                                    function toggleFreelancer(freelancerId) {
-                                        // In a real implementation, this would be an API call
-                                        const freelancerIndex = freelancers.findIndex(f => f.id === freelancerId);
-                                        if (freelancerIndex !== -1) {
-                                            freelancers[freelancerIndex].isActive = !freelancers[freelancerIndex].isActive;
-                                        }
-
-                                        alert(`Freelancer ${freelancers[freelancerIndex].isActive ? 'activated' : 'deactivated'} successfully!`);
-                                        fetchFreelancers();
-                                    }
-
-                                    // Confirm delete freelancer
-                                    function confirmDeleteFreelancer(freelancerId) {
-                                        freelancerToDelete = freelancerId;
-                                        document.getElementById('delete-confirm-modal').style.display = 'block';
-                                    }
-
-                                    // Delete freelancer
-                                    function deleteFreelancer(freelancerId) {
-                                        // In a real implementation, this would be an API call
-                                        const freelancerIndex = freelancers.findIndex(f => f.id === freelancerId);
-                                        if (freelancerIndex !== -1) {
-                                            freelancers.splice(freelancerIndex, 1);
-                                        }
-
-                                        alert('Freelancer deleted successfully!');
-                                        closeModal('delete-confirm-modal');
-                                        fetchFreelancers();
-                                    }
-
-                                    // Close modal
-                                    function closeModal(modalId) {
-                                        document.getElementById(modalId).style.display = 'none';
-                                    }
-
-                                    // Pagination functions
-                                    function renderPagination(totalPages, currentPage) {
-                                        const paginationContainer = document.getElementById('pagination');
-                                        paginationContainer.innerHTML = '';
-
-                                        // Always show first page button
-                                        addPageButton(paginationContainer, 1, currentPage);
-
-                                        // Show previous ellipsis if needed
-                                        if (currentPage > 3) {
-                                            const ellipsis = document.createElement('li');
-                                            ellipsis.innerHTML = '<span>...</span>';
-                                            paginationContainer.appendChild(ellipsis);
-                                        }
-
-                                        // Show pages around current page
-                                        const startPage = Math.max(2, currentPage - 1);
-                                        const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-                                        for (let i = startPage; i <= endPage; i++) {
-                                            addPageButton(paginationContainer, i, currentPage);
-                                        }
-
-                                        // Show next ellipsis if needed
-                                        if (currentPage < totalPages - 2) {
-                                            const ellipsis = document.createElement('li');
-                                            ellipsis.innerHTML = '<span>...</span>';
-                                            paginationContainer.appendChild(ellipsis);
-                                        }
-
-                                        // Always show last page button if there are multiple pages
-                                        if (totalPages > 1) {
-                                            addPageButton(paginationContainer, totalPages, currentPage);
-                                        }
-                                    }
-
-                                    function addPageButton(container, pageNumber, currentPage) {
-                                        const pageItem = document.createElement('li');
-                                        if (pageNumber === currentPage) {
-                                            pageItem.className = 'active';
-                                        }
-
-                                        const pageLink = document.createElement('a');
-                                        pageLink.href = '#';
-                                        pageLink.textContent = pageNumber;
-                                        pageLink.onclick = (e) => {
-                                            e.preventDefault();
-                                            currentPage = pageNumber;
-                                            fetchFreelancers();
-                                        };
-
-                                        pageItem.appendChild(pageLink);
-                                        container.appendChild(pageItem);
-                                    }
-
-                                    // Mock data for demonstration
-                                    function getMockFreelancers() {
-                                        return [
-                                            {
-                                                id: 'FL001',
-                                                name: 'Priya Sharma',
-                                                email: 'priya.sharma@example.com',
-                                                phone: '+91 98765 43210',
-                                                location: 'Mumbai',
-                                                bio: 'Professional makeup artist with 5 years of experience in bridal and party makeup. Specialized in natural and glam looks.',
-                                                skills: ['Bridal Makeup', 'Party Makeup', 'Hair Styling'],
-                                                experience: 5,
-                                                serviceLocations: ['Mumbai', 'Thane', 'Navi Mumbai'],
-                                              
-                                                isActive: true,
-                                                isVerified: true
-                                            },
-                                            {
-                                                id: 'FL002',
-                                                name: 'Rahul Verma',
-                                                email: 'rahul.verma@example.com',
-                                                phone: '+91 87654 32109',
-                                                location: 'Delhi',
-                                                bio: 'Expert hair stylist with specialization in coloring, cutting, and styling. Passionate about creating unique looks for every client.',
-                                                skills: ['Hair Coloring', 'Hair Cutting', 'Hair Treatment'],
-                                                experience: 7,
-                                                serviceLocations: ['Delhi', 'Gurgaon', 'Noida'],
-                                           
-                                                isActive: true,
-                                                isVerified: false
-                                            },
-                                            {
-                                                id: 'FL003',
-                                                name: 'Anjali Patel',
-                                                email: 'anjali.patel@example.com',
-                                                phone: '+91 76543 21098',
-                                                location: 'Bangalore',
-                                                bio: 'Skilled nail artist with expertise in gel nails, nail art, and manicures. Focus on hygiene and quality service.',
-                                                skills: ['Gel Nails', 'Nail Art', 'Manicure', 'Pedicure'],
-                                                experience: 3,
-                                                serviceLocations: ['Bangalore', 'Whitefield', 'Electronic City'],
-                                               
-                                                isActive: false,
-                                                isVerified: true
-                                            },
-                                            {
-                                                id: 'FL004',
-                                                name: 'Sneha Reddy',
-                                                email: 'sneha.reddy@example.com',
-                                                phone: '+91 65432 10987',
-                                                location: 'Hyderabad',
-                                                bio: 'Beauty therapist specializing in facials, skin treatments, and waxing. Committed to providing personalized skincare solutions.',
-                                                skills: ['Facials', 'Skin Treatment', 'Waxing', 'Threading'],
-                                                experience: 4,
-                                                serviceLocations: ['Hyderabad', 'Secunderabad', 'Gachibowli'],
-                                                
-                                                isActive: true,
-                                                isVerified: true
-                                            },
-                                            {
-                                                id: 'FL005',
-                                                name: 'Meera Joshi',
-                                                email: 'meera.joshi@example.com',
-                                                phone: '+91 54321 09876',
-                                                location: 'Pune',
-                                                bio: 'Professional beautician offering complete beauty services including makeup, hair, and skincare. Focus on enhancing natural beauty.',
-                                                skills: ['Makeup', 'Hair Styling', 'Skincare', 'Bridal Packages'],
-                                                experience: 6,
-                                                serviceLocations: ['Pune', 'Hinjewadi', 'Kothrud'],
-                                 
-                                                isActive: true,
-                                                isVerified: false
-                                            }
-                                        ];
-                                    }
+                                // Update status /freelance/update-status
+                                function toggleFreelancerStatus(freelancerId, currentStatus){
+                                    let newStatus = (currentStatus === 'approved') ? 'inactive' : 'approved';
+                                    if(!confirm("Are you sure you want to set status to "+newStatus+"?")) return;
+                                    fetch(`/freelance/${freelancerId}/status`, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ status: newStatus })
+                                    })
+                                    .then(res => res.json())
+                                    .then(resp => {
+                                        if(resp.success){ window.location.reload();}
+                                        else{ alert(resp.error || "Failed to update status."); }
+                                    })
+                                    .catch(() => alert("Server error while updating status."));
+                                }
                                 </script>
 
                                 <!-- /main-content-wrap -->

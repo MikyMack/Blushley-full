@@ -19556,7 +19556,7 @@ ul.list-text.type-number {
 
 /* Why Join Section */
 .why-join-section {
-  padding-bottom: 100px;
+  /* padding-bottom: 100px; */
   background: var(--white);
 }
 

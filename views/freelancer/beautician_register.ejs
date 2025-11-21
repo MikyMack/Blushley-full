@@ -86,8 +86,8 @@
                         </a>
                     </div>
                     <div class="col-xl-3 col-md-4 col-6">
-                        <a href="index.html" class="logo-header">
-                              <img src="images/logo/logoggg.png" alt="logo" class="logo">
+                        <a href="/" class="logo-header">
+                              <img src="/images/logo/logoggg.png" alt="logo" class="logo">
                         </a>
                     </div>
                        <div class="col-xl-6 col-md-4 col-6">
@@ -121,7 +121,7 @@
                     Connect with premium clients, manage bookings, and expand your reach. Join professionals who are
                     already earning more.
                 </p>
-                <button class="btn-hero" id="openAuthModal">Register Now</button>
+                <button class="btn-hero" id="openAuthModal" onclick="document.getElementById('authModal').classList.add('active')">Register Now</button>
             </div>
         </div>
     </section>
@@ -139,7 +139,7 @@
                 <div class="benefits-grid">
                     <div class="benefit-item">
                         <div class="benefit-icon">
-                            <img src="images/icons/beautician-reg/briefcase.svg" alt="">
+                            <img src="/images/icons/beautician-reg/briefcase.svg" alt="">
                           
                         </div>
                         <h3 class="benefit-title">Professional Presence</h3>
@@ -148,35 +148,35 @@
                     </div>
 
                     <div class="benefit-item">
-                        <div class="benefit-icon">  <img src="images/icons/beautician-reg/clock.svg" alt=""></div>
+                        <div class="benefit-icon">  <img src="/images/icons/beautician-reg/clock.svg" alt=""></div>
                         <h3 class="benefit-title">Smart Scheduling</h3>
                         <p class="benefit-text">Effortless appointment management. Control your availability and sync
                             bookings automatically.</p>
                     </div>
 
                     <div class="benefit-item">
-                        <div class="benefit-icon">  <img src="images/icons/beautician-reg/dollar-sign.svg" alt=""></div>
+                        <div class="benefit-icon">  <img src="/images/icons/beautician-reg/dollar-sign.svg" alt=""></div>
                         <h3 class="benefit-title">Increase Earnings</h3>
                         <p class="benefit-text">Tap into a client base actively seeking quality beauty professionals.
                             More clients, more revenue.</p>
                     </div>
 
                     <div class="benefit-item">
-                        <div class="benefit-icon">  <img src="images/icons/beautician-reg/star.svg" alt=""></div>
+                        <div class="benefit-icon">  <img src="/images/icons/beautician-reg/star.svg" alt=""></div>
                         <h3 class="benefit-title">Client Trust & Reviews</h3>
                         <p class="benefit-text">Build credibility through verified reviews. Your reputation becomes your
                             best marketing asset.</p>
                     </div>
 
                     <div class="benefit-item">
-                        <div class="benefit-icon">  <img src="images/icons/beautician-reg/layers.svg" alt=""></div>
+                        <div class="benefit-icon">  <img src="/images/icons/beautician-reg/layers.svg" alt=""></div>
                         <h3 class="benefit-title">Work Anywhere</h3>
                         <p class="benefit-text">Complete control from your phone. Accept bookings, manage clients, and
                             update services on the go.</p>
                     </div>
 
                     <div class="benefit-item">
-                        <div class="benefit-icon">  <img src="images/icons/beautician-reg/target.svg" alt=""></div>
+                        <div class="benefit-icon">  <img src="/images/icons/beautician-reg/target.svg" alt=""></div>
                         <h3 class="benefit-title">Right Clients, Right Time</h3>
                         <p class="benefit-text">Connect with clients looking for exactly what you offer. No wasted time,
                             maximum conversions.</p>
@@ -283,34 +283,7 @@
             </div>
         </section>
 
-        <!-- Stats Section -->
-     <!--   <section class="stats-section">
-            <div class="container">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-icon">🚀</div>
-                        <p class="stat-label">Fast Growing</p>
-                        <p class="stat-description">Join a rapidly expanding network</p>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">✨</div>
-                        <p class="stat-label">Premium Quality</p>
-                        <p class="stat-description">Professional beauty services</p>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">🤝</div>
-                        <p class="stat-label">Trusted Partners</p>
-                        <p class="stat-description">Work with verified clients</p>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">🏆</div>
-                        <p class="stat-label">Award Winning</p>
-                        <p class="stat-description">Excellence in beauty services</p>
-                    </div>
-                </div>
-            </div>
-        </section>-->
-
+    
         <!-- Final CTA -->
         <section class="why-join-section">
         <div class="container">
@@ -321,8 +294,8 @@
                     growing income.
                 </p>
                 <div class="cta-buttons">
-                    <button class="btn-primary-cta" id="openAuthModal2">Register Now</button>
-                    <button class="btn-secondary-cta" id="openAuthModal3">Already Registered? Login</button>
+                    <button class="btn-primary-cta" id="openAuthModal2" type="button" onclick="document.getElementById('authModal').classList.add('active')">Register Now</button>
+                    <button class="btn-secondary-cta" id="openAuthModal3" type="button" onclick="document.getElementById('authModal').classList.add('active'); document.querySelectorAll('.auth-tab').forEach(tab => { if(tab.getAttribute('data-tab')==='login'){tab.click();} });">Already Registered? Login</button>
                 </div>
             </div>
         </div>
@@ -340,8 +313,8 @@
                     <div class="col-lg-5">
                         <div class="footer-infor">
                             <div class="footer-logo">
-                                <a href="index.html">
-                                    <img src="images/logo/blushley-png-without-shade.png" alt="">
+                                <a href="/">
+                                    <img src="/images/logo/blushley-png-without-shade.png" alt="">
                                 </a>
                             </div>
                             <p>Premium beauty products and professional beautician services. Shop skincare,
@@ -436,12 +409,12 @@
                             <div class="tf-payment">
                                 <p class="text-caption-1">Payment:</p>
                                 <ul>
-                                    <li><img src="images/payment/img-1.png" alt=""></li>
-                                    <li><img src="images/payment/img-2.png" alt=""></li>
-                                    <li><img src="images/payment/img-3.png" alt=""></li>
-                                    <li><img src="images/payment/img-4.png" alt=""></li>
-                                    <li><img src="images/payment/img-5.png" alt=""></li>
-                                    <li><img src="images/payment/img-6.png" alt=""></li>
+                                    <li><img src="/images/payment/img-1.png" alt=""></li>
+                                    <li><img src="/images/payment/img-2.png" alt=""></li>
+                                    <li><img src="/images/payment/img-3.png" alt=""></li>
+                                    <li><img src="/images/payment/img-4.png" alt=""></li>
+                                    <li><img src="/images/payment/img-5.png" alt=""></li>
+                                    <li><img src="/images/payment/img-6.png" alt=""></li>
                                 </ul>
                             </div>
                         </div>
@@ -494,7 +467,7 @@
             <!-- toolbar-bottom -->
             <div class="tf-toolbar-bottom">
                 <div class="toolbar-item">
-                    <a href="index.html">
+                    <a href="/">
                         <div class="toolbar-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" stroke="#4D4E4F" stroke-width="2" stroke-linecap="round"
@@ -1054,7 +1027,7 @@
                 <div class="mega-menu">
                     <div class="row-demo">
                         <div class="demo-item">
-                            <a href="index.html">
+                            <a href="/">
                                 <div class="demo-image position-relative">
                                     <img class="lazyload" data-src="images/demo/home-fashion-womenswear.jpg"
                                         src="images/demo/home-fashion-womenswear.jpg" alt="home-fashion-womenswear">
@@ -1417,7 +1390,7 @@
                     </form>
                     <ul class="nav-ul-mb" id="wrapper-menu-navigation">
                         <li class="nav-mb-item active">
-                            <a href="index.html" class="mb-menu-link">
+                            <a href="/" class="mb-menu-link">
                                 <span>Home</span>
 
                             </a>
@@ -1524,42 +1497,93 @@
     <div class="modal-overlay" id="authModal">
         <div class="auth-modal">
             <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Welcome to BLUSHLEY</h2>
+                <h2 class="modal-title" id="modalTitle">Freelancer Registration</h2>
                 <button class="close-modal" id="closeModal">&times;</button>
             </div>
-            
             <div class="modal-body">
-                <!-- Auth Tabs -->
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="register">Register</button>
                     <button class="auth-tab" data-tab="login">Login</button>
                 </div>
-
                 <!-- Register Form -->
-                <form class="auth-form active" id="registerForm">
+                <form class="auth-form active" id="registerForm" enctype="multipart/form-data" method="POST" action="/freelance/beautician_register">
                     <div class="form-group">
                         <label class="form-label" for="fullName">Full Name</label>
-                        <input type="text" class="form-input" id="fullName" required>
+                        <input type="text" class="form-input" id="fullName" name="fullName" required>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="phoneNumber">Phone Number</label>
-                        <input type="tel" class="form-input" id="phoneNumber" required>
-                    </div>
-                    
                     <div class="form-group">
                         <label class="form-label" for="email">Email Address</label>
-                        <input type="email" class="form-input" id="email" required>
+                        <input type="email" class="form-input" id="email" name="email" required>
                     </div>
-                    
                     <div class="form-group">
-                        <label class="form-label" for="location">Location</label>
-                        <input type="text" class="form-input" id="location" required>
+                        <label class="form-label" for="phone">Phone Number</label>
+                        <input type="tel" class="form-input" id="phone" name="phone" required>
                     </div>
-                    
+                    <div class="form-group">
+                        <label class="form-label" for="bio">Bio / About You</label>
+                        <textarea class="form-input" id="bio" name="bio" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Service Locations</label>
+                        <div id="locations-chips-input" class="chips-input-wrapper">
+                            <input type="text" id="locationsInput" class="chips-input" placeholder="Add a location and press Enter">
+                        </div>
+                        <input type="hidden" id="locations" name="locations" required>
+                        <small style="font-size: 12px;">e.g., Trivandrum, Kochi</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Your Skills</label>
+                        <div id="skills-chips-input" class="chips-input-wrapper">
+                            <input type="text" id="skillsInput" class="chips-input" placeholder="Add a skill and press Enter">
+                        </div>
+                        <input type="hidden" id="skills" name="skills" required>
+                        <small style="font-size: 12px;">e.g., Hair, Makeup, Nails</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Availability</label>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 7px;">
+                            <div class="avail-days">
+                                <label>Days:</label>
+                                <div class="availability-days" style="display:flex; flex-wrap:wrap; gap:4px; margin-top: 2px;">
+                                    <% ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].forEach(function(day) { %>
+                                        <label class="avail-checkbox">
+                                        <input type="checkbox" name="availability_days" value="<%= day %>">
+                                         <%= day.substr(0,3) %>
+                                        </label>
+                                    <% }); %>
+                                </div>
+                            </div>
+                            <div class="avail-time">
+                                <label>From:</label>
+                                <input type="time" class="form-input" id="availStart" style="width:150px;">
+                                <label>To:</label>
+                                <input type="time" class="form-input" id="availEnd" style="width:150px;">
+                            </div>
+                        </div>
+                        <input type="hidden" id="availability" name="availability">
+                        <small style="font-size: 12px;">Select your working days and time slot</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="profileImage">Profile Picture</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" class="file-input" id="profileImage" name="profileImage" accept="image/*">
+                            <label class="file-input-label" for="profileImage">
+                                <i class="fas fa-upload"></i> Choose Profile Picture
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Portfolio Images</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" class="file-input" id="portfolioImages" name="portfolioImages" multiple accept="image/*">
+                            <label class="file-input-label" for="portfolioImages">
+                                <i class="fas fa-images"></i> Upload Portfolio (max 5)
+                            </label>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label class="form-label" for="proofType">Proof Type</label>
-                        <select class="form-select" id="proofType" required>
+                        <select class="form-select" id="proofType" name="proofType" required>
                             <option value="">Select proof type</option>
                             <option value="Aadhaar Card">Aadhaar Card</option>
                             <option value="PAN Card">PAN Card</option>
@@ -1568,60 +1592,26 @@
                             <option value="Voter ID">Voter ID</option>
                         </select>
                     </div>
-                    
                     <div class="form-group">
                         <label class="form-label" for="proofNumber">Proof Number</label>
-                        <input type="text" class="form-input" id="proofNumber" required>
+                        <input type="text" class="form-input" id="proofNumber" name="proofNumber" required>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Profile Picture</label>
-                        <div class="file-input-wrapper">
-                            <input type="file" class="file-input" id="profilePicture" accept="image/*">
-                            <label class="file-input-label" for="profilePicture">
-                                <i class="fas fa-upload"></i> Choose Profile Picture
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Skills</label>
-                        <div class="skills-container" id="skillsContainer">
-                            <!-- Skills will be added here dynamically -->
-                        </div>
-                        <div class="add-skill-input">
-                            <input type="text" class="form-input" id="newSkill" placeholder="Add a skill">
-                            <button type="button" class="btn-secondary" id="addSkillBtn">Add</button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Preferred Locations</label>
-                        <div class="skills-container" id="locationsContainer">
-                            <!-- Locations will be added here dynamically -->
-                        </div>
-                        <div class="add-skill-input">
-                            <input type="text" class="form-input" id="newLocation" placeholder="Add a location">
-                            <button type="button" class="btn-secondary" id="addLocationBtn">Add</button>
-                        </div>
-                    </div>
-                    
+
                     <button style="display: flex; text-align: center; justify-content: center;" type="submit" class="btn-primary">Register</button>
-                    
-                    <div  class="form-footer">
-                        <p style="display: flex; justify-content: center; align-items: center; text-align: center; flex-direction: column;">Already have an account? <button  type="button" class="switch-form" data-switch-to="login">Login here</button></p>
+                    <div class="form-footer">
+                        <p style="display: flex; justify-content: center; align-items: center; text-align: center; flex-direction: column;">
+                            Already have an account? <button type="button" class="switch-form" data-switch-to="login">Login here</button>
+                        </p>
                     </div>
                 </form>
 
                 <!-- Login Form -->
-                <form class="auth-form" id="loginForm">
+                <form class="auth-form" id="loginForm" autocomplete="off" method="post" action="/freelance/send-login-otp">
                     <div class="form-group">
                         <label class="form-label" for="loginEmail">Email Address</label>
-                        <input type="email" class="form-input" id="loginEmail" required>
+                        <input type="email" class="form-input" id="loginEmail" name="email" required autocomplete="off">
                     </div>
-                    
                     <button style="display: flex; justify-content: center;" type="submit" class="btn-primary">Send OTP</button>
-                    
                     <div style="display: flex; justify-content: center; align-items: center;" class="form-footer">
                         <p>Don't have an account? <button type="button" class="switch-form" data-switch-to="register">Register here</button></p>
                     </div>
@@ -1630,33 +1620,594 @@
                 <!-- OTP Verification -->
                 <div class="otp-section" id="otpSection">
                     <h3>Enter OTP</h3>
-                    <p>We've sent a 6-digit OTP to your email</p>
-                    
+                    <p id="otpMessage">We've sent a 6-digit OTP to your email</p>
                     <div class="otp-inputs">
-                        <input type="text" class="otp-input" maxlength="1" data-index="0">
-                        <input type="text" class="otp-input" maxlength="1" data-index="1">
-                        <input type="text" class="otp-input" maxlength="1" data-index="2">
-                        <input type="text" class="otp-input" maxlength="1" data-index="3">
-                        <input type="text" class="otp-input" maxlength="1" data-index="4">
-                        <input type="text" class="otp-input" maxlength="1" data-index="5">
+                        <input type="text" class="otp-input" maxlength="1" data-index="0" inputmode="numeric" pattern="\d*">
+                        <input type="text" class="otp-input" maxlength="1" data-index="1" inputmode="numeric" pattern="\d*">
+                        <input type="text" class="otp-input" maxlength="1" data-index="2" inputmode="numeric" pattern="\d*">
+                        <input type="text" class="otp-input" maxlength="1" data-index="3" inputmode="numeric" pattern="\d*">
+                        <input type="text" class="otp-input" maxlength="1" data-index="4" inputmode="numeric" pattern="\d*">
+                        <input type="text" class="otp-input" maxlength="1" data-index="5" inputmode="numeric" pattern="\d*">
                     </div>
-                    
-                   <a href="freelance-dashboard.html"> <button class="btn-primary" id="verifyOtpBtn">Verify OTP</button></a>
-                    <button class="resend-otp" id="resendOtpBtn">Resend OTP</button>
+                    <button class="btn-primary" id="verifyOtpBtn">Verify OTP</button>
+                    <button class="resend-otp" id="resendOtpBtn" type="button" style="margin-top:8px;background:none;border:none;color:#b50957;font-weight:600;">Resend OTP</button>
                 </div>
 
-                <!-- Success Message -->
                 <div class="success-message" id="successMessage">
                     <div class="success-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <h3>Registration Successful!</h3>
-                    <p>Your account has been created successfully. You can now login to access your dashboard.</p>
+                    <p>Your account has been created successfully. Please verify your email to continue.</p>
                     <button class="btn-primary" id="goToLoginBtn">Go to Login</button>
                 </div>
             </div>
         </div>
     </div>
+    <style>
+    .chips-input-wrapper {
+        border: 1px solid #d7d7d7;
+        border-radius: 4px;
+        padding: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        background: #fff;
+        min-height: 42px;
+        margin-bottom: 3px;
+        transition: border 0.2s;
+    }
+    .chip {
+        background: #f0c7d8;
+        color: #181818;
+        border-radius: 14px;
+        padding: 2px 13px 2px 9px;
+        font-size: 14px;
+        margin: 2px 5px 2px 0;
+        display: flex;
+        align-items: center;
+        cursor: default;
+    }
+    .chip .remove-chip {
+        background: none;
+        border: none;
+        color: #b50957;
+        margin-left: 7px;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        line-height: 1;
+    }
+    .chips-input {
+        border: none;
+        outline: none;
+        flex: 1 1 auto;
+        min-width: 120px;
+        font-size: 15px;
+        background: transparent;
+        margin: 3px 0;
+        padding: 2px 4px;
+    }
+    .avail-checkbox {
+        margin-right: 6px;
+        padding: 1px 4px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 3px;
+        background: #faf7fc;
+    }
+    .avail-checkbox input[type="checkbox"] {
+        margin-right: 3px;
+        accent-color: #c46db3;
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const authModal = document.getElementById('authModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const switchFormBtns = document.querySelectorAll('.switch-form');
+        const registerForm = document.getElementById('registerForm');
+        const loginForm = document.getElementById('loginForm');
+        const otpSection = document.getElementById('otpSection');
+        const otpMessage = document.getElementById('otpMessage');
+        const successMessage = document.getElementById('successMessage');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        const resendOtpBtn = document.getElementById('resendOtpBtn');
+        const goToLoginBtn = document.getElementById('goToLoginBtn');
+
+        // UTILITY: Chips component for locations & skills
+        function chipsInput(wrapperId, inputId, hiddenId) {
+            const wrapper = document.getElementById(wrapperId);
+            const input = wrapper.querySelector('input.chips-input');
+            const hidden = document.getElementById(hiddenId);
+            let values = [];
+
+            function render() {
+                wrapper.querySelectorAll('.chip').forEach(chip => chip.remove());
+                values.forEach((val, i) => {
+                    const chip = document.createElement('span');
+                    chip.className = 'chip';
+                    chip.textContent = val;
+                    const x = document.createElement('button');
+                    x.className = 'remove-chip';
+                    x.type = 'button';
+                    x.innerHTML = '&times;';
+                    x.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        values.splice(i, 1);
+                        render();
+                    });
+                    chip.appendChild(x);
+                    wrapper.insertBefore(chip, input);
+                });
+                hidden.value = JSON.stringify(values);
+            }
+
+            input.addEventListener('keydown', function(e) {
+                if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+                    e.preventDefault();
+                    let val = input.value.trim();
+                    if(!values.includes(val)) values.push(val);
+                    input.value = '';
+                    render();
+                } else if (e.key === 'Backspace' && input.value === '' && values.length) {
+                    values.pop();
+                    render();
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                let val = input.value.trim();
+                if (val && !values.includes(val)) {
+                    values.push(val);
+                    input.value = '';
+                    render();
+                }
+            });
+
+            registerForm.addEventListener('reset', function() {
+                values = [];
+                render();
+            });
+
+            render();
+        }
+        chipsInput('locations-chips-input', 'locationsInput', 'locations');
+        chipsInput('skills-chips-input', 'skillsInput', 'skills');
+
+        // AVAILABILITY composition UX
+        const daysCheckboxes = document.querySelectorAll('.availability-days input[type="checkbox"]');
+        const availStartInput = document.getElementById('availStart');
+        const availEndInput = document.getElementById('availEnd');
+        const availHidden = document.getElementById('availability');
+        function collectAvailability() {
+            const selectedDays = Array.from(daysCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            const start = availStartInput.value;
+            const end = availEndInput.value;
+            if (selectedDays.length && start && end) {
+                availHidden.value = JSON.stringify({ days: selectedDays, start, end });
+            } else {
+                availHidden.value = '';
+            }
+        }
+        daysCheckboxes.forEach(cb => cb.addEventListener('change', collectAvailability));
+        availStartInput.addEventListener('change', collectAvailability);
+        availEndInput.addEventListener('change', collectAvailability);
+        registerForm.addEventListener('reset', function() {
+            daysCheckboxes.forEach(cb => cb.checked = false);
+            availStartInput.value = '';
+            availEndInput.value = '';
+            collectAvailability();
+        });
+        registerForm.addEventListener('submit', function(e) {
+            collectAvailability();
+            if (!availHidden.value) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Availability',
+                    text: 'Please select your available days and working time.'
+                });
+                return false;
+            }
+        });
+
+        // Show/hide forms logic
+        function showForm(formName) {
+            authTabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-tab') === formName) {
+                    tab.classList.add('active');
+                }
+            });
+            authForms.forEach(form => form.classList.remove('active'));
+            if (formName === 'register') {
+                modalTitle.textContent = 'Freelancer Registration';
+                registerForm.classList.add('active');
+            } else {
+                modalTitle.textContent = 'Welcome Back';
+                loginForm.classList.add('active');
+            }
+            otpSection.classList.remove('active');
+            successMessage.classList.remove('active');
+        }
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                showForm(this.getAttribute('data-tab'));
+            });
+        });
+        switchFormBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                showForm(this.getAttribute('data-switch-to'));
+            });
+        });
+        closeModalBtn.addEventListener('click', function() {
+            authModal.classList.remove('active');
+            resetForms();
+        });
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                authModal.classList.remove('active');
+                resetForms();
+            }
+        });
+
+        // Helper: Set loading on button
+        function setLoading(btn, isLoading, loadingText = 'Loading...') {
+            if (!btn) return;
+            if (isLoading) {
+                btn.dataset.originalText = btn.textContent;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="vertical-align:middle;"></span> ' + loadingText;
+            } else {
+                if (btn.dataset.originalText) {
+                    btn.textContent = btn.dataset.originalText;
+                }
+                btn.disabled = false;
+            }
+        }
+
+        // Registration form submit: on success, show OTP modal and a message to verify
+        registerForm.addEventListener('submit', async function(e) {
+            if (e.defaultPrevented) return;
+            e.preventDefault();
+
+            const formData = new FormData(registerForm);
+
+            try {
+                const locationsVal = document.getElementById('locations').value;
+                const skillsVal = document.getElementById('skills').value;
+                const availabilityVal = document.getElementById('availability').value;
+
+                if (!locationsVal || JSON.parse(locationsVal).length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Missing Location',
+                        text: 'Please enter at least one location.'
+                    });
+                    return;
+                }
+                if (!skillsVal || JSON.parse(skillsVal).length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Missing Skills',
+                        text: 'Please enter at least one skill.'
+                    });
+                    return;
+                }
+                formData.set('locations', locationsVal);
+                formData.set('skills', JSON.parse(skillsVal).join(','));
+                formData.set('skillsArray', skillsVal);
+                formData.set('availability', availabilityVal);
+
+                // Add loading to submit button
+                const submitBtn = registerForm.querySelector('button[type="submit"], input[type="submit"]');
+                setLoading(submitBtn, true, 'Registering...');
+
+                const response = await fetch('/freelance/beautician_register', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                setLoading(submitBtn, false);
+
+                if (response.ok) {
+                    registerForm.classList.remove('active');
+                    otpSection.classList.add('active');
+                    modalTitle.textContent = 'Verify Your Email';
+
+                    const emailVal = registerForm.querySelector('#email').value.trim();
+                    if (otpMessage) {
+                        otpMessage.textContent = 'Please enter the OTP sent to your email: ' + emailVal;
+                        otpMessage.style.display = '';
+                    }
+                    otpInputs.forEach(input => input.value = '');
+                    if(otpInputs[0]) otpInputs[0].focus();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registration Successful!',
+                        html: 'Your account has been created successfully.<br>Please verify your email to continue.',
+                        timer: 2400,
+                        showConfirmButton: false
+                    });
+                } else {
+                    const errJson = await response.json().catch(() => ({}));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Failed',
+                        text: errJson.message || "Registration failed. Please try again."
+                    });
+                }
+            } catch (err) {
+                const submitBtn = registerForm.querySelector('button[type="submit"], input[type="submit"]');
+                setLoading(submitBtn, false);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "An error occurred. Please try again."
+                });
+            }
+        });
+
+        // Login: send OTP to email using /freelance/send-login-otp (for login only)
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = loginForm.querySelector('#loginEmail').value.trim();
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Email',
+                    text: 'Please enter your email.'
+                });
+                return;
+            }
+
+            const submitBtn = loginForm.querySelector('button[type="submit"], input[type="submit"]');
+            setLoading(submitBtn, true, 'Sending OTP...');
+            try {
+                const response = await fetch('/freelance/send-login-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const result = await response.json();
+                setLoading(submitBtn, false);
+                if (response.ok && result.success) {
+                    loginForm.classList.remove('active');
+                    otpSection.classList.add('active');
+                    modalTitle.textContent = 'Verify Login OTP';
+                    if (otpMessage) {
+                        otpMessage.textContent = 'Please enter the OTP sent to your email: ' + email;
+                        otpMessage.style.display = '';
+                    }
+                    otpInputs.forEach(input => input.value = '');
+                    if(otpInputs[0]) otpInputs[0].focus();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'OTP Sent',
+                        html: 'An OTP has been sent to your email. Please check your inbox.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to Send OTP',
+                        text: result.message || 'Could not send OTP. Try again.'
+                    });
+                }
+            } catch (err) {
+                setLoading(submitBtn, false);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while sending OTP.'
+                });
+            }
+        });
+
+        // OTP input UX
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.match(/\d/) && this.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // OTP verification logic
+        verifyOtpBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            let otp = '';
+            otpInputs.forEach(input => otp += input.value.trim());
+            if (otp.length !== 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid OTP',
+                    text: 'Please enter complete 6-digit OTP'
+                });
+                return;
+            }
+
+            let email = '';
+            let forLogin = false;
+            // If login tab or OTP entered after login, use loginForm email and login route
+            if (loginForm.classList.contains('active') || modalTitle.textContent.indexOf('Login') !== -1) {
+                email = loginForm.querySelector('#loginEmail').value.trim();
+                forLogin = true;
+            } else {
+                email = registerForm.querySelector('#email').value.trim();
+                forLogin = false;
+            }
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Email',
+                    text: 'Please enter email.'
+                });
+                return;
+            }
+
+            setLoading(verifyOtpBtn, true, 'Verifying...');
+            try {
+                let response, result;
+                if (forLogin) {
+                    response = await fetch('/freelance/verify-login-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, otp })
+                    });
+                    result = await response.json();
+                } else {
+                    // Registration verification (generic, still using main OTP route)
+                    response = await fetch('/verify-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, otp, purpose: 'freelancer_verify' })
+                    });
+                    result = await response.json();
+                }
+                setLoading(verifyOtpBtn, false);
+
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: forLogin ? 'Login successful!' : 'Verification successful!',
+                        html: (result.message ? result.message + '<br>' : '') +
+                              (result.status === "pending" && result.role === "freelancer"
+                                ? `<div style="margin-top:5px">Your freelancer profile is under admin review.</div>`
+                                : '') +
+                              "Redirecting...",
+                        timer: 2300,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = result.redirect || result.redirectTo || (forLogin ? '/freelance/beautician_dashboard' : '/freelance/beautician_register');
+                        resetForms();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: forLogin ? 'OTP Verification Failed' : 'OTP Verification Failed',
+                        text: result.message || "OTP verification failed. Try again."
+                    });
+                    otpInputs.forEach(input => input.value = '');
+                    if (otpInputs[0]) otpInputs[0].focus();
+                }
+            } catch (err) {
+                setLoading(verifyOtpBtn, false);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error verifying OTP',
+                    text: 'Please try again.'
+                });
+                otpInputs.forEach(input => input.value = '');
+                if (otpInputs[0]) otpInputs[0].focus();
+            }
+        });
+
+        // Resend OTP logic
+        resendOtpBtn.addEventListener('click', async function() {
+            otpInputs.forEach(input => { input.value = ''; });
+            if(otpInputs[0]) otpInputs[0].focus();
+
+            let email = '';
+            let forLogin = false;
+            if (loginForm.classList.contains('active') || modalTitle.textContent.indexOf('Login') !== -1) {
+                email = loginForm.querySelector('#loginEmail').value.trim();
+                forLogin = true;
+            } else {
+                email = registerForm.querySelector('#email').value.trim();
+                forLogin = false;
+            }
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Email',
+                    text: 'Please enter your email.'
+                });
+                return;
+            }
+
+            setLoading(resendOtpBtn, true, 'Resending...');
+            try {
+                let response, result;
+                if (forLogin) {
+                    // Use the send-login-otp endpoint for login
+                    response = await fetch('/freelance/send-login-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                } else {
+                    // Use the registration OTP endpoint for resending registration verification
+                    response = await fetch('/auth/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, purpose: 'freelancer_verify' })
+                    });
+                }
+                result = await response.json();
+
+                setLoading(resendOtpBtn, false);
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'OTP Resent',
+                        html: 'OTP has been resent to your email.',
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                    if (otpMessage) {
+                        otpMessage.textContent = 'Please enter the OTP sent to your email: ' + email;
+                        otpMessage.style.display = '';
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to Resend OTP',
+                        text: result.message || 'Could not resend OTP.'
+                    });
+                }
+            } catch (err) {
+                setLoading(resendOtpBtn, false);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error resending OTP',
+                    text: 'Please try again.'
+                });
+            }
+        });
+
+        goToLoginBtn.addEventListener('click', function() {
+            showForm('login');
+        });
+
+        function resetForms() {
+            registerForm.reset();
+            loginForm.reset();
+            otpInputs.forEach(input => input.value = '');
+            showForm('register');
+            if (otpMessage) {
+                otpMessage.textContent = '';
+                otpMessage.style.display = 'none';
+            }
+        }
+    });
+    </script>
 
     <!-- quickView -->
     <div class="modal fullRight fade modal-quick-view" id="quickView">
@@ -2937,260 +3488,7 @@
 
         var AUTOHIDE = Boolean(0);
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Modal Elements
-            const authModal = document.getElementById('authModal');
-            const openAuthModalBtn = document.getElementById('openAuthModal');
-            const openAuthModalBtn2 = document.getElementById('openAuthModal2');
-            const openAuthModalBtn3 = document.getElementById('openAuthModal3');
-            const closeModalBtn = document.getElementById('closeModal');
-            const modalTitle = document.getElementById('modalTitle');
-
-            // Form Elements
-            const authTabs = document.querySelectorAll('.auth-tab');
-            const authForms = document.querySelectorAll('.auth-form');
-            const switchFormBtns = document.querySelectorAll('.switch-form');
-            const registerForm = document.getElementById('registerForm');
-            const loginForm = document.getElementById('loginForm');
-            const otpSection = document.getElementById('otpSection');
-            const successMessage = document.getElementById('successMessage');
-
-            // OTP Elements
-            const otpInputs = document.querySelectorAll('.otp-input');
-            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-            const resendOtpBtn = document.getElementById('resendOtpBtn');
-            const goToLoginBtn = document.getElementById('goToLoginBtn');
-
-            // Skills and Locations
-            const skillsContainer = document.getElementById('skillsContainer');
-            const locationsContainer = document.getElementById('locationsContainer');
-            const addSkillBtn = document.getElementById('addSkillBtn');
-            const addLocationBtn = document.getElementById('addLocationBtn');
-            const newSkillInput = document.getElementById('newSkill');
-            const newLocationInput = document.getElementById('newLocation');
-
-            // Open Modal from all buttons
-            function openModal(defaultTab = 'register') {
-                authModal.classList.add('active');
-                showForm(defaultTab);
-            }
-
-            // Button 1 - Hero Section "Register Now"
-            openAuthModalBtn.addEventListener('click', function() {
-                openModal('register');
-            });
-
-            // Button 2 - CTA Section "Register Now"
-            openAuthModalBtn2.addEventListener('click', function() {
-                openModal('register');
-            });
-
-            // Button 3 - CTA Section "Already Registered? Login"
-            openAuthModalBtn3.addEventListener('click', function() {
-                openModal('login');
-            });
-
-            // Close Modal
-            closeModalBtn.addEventListener('click', function() {
-                authModal.classList.remove('active');
-                resetForms();
-            });
-
-            // Close modal when clicking outside
-            authModal.addEventListener('click', function(e) {
-                if (e.target === authModal) {
-                    authModal.classList.remove('active');
-                    resetForms();
-                }
-            });
-
-            // Switch between tabs
-            authTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabName = this.getAttribute('data-tab');
-                    showForm(tabName);
-                });
-            });
-
-            // Switch between forms using footer links
-            switchFormBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const formToShow = this.getAttribute('data-switch-to');
-                    showForm(formToShow);
-                });
-            });
-
-            // Show specific form
-            function showForm(formName) {
-                // Update tabs
-                authTabs.forEach(tab => {
-                    tab.classList.remove('active');
-                    if (tab.getAttribute('data-tab') === formName) {
-                        tab.classList.add('active');
-                    }
-                });
-
-                // Update forms
-                authForms.forEach(form => {
-                    form.classList.remove('active');
-                });
-
-                // Update modal title
-                if (formName === 'register') {
-                    modalTitle.textContent = 'Create Your Account';
-                    registerForm.classList.add('active');
-                } else {
-                    modalTitle.textContent = 'Welcome Back';
-                    loginForm.classList.add('active');
-                }
-
-                // Hide OTP and success messages
-                otpSection.classList.remove('active');
-                successMessage.classList.remove('active');
-            }
-
-            // Register Form Submission
-            registerForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Get form data
-                const formData = {
-                    fullName: document.getElementById('fullName').value,
-                    phoneNumber: document.getElementById('phoneNumber').value,
-                    email: document.getElementById('email').value,
-                    location: document.getElementById('location').value,
-                    proofType: document.getElementById('proofType').value,
-                    proofNumber: document.getElementById('proofNumber').value,
-                    skills: Array.from(skillsContainer.querySelectorAll('.skill-tag')).map(tag => tag.textContent.replace(' ×', '')),
-                    preferredLocations: Array.from(locationsContainer.querySelectorAll('.skill-tag')).map(tag => tag.textContent.replace(' ×', ''))
-                };
-
-                // In a real app, you would send this data to your backend
-                console.log('Registration data:', formData);
-
-                // Show success message
-                registerForm.classList.remove('active');
-                successMessage.classList.add('active');
-                modalTitle.textContent = 'Registration Successful';
-            });
-
-            // Login Form Submission
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('loginEmail').value;
-                
-                // In a real app, you would send OTP to the email
-                console.log('Sending OTP to:', email);
-                
-                // Show OTP section
-                loginForm.classList.remove('active');
-                otpSection.classList.add('active');
-                modalTitle.textContent = 'Verify Your Email';
-            });
-
-            // OTP Input Handling
-            otpInputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
-                    if (this.value.length === 1 && index < otpInputs.length - 1) {
-                        otpInputs[index + 1].focus();
-                    }
-                });
-
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                        otpInputs[index - 1].focus();
-                    }
-                });
-            });
-
-            // Verify OTP
-            verifyOtpBtn.addEventListener('click', function() {
-                let otp = '';
-                otpInputs.forEach(input => {
-                    otp += input.value;
-                });
-
-                if (otp.length === 6) {
-                    // In a real app, you would verify OTP with backend
-                    console.log('Verifying OTP:', otp);
-                    
-                    // For demo purposes, assume OTP is correct
-                    alert('Login successful! Redirecting to dashboard...');
-                    authModal.classList.remove('active');
-                    resetForms();
-                    
-                    // Here you would redirect to the actual dashboard
-                    // window.location.href = 'dashboard.html';
-                } else {
-                    alert('Please enter complete 6-digit OTP');
-                }
-            });
-
-            // Resend OTP
-            resendOtpBtn.addEventListener('click', function() {
-                // In a real app, you would resend OTP
-                console.log('Resending OTP...');
-                alert('OTP has been resent to your email');
-                
-                // Clear OTP inputs
-                otpInputs.forEach(input => {
-                    input.value = '';
-                });
-                otpInputs[0].focus();
-            });
-
-            // Go to Login from Success
-            goToLoginBtn.addEventListener('click', function() {
-                showForm('login');
-            });
-
-            // Add Skill
-            addSkillBtn.addEventListener('click', function() {
-                const skill = newSkillInput.value.trim();
-                if (skill) {
-                    const skillTag = document.createElement('div');
-                    skillTag.className = 'skill-tag';
-                    skillTag.innerHTML = `${skill} <i class="fas fa-times"></i>`;
-                    
-                    skillTag.querySelector('i').addEventListener('click', function() {
-                        skillTag.remove();
-                    });
-                    
-                    skillsContainer.appendChild(skillTag);
-                    newSkillInput.value = '';
-                }
-            });
-
-            // Add Location
-            addLocationBtn.addEventListener('click', function() {
-                const location = newLocationInput.value.trim();
-                if (location) {
-                    const locationTag = document.createElement('div');
-                    locationTag.className = 'skill-tag';
-                    locationTag.innerHTML = `${location} <i class="fas fa-times"></i>`;
-                    
-                    locationTag.querySelector('i').addEventListener('click', function() {
-                        locationTag.remove();
-                    });
-                    
-                    locationsContainer.appendChild(locationTag);
-                    newLocationInput.value = '';
-                }
-            });
-
-            // Reset all forms
-            function resetForms() {
-                registerForm.reset();
-                loginForm.reset();
-                otpInputs.forEach(input => input.value = '');
-                skillsContainer.innerHTML = '';
-                locationsContainer.innerHTML = '';
-                showForm('register');
-            }
-        });
-    </script>
+ 
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {

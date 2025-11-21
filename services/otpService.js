@@ -6,12 +6,11 @@ const nodemailer = require('nodemailer');
 const FAST2SMS_KEY = process.env.FAST2SMS_API_KEY;
 const FAST2SMS_SENDER = process.env.FAST2SMS_SENDER || 'FSTSMS';
 
-// generate 6-digit OTP and return plain + hash
+
 function genOtp() {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const salt = crypto.randomBytes(8).toString('hex');
   const hash = crypto.createHmac('sha256', salt).update(otp).digest('hex');
-  // store salt + hash together so we can verify: salt$hash
   return { otp, storedHash: `${salt}$${hash}` };
 }
 

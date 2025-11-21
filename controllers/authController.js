@@ -86,52 +86,67 @@ exports.verifyOtp = async (req, res) => {
       return res.status(400).json({ error: "Invalid OTP" });
     }
 
+    // Delete OTP after success
     await Otp.deleteMany({ phone: identifier, purpose });
 
-    // =========================================================
-    // USER CREATION OR FETCH BASED ON PURPOSE
-    // =========================================================
-    let user;
+    let user = await User.findOne({ email });
 
-    if (phone) {
-      // Normal Customer/User
+    /* ---------- ROLE LOGIC ----------- */
+    if (purpose === "freelancer_verify") {
+
+      user = await User.findOneAndUpdate(
+        { email },
+        { isVerified: true, role: "freelancer" },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        success: true,
+        role: "freelancer",
+        status: "pending",
+        message: "OTP verified. Your freelancer profile is under admin review."
+      });
+    }
+
+    if (purpose === "reseller_verify") {
+
+      user = await User.findOneAndUpdate(
+        { email },
+        { isVerified: true, role: "reseller" },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        success: true,
+        role: "reseller",
+        status: "pending",
+        message: "OTP verified. Your reseller account is under admin review."
+      });
+    }
+
+    /* ---------- NORMAL USER LOGIN ----------- */
+    if (phone && purpose === "login") {
       user = await User.findOneAndUpdate(
         { phone },
         { isVerified: true },
         { new: true, upsert: true }
       );
-    } else if (purpose === "reseller_verify") {
-      user = await User.findOne({ email });
-      if (!user) user = await User.create({ email, role: "reseller", isVerified: true });
-    } else if (purpose === "freelancer_verify") {
-      user = await User.findOne({ email });
-      if (!user) user = await User.create({ email, role: "freelancer", isVerified: true });
-    } else {
-      // Default fallback user
-      user = await User.findOneAndUpdate(
-        { email },
-        { isVerified: true },
-        { new: true, upsert: true }
-      );
+
+      req.session.user = {
+        _id: user._id,
+        name: user.name || "",
+        phone: user.phone,
+        email: user.email,
+        role: user.role || "user"
+      };
+
+      return res.redirect("/user/dashboard");
     }
 
-    // =====================================================
-    // SESSION CREATION (OPTION A SYSTEM)
-    // =====================================================
-    req.session.user = {
-      _id: user._id,
-      name: user.name || "",
-      phone: user.phone,
-      email: user.email,
-      role: user.role
-    };
-
-    // =====================================================
-    // REDIRECT BASED ON ROLE
-    // =====================================================
-    if (user.role === "reseller") return res.redirect("/reseller/dashboard");
-    if (user.role === "freelancer") return res.redirect("/freelancer/dashboard");
-    if (user.role === "salon") return res.redirect("/salon/dashboard");
+    /* ---------- SALON LOGIN ----------- */
+    if (user && user.role === "salon") {
+      return res.redirect("/salon/dashboard");
+    }
 
     return res.redirect("/user/dashboard");
 
@@ -140,6 +155,7 @@ exports.verifyOtp = async (req, res) => {
     return res.status(500).json({ error: "OTP verification failed" });
   }
 };
+
 
 /* ============================================================
    LOGOUT
