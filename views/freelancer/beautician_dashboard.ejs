@@ -889,6 +889,12 @@
                     <i class="fas fa-wallet"></i>
                     <span>Payments</span>
                 </li>
+                <li class="nav-item">
+                    <a href="/logout" style="display: flex; align-items: center; color: inherit; text-decoration: none;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span style="margin-left: 8px;">Logout</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     
@@ -1484,6 +1490,8 @@
                     locations: <%- JSON.stringify(freelancer.locations || []) %>,
                     availability: <%- JSON.stringify(freelancer.availability || []) %>,
                     freelancerServices: <%- JSON.stringify(freelancer.freelancerServices || []) %>,
+                    profileImage: '<%= freelancer.profileImage || "" %>',
+                    portfolioImages: <%- JSON.stringify(freelancer.portfolioImages || []) %>,
                     createdAt: '<%= freelancer.createdAt || "" %>'
                 }
             };
@@ -1534,6 +1542,21 @@
         safeAddEventListener('#view-calendar', 'click', function(e) {
             e.preventDefault();
             switchToPage('bookings');
+        });
+
+        // For portfolio/profile image edits
+        document.body.addEventListener('change', async function (e) {
+            if (e.target && e.target.matches('#profile-pic-input')) {
+                await uploadProfileImage(e);
+            } else if (e.target && e.target.matches('#portfolio-images-input')) {
+                await uploadPortfolioImages(e);
+            }
+        });
+        document.body.addEventListener('click', async function (e) {
+            if (e.target.classList.contains('remove-portfolio-img-btn')) {
+                const img = e.target.getAttribute('data-img');
+                await removePortfolioImage(img);
+            }
         });
     }
 
@@ -1593,44 +1616,88 @@
         });
     }
 
+    function profileImgHtml(freelancer, editable) {
+        let html = `<div class="profile-pic-block" style="text-align:center;margin-bottom:15px;">
+            <img src="${freelancer.profileImage ? freelancer.profileImage : '/images/user-placeholder.svg'}" alt="Profile" style="height:90px;width:90px;border-radius:50%;border: 1.5px solid #b6b6b6;object-fit:cover;" id="current-profile-pic">
+            ${editable ? `<div>
+               <label class="action-button secondary-button" style="margin-top: 6px; font-size: 0.925rem;">
+                   Change
+                   <input type="file" accept="image/*" id="profile-pic-input" style="display:none;" />
+               </label>
+            </div>` : ""}
+        </div>`;
+        return html;
+    }
+
+    function portfolioImagesHtml(freelancer, editable) {
+        let html = `<div class="portfolio-section" style="margin-bottom: 18px;">
+            <div style="font-size:1.01rem;font-weight:500;margin-bottom:8px">Portfolio Images:</div>
+            <div class="portfolio-images-gallery" style="display: flex; flex-wrap: wrap; gap: 10px;">`;
+
+        // Display existing images
+        (freelancer.portfolioImages || []).forEach(img => {
+            html += `<div style="position: relative;">
+                <img src="${img}" alt="Portfolio" style="width: 70px; height: 70px; object-fit: cover; border-radius:8px; border:1px solid #e5e5e5">
+                ${editable ? `<button class="remove-portfolio-img-btn" data-img="${img}" style="position:absolute;top:1px;right:1px;background:#9b1b1b;color:#fff;border:none;border-radius:50%;padding:2px 6px;cursor:pointer;min-width:22px;line-height:15px;">&times;</button>` : ""}
+            </div>`;
+        });
+
+        html += `</div>`;
+        if (editable) {
+            html += `<div style="margin-top:10px;">
+                <label class="action-button secondary-button" style="font-size:0.98rem;">
+                    Add Images
+                    <input type="file" id="portfolio-images-input" accept="image/*" multiple style="display:none;">
+                </label>
+            </div>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+
     function loadProfileInfo() {
         const container = safeQuerySelector('#profile-info');
         if (!container || !freelancerData || !freelancerData.freelancer) {
             return;
         }
         const freelancer = freelancerData.freelancer;
-        container.innerHTML = `
+        const editable = isProfileEditMode;
+
+        let html = profileImgHtml(freelancer, editable);
+        html += `
             <div class="profile-field">
                 <span class="field-label">Full Name *</span>
                 <span class="field-value">${escapeHtml(freelancer.fullName || 'Not set')}</span>
-                <input type="text" class="form-input" value="${escapeHtml(freelancer.fullName || '')}" data-field="fullName">
+                <input type="text" class="form-input" value="${escapeHtml(freelancer.fullName || '')}" data-field="fullName" style="display:none;">
             </div>
             <div class="profile-field">
                 <span class="field-label">Professional Title</span>
                 <span class="field-value">${escapeHtml(freelancer.professionalTitle || 'Not set')}</span>
-                <input type="text" class="form-input" value="${escapeHtml(freelancer.professionalTitle || '')}" data-field="professionalTitle">
+                <input type="text" class="form-input" value="${escapeHtml(freelancer.professionalTitle || '')}" data-field="professionalTitle" style="display:none;">
             </div>
             <div class="profile-field">
                 <span class="field-label">Bio</span>
                 <span class="field-value">${escapeHtml(freelancer.bio || 'Not set')}</span>
-                <textarea class="form-input form-textarea" data-field="bio">${escapeHtml(freelancer.bio || '')}</textarea>
+                <textarea class="form-input form-textarea" data-field="bio" style="display:none;">${escapeHtml(freelancer.bio || '')}</textarea>
             </div>
             <div class="profile-field">
                 <span class="field-label">Experience (Years) *</span>
                 <span class="field-value">${freelancer.experience || 0} years</span>
-                <input type="number" class="form-input" value="${freelancer.experience || 0}" data-field="experience" min="0" max="50">
+                <input type="number" class="form-input" value="${freelancer.experience || 0}" data-field="experience" min="0" max="50" style="display:none;">
             </div>
             <div class="profile-field">
                 <span class="field-label">Contact Email *</span>
                 <span class="field-value">${escapeHtml(freelancer.email || 'Not set')}</span>
-                <input type="email" class="form-input" value="${escapeHtml(freelancer.email || '')}" data-field="email">
+                <input type="email" class="form-input" value="${escapeHtml(freelancer.email || '')}" data-field="email" style="display:none;">
             </div>
             <div class="profile-field">
                 <span class="field-label">Phone Number *</span>
                 <span class="field-value">${escapeHtml(freelancer.phone || 'Not set')}</span>
-                <input type="tel" class="form-input" value="${escapeHtml(freelancer.phone || '')}" data-field="phone">
+                <input type="tel" class="form-input" value="${escapeHtml(freelancer.phone || '')}" data-field="phone" style="display:none;">
             </div>
         `;
+        html += portfolioImagesHtml(freelancer, editable);
+        container.innerHTML = html;
     }
 
     function enterProfileEditMode() {
@@ -1644,6 +1711,8 @@
                 formInput.style.display = 'block';
             }
         });
+        // Show/hide upload UI for pic/portfolio handled by loadProfileInfo
+        loadProfileInfo();
         const editBtn = safeQuerySelector('#edit-profile-btn');
         const saveBtn = safeQuerySelector('#save-profile-btn');
         const cancelBtn = safeQuerySelector('#cancel-profile-btn');
@@ -1663,13 +1732,13 @@
                 formInput.style.display = 'none';
             }
         });
+        loadProfileInfo();
         const editBtn = safeQuerySelector('#edit-profile-btn');
         const saveBtn = safeQuerySelector('#save-profile-btn');
         const cancelBtn = safeQuerySelector('#cancel-profile-btn');
         if (editBtn) editBtn.style.display = 'inline-block';
         if (saveBtn) saveBtn.style.display = 'none';
         if (cancelBtn) cancelBtn.style.display = 'none';
-        loadProfileInfo();
     }
 
     async function saveProfile() {
@@ -1714,6 +1783,82 @@
             }
         } catch (error) {
             alert('Failed to update profile: ' + error.message);
+        }
+    }
+
+    async function uploadProfileImage(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append('profileImage', file);
+            const resp = await fetch('/freelance/freelancer/upload-profile-image', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+            if (data.success && data.url) {
+                // Update on the client side for immediate feedback, but reload after saveProfile
+                freelancerData.freelancer.profileImage = data.url;
+                // Replace the current image
+                const img = safeQuerySelector('#current-profile-pic');
+                if (img) img.src = data.url;
+                alert('Profile image updated! Save your profile to keep the change.');
+            } else {
+                alert('Failed to upload profile image. ' + (data.error || ''));
+            }
+        } catch (err) {
+            alert('Error uploading image');
+        }
+    }
+
+    async function uploadPortfolioImages(e) {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        try {
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('portfolioImages', files[i]);
+            }
+            const resp = await fetch('/freelance/freelancer/upload-portfolio-images', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+            if (data.success && Array.isArray(data.urls)) {
+                // Update on the client for immediate feedback, but reload after saveProfile
+                freelancerData.freelancer.portfolioImages = [
+                    ...(freelancerData.freelancer.portfolioImages || []),
+                    ...data.urls
+                ];
+                loadProfileInfo();
+                alert('Portfolio images uploaded! Save your profile to keep the changes.');
+            } else {
+                alert('Failed to upload images. ' + (data.error || ''));
+            }
+        } catch (err) {
+            alert('Error uploading images');
+        }
+    }
+
+    async function removePortfolioImage(imgUrl) {
+        if (!confirm('Remove this portfolio image?')) return;
+        try {
+            // Immediate remove from local for feedback before server
+            const images = freelancerData.freelancer.portfolioImages || [];
+            freelancerData.freelancer.portfolioImages = images.filter(img => img !== imgUrl);
+            loadProfileInfo();
+            const resp = await fetch('/freelance/freelancer/remove-portfolio-image', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imgUrl })
+            });
+            const data = await resp.json();
+            if (!data.success) {
+                alert('Failed to remove image. ' + (data.error || ''));
+            }
+        } catch (err) {
+            alert('Error removing image');
         }
     }
 
@@ -2065,7 +2210,7 @@
         const freelancer = freelancerData.freelancer;
         const locationsText = (freelancer.locations || []).map(loc => loc.city).join(', ') || 'Not set';
         const servicesCount = (freelancer.freelancerServices || []).length;
-        container.innerHTML = `
+        let html = `
             <div class="preview-section">
                 <h4>Basic Information</h4>
                 <div class="preview-field">
@@ -2077,8 +2222,20 @@
                 <div class="preview-field">
                     <strong>Experience:</strong> ${freelancer.experience || 0} years
                 </div>
+                <div class="preview-field">
+                    <strong>Profile Picture:</strong> <img src="${freelancer.profileImage || '/images/user-placeholder.svg'}" alt="Profile" style="height:45px;width:45px;border-radius:50%;border:1.5px solid #b6b6b6;object-fit:cover;">
+                </div>
             </div>
-            
+            <div class="preview-section">
+                <h4>Portfolio Images</h4>
+                <div class="preview-field">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        ${(freelancer.portfolioImages || []).map(img => 
+                            `<img src="${img}" alt="Portfolio" style="width:45px;height:45px;object-fit:cover;border-radius:8px;border:1px solid #ddd;" />`
+                        ).join('') || '<span style="color:#888;">No portfolio images</span>'}
+                    </div>
+                </div>
+            </div>
             <div class="preview-section">
                 <h4>Service Details</h4>
                 <div class="preview-field">
@@ -2088,7 +2245,6 @@
                     <strong>Service Locations:</strong> ${escapeHtml(locationsText)}
                 </div>
             </div>
-            
             <div class="preview-section">
                 <h4>Availability</h4>
                 <div class="preview-field">
@@ -2096,6 +2252,7 @@
                 </div>
             </div>
         `;
+        container.innerHTML = html;
     }
 
     function getAvailableDaysCount() {
