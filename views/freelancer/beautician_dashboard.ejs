@@ -869,7 +869,7 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar-navigation" id="sidebarNavigation">
             <div class="brand-logo">
-                <img style="background-color: white; padding: 5px; height: 56px; border-radius: 50px;" src="images/logo/blushley-png-without-shade.png" alt="">
+                <img style="background-color: white; padding: 5px; height: 56px; border-radius: 50px;" src="/images/logo/blushley-png-without-shade.png" alt="">
                 <h1>Blushley</h1>
             </div>
             <ul class="nav-menu">
@@ -1510,6 +1510,14 @@
     }
 
     function setupEventListeners() {
+        // Sidebar toggle functionality
+        safeAddEventListener('#mobileMenuToggle', 'click', function() {
+            const sidebar = document.getElementById('sidebarNavigation');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-hidden');
+            }
+        });
+        
         safeAddEventListener('#edit-profile-btn', 'click', enterProfileEditMode);
         safeAddEventListener('#save-profile-btn', 'click', saveProfile);
         safeAddEventListener('#cancel-profile-btn', 'click', exitProfileEditMode);
