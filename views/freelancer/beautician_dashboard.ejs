@@ -891,26 +891,34 @@
                 </li>
             </ul>
         </nav>
-
+    
         <!-- Main Content Area -->
         <main class="main-content-area" id="mainContentArea">
             <!-- Header Bar -->
             <div class="header-bar">
                 <div class="page-title">
                     <h2 id="current-page-title">Beautician Dashboard</h2>
-                    <p id="current-page-description">Welcome back, Sophia! Here's your beauty business overview.</p>
+                    <p id="current-page-description">
+                        Welcome back, <%= freelancer.fullName || 'Freelancer' %>! Here's your beauty business overview.
+                    </p>
                 </div>
                 <div class="user-profile">
                     <div class="user-avatar">
+                        <% if(freelancer.profileImage) { %>
+                        <img src="<%= freelancer.profileImage %>" alt="Profile" style="width:40px; height:40px; border-radius: 50%;">
+                        <% } else { %>
                         <i class="fas fa-user"></i>
+                        <% } %>
                     </div>
                     <div class="user-info">
-                        <h4>Sophia Martinez</h4>
-                        <p>Beauty Specialist</p>
+                        <h4><%= freelancer.fullName || 'Freelancer' %></h4>
+                        <p>
+                            <%= freelancer.professionalTitle || 'Beautician' %>
+                        </p>
                     </div>
                 </div>
             </div>
-
+    
             <!-- Dashboard Page -->
             <div class="page-content active" id="dashboard-page">
                 <!-- Dashboard Cards -->
@@ -919,32 +927,32 @@
                         <div class="card-icon primary">
                             <i class="fas fa-calendar-day"></i>
                         </div>
-                        <div class="card-value">8</div>
+                        <div class="card-value"><%= todaysBookings ? todaysBookings.length : 0 %></div>
                         <div class="card-label">Today's Appointments</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon success">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <div class="card-value">42</div>
+                        <div class="card-value"><%= completedThisMonth || 0 %></div>
                         <div class="card-label">Completed This Month</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon warning">
                             <i class="fas fa-clock"></i>
                         </div>
-                        <div class="card-value">5</div>
+                        <div class="card-value"><%= pendingConfirmations ? pendingConfirmations.length : 0 %></div>
                         <div class="card-label">Pending Confirmations</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon danger">
                             <i class="fas fa-indian-rupee"></i>
                         </div>
-                        <div class="card-value">₹2,850</div>
+                        <div class="card-value">₹<%= totalEarnings || 0 %></div>
                         <div class="card-label">Earnings This Month</div>
                     </div>
                 </div>
-
+    
                 <!-- Dashboard Sections -->
                 <div class="dashboard-sections">
                     <!-- Left Column -->
@@ -953,7 +961,7 @@
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Today's Appointments</h3>
-                                <a href="#" class="view-all-link">View All</a>
+                                <a href="#" class="view-all-link" id="view-all-bookings">View All</a>
                             </div>
                             <div class="table-responsive">
                                 <table class="bookings-table">
@@ -967,98 +975,85 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="client-info">
-                                                    <div class="client-avatar">EJ</div>
-                                                    <div>Emma Johnson</div>
-                                                </div>
-                                            </td>
-                                            <td>Bridal Makeup</td>
-                                            <td>10:00 AM</td>
-                                            <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                            <td><button class="action-button confirm-button" disabled>Confirmed</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="client-info">
-                                                    <div class="client-avatar">MW</div>
-                                                    <div>Mia Williams</div>
-                                                </div>
-                                            </td>
-                                            <td>Facial Treatment</td>
-                                            <td>11:30 AM</td>
-                                            <td><span class="status-badge status-pending">Pending</span></td>
-                                            <td><button class="action-button confirm-button">Confirm</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="client-info">
-                                                    <div class="client-avatar">OB</div>
-                                                    <div>Olivia Brown</div>
-                                                </div>
-                                            </td>
-                                            <td>Hair Styling</td>
-                                            <td>2:00 PM</td>
-                                            <td><span class="status-badge status-pending">Pending</span></td>
-                                            <td><button class="action-button confirm-button">Confirm</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="client-info">
-                                                    <div class="client-avatar">AD</div>
-                                                    <div>Ava Davis</div>
-                                                </div>
-                                            </td>
-                                            <td>Manicure & Pedicure</td>
-                                            <td>4:30 PM</td>
-                                            <td><span class="status-badge status-completed">Completed</span></td>
-                                            <td><button class="action-button confirm-button" disabled>Completed</button></td>
-                                        </tr>
+                                        <% if(todaysBookings && todaysBookings.length) { %>
+                                            <% todaysBookings.forEach(function(b) { %>
+                                                <tr>
+                                                    <td>
+                                                        <div class="client-info">
+                                                            <div class="client-avatar">
+                                                                <%= b.user && b.user.fullName 
+                                                                    ? (b.user.fullName.trim().split(" ").map(x=>x[0]).join("").substring(0,2).toUpperCase())
+                                                                    : 'NA'
+                                                                %>
+                                                            </div>
+                                                            <div><%= b.user && b.user.fullName || 'Unknown' %></div>
+                                                        </div>
+                                                    </td>
+                                                    <td><%= b.service && b.service.name || '-' %></td>
+                                                    <td>
+                                                        <% 
+                                                            const start = new Date(b.bookingTime);
+                                                            let options = { hour: 'numeric', minute: '2-digit', hour12:true };
+                                                        %>
+                                                        <%= start.toLocaleTimeString('en-US', options) %>
+                                                    </td>
+                                                    <td>
+                                                        <% let badge = 'status-pending', statusTxt = 'Pending';
+                                                        if(b.status === 'completed') { 
+                                                            badge = 'status-completed'; statusTxt='Completed'; 
+                                                        } else if(b.status === 'confirmed'){ 
+                                                            badge = 'status-confirmed'; statusTxt='Confirmed';
+                                                        }
+                                                        %>
+                                                        <span class="status-badge <%= badge %>"><%= statusTxt %></span>
+                                                    </td>
+                                                    <td>
+                                                        <% if(b.status === 'pending') { %>
+                                                        <button class="action-button confirm-button" onclick="confirmAppointment('<%= b._id %>')">Confirm</button>
+                                                        <% } else { %>
+                                                        <button class="action-button confirm-button" disabled><%= statusTxt %></button>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr><td colspan="5">No appointments today.</td></tr>
+                                        <% } %>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
+    
                         <!-- Payment Dashboard -->
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Recent Payments</h3>
-                                <a href="#" class="view-all-link">View All</a>
+                                <a href="#" class="view-all-link" id="view-all-payments">View All</a>
                             </div>
                             <div class="payment-list">
+                                <% 
+                                let paidPayments = allBookings.filter(b =>
+                                    b.status === 'completed' && b.payment && b.payment.status === 'paid'
+                                ).slice(0, 4);
+    
+                                paidPayments.forEach(function(b) { %>
                                 <div class="payment-item">
                                     <div class="payment-info">
-                                        <h4>Emma Johnson</h4>
-                                        <p>Bridal Makeup</p>
+                                        <h4><%= b.user && b.user.fullName || 'Unknown' %></h4>
+                                        <p><%= b.service && b.service.name || '' %></p>
                                     </div>
-                                    <div class="payment-amount">₹120</div>
-                                </div>
-                                <div class="payment-item">
-                                    <div class="payment-info">
-                                        <h4>Mia Williams</h4>
-                                        <p>Facial Treatment</p>
+                                    <div class="payment-amount">
+                                        ₹<%= b.service && b.service.price ? b.service.price : 0 %>
                                     </div>
-                                    <div class="payment-amount">₹85</div>
                                 </div>
-                                <div class="payment-item">
-                                    <div class="payment-info">
-                                        <h4>Olivia Brown</h4>
-                                        <p>Hair Styling</p>
-                                    </div>
-                                    <div class="payment-amount">₹65</div>
-                                </div>
-                                <div class="payment-item">
-                                    <div class="payment-info">
-                                        <h4>Ava Davis</h4>
-                                        <p>Manicure & Pedicure</p>
-                                    </div>
-                                    <div class="payment-amount">₹55</div>
-                                </div>
+                                <% }); %>
+                                <% if(paidPayments.length === 0) { %>
+                                    <div style="padding:10px; color: #777;">No recent payments.</div>
+                                <% } %>
                             </div>
                         </div>
                     </div>
-
+    
                     <!-- Right Column -->
                     <div class="right-column">
                         <!-- Profile Section -->
@@ -1070,62 +1065,67 @@
                             <div class="profile-details">
                                 <div class="profile-field">
                                     <span class="field-label">Specialization</span>
-                                    <span class="field-value">Bridal Makeup & Skincare</span>
+                                    <span class="field-value"><%= freelancer.professionalTitle || 'N/A' %></span>
                                 </div>
                                 <div class="profile-field">
                                     <span class="field-label">Experience</span>
-                                    <span class="field-value">6 Years</span>
+                                    <span class="field-value"><%= freelancer.experience ? `${freelancer.experience} Year${freelancer.experience>1?"s":""}`:'N/A' %></span>
                                 </div>
-                               
                                 <div class="profile-field">
                                     <span class="field-label">Response Time</span>
                                     <span class="field-value">&lt; 1 hour</span>
                                 </div>
                                 <div class="profile-field">
                                     <span class="field-label">Client Rating</span>
-                                    <span class="field-value">4.9/5</span>
+                                    <span class="field-value"><%= freelancer.rating ? freelancer.rating.toFixed(1) : '-' %>/<%= 5 %></span>
                                 </div>
                                 <div class="profile-field">
                                     <span class="field-label">Member Since</span>
-                                    <span class="field-value">Mar 2018</span>
+                                    <span class="field-value">
+                                        <%= freelancer.createdAt 
+                                            ? freelancer.createdAt.toLocaleString('default', { month: 'short', year: 'numeric' })
+                                            : '-' %>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-
+    
                         <!-- Upcoming Appointments -->
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Upcoming Appointments</h3>
-                                <a href="#" class="view-all-link">View Calendar</a>
+                                <a href="#" class="view-all-link" id="view-calendar">View Calendar</a>
                             </div>
                             <div class="deadline-list">
+                                <% 
+                                    let upcoming = allBookings.filter(b => 
+                                        b.status !== 'completed' && new Date(b.bookingTime) > new Date()
+                                    ).sort((a,b)=>new Date(a.bookingTime)-new Date(b.bookingTime)).slice(0, 3);
+                                    if (upcoming.length === 0) { 
+                                %>
+                                    <div style="padding:10px; color: #777;">No upcoming appointments.</div>
+                                <% } %>
+                                <% 
+                                upcoming.forEach(function(b) { 
+                                    let appointmentDate = new Date(b.bookingTime);
+                                    let dateLabel = appointmentDate.toDateString() === new Date().toDateString() 
+                                        ? "Today" 
+                                        : (appointmentDate.toDateString() === new Date(Date.now() + 86400000).toDateString() ? "Tomorrow" : appointmentDate.toLocaleDateString("en-US",{month:'short', day:'numeric'}));
+                                %>
                                 <div class="payment-item">
                                     <div class="payment-info">
-                                        <h4>Isabella Garcia</h4>
-                                        <p>Evening Makeup</p>
+                                        <h4><%= b.user && b.user.fullName || 'Unknown' %></h4>
+                                        <p><%= b.service && b.service.name || '' %></p>
                                     </div>
-                                    <div class="payment-amount">Tomorrow</div>
+                                    <div class="payment-amount"><%= dateLabel %></div>
                                 </div>
-                                <div class="payment-item">
-                                    <div class="payment-info">
-                                        <h4>Sophia Martinez</h4>
-                                        <p>Skincare Consultation</p>
-                                    </div>
-                                    <div class="payment-amount">Oct 18</div>
-                                </div>
-                                <div class="payment-item">
-                                    <div class="payment-info">
-                                        <h4>Charlotte Wilson</h4>
-                                        <p>Bridal Trial</p>
-                                    </div>
-                                    <div class="payment-amount">Oct 20</div>
-                                </div>
+                                <% }); %>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
+    
             <!-- Bookings Page -->
             <div class="page-content" id="bookings-page">
                 <div class="section-card">
@@ -1143,324 +1143,189 @@
                                     <th>Service</th>
                                     <th>Date</th>
                                     <th>Time</th>
-                                    <th>Duration</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="client-info">
-                                            <div class="client-avatar">EJ</div>
-                                            <div>Emma Johnson</div>
-                                        </div>
-                                    </td>
-                                    <td>Bridal Makeup</td>
-                                    <td>Oct 15, 2023</td>
-                                    <td>10:00 AM</td>
-                                    <td>2 hours</td>
-                                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                    <td><button class="action-button confirm-button" disabled>Confirmed</button></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="client-info">
-                                            <div class="client-avatar">MW</div>
-                                            <div>Mia Williams</div>
-                                        </div>
-                                    </td>
-                                    <td>Facial Treatment</td>
-                                    <td>Oct 15, 2023</td>
-                                    <td>11:30 AM</td>
-                                    <td>1 hour</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td><button class="action-button confirm-button">Confirm</button></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="client-info">
-                                            <div class="client-avatar">OB</div>
-                                            <div>Olivia Brown</div>
-                                        </div>
-                                    </td>
-                                    <td>Hair Styling</td>
-                                    <td>Oct 15, 2023</td>
-                                    <td>2:00 PM</td>
-                                    <td>1.5 hours</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td><button class="action-button confirm-button">Confirm</button></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="client-info">
-                                            <div class="client-avatar">AD</div>
-                                            <div>Ava Davis</div>
-                                        </div>
-                                    </td>
-                                    <td>Manicure & Pedicure</td>
-                                    <td>Oct 15, 2023</td>
-                                    <td>4:30 PM</td>
-                                    <td>1 hour</td>
-                                    <td><span class="status-badge status-completed">Completed</span></td>
-                                    <td><button class="action-button confirm-button" disabled>Completed</button></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="client-info">
-                                            <div class="client-avatar">IG</div>
-                                            <div>Isabella Garcia</div>
-                                        </div>
-                                    </td>
-                                    <td>Evening Makeup</td>
-                                    <td>Oct 16, 2023</td>
-                                    <td>6:00 PM</td>
-                                    <td>1.5 hours</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td><button class="action-button confirm-button">Confirm</button></td>
-                                </tr>
+                                <% if(allBookings && allBookings.length) { %>
+                                    <% allBookings.forEach(function(b) { %>
+                                        <tr>
+                                            <td>
+                                                <div class="client-info">
+                                                    <div class="client-avatar">
+                                                        <%= b.user && b.user.fullName 
+                                                                ? (b.user.fullName.trim().split(" ").map(x=>x[0]).join("").substring(0,2).toUpperCase())
+                                                                : 'NA'
+                                                         %>
+                                                    </div>
+                                                    <div><%= b.user && b.user.fullName || 'Unknown' %></div>
+                                                </div>
+                                            </td>
+                                            <td><%= b.service && b.service.name || '-' %></td>
+                                            <td>
+                                                <%
+                                                    let dt = new Date(b.bookingTime);
+                                                    let options = { year:'numeric', month: 'short', day: 'numeric' };
+                                                %>
+                                                <%= dt.toLocaleDateString('en-US', options) %>
+                                            </td>
+                                            <td>
+                                                <% 
+                                                    let timeoptions = { hour: 'numeric', minute: '2-digit', hour12:true };
+                                                %>
+                                                <%= dt.toLocaleTimeString('en-US', timeoptions) %>
+                                            </td>
+                                            <td>
+                                                <% let badge = 'status-pending', statusTxt = 'Pending';
+                                                if(b.status === 'completed') { 
+                                                    badge = 'status-completed'; statusTxt='Completed'; 
+                                                } else if(b.status === 'confirmed'){ 
+                                                    badge = 'status-confirmed'; statusTxt='Confirmed';
+                                                }
+                                                %>
+                                                <span class="status-badge <%= badge %>"><%= statusTxt %></span>
+                                            </td>
+                                            <td>
+                                                <% if(b.status === 'pending') { %>
+                                                <button class="action-button confirm-button" onclick="confirmAppointment('<%= b._id %>')">Confirm</button>
+                                                <% } else { %>
+                                                <button class="action-button confirm-button" disabled><%= statusTxt %></button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr><td colspan="6">No appointments found.</td></tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
+    
             <!-- Profile Page -->
             <div class="page-content" id="profile-page">
                 <div class="profile-header">
                     <div class="profile-picture-container">
                         <div class="profile-picture" style="background-color: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px;">
+                        <% if(freelancer.profileImage){ %>
+                            <img src="<%= freelancer.profileImage %>" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <% } else { %>
                             <i class="fas fa-user"></i>
+                        <% } %>
                         </div>
                         <button class="change-photo-btn">
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>
                     <div class="profile-info">
-                        <h2>Sophia Martinez</h2>
-                        <p>Beauty Specialist | 6 years experience</p>
+                        <h2><%= freelancer.fullName || 'Freelancer' %></h2>
+                        <p>
+                            <%= freelancer.professionalTitle || 'Beautician' %> | 
+                            <%= freelancer.experience ? `${freelancer.experience} year${freelancer.experience>1?'s':''} experience` : '' %>
+                        </p>
                         <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <span>4.9 (128 reviews)</span>
+                            <% let stars = Math.floor(freelancer.rating || 0); 
+                               let halfStar = freelancer.rating % 1 >= 0.5;
+                            %>
+                            <% for(let i=0;i<stars;i++){%><i class="fas fa-star"></i><% } %>
+                            <% if(halfStar){ %><i class="fas fa-star-half-alt"></i><% } %>
+                            <% for(let i=0; i<5-stars-(halfStar?1:0); i++){%><i class="far fa-star"></i><% } %>
+                            <span><%= (freelancer.rating||"-") %> (<%= freelancer.totalReviews || 0 %> reviews)</span>
                         </div>
                     </div>
                 </div>
-
+    
                 <div class="dashboard-sections">
                     <div class="left-column">
+                        <!-- Profile Information Section -->
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Profile Information</h3>
-                                <button class="action-button edit-button" id="toggle-edit-btn">Edit Profile</button>
+                                <div class="section-actions">
+                                    <button class="action-button edit-button" id="edit-profile-btn">
+                                        <i class="fas fa-edit"></i> Edit Profile
+                                    </button>
+                                    <button class="action-button primary-button" id="save-profile-btn" style="display: none;">
+                                        <i class="fas fa-save"></i> Save Profile
+                                    </button>
+                                    <button class="action-button secondary-button" id="cancel-profile-btn" style="display: none;">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
                             </div>
                             <div class="profile-details" id="profile-info">
-                                <div class="profile-field">
-                                    <span class="field-label">Full Name</span>
-                                    <span class="field-value" id="field-name">Sophia Martinez</span>
-                                    <input type="text" class="form-input" id="input-name" value="Sophia Martinez">
-                                </div>
-                                <div class="profile-field">
-                                    <span class="field-label">Professional Title</span>
-                                    <span class="field-value" id="field-title">Beauty Specialist</span>
-                                    <input type="text" class="form-input" id="input-title" value="Beauty Specialist">
-                                </div>
-                                <div class="profile-field">
-                                    <span class="field-label">Bio</span>
-                                    <span class="field-value" id="field-bio">Certified beautician with 6+ years of experience specializing in bridal makeup, skincare, and beauty treatments. Passionate about enhancing natural beauty and providing personalized services.</span>
-                                    <textarea class="form-input form-textarea" id="input-bio">Certified beautician with 6+ years of experience specializing in bridal makeup, skincare, and beauty treatments. Passionate about enhancing natural beauty and providing personalized services.</textarea>
-                                </div>
-                           
-                                <div class="profile-field">
-                                    <span class="field-label">Experience</span>
-                                    <span class="field-value" id="field-experience">6 years</span>
-                                    <input type="text" class="form-input" id="input-experience" value="6 years">
-                                </div>
-                                <div class="profile-field">
-                                    <span class="field-label">Contact Email</span>
-                                    <span class="field-value" id="field-email">sophia@glamcarepro.com</span>
-                                    <input type="email" class="form-input" id="input-email" value="sophia@glamcarepro.com">
-                                </div>
-                                <div class="profile-field">
-                                    <span class="field-label">Phone Number</span>
-                                    <span class="field-value" id="field-phone">+1 (555) 123-4567</span>
-                                    <input type="tel" class="form-input" id="input-phone" value="+1 (555) 123-4567">
-                                </div>
+                                <!-- Profile fields will be dynamically loaded -->
                             </div>
                         </div>
-
+    
+                        <!-- Availability Section -->
                         <div class="section-card">
                             <div class="section-header">
-                                <h3 class="section-title">Working Hours</h3>
+                                <h3 class="section-title">Working Hours & Availability</h3>
+                                <div class="section-actions">
+                                    <button class="action-button edit-button" id="edit-availability-btn">
+                                        <i class="fas fa-edit"></i> Edit Availability
+                                    </button>
+                                    <button class="action-button primary-button" id="save-availability-btn" style="display: none;">
+                                        <i class="fas fa-save"></i> Save Availability
+                                    </button>
+                                    <button class="action-button secondary-button" id="cancel-availability-btn" style="display: none;">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
                             </div>
-                            <div class="working-hours" id="working-hours">
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Monday</span>
-                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
-                                    <select class="form-select">
-                                        <option>9:00 AM - 6:00 PM</option>
-                                        <option>10:00 AM - 7:00 PM</option>
-                                        <option>Closed</option>
-                                    </select>
-                                </div>
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Tuesday</span>
-                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
-                                    <select class="form-select">
-                                        <option>9:00 AM - 6:00 PM</option>
-                                        <option>10:00 AM - 7:00 PM</option>
-                                        <option>Closed</option>
-                                    </select>
-                                </div>
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Wednesday</span>
-                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
-                                    <select class="form-select">
-                                        <option>9:00 AM - 6:00 PM</option>
-                                        <option>10:00 AM - 7:00 PM</option>
-                                        <option>Closed</option>
-                                    </select>
-                                </div>
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Thursday</span>
-                                    <span class="hour-time">9:00 AM - 6:00 PM</span>
-                                    <select class="form-select">
-                                        <option>9:00 AM - 6:00 PM</option>
-                                        <option>10:00 AM - 7:00 PM</option>
-                                        <option>Closed</option>
-                                    </select>
-                                </div>
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Friday</span>
-                                    <span class="hour-time">9:00 AM - 8:00 PM</span>
-                                    <select class="form-select">
-                                        <option>9:00 AM - 8:00 PM</option>
-                                        <option>9:00 AM - 6:00 PM</option>
-                                        <option>Closed</option>
-                                    </select>
-                                </div>
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Saturday</span>
-                                    <span class="hour-time">10:00 AM - 4:00 PM</span>
-                                    <select class="form-select">
-                                        <option>10:00 AM - 4:00 PM</option>
-                                        <option>9:00 AM - 5:00 PM</option>
-                                        <option>Closed</option>
-                                    </select>
-                                </div>
-                                <div style="display: flex;  align-items: center;" class="hour-item">
-                                    <span class="hour-day">Sunday</span>
-                                    <span class="hour-time">Closed</span>
-                                    <select class="form-select">
-                                        <option>Closed</option>
-                                        <option>10:00 AM - 4:00 PM</option>
-                                        <option>12:00 PM - 5:00 PM</option>
-                                    </select>
-                                </div>
+                            <div class="availability-container" id="availability-container">
+                                <!-- Availability will be dynamically loaded -->
                             </div>
                         </div>
                     </div>
-
+    
                     <div class="right-column">
+                        <!-- Services Section -->
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Services & Pricing</h3>
+                                <div class="section-actions">
+                                    <button class="action-button primary-button" id="add-service-btn">
+                                        <i class="fas fa-plus"></i> Add Service
+                                    </button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Beauty Services</label>
-                                <div class="services-container" id="services-container">
-                                    <div class="service-tag">
-                                        Bridal Makeup 
-                                        <span class="service-price">₹120</span>
-                                        <i class="fas fa-times"></i>
-                                    </div>
-                                    <div class="service-tag">
-                                        Skincare 
-                                        <span class="service-price">₹85</span>
-                                        <i class="fas fa-times"></i>
-                                    </div>
-                                    <div class="service-tag">
-                                        Hair Styling 
-                                        <span class="service-price">₹65</span>
-                                        <i class="fas fa-times"></i>
-                                    </div>
-                                    <div class="service-tag">
-                                        Manicure 
-                                        <span class="service-price">₹35</span>
-                                        <i class="fas fa-times"></i>
-                                    </div>
-                                    <div class="service-tag">
-                                        Pedicure 
-                                        <span class="service-price">₹45</span>
-                                        <i class="fas fa-times"></i>
-                                    </div>
-                                    <div class="service-tag">
-                                        Facial Treatments 
-                                        <span class="service-price">₹90</span>
-                                        <i class="fas fa-times"></i>
-                                    </div>
-                                </div>
-                                <div class="add-service-form">
-                                    <div class="service-inputs">
-                                        <input style="display: block;" type="text" class="form-input" id="new-service" placeholder="Service name">
-                                        <div class="price-input-container">
-                                            <input style="display: block;" type="number" class="form-input price-input" id="new-service-price" placeholder="Price">
-                                        </div>
-                                    </div>
-                                    <button type="button" class="action-button edit-button" id="add-service-btn">Add Service</button>
-                                </div>
+                            <div class="services-management" id="services-management">
+                                <!-- Services will be dynamically loaded -->
                             </div>
                         </div>
-
+    
+                        <!-- Locations Section -->
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Service Locations</h3>
+                                <div class="section-actions">
+                                    <button class="action-button primary-button" id="add-location-btn">
+                                        <i class="fas fa-plus"></i> Add Location
+                                    </button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Areas I Serve</label>
-                                <div class="locations-container" id="locations-container">
-                                    <div class="location-tag">Manhattan <i class="fas fa-times"></i></div>
-                                    <div class="location-tag">Brooklyn <i class="fas fa-times"></i></div>
-                                    <div class="location-tag">Queens <i class="fas fa-times"></i></div>
-                                </div>
-                                <div class="add-service-form">
-                                    <input type="text" class="form-input" id="new-location" placeholder="Add a new location">
-                                    <button type="button" class="action-button edit-button" id="add-location-btn">Add</button>
-                                </div>
+                            <div class="locations-management" id="locations-management">
+                                <!-- Locations will be dynamically loaded -->
                             </div>
                         </div>
-
+    
+                        <!-- Profile Preview Section -->
                         <div class="section-card">
                             <div class="section-header">
                                 <h3 class="section-title">Profile Preview</h3>
                             </div>
-                            <div class="profile-details">
-                                <div class="profile-field">
-                                    <span class="field-label">Name</span>
-                                    <span class="field-value" id="preview-name">Sophia Martinez</span>
-                                </div>
-                                <div class="profile-field">
-                                    <span class="field-label">Title</span>
-                                    <span class="field-value" id="preview-title">Beauty Specialist</span>
-                                </div>
-                               
-                                <div class="profile-field">
-                                    <span class="field-label">Locations</span>
-                                    <span class="field-value" id="preview-locations">Manhattan, Brooklyn, Queens</span>
-                                </div>
-                            </div>
-                            <div style="margin-top: 20px; text-align: center;">
-                                <button class="action-button edit-button" id="save-profile-btn" style="display: none;">Save Changes</button>
-                                <button class="action-button secondary-button" id="cancel-edit-btn" style="display: none; margin-top: 10px;">Cancel</button>
+                            <div class="profile-preview" id="profile-preview">
+                                <!-- Preview will be dynamically updated -->
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
+    
             <!-- Payments Page -->
             <div class="page-content" id="payments-page">
                 <div class="section-card">
@@ -1481,46 +1346,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Oct 14, 2023</td>
-                                    <td>Emma Johnson</td>
-                                    <td>Bridal Makeup</td>
-                                    <td>₹120</td>
-                                    <td><span class="status-badge status-completed">Paid</span></td>
-                                    <td><button class="action-button edit-button">UPI</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Oct 13, 2023</td>
-                                    <td>Mia Williams</td>
-                                    <td>Facial Treatment</td>
-                                    <td>₹85</td>
-                                    <td><span class="status-badge status-completed">Paid</span></td>
-                                    <td><button class="action-button edit-button">UPI</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Oct 12, 2023</td>
-                                    <td>Olivia Brown</td>
-                                    <td>Hair Styling</td>
-                                    <td>₹65</td>
-                                    <td><span class="status-badge status-completed">Paid</span></td>
-                                    <td><button class="action-button edit-button">UPI</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Oct 11, 2023</td>
-                                    <td>Ava Davis</td>
-                                    <td>Manicure & Pedicure</td>
-                                    <td>₹55</td>
-                                    <td><span class="status-badge status-completed">Paid</span></td>
-                                    <td><button class="action-button edit-button">UPI</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Oct 10, 2023</td>
-                                    <td>Isabella Garcia</td>
-                                    <td>Evening Makeup</td>
-                                    <td>₹75</td>
-                                    <td><span class="status-badge status-completed">Paid</span></td>
-                                    <td><button class="action-button edit-button">COD</button></td>
-                                </tr>
+                                <% 
+                                let paid = allBookings.filter(b => b.payment && b.payment.status==='paid');
+                                if(paid.length){
+                                    paid.forEach(function(b){
+                                %>
+                                    <tr>
+                                        <td>
+                                            <% let dt = new Date(b.bookingTime); %>
+                                            <%= dt.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) %>
+                                        </td>
+                                        <td><%= b.user && b.user.fullName || 'Unknown' %></td>
+                                        <td><%= b.service && b.service.name || '' %></td>
+                                        <td>₹<%= b.service && b.service.price ? b.service.price : 0 %></td>
+                                        <td><span class="status-badge status-completed">Paid</span></td>
+                                        <td>
+                                            <button class="action-button edit-button">
+                                                <%= b.payment && b.payment.paymentType ? b.payment.paymentType : 'N/A' %>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }); 
+                                } else { %>
+                                    <tr><td colspan="6">No payments yet.</td></tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
@@ -1528,296 +1377,950 @@
             </div>
         </main>
     </div>
-
+    
+    <!-- Add Service Modal -->
+    <div id="add-service-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Service</h3>
+                <button class="close-btn" onclick="closeModal('add-service-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-service-form">
+                    <div class="form-group">
+                        <label for="service-name">Service Name *</label>
+                        <input type="text" id="service-name" name="serviceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-price">Price (₹) *</label>
+                        <input type="number" id="service-price" name="price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-duration">Duration (minutes) *</label>
+                        <input type="number" id="service-duration" name="durationMinutes" min="15" step="15" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="action-button secondary-button" onclick="closeModal('add-service-modal')">Cancel</button>
+                        <button type="submit" class="action-button primary-button">Add Service</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Location Modal -->
+    <div id="add-location-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Service Location</h3>
+                <button class="close-btn" onclick="closeModal('add-location-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-location-form">
+                    <div class="form-group">
+                        <label for="location-city">City *</label>
+                        <input type="text" id="location-city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location-state">State</label>
+                        <input type="text" id="location-state" name="state">
+                    </div>
+                    <div class="form-group">
+                        <label for="location-pincode">Pincode</label>
+                        <input type="text" id="location-pincode" name="pincode">
+                    </div>
+                    <div class="form-group">
+                        <label for="location-radius">Service Radius (km)</label>
+                        <input type="number" id="location-radius" name="radius" min="1" max="50" value="5">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="action-button secondary-button" onclick="closeModal('add-location-modal')">Cancel</button>
+                        <button type="submit" class="action-button primary-button">Add Location</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const sidebarNavigation = document.getElementById('sidebarNavigation');
-            const mainContentArea = document.getElementById('mainContentArea');
-            
-            mobileMenuToggle.addEventListener('click', function() {
-                sidebarNavigation.classList.toggle('mobile-hidden');
-                mainContentArea.classList.toggle('full-width');
-                
-                // Change icon based on menu state
-                const icon = this.querySelector('i');
-                if (sidebarNavigation.classList.contains('mobile-hidden')) {
-                    icon.className = 'fas fa-bars';
-                } else {
-                    icon.className = 'fas fa-times';
-                }
-            });
-            
-            // Page Navigation
-            const navItems = document.querySelectorAll('.nav-item');
-            const pageContents = document.querySelectorAll('.page-content');
-            const pageTitle = document.getElementById('current-page-title');
-            const pageDescription = document.getElementById('current-page-description');
-            
-            // Page titles and descriptions
-            const pageData = {
-                'dashboard': {
-                    title: 'Beautician Dashboard',
-                    description: 'Welcome back, Sophia! Here\'s your beauty business overview.'
-                },
-                'bookings': {
-                    title: 'Appointment Management',
-                    description: 'Manage your current and upcoming beauty appointments.'
-                },
-                'profile': {
-                    title: 'My Profile',
-                    description: 'Update your profile information and services.'
-                },
-                'payments': {
-                    title: 'Payment Dashboard',
-                    description: 'View your earnings and payment history.'
+    let freelancerData = null;
+    let isProfileEditMode = false;
+    let isAvailabilityEditMode = false;
+    let currentAvailability = [];
+
+    function safeQuerySelector(selector) {
+        const element = document.querySelector(selector);
+        return element;
+    }
+
+    function safeAddEventListener(selector, event, handler) {
+        const element = safeQuerySelector(selector);
+        if (element) {
+            element.addEventListener(event, handler);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDashboard();
+        setupEventListeners();
+        setupNavigation();
+        loadInitialData();
+    });
+
+    function loadInitialData() {
+        try {
+            freelancerData = {
+                freelancer: {
+                    _id: '<%= freelancer._id || "" %>',
+                    fullName: '<%= freelancer.fullName || "" %>',
+                    professionalTitle: '<%= freelancer.professionalTitle || "" %>',
+                    email: '<%= freelancer.email || "" %>',
+                    phone: '<%= freelancer.phone || "" %>',
+                    bio: '<%= freelancer.bio || "" %>',
+                    experience: <%= freelancer.experience || 0 %>,
+                    skills: <%- JSON.stringify(freelancer.skills || []) %>,
+                    rating: <%= freelancer.rating || 0 %>,
+                    totalReviews: <%= freelancer.totalReviews || 0 %>,
+                    locations: <%- JSON.stringify(freelancer.locations || []) %>,
+                    availability: <%- JSON.stringify(freelancer.availability || []) %>,
+                    freelancerServices: <%- JSON.stringify(freelancer.freelancerServices || []) %>,
+                    createdAt: '<%= freelancer.createdAt || "" %>'
                 }
             };
-            
-            // Navigation click handler
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const pageId = this.getAttribute('data-page');
-                    
-                    // Update active nav item
-                    navItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show selected page
-                    pageContents.forEach(page => page.classList.remove('active'));
-                    document.getElementById(`${pageId}-page`).classList.add('active');
-                    
-                    // Update page title and description
+            currentAvailability = freelancerData.freelancer.availability || [];
+            if (document.getElementById('profile-page').classList.contains('active')) {
+                loadProfileInfo();
+                loadAvailability();
+                loadServices();
+                loadLocations();
+                loadProfilePreview();
+            }
+        } catch (error) {}
+    }
+
+    function initializeDashboard() {
+    }
+
+    function setupEventListeners() {
+        safeAddEventListener('#edit-profile-btn', 'click', enterProfileEditMode);
+        safeAddEventListener('#save-profile-btn', 'click', saveProfile);
+        safeAddEventListener('#cancel-profile-btn', 'click', exitProfileEditMode);
+
+        safeAddEventListener('#edit-availability-btn', 'click', enterAvailabilityEditMode);
+        safeAddEventListener('#save-availability-btn', 'click', saveAvailability);
+        safeAddEventListener('#cancel-availability-btn', 'click', exitAvailabilityEditMode);
+
+        safeAddEventListener('#add-service-btn', 'click', showAddServiceModal);
+        safeAddEventListener('#add-service-form', 'submit', handleAddService);
+
+        safeAddEventListener('#add-location-btn', 'click', showAddLocationModal);
+        safeAddEventListener('#add-location-form', 'submit', handleAddLocation);
+
+        safeAddEventListener('#edit-profile-link', 'click', function(e) {
+            e.preventDefault();
+            switchToPage('profile');
+        });
+
+        safeAddEventListener('#view-all-bookings', 'click', function(e) {
+            e.preventDefault();
+            switchToPage('bookings');
+        });
+
+        safeAddEventListener('#view-all-payments', 'click', function(e) {
+            e.preventDefault();
+            switchToPage('payments');
+        });
+
+        safeAddEventListener('#view-calendar', 'click', function(e) {
+            e.preventDefault();
+            switchToPage('bookings');
+        });
+    }
+
+    function setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item');
+        const pageContents = document.querySelectorAll('.page-content');
+        const pageTitle = safeQuerySelector('#current-page-title');
+        const pageDescription = safeQuerySelector('#current-page-description');
+
+        if (!navItems.length || !pageContents.length || !pageTitle || !pageDescription) {
+            return;
+        }
+
+        const pageData = {
+            'dashboard': {
+                title: 'Beautician Dashboard',
+                description: 'Welcome back! Here\'s your beauty business overview.'
+            },
+            'bookings': {
+                title: 'Appointment Management',
+                description: 'Manage your current and upcoming beauty appointments.'
+            },
+            'profile': {
+                title: 'My Profile',
+                description: 'Update your profile information and services.'
+            },
+            'payments': {
+                title: 'Payment Dashboard',
+                description: 'View your earnings and payment history.'
+            }
+        };
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const pageId = this.getAttribute('data-page');
+                navItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                pageContents.forEach(page => page.classList.remove('active'));
+                const targetPage = document.getElementById(`${pageId}-page`);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    if (pageId === 'profile') {
+                        setTimeout(() => {
+                            loadProfileInfo();
+                            loadAvailability();
+                            loadServices();
+                            loadLocations();
+                            loadProfilePreview();
+                        }, 100);
+                    }
+                }
+                if (pageData[pageId]) {
                     pageTitle.textContent = pageData[pageId].title;
                     pageDescription.textContent = pageData[pageId].description;
-                    
-                    // Close mobile menu on navigation
-                    if (window.innerWidth <= 992) {
-                        sidebarNavigation.classList.add('mobile-hidden');
-                        mainContentArea.classList.add('full-width');
-                        mobileMenuToggle.querySelector('i').className = 'fas fa-bars';
-                    }
-                });
-            });
-            
-            // Confirm appointment buttons
-            const confirmButtons = document.querySelectorAll('.confirm-button:not(:disabled)');
-            confirmButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    const statusBadge = row.querySelector('.status-badge');
-                    
-                    // Update status
-                    statusBadge.textContent = 'Confirmed';
-                    statusBadge.className = 'status-badge status-confirmed';
-                    
-                    // Update button
-                    this.textContent = 'Confirmed';
-                    this.disabled = true;
-                    this.style.backgroundColor = '#a59e8c';
-                    
-                    // Show confirmation message
-                    alert('Appointment confirmed successfully!');
-                });
-            });
-            
-            // Profile editing functionality
-            const toggleEditBtn = document.getElementById('toggle-edit-btn');
-            const saveProfileBtn = document.getElementById('save-profile-btn');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            const profileInfo = document.getElementById('profile-info');
-            const workingHours = document.getElementById('working-hours');
-            const servicesContainer = document.getElementById('services-container');
-            const locationsContainer = document.getElementById('locations-container');
-            const addServiceBtn = document.getElementById('add-service-btn');
-            const newServiceInput = document.getElementById('new-service');
-            const newServicePriceInput = document.getElementById('new-service-price');
-            const addLocationBtn = document.getElementById('add-location-btn');
-            const newLocationInput = document.getElementById('new-location');
-            
-            let isEditMode = false;
-            
-            // Toggle edit mode
-            toggleEditBtn.addEventListener('click', function() {
-                isEditMode = !isEditMode;
-                
-                if (isEditMode) {
-                    // Enter edit mode - show all form inputs
-                    enterEditMode();
-                } else {
-                    // Exit edit mode - hide all form inputs
-                    exitEditMode();
                 }
             });
-            
-            // Enter edit mode function
-            function enterEditMode() {
-                // Add edit mode to all sections
-                profileInfo.classList.add('edit-mode');
-                workingHours.classList.add('edit-mode');
-                servicesContainer.classList.add('edit-mode');
-                locationsContainer.classList.add('edit-mode');
-                
-                // Show form inputs in Services & Skills section
-                const serviceInputs = document.querySelectorAll('#services-container .form-input');
-                serviceInputs.forEach(input => {
-                    input.style.display = 'block';
-                });
-                
-                // Show form inputs in Service Locations section
-                const locationInputs = document.querySelectorAll('#locations-container .form-input');
-                locationInputs.forEach(input => {
-                    input.style.display = 'block';
-                });
-                
-                toggleEditBtn.textContent = 'View Profile';
-                saveProfileBtn.style.display = 'inline-block';
-                cancelEditBtn.style.display = 'inline-block';
-            }
-            
-            // Exit edit mode function
-            function exitEditMode() {
-                // Remove edit mode from all sections
-                profileInfo.classList.remove('edit-mode');
-                workingHours.classList.remove('edit-mode');
-                servicesContainer.classList.remove('edit-mode');
-                locationsContainer.classList.remove('edit-mode');
-                
-                // Hide form inputs in Services & Skills section
-                const serviceInputs = document.querySelectorAll('#services-container .form-input');
-                serviceInputs.forEach(input => {
-                    input.style.display = 'none';
-                });
-                
-                // Hide form inputs in Service Locations section
-                const locationInputs = document.querySelectorAll('#locations-container .form-input');
-                locationInputs.forEach(input => {
-                    input.style.display = 'none';
-                });
-                
-                toggleEditBtn.textContent = 'Edit Profile';
-                saveProfileBtn.style.display = 'none';
-                cancelEditBtn.style.display = 'none';
-            }
-            
-            // Cancel edit
-            cancelEditBtn.addEventListener('click', function() {
-                isEditMode = false;
-                exitEditMode();
-                
-                // Reset form values (in a real app, you would revert to original values)
-                alert('Changes discarded');
-            });
-            
-            // Save profile
-            saveProfileBtn.addEventListener('click', function() {
-                // Update profile preview
-                updateProfilePreview();
-                
-                // Exit edit mode
-                isEditMode = false;
-                exitEditMode();
-                
-                alert('Profile updated successfully!');
-            });
-            
-            // Update profile preview
-            function updateProfilePreview() {
-                document.getElementById('preview-name').textContent = 
-                    document.getElementById('input-name').value;
-                document.getElementById('preview-title').textContent = 
-                    document.getElementById('input-title').value;
-                document.getElementById('preview-rate').textContent = '₹' + 
-                    document.getElementById('input-rate').value + '/hr';
-                
-                // Update locations preview
-                const locations = Array.from(locationsContainer.querySelectorAll('.location-tag'))
-                    .map(tag => tag.textContent.replace(' ×', ''));
-                document.getElementById('preview-locations').textContent = locations.join(', ');
-            }
-            
-            // Add service with price
-            addServiceBtn.addEventListener('click', function() {
-                const service = newServiceInput.value.trim();
-                const price = newServicePriceInput.value.trim();
-                
-                if (service && price) {
-                    const serviceTag = document.createElement('div');
-                    serviceTag.className = 'service-tag';
-                    serviceTag.innerHTML = `
-                        ${service} 
-                        <span class="service-price">₹${price}</span>
-                        <i class="fas fa-times"></i>
-                    `;
-                    
-                    // Add remove functionality
-                    serviceTag.querySelector('i').addEventListener('click', function() {
-                        serviceTag.remove();
-                    });
-                    
-                    servicesContainer.appendChild(serviceTag);
-                    newServiceInput.value = '';
-                    newServicePriceInput.value = '';
-                } else {
-                    alert('Please enter both service name and price');
-                }
-            });
-            
-            // Add location
-            addLocationBtn.addEventListener('click', function() {
-                const location = newLocationInput.value.trim();
-                if (location) {
-                    const locationTag = document.createElement('div');
-                    locationTag.className = 'location-tag';
-                    locationTag.innerHTML = `${location} <i class="fas fa-times"></i>`;
-                    
-                    // Add remove functionality
-                    locationTag.querySelector('i').addEventListener('click', function() {
-                        locationTag.remove();
-                        updateProfilePreview();
-                    });
-                    
-                    locationsContainer.appendChild(locationTag);
-                    newLocationInput.value = '';
-                    updateProfilePreview();
-                }
-            });
-            
-            // Remove service functionality for existing services
-            servicesContainer.querySelectorAll('.service-tag i').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    this.parentElement.remove();
-                });
-            });
-            
-            // Remove location functionality for existing locations
-            locationsContainer.querySelectorAll('.location-tag i').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    this.parentElement.remove();
-                    updateProfilePreview();
-                });
-            });
-            
-            // Edit profile link from dashboard
-            document.getElementById('edit-profile-link').addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Switch to profile page
-                navItems.forEach(i => i.classList.remove('active'));
-                document.querySelector('.nav-item[data-page="profile"]').classList.add('active');
-                
-                pageContents.forEach(page => page.classList.remove('active'));
-                document.getElementById('profile-page').classList.add('active');
-                
-                // Update page title and description
-                pageTitle.textContent = pageData['profile'].title;
-                pageDescription.textContent = pageData['profile'].description;
-            });
-            
-            // Initialize profile preview
-            updateProfilePreview();
         });
+    }
+
+    function loadProfileInfo() {
+        const container = safeQuerySelector('#profile-info');
+        if (!container || !freelancerData || !freelancerData.freelancer) {
+            return;
+        }
+        const freelancer = freelancerData.freelancer;
+        container.innerHTML = `
+            <div class="profile-field">
+                <span class="field-label">Full Name *</span>
+                <span class="field-value">${escapeHtml(freelancer.fullName || 'Not set')}</span>
+                <input type="text" class="form-input" value="${escapeHtml(freelancer.fullName || '')}" data-field="fullName">
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Professional Title</span>
+                <span class="field-value">${escapeHtml(freelancer.professionalTitle || 'Not set')}</span>
+                <input type="text" class="form-input" value="${escapeHtml(freelancer.professionalTitle || '')}" data-field="professionalTitle">
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Bio</span>
+                <span class="field-value">${escapeHtml(freelancer.bio || 'Not set')}</span>
+                <textarea class="form-input form-textarea" data-field="bio">${escapeHtml(freelancer.bio || '')}</textarea>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Experience (Years) *</span>
+                <span class="field-value">${freelancer.experience || 0} years</span>
+                <input type="number" class="form-input" value="${freelancer.experience || 0}" data-field="experience" min="0" max="50">
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Contact Email *</span>
+                <span class="field-value">${escapeHtml(freelancer.email || 'Not set')}</span>
+                <input type="email" class="form-input" value="${escapeHtml(freelancer.email || '')}" data-field="email">
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Phone Number *</span>
+                <span class="field-value">${escapeHtml(freelancer.phone || 'Not set')}</span>
+                <input type="tel" class="form-input" value="${escapeHtml(freelancer.phone || '')}" data-field="phone">
+            </div>
+        `;
+    }
+
+    function enterProfileEditMode() {
+        isProfileEditMode = true;
+        const profileFields = document.querySelectorAll('#profile-info .profile-field');
+        profileFields.forEach(field => {
+            const staticValue = field.querySelector('.field-value');
+            const formInput = field.querySelector('.form-input');
+            if (staticValue && formInput) {
+                staticValue.style.display = 'none';
+                formInput.style.display = 'block';
+            }
+        });
+        const editBtn = safeQuerySelector('#edit-profile-btn');
+        const saveBtn = safeQuerySelector('#save-profile-btn');
+        const cancelBtn = safeQuerySelector('#cancel-profile-btn');
+        if (editBtn) editBtn.style.display = 'none';
+        if (saveBtn) saveBtn.style.display = 'inline-block';
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
+    }
+
+    function exitProfileEditMode() {
+        isProfileEditMode = false;
+        const profileFields = document.querySelectorAll('#profile-info .profile-field');
+        profileFields.forEach(field => {
+            const staticValue = field.querySelector('.field-value');
+            const formInput = field.querySelector('.form-input');
+            if (staticValue && formInput) {
+                staticValue.style.display = 'block';
+                formInput.style.display = 'none';
+            }
+        });
+        const editBtn = safeQuerySelector('#edit-profile-btn');
+        const saveBtn = safeQuerySelector('#save-profile-btn');
+        const cancelBtn = safeQuerySelector('#cancel-profile-btn');
+        if (editBtn) editBtn.style.display = 'inline-block';
+        if (saveBtn) saveBtn.style.display = 'none';
+        if (cancelBtn) cancelBtn.style.display = 'none';
+        loadProfileInfo();
+    }
+
+    async function saveProfile() {
+        try {
+            const fullNameInput = safeQuerySelector('input[data-field="fullName"]');
+            const professionalTitleInput = safeQuerySelector('input[data-field="professionalTitle"]');
+            const bioInput = safeQuerySelector('textarea[data-field="bio"]');
+            const experienceInput = safeQuerySelector('input[data-field="experience"]');
+            const emailInput = safeQuerySelector('input[data-field="email"]');
+            const phoneInput = safeQuerySelector('input[data-field="phone"]');
+            if (!fullNameInput || !emailInput || !phoneInput) {
+                alert('Required form fields not found');
+                return;
+            }
+            const profileData = {
+                fullName: fullNameInput.value,
+                professionalTitle: professionalTitleInput ? professionalTitleInput.value : '',
+                bio: bioInput ? bioInput.value : '',
+                experience: experienceInput ? parseInt(experienceInput.value) || 0 : 0,
+                email: emailInput.value,
+                phone: phoneInput.value
+            };
+            if (!profileData.fullName || !profileData.email || !profileData.phone) {
+                alert('Please fill all required fields (marked with *)');
+                return;
+            }
+            const response = await fetch('/freelance/freelancer/update-profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(profileData)
+            });
+            if (!response.ok) throw new Error('Failed to update profile');
+            const result = await response.json();
+            if (result.success) {
+                alert('Profile updated successfully!');
+                exitProfileEditMode();
+                window.location.reload();
+            } else {
+                throw new Error(result.error || 'Profile update failed');
+            }
+        } catch (error) {
+            alert('Failed to update profile: ' + error.message);
+        }
+    }
+
+    function loadAvailability() {
+        const container = safeQuerySelector('#availability-container');
+        if (!container) {
+            return;
+        }
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        let html = '<div class="availability-display">';
+        days.forEach((day, index) => {
+            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === index) || { dayOfWeek: index, slots: [] };
+            const timeDisplay = dayAvailability.slots && dayAvailability.slots.length > 0 
+                ? dayAvailability.slots.map(slot => `${slot.start} - ${slot.end}`).join(', ')
+                : 'Not Available';
+            html += `
+                <div class="availability-day">
+                    <span class="day-name">${day}</span>
+                    <span class="day-time">${timeDisplay}</span>
+                </div>
+            `;
+        });
+        html += '</div>';
+        html += `
+            <div class="availability-edit-form" style="display: none;">
+                ${generateAvailabilityForm()}
+            </div>
+        `;
+        container.innerHTML = html;
+    }
+
+    function generateAvailabilityForm() {
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        return days.map((day, index) => {
+            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === index) || { dayOfWeek: index, slots: [] };
+            const hasSlots = dayAvailability.slots && dayAvailability.slots.length > 0;
+            return `
+                <div class="availability-edit-day">
+                    <div class="day-header">
+                        <span class="day-name">${day}</span>
+                        <label class="availability-toggle">
+                            <input type="checkbox" ${hasSlots ? 'checked' : ''} onchange="toggleDayAvailability(${index}, this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="time-slots" id="slots-${index}" style="${hasSlots ? '' : 'display: none;'}">
+                        ${hasSlots ? dayAvailability.slots.map((slot, slotIndex) => `
+                            <div class="time-slot">
+                                <input type="time" value="${slot.start}" onchange="updateSlot(${index}, ${slotIndex}, 'start', this.value)">
+                                <span>to</span>
+                                <input type="time" value="${slot.end}" onchange="updateSlot(${index}, ${slotIndex}, 'end', this.value)">
+                                <button type="button" class="remove-slot-btn" onclick="removeSlot(${index}, ${slotIndex})">×</button>
+                            </div>
+                        `).join('') : ''}
+                        <button type="button" class="add-slot-btn" onclick="addSlot(${index})">+ Add Time Slot</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function enterAvailabilityEditMode() {
+        isAvailabilityEditMode = true;
+        const display = safeQuerySelector('.availability-display');
+        const editForm = safeQuerySelector('.availability-edit-form');
+        const editBtn = safeQuerySelector('#edit-availability-btn');
+        const saveBtn = safeQuerySelector('#save-availability-btn');
+        const cancelBtn = safeQuerySelector('#cancel-availability-btn');
+        if (display) display.style.display = 'none';
+        if (editForm) editForm.style.display = 'block';
+        if (editBtn) editBtn.style.display = 'none';
+        if (saveBtn) saveBtn.style.display = 'inline-block';
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
+    }
+
+    function exitAvailabilityEditMode() {
+        isAvailabilityEditMode = false;
+        const display = safeQuerySelector('.availability-display');
+        const editForm = safeQuerySelector('.availability-edit-form');
+        const editBtn = safeQuerySelector('#edit-availability-btn');
+        const saveBtn = safeQuerySelector('#save-availability-btn');
+        const cancelBtn = safeQuerySelector('#cancel-availability-btn');
+        if (display) display.style.display = 'block';
+        if (editForm) editForm.style.display = 'none';
+        if (editBtn) editBtn.style.display = 'inline-block';
+        if (saveBtn) saveBtn.style.display = 'none';
+        if (cancelBtn) cancelBtn.style.display = 'none';
+        currentAvailability = freelancerData.freelancer.availability || [];
+        loadAvailability();
+    }
+
+    async function saveAvailability() {
+        try {
+            const availability = [];
+            for (let i = 0; i < 7; i++) {
+                const slotsContainer = document.getElementById(`slots-${i}`);
+                if (slotsContainer && slotsContainer.style.display !== 'none') {
+                    const slots = [];
+                    const timeSlots = slotsContainer.querySelectorAll('.time-slot');
+                    timeSlots.forEach(slot => {
+                        const inputs = slot.querySelectorAll('input[type="time"]');
+                        if (inputs[0].value && inputs[1].value) {
+                            slots.push({
+                                start: inputs[0].value,
+                                end: inputs[1].value
+                            });
+                        }
+                    });
+                    if (slots.length > 0) {
+                        availability.push({
+                            dayOfWeek: i,
+                            slots: slots
+                        });
+                    }
+                }
+            }
+            const response = await fetch('/freelance/freelancer/update-availability', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ availability })
+            });
+            if (!response.ok) throw new Error('Failed to update availability');
+            const result = await response.json();
+            if (result.success) {
+                alert('Availability updated successfully!');
+                currentAvailability = availability;
+                exitAvailabilityEditMode();
+                loadAvailability();
+                loadProfilePreview();
+            } else {
+                throw new Error(result.error || 'Availability update failed');
+            }
+        } catch (error) {
+            alert('Failed to update availability: ' + error.message);
+        }
+    }
+
+    function loadServices() {
+        const container = safeQuerySelector('#services-management');
+        if (!container) {
+            return;
+        }
+        const services = freelancerData.freelancer.freelancerServices || [];
+        let html = '<div class="services-list">';
+        if (services.length === 0) {
+            html += '<p class="no-data">No services added yet. Click "Add Service" to get started.</p>';
+        } else {
+            services.forEach(service => {
+                html += `
+                    <div class="service-item" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0;">
+                        <div class="service-info" style="flex:1;">
+                            <h4 style="margin: 0 0 4px 0;">${escapeHtml(service.serviceId)}</h4>
+                            <div class="service-details" style="display: flex; align-items: center; gap: 10px;">
+                                <span class="service-price">₹${service.freelancerBasePrice || 0}</span>
+                                <span class="service-duration">${service.durationMinutes || 0} min</span>
+                                <span class="service-status status-${service.status || 'pending'}">${service.status || 'pending'}</span>
+                            </div>
+                        </div>
+                        <div class="service-actions" style="display: flex; align-items: center; margin-left: 12px;">
+                            <button class="action-button small-danger" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; padding: 0; font-size: 18px;" onclick="removeService('${service.serviceId}')" title="Delete Service">
+                                <i class="fas fa-trash" style="margin: 0; color: #9B1B1B;"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function showAddServiceModal() {
+        const modal = safeQuerySelector('#add-service-modal');
+        if (modal) modal.style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        const modal = safeQuerySelector(`#${modalId}`);
+        if (modal) modal.style.display = 'none';
+    }
+
+    async function handleAddService(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const serviceData = {
+            serviceName: formData.get('serviceName'),
+            price: parseFloat(formData.get('price')),
+            durationMinutes: parseInt(formData.get('durationMinutes'))
+        };
+        if (!serviceData.serviceName || !serviceData.price || !serviceData.durationMinutes) {
+            alert('Please fill all required fields');
+            return;
+        }
+        try {
+            const response = await fetch('/freelance/freelancer/add-service', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(serviceData)
+            });
+            if (!response.ok) throw new Error('Failed to add service');
+            const result = await response.json();
+            if (result.success) {
+                alert('Service added successfully!');
+                closeModal('add-service-modal');
+                e.target.reset();
+                window.location.reload();
+            } else {
+                throw new Error(result.error || 'Add service failed');
+            }
+        } catch (error) {
+            alert('Failed to add service: ' + error.message);
+        }
+    }
+
+    async function removeService(serviceId) {
+        if (!confirm('Are you sure you want to remove this service?')) return;
+        try {
+            const response = await fetch(`/freelance/freelancer/remove-service/${encodeURIComponent(serviceId)}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) throw new Error('Failed to remove service');
+            const result = await response.json();
+            if (result.success) {
+                alert('Service removed successfully!');
+                window.location.reload();
+            } else {
+                throw new Error(result.error || 'Remove service failed');
+            }
+        } catch (error) {
+            alert('Failed to remove service: ' + error.message);
+        }
+    }
+
+    function loadLocations() {
+        const container = safeQuerySelector('#locations-management');
+        if (!container) {
+            return;
+        }
+        const locations = freelancerData.freelancer.locations || [];
+        let html = '<div class="locations-list">';
+        if (locations.length === 0) {
+            html += '<p class="no-data">No locations added yet. Click "Add Location" to get started.</p>';
+        } else {
+            locations.forEach(location => {
+                const locationText = [location.city, location.state, location.pincode].filter(Boolean).join(', ');
+                html += `
+                    <div class="location-item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div class="location-info" style="display: flex; flex-direction: column;">
+                            <div style="display: flex; align-items: center;">
+                                <h4 style="margin: 0; font-size: 1rem;">${escapeHtml(locationText)}</h4>
+                                <span class="location-radius" style="margin-left: 12px; color: #1976d2; font-size: 0.98rem;">Radius: ${location.radius || 5} km</span>
+                            </div>
+                        </div>
+                        <div class="location-actions" style="margin-left: 16px; display: flex; align-items: center;">
+                            <button class="action-button small-danger" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; padding: 0; font-size: 18px;" onclick="removeLocation('${location.city}')" title="Remove Location" 
+                                style="margin-left: 0; display:flex; align-items: center;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function showAddLocationModal() {
+        const modal = safeQuerySelector('#add-location-modal');
+        if (modal) modal.style.display = 'block';
+    }
+
+    async function handleAddLocation(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const locationData = {
+            city: formData.get('city'),
+            state: formData.get('state'),
+            pincode: formData.get('pincode'),
+            radius: parseInt(formData.get('radius')) || 5
+        };
+        if (!locationData.city) {
+            alert('Please enter at least the city name');
+            return;
+        }
+        try {
+            const currentLocations = freelancerData.freelancer.locations || [];
+            const updatedLocations = [...currentLocations.map(loc => loc.city), locationData.city];
+            const response = await fetch('/freelance/freelancer/update-locations', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    locations: updatedLocations
+                })
+            });
+            if (!response.ok) throw new Error('Failed to add location');
+            const result = await response.json();
+            if (result.success) {
+                alert('Location added successfully!');
+                closeModal('add-location-modal');
+                e.target.reset();
+                window.location.reload();
+            } else {
+                throw new Error(result.error || 'Add location failed');
+            }
+        } catch (error) {
+            alert('Failed to add location: ' + error.message);
+        }
+    }
+
+    async function removeLocation(locationCity) {
+        if (!confirm('Are you sure you want to remove this location?')) return;
+        try {
+            const currentLocations = freelancerData.freelancer.locations || [];
+            const updatedLocations = currentLocations.filter(loc => loc.city !== locationCity).map(loc => loc.city);
+            const response = await fetch('/freelance/freelancer/update-locations', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    locations: updatedLocations
+                })
+            });
+            if (!response.ok) throw new Error('Failed to remove location');
+            const result = await response.json();
+            if (result.success) {
+                alert('Location removed successfully!');
+                window.location.reload();
+            } else {
+                throw new Error(result.error || 'Remove location failed');
+            }
+        } catch (error) {
+            alert('Failed to remove location: ' + error.message);
+        }
+    }
+
+    function loadProfilePreview() {
+        const container = safeQuerySelector('#profile-preview');
+        if (!container || !freelancerData || !freelancerData.freelancer) {
+            return;
+        }
+        const freelancer = freelancerData.freelancer;
+        const locationsText = (freelancer.locations || []).map(loc => loc.city).join(', ') || 'Not set';
+        const servicesCount = (freelancer.freelancerServices || []).length;
+        container.innerHTML = `
+            <div class="preview-section">
+                <h4>Basic Information</h4>
+                <div class="preview-field">
+                    <strong>Name:</strong> ${escapeHtml(freelancer.fullName || 'Not set')}
+                </div>
+                <div class="preview-field">
+                    <strong>Title:</strong> ${escapeHtml(freelancer.professionalTitle || 'Not set')}
+                </div>
+                <div class="preview-field">
+                    <strong>Experience:</strong> ${freelancer.experience || 0} years
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <h4>Service Details</h4>
+                <div class="preview-field">
+                    <strong>Total Services:</strong> ${servicesCount}
+                </div>
+                <div class="preview-field">
+                    <strong>Service Locations:</strong> ${escapeHtml(locationsText)}
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <h4>Availability</h4>
+                <div class="preview-field">
+                    <strong>Working Days:</strong> ${getAvailableDaysCount()} days/week
+                </div>
+            </div>
+        `;
+    }
+
+    function getAvailableDaysCount() {
+        return currentAvailability.filter(day => day.slots && day.slots.length > 0).length;
+    }
+
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return String(unsafe)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function switchToPage(page) {
+        const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+        if (navItem) navItem.click();
+    }
+
+    async function confirmAppointment(bookingId) {
+        if (!confirm('Are you sure you want to confirm this appointment?')) return;
+        try {
+            const response = await fetch(`/freelance/bookings/${bookingId}/confirm`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (!response.ok) throw new Error('Failed to confirm appointment');
+            const result = await response.json();
+            if (result.success) {
+                alert('Appointment confirmed successfully!');
+                window.location.reload();
+            } else {
+                throw new Error(result.error || 'Confirmation failed');
+            }
+        } catch (error) {
+            alert('Failed to confirm appointment: ' + error.message);
+        }
+    }
+
+    function toggleDayAvailability(dayIndex, isAvailable) {
+        const slotsContainer = document.getElementById(`slots-${dayIndex}`);
+        if (slotsContainer) {
+            if (isAvailable) {
+                slotsContainer.style.display = 'block';
+                if (slotsContainer.querySelectorAll('.time-slot').length === 0) {
+                    addSlot(dayIndex);
+                }
+            } else {
+                slotsContainer.style.display = 'none';
+                currentAvailability = currentAvailability.filter(a => a.dayOfWeek !== dayIndex);
+            }
+        }
+    }
+
+    function addSlot(dayIndex) {
+        const slotsContainer = document.getElementById(`slots-${dayIndex}`);
+        if (!slotsContainer) return;
+        const slotIndex = slotsContainer.querySelectorAll('.time-slot').length;
+        const slotHtml = `
+            <div class="time-slot">
+                <input type="time" value="09:00" onchange="updateSlot(${dayIndex}, ${slotIndex}, 'start', this.value)">
+                <span>to</span>
+                <input type="time" value="17:00" onchange="updateSlot(${dayIndex}, ${slotIndex}, 'end', this.value)">
+                <button type="button" class="remove-slot-btn" onclick="removeSlot(${dayIndex}, ${slotIndex})">×</button>
+            </div>
+        `;
+        slotsContainer.insertAdjacentHTML('beforeend', slotHtml);
+        let dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
+        if (!dayAvailability) {
+            dayAvailability = { dayOfWeek: dayIndex, slots: [] };
+            currentAvailability.push(dayAvailability);
+        }
+        dayAvailability.slots.push({ start: "09:00", end: "17:00" });
+    }
+
+    function removeSlot(dayIndex, slotIndex) {
+        const slotsContainer = document.getElementById(`slots-${dayIndex}`);
+        if (!slotsContainer) return;
+        const slots = slotsContainer.querySelectorAll('.time-slot');
+        if (slots.length > 1) {
+            slots[slotIndex].remove();
+            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
+            if (dayAvailability) {
+                dayAvailability.slots.splice(slotIndex, 1);
+                if (dayAvailability.slots.length === 0) {
+                    currentAvailability = currentAvailability.filter(a => a.dayOfWeek !== dayIndex);
+                }
+            }
+        }
+    }
+
+    function updateSlot(dayIndex, slotIndex, type, value) {
+        const dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
+        if (dayAvailability && dayAvailability.slots[slotIndex]) {
+            dayAvailability.slots[slotIndex][type] = value;
+        }
+    }
     </script>
+     <style>
+    /* Modal Styles: fixes centering and backdrop for service/location modals */
+    #add-service-modal, #add-location-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(30,40,60,0.22);
+
+        display: flex; /* Use flex to center */
+        justify-content: center;
+        align-items: flex-start; /* Start at the top */
+        transition: all 0.15s;
+    }
+    #add-service-modal.open, #add-location-modal.open {
+        display: flex;
+    }
+    #add-service-modal:not(.open), #add-location-modal:not(.open) {
+        display: none;
+    }
+    #add-service-modal .modal-content, #add-location-modal .modal-content {
+        background: #fff;
+        border-radius: 14px;
+        max-width: 400px;
+        width: 98vw;
+        box-shadow: 0 6px 32px rgba(0,0,0,0.19);
+        padding: 32px 28px 20px 28px;
+        animation: modalPopIn 0.18s;
+        position: relative;
+        margin: 8vh auto 0 auto; /* 8vh from top centers the modal lower on the page */
+    }
+    #add-service-modal .modal-header, #add-location-modal .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #EFEFEF;
+        margin-bottom: 14px;
+    }
+    #add-service-modal .modal-header h3, #add-location-modal .modal-header h3 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #0e1a2b;
+        margin: 0;
+    }
+    #add-service-modal .close-btn, #add-location-modal .close-btn {
+        font-size: 1.7rem;
+        border: none;
+        background: transparent;
+        color: #999;
+        cursor: pointer;
+        line-height: 1;
+        margin-left: 10px;
+        transition: color 0.2s;
+    }
+    #add-service-modal .close-btn:hover, #add-location-modal .close-btn:hover {
+        color: #1976d2;
+    }
+    #add-service-modal .form-group, #add-location-modal .form-group {
+        margin-bottom: 16px;
+    }
+    #add-service-modal input, #add-service-modal select,
+    #add-location-modal input, #add-location-modal select {
+        width: 100%;
+        padding: 7px 11px;
+        border-radius: 6px;
+        border: 1px solid #e2e2e2;
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+    #add-service-modal label, #add-location-modal label {
+        font-weight: 500;
+        margin-bottom: 3px;
+        display: block;
+    }
+    #add-service-modal .form-actions, #add-location-modal .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 14px;
+        margin-top: 15px;
+    }
+    #add-service-modal .primary-button, #add-location-modal .primary-button {
+        background: #1976d2;
+        color: #fff;
+        padding: 8px 18px;
+        border-radius: 5px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    #add-service-modal .secondary-button, #add-location-modal .secondary-button {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 8px 18px;
+        border-radius: 5px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    /* Pop-in animation for modal */
+    @keyframes modalPopIn {
+        0% {transform: scale(0.89);}
+        85% {transform: scale(1.03);}
+        100% {transform: scale(1);}
+    }
+    </style>
+    <style>
+    .add-service-form input, #add-location-form input,
+    #profile-form input, #profile-form textarea, #availability-form input, #availability-form select {
+        margin-bottom:8px; width:100%;
+    }
+    .action-button.small-secondary { background:#E3F2FD; color:#1976d2; padding:2px 8px; font-size:12px; margin-left:7px;}
+    .action-button.small-danger { background:#ffc6c6; color:#9B1B1B; padding:2px 8px; font-size:12px; }
+    .services-container .service-tag, .locations-container .location-tag {display:inline-flex;align-items:center;margin:4px 3px 4px 0;padding:7px 13px;background:#e3f2fd;color:#1976d2;border-radius:19px;}
+    .services-container .service-tag i, .locations-container .location-tag i {margin-left:10px;cursor:pointer;opacity:0.7;}
+    .services-container .service-tag i:hover, .locations-container .location-tag i:hover {opacity:1;}
+    .service-price,.service-duration{margin-left:6px;background:#1976d2;color:#fff;padding:1px 7px;border-radius:8px;font-size:13px;}
+    .hour-item input[type="time"]{font-size:13px;}
+    .action-button.primary-button {background: #1976d2; color: #fff;}
+    .action-button.secondary-button {background: #f2f2f2; color: #393939;}
+    .action-button.edit-button {background: #fff; color: #1976d2; border:1px solid #1976d2;}
+    </style>
 </body>
 </html>

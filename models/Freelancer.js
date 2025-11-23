@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const AvailabilitySchema = new mongoose.Schema({
-  dayOfWeek: { type: Number, min: 0, max: 6 }, 
+  dayOfWeek: { type: Number, min: 0, max: 6 },
   slots: [{
-    start: String,  
-    end: String     
+    start: String,
+    end: String
   }]
 }, { _id: true });
 
@@ -16,26 +16,24 @@ const ServiceLocationSchema = new mongoose.Schema({
 }, { _id: true });
 
 const FreelancerServiceSchema = new mongoose.Schema({
-  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+  serviceId: { type: String, required: true },
 
-  freelancerBasePrice: { type: Number, required: true },
+  freelancerBasePrice: Number,
   adminPrice: Number,
   adminCommissionPercent: { type: Number, default: 0 },
   finalPrice: Number,
 
   durationMinutes: Number,
-  images: [String],
 
-  status: { 
-    type: String, 
-    enum: ['pending','approved','rejected','inactive'], 
-    default: 'pending' 
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected', 'inactive'],
+    default: 'pending'
   },
 
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'AdminStaff' },
   approvedAt: Date
 }, { timestamps: true });
-
 
 const FreelancerSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -43,13 +41,16 @@ const FreelancerSchema = new mongoose.Schema({
   fullName: String,
   phone: String,
   email: String,
+  professionalTitle: { type: String },
+
+  experience: { type: Number, default: 0 },  
 
   bio: String,
 
   skills: [String],
 
   proof: {
-    type: { type: String }, 
+    type: { type: String },
     number: String
   },
 
@@ -57,16 +58,15 @@ const FreelancerSchema = new mongoose.Schema({
   portfolioImages: [String],
   documents: [String],
 
-  freelancerServices: [FreelancerServiceSchema],
+  freelancerServices: [FreelancerServiceSchema],  
 
   locations: [ServiceLocationSchema],
-
   availability: [AvailabilitySchema],
 
-  status: { 
-    type: String, 
-    enum: ['pending','approved','rejected','inactive'], 
-    default: 'pending' 
+  status: {
+    type: String,
+    enum: ['pending','approved','rejected','inactive'],
+    default: 'pending'
   },
 
   rating: { type: Number, default: 0 },

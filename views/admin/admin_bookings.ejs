@@ -984,13 +984,7 @@
                                 <div class="wg-box">
                                     <div class="title-box">
                                         <i class="icon-calendar"></i>
-                                        <div class="body-text">Tip: Manage freelance and salon bookings. You can confirm bookings, update status, and view detailed booking information.</div>
-                                    </div>
-
-                                    <!-- Booking Tabs -->
-                                    <div class="booking-tabs">
-                                        <button class="booking-tab active" data-tab="freelance">Freelance Bookings</button>
-                                        <button class="booking-tab" data-tab="salon">Salon Bookings</button>
+                                        <div class="body-text">Tip: Manage freelance bookings. You can confirm bookings, update status, and view detailed booking information.</div>
                                     </div>
 
                                     <div class="flex items-center justify-between gap10 flex-wrap">
@@ -999,53 +993,172 @@
                                                 <div class="text-tiny">Showing</div>
                                                 <div class="select">
                                                     <select id="limit-select">
-                                                        <option value="10">10</option>
-                                                        <option value="20">20</option>
-                                                        <option value="30">30</option>
+                                                        <option value="10" <%= (limit && limit == 10) ? 'selected' : '' %>>10</option>
+                                                        <option value="20" <%= (limit && limit == 20) ? 'selected' : '' %>>20</option>
+                                                        <option value="30" <%= (limit && limit == 30) ? 'selected' : '' %>>30</option>
                                                     </select>
                                                 </div>
                                                 <div class="text-tiny">entries</div>
                                             </div>
                                             <div class="form-search">
-                                                <input type="text" id="search-input"
-                                                    placeholder="Search by booking ID, customer name, or service...">
-                                                <button id="search-btn"><i class="icon-search"></i></button>
+                                                <form method="get" action="/admin/bookings" id="search-form" style="display: flex; align-items: center;">
+                                                    <input type="text" id="search-input"
+                                                        name="search"
+                                                        value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                                        placeholder="Search by booking ID, customer name, or service...">
+                                                    <button id="search-btn" type="submit"><i class="icon-search"></i></button>
+                                                </form>
                                             </div>
                                             <div class="show">
                                                 <div class="text-tiny">Filter by:</div>
                                                 <div class="select">
-                                                    <select id="status-filter">
-                                                        <option value="all">All Status</option>
-                                                        <option value="pending">Pending</option>
-                                                        <option value="confirmed">Confirmed</option>
-                                                        <option value="upcoming">Upcoming</option>
-                                                        <option value="completed">Completed</option>
-                                                        <option value="cancelled">Cancelled</option>
-                                                    </select>
+                                                    <form method="get" action="/admin/bookings" id="filter-form" style="display:inline;">
+                                                        <select id="status-filter" name="status" onchange="this.form.submit()">
+                                                            <option value="all" <%= filterStatus === 'all' ? 'selected' : '' %>>All Status</option>
+                                                            <option value="waiting_admin_approval" <%= filterStatus === 'waiting_admin_approval' ? 'selected' : '' %>>Waiting Admin Approval</option>
+                                                            <option value="approved_by_admin" <%= filterStatus === 'approved_by_admin' ? 'selected' : '' %>>Approved by Admin</option>
+                                                            <option value="rejected_by_admin" <%= filterStatus === 'rejected_by_admin' ? 'selected' : '' %>>Rejected by Admin</option>
+                                                            <option value="accepted_by_freelancer" <%= filterStatus === 'accepted_by_freelancer' ? 'selected' : '' %>>Accepted by Freelancer</option>
+                                                            <option value="cancelled_by_user" <%= filterStatus === 'cancelled_by_user' ? 'selected' : '' %>>Cancelled by User</option>
+                                                            <option value="completed" <%= filterStatus === 'completed' ? 'selected' : '' %>>Completed</option>
+                                                        </select>
+                                                        <% /* keep query string for search + limit selection if needed */ %>
+                                                        <% if (typeof search !== 'undefined' && search) { %>
+                                                            <input type="hidden" name="search" value="<%= search %>"/>
+                                                        <% } %>
+                                                        <% if (typeof limit !== 'undefined' && limit) { %>
+                                                            <input type="hidden" name="limit" value="<%= limit %>"/>
+                                                        <% } %>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Freelance Bookings Tab -->
-                                    <div id="freelance-bookings" class="tab-content active">
+                                    <div class="tab-content active" id="freelance-bookings">
                                         <div class="bookings-container" id="freelance-bookings-list">
-                                            <!-- Freelance booking cards will be dynamically inserted here -->
-                                        </div>
-                                    </div>
-
-                                    <!-- Salon Bookings Tab -->
-                                    <div id="salon-bookings" class="tab-content">
-                                        <div class="bookings-container" id="salon-bookings-list">
-                                            <!-- Salon booking cards will be dynamically inserted here -->
+                                            <% if (error) { %>
+                                                <div class="error-message"><%= error %></div>
+                                            <% } else if (!bookings || bookings.length === 0) { %>
+                                                <div class="no-bookings">No bookings found matching your criteria.</div>
+                                            <% } else { %>
+                                                <% bookings.forEach(function(booking) { %>
+                                                    <div class="booking-card" id="booking-<%= booking._id %>">
+                                                        <div class="booking-header">
+                                                            <div>
+                                                                <div class="booking-id">
+                                                                    <%= booking.bookingToken 
+                                                                            ? booking.bookingToken 
+                                                                            : booking._id.toString() %>
+                                                                </div>
+                                                                <div class="booking-date">
+                                                                    <%= booking.bookingDate 
+                                                                            ? (new Date(booking.bookingDate)).toLocaleString('en-IN', 
+                                                                                {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) 
+                                                                            : '' %>
+                                                                </div>
+                                                            </div>
+                                                            <div class="booking-status">
+                                                                <span class="status-badge <%= booking.status %>">
+                                                                    <%= (function(status) {
+                                                                        switch(status) {
+                                                                            case 'waiting_admin_approval': return 'Waiting Admin Approval';
+                                                                            case 'approved_by_admin': return 'Approved by Admin';
+                                                                            case 'rejected_by_admin': return 'Rejected by Admin';
+                                                                            case 'accepted_by_freelancer': return 'Accepted by Freelancer';
+                                                                            case 'cancelled_by_user': return 'Cancelled by User';
+                                                                            case 'completed': return 'Completed';
+                                                                            default: return status;
+                                                                        }
+                                                                    })(booking.status) %>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="booking-body">
+                                                            <div class="booking-customer">
+                                                                <div class="customer-name"><%= booking.user && booking.user.name ? booking.user.name : '' %></div>
+                                                                <div class="customer-contact"><%= booking.user && booking.user.email ? booking.user.email : '' %> • <%= booking.user && booking.user.phone ? booking.user.phone : '' %></div>
+                                                            </div>
+                                                            <div class="booking-service">
+                                                                <div class="service-name"><%= booking.service && booking.service.serviceName %></div>
+                                                                <div class="service-details">
+                                                                    <%= booking.bookingDate 
+                                                                        ? (new Date(booking.bookingDate)).toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' })
+                                                                        : '' %>
+                                                                    <% if (booking.bookingTime) { %>
+                                                                        <span>• <%= booking.bookingTime %></span>
+                                                                    <% } %>
+                                                                    <% if (booking.service && booking.service.durationMinutes) { %>
+                                                                        <span>• <%= booking.service.durationMinutes %> min</span>
+                                                                    <% } %>
+                                                                </div>
+                                                            </div>
+                                                            <div class="booking-provider">
+                                                                <div class="provider-name"><%= booking.freelancer && booking.freelancer.freelancerName ? booking.freelancer.freelancerName : '' %></div>
+                                                                <% if (booking.freelancer && booking.freelancer.freelancerPhone) { %>
+                                                                    <div class="provider-contact"><%= booking.freelancer.freelancerPhone %></div>
+                                                                <% } %>
+                                                                <% /* Additional info (if available) could go here */ %>
+                                                            </div>
+                                                            <div class="booking-total">
+                                                                <span>Total Amount:</span>
+                                                                <span>
+                                                                    ₹
+                                                                    <%= booking.service && booking.service.price ? Number(booking.service.price).toFixed(2) : '0.00' %>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="booking-footer">
+                                                            <div class="text-tiny">
+                                                                Payment: 
+                                                                <%= booking.payment && booking.payment.method ? booking.payment.method : '-' %>
+                                                                • 
+                                                                <%= booking.payment && booking.payment.status ? booking.payment.status : '-' %>
+                                                            </div>
+                                                            <div class="booking-actions">
+                                                                <button class="btn btn-info btn-sm" onclick="showBookingDetails('<%= booking.bookingToken || booking._id %>')">
+                                                                    <i class="icon-eye"></i> View
+                                                                </button>
+                                                                <% if (booking.status === 'waiting_admin_approval') { %>
+                                                                    <button class="btn btn-success btn-sm" onclick="adminApproveBooking('<%= booking._id %>', 'approve')">
+                                                                        <i class="icon-check"></i> Approve
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-sm" onclick="adminApproveBooking('<%= booking._id %>', 'reject')">
+                                                                        <i class="icon-x"></i> Reject
+                                                                    </button>
+                                                                <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
+                                            <% } %>
                                         </div>
                                     </div>
 
                                     <div class="divider"></div>
                                     <div class="flex items-center justify-between flex-wrap gap10">
-                                        <div class="text-tiny" id="showing-entries">Showing 0 entries</div>
-                                        <ul class="wg-pagination" id="pagination">
-                                            <!-- Pagination will be loaded here dynamically -->
+                                        <div class="text-tiny" id="showing-entries">
+                                            <% if (total && total > 0) { %>
+                                                Showing 
+                                                <%= ((page-1)*limit) + 1 %> 
+                                                to 
+                                                <%= Math.min(page*limit, total) %> 
+                                                of <%= total %> entries
+                                            <% } else { %>
+                                                Showing 0 entries
+                                            <% } %>
+                                        </div>
+                                        <ul class="wg-pagination">
+                                            <% if (totalPages > 1) { %>
+                                                <% for (let p=1; p <= totalPages; p++) { %>
+                                                    <li class="<%= (p === page) ? 'active' : '' %>">
+                                                        <a href="?page=<%= p %>
+                                                            <% if (filterStatus) { %>&status=<%= filterStatus %><% } %>
+                                                            <% if (typeof search !== 'undefined' && search) { %>&search=<%= encodeURIComponent(search) %><% } %>
+                                                            <% if (typeof limit !== 'undefined' && limit) { %>&limit=<%= limit %><% } %>"><%= p %></a>
+                                                    </li>
+                                                <% } %>
+                                            <% } %>
                                         </ul>
                                     </div>
                                 </div>
@@ -1063,902 +1176,192 @@
                                                 <i class="icon-x"></i>
                                             </button>
                                         </div>
-                                        
-                                        <div class="modal-body">
-                                            <div class="booking-details-grid">
-                                                <div class="form-section">
-                                                    <div class="section-header">
-                                                        <h4><i class="icon-user"></i> Customer Information</h4>
-                                                    </div>
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label>Customer Name</label>
-                                                            <div id="detail-customer-name" class="detail-value"></div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Email</label>
-                                                            <div id="detail-customer-email" class="detail-value"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label>Phone</label>
-                                                            <div id="detail-customer-phone" class="detail-value"></div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Booking Date</label>
-                                                            <div id="detail-booking-date" class="detail-value"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Service Address</label>
-                                                        <div id="detail-service-address" class="detail-value"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-section">
-                                                    <div class="section-header">
-                                                        <h4><i class="icon-shopping-bag"></i> Booking Summary</h4>
-                                                    </div>
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label>Booking ID</label>
-                                                            <div id="detail-booking-id" class="detail-value"></div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Status</label>
-                                                            <div id="detail-booking-status" class="detail-value"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-grid">
-                                                        <div class="form-group">
-                                                            <label>Payment Method</label>
-                                                            <div id="detail-payment-method" class="detail-value"></div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Payment Status</label>
-                                                            <div id="detail-payment-status" class="detail-value"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Booking Total</label>
-                                                        <div id="detail-booking-total" class="detail-value" style="font-size: 18px; font-weight: 600; color: #5c4d3b;"></div>
-                                                    </div>
-                                                </div>
+                                        <div class="modal-body" id="booking-details-body">
+                                            <div class="loader" id="booking-details-loader" style="display:none;text-align:center;">
+                                                <i class="icon-loader" style="font-size:32px;animation: spin 0.5s linear infinite;"></i>
                                             </div>
-
-                                            <div class="form-section">
-                                                <div class="section-header">
-                                                    <h4><i class="icon-scissors"></i> Service Details</h4>
-                                                </div>
-                                                <div class="form-grid">
-                                                    <div class="form-group">
-                                                        <label>Service Type</label>
-                                                        <div id="detail-service-type" class="detail-value"></div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Service Date & Time</label>
-                                                        <div id="detail-service-datetime" class="detail-value"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Service Description</label>
-                                                    <div id="detail-service-description" class="detail-value"></div>
-                                                </div>
+                                            <div id="booking-details-content" style="display:none">
+                                                <!-- Details loaded by JS -->
                                             </div>
-
-                                            <div class="form-section">
-                                                <div class="section-header">
-                                                    <h4><i class="icon-users"></i> Service Provider Details</h4>
-                                                </div>
-                                                <div id="detail-provider-info" class="booking-provider">
-                                                    <!-- Provider information will be dynamically inserted here -->
-                                                </div>
-                                            </div>
-
-                                            <div class="form-section">
-                                                <div class="section-header">
-                                                    <h4><i class="icon-clock"></i> Booking Timeline</h4>
-                                                </div>
-                                                <div id="detail-booking-timeline" class="booking-timeline">
-                                                    <!-- Booking timeline will be dynamically inserted here -->
-                                                </div>
-                                            </div>
-
-                                            <div class="form-actions">
-                                                <button type="button" class="btn btn-secondary" 
-                                                        onclick="closeModal('booking-details-modal')">
-                                                    <i class="icon-x"></i> Close
-                                                </button>
-                                                <button type="button" class="btn btn-primary" id="print-booking-btn">
-                                                    <i class="icon-printer"></i> Print Booking
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Update Status Modal -->
-                                <div id="update-status-modal" class="modal">
-                                    <div class="modal-content modern-modal">
-                                        <div class="modal-header">
-                                            <div class="modal-title">
-                                                <i class="icon-edit-3"></i>
-                                                <h3>Update Booking Status</h3>
-                                            </div>
-                                            <button class="close-btn" onclick="closeModal('update-status-modal')">
-                                                <i class="icon-x"></i>
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="modal-body">
-                                            <form id="update-status-form">
-                                                <input type="hidden" id="update-booking-id" name="bookingId">
-                                                <input type="hidden" id="update-booking-type" name="bookingType">
-                                                
-                                                <div class="form-section">
-                                                    <div class="form-group">
-                                                        <label for="update-booking-status">Booking Status</label>
-                                                        <select id="update-booking-status" name="status" required>
-                                                            <option value="pending">Pending</option>
-                                                            <option value="confirmed">Confirmed</option>
-                                                            <option value="upcoming">Upcoming</option>
-                                                            <option value="completed">Completed</option>
-                                                            <option value="cancelled">Cancelled</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="update-status-notes">Notes (Optional)</label>
-                                                        <textarea id="update-status-notes" name="notes" rows="3" placeholder="Add any notes about this status update..."></textarea>
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-actions">
-                                                    <button type="button" class="btn btn-secondary" 
-                                                            onclick="closeModal('update-status-modal')">
-                                                        <i class="icon-x"></i> Cancel
-                                                    </button>
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="icon-save"></i> Update Status
-                                                    </button>
-                                                </div>
-                                            </form>
                                         </div>
                                     </div>
                                 </div>
 
                                 <script>
-                                    // Global variables
-                                    let currentPage = 1;
-                                    let limit = 10;
-                                    let searchQuery = '';
-                                    let statusFilter = 'all';
-                                    let currentTab = 'freelance';
-                                    let freelanceBookings = [];
-                                    let salonBookings = [];
-
-                                    // DOM Content Loaded
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Initialize
-                                        fetchBookings();
-
-                                        // Event listeners
-                                        document.getElementById('limit-select').addEventListener('change', function () {
-                                            limit = parseInt(this.value);
-                                            currentPage = 1;
-                                            fetchBookings();
-                                        });
-
-                                        document.getElementById('search-btn').addEventListener('click', function () {
-                                            searchQuery = document.getElementById('search-input').value;
-                                            currentPage = 1;
-                                            fetchBookings();
-                                        });
-
-                                        document.getElementById('status-filter').addEventListener('change', function () {
-                                            statusFilter = this.value;
-                                            currentPage = 1;
-                                            fetchBookings();
-                                        });
-
-                                        document.getElementById('update-status-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            updateBookingStatus();
-                                        });
-
-                                        document.getElementById('print-booking-btn').addEventListener('click', function() {
-                                            window.print();
-                                        });
-
-                                        // Tab switching
-                                        document.querySelectorAll('.booking-tab').forEach(tab => {
-                                            tab.addEventListener('click', function() {
-                                                const tabId = this.getAttribute('data-tab');
-                                                switchTab(tabId);
-                                            });
-                                        });
+                                    // Limit control (optional: preserve query string on change)
+                                    document.getElementById('limit-select').addEventListener('change', function() {
+                                        const params = new URLSearchParams(window.location.search);
+                                        params.set('limit', this.value);
+                                        params.set('page', 1); // reset to first page
+                                        window.location.search = params.toString();
                                     });
 
-                                    // Switch between tabs
-                                    function switchTab(tabId) {
-                                        // Update active tab
-                                        document.querySelectorAll('.booking-tab').forEach(tab => {
-                                            tab.classList.remove('active');
-                                        });
-                                        document.querySelector(`.booking-tab[data-tab="${tabId}"]`).classList.add('active');
+                                    // Keep filter+limit+search on search submit
+                                    document.getElementById('search-form').addEventListener('submit', function(e) {
+                                        // No extra JS needed, as form posts with GET and query params handled on server-side
+                                    });
 
-                                        // Update active tab content
-                                        document.querySelectorAll('.tab-content').forEach(content => {
-                                            content.classList.remove('active');
-                                        });
-                                        document.getElementById(`${tabId}-bookings`).classList.add('active');
-
-                                        currentTab = tabId;
-                                        currentPage = 1;
-                                        fetchBookings();
-                                    }
-
-                                    // Fetch bookings from API
-                                    async function fetchBookings() {
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            // For demo purposes, we'll use mock data
-                                            freelanceBookings = getMockFreelanceBookings();
-                                            salonBookings = getMockSalonBookings();
-                                            
-                                            let currentBookings = currentTab === 'freelance' ? freelanceBookings : salonBookings;
-                                            
-                                            // Filter by search query if provided
-                                            if (searchQuery) {
-                                                currentBookings = currentBookings.filter(booking => 
-                                                    booking.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                    booking.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                    booking.service.name.toLowerCase().includes(searchQuery.toLowerCase())
-                                                );
-                                            }
-                                            
-                                            // Filter by status if provided
-                                            if (statusFilter !== 'all') {
-                                                currentBookings = currentBookings.filter(booking => booking.status === statusFilter);
-                                            }
-                                            
-                                            renderBookings(currentBookings);
-                                            renderPagination(Math.ceil(currentBookings.length / limit), currentPage);
-                                            document.getElementById('showing-entries').textContent = `Showing ${Math.min(currentBookings.length, limit)} of ${currentBookings.length} entries`;
-                                        } catch (error) {
-                                            console.error('Error fetching bookings:', error);
-                                            alert('Failed to load bookings. Please try again later.');
-                                            document.getElementById(`${currentTab}-bookings-list`).innerHTML = '<div class="error-message">Failed to load bookings</div>';
-                                        }
-                                    }
-
-                                    // Render booking cards
-                                    function renderBookings(bookings) {
-                                        const bookingsList = document.getElementById(`${currentTab}-bookings-list`);
-                                        bookingsList.innerHTML = '';
-
-                                        // Calculate pagination
-                                        const startIndex = (currentPage - 1) * limit;
-                                        const endIndex = startIndex + limit;
-                                        const paginatedBookings = bookings.slice(startIndex, endIndex);
-
-                                        if (paginatedBookings.length === 0) {
-                                            bookingsList.innerHTML = '<div class="no-bookings">No bookings found matching your criteria.</div>';
-                                            return;
-                                        }
-
-                                        paginatedBookings.forEach(booking => {
-                                            const bookingCard = document.createElement('div');
-                                            bookingCard.className = 'booking-card';
-                                            bookingCard.id = `booking-${booking.id}`;
-
-                                            // Format date
-                                            const bookingDate = new Date(booking.bookingDate).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
-
-                                            // Service date
-                                            const serviceDate = new Date(booking.service.date).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
-
-                                            // Status badge
-                                            const statusBadge = getStatusBadge(booking.status);
-
-                                            // Provider info
-                                            let providerInfo = '';
-                                            if (currentTab === 'freelance') {
-                                                providerInfo = `
-                                                    <div class="booking-provider">
-                                                        <div class="provider-name">${booking.freelancer.name}</div>
-                                                        <div class="provider-location">${booking.freelancer.specialization} • ${booking.freelancer.experience}</div>
-                                                        <div class="provider-contact">${booking.freelancer.phone}</div>
-                                                    </div>
-                                                `;
-                                            } else {
-                                                providerInfo = `
-                                                    <div class="booking-provider">
-                                                        <div class="provider-name">${booking.salon.name}</div>
-                                                        <div class="provider-location">${booking.salon.address}</div>
-                                                        <div class="provider-contact">${booking.salon.phone}</div>
-                                                    </div>
-                                                `;
-                                            }
-
-                                            bookingCard.innerHTML = `
-                                                <div class="booking-header">
-                                                    <div>
-                                                        <div class="booking-id">${booking.id}</div>
-                                                        <div class="booking-date">${bookingDate}</div>
-                                                    </div>
-                                                    <div class="booking-status">
-                                                        ${statusBadge}
-                                                    </div>
-                                                </div>
-                                                <div class="booking-body">
-                                                    <div class="booking-customer">
-                                                        <div class="customer-name">${booking.customer.name}</div>
-                                                        <div class="customer-contact">${booking.customer.email} • ${booking.customer.phone}</div>
-                                                    </div>
-                                                    <div class="booking-service">
-                                                        <div class="service-name">${booking.service.name}</div>
-                                                        <div class="service-details">${serviceDate} • ${booking.service.duration}</div>
-                                                    </div>
-                                                    ${providerInfo}
-                                                    <div class="booking-total">
-                                                        <span>Total Amount:</span>
-                                                        <span>₹${booking.total.toFixed(2)}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="booking-footer">
-                                                    <div class="text-tiny">Payment: ${booking.payment.method} • ${booking.payment.status}</div>
-                                                    <div class="booking-actions">
-                                                        <button class="btn btn-info btn-sm" onclick="showBookingDetails('${booking.id}', '${currentTab}')">
-                                                            <i class="icon-eye"></i> View
-                                                        </button>
-                                                        ${booking.status === 'pending' ? `
-                                                            <button class="btn btn-success btn-sm" onclick="confirmBooking('${booking.id}', '${currentTab}')">
-                                                                <i class="icon-check"></i> Confirm
-                                                            </button>
-                                                        ` : ''}
-                                                        <button class="btn btn-primary btn-sm" onclick="showUpdateStatusModal('${booking.id}', '${currentTab}')">
-                                                            <i class="icon-edit-3"></i> Update Status
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            `;
-
-                                            bookingsList.appendChild(bookingCard);
-                                        });
-                                    }
-
-                                    // Get status badge HTML
-                                    function getStatusBadge(status) {
-                                        const statusText = status.charAt(0).toUpperCase() + status.slice(1);
-                                        return `<span class="status-badge ${status}">${statusText}</span>`;
-                                    }
-
-                                    // Show booking details modal
-                                    function showBookingDetails(bookingId, bookingType) {
-                                        const bookings = bookingType === 'freelance' ? freelanceBookings : salonBookings;
-                                        const booking = bookings.find(b => b.id === bookingId);
-                                        if (!booking) {
-                                            alert('Booking not found');
-                                            return;
-                                        }
-
-                                        // Populate customer information
-                                        document.getElementById('detail-customer-name').textContent = booking.customer.name;
-                                        document.getElementById('detail-customer-email').textContent = booking.customer.email;
-                                        document.getElementById('detail-customer-phone').textContent = booking.customer.phone;
-                                        document.getElementById('detail-service-address').textContent = booking.service.address;
-                                        
-                                        // Format date
-                                        const bookingDate = new Date(booking.bookingDate).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        });
-                                        document.getElementById('detail-booking-date').textContent = bookingDate;
-
-                                        // Populate booking summary
-                                        document.getElementById('detail-booking-id').textContent = booking.id;
-                                        document.getElementById('detail-booking-status').innerHTML = getStatusBadge(booking.status);
-                                        document.getElementById('detail-payment-method').textContent = booking.payment.method;
-                                        document.getElementById('detail-payment-status').textContent = booking.payment.status;
-                                        document.getElementById('detail-booking-total').textContent = `₹${booking.total.toFixed(2)}`;
-
-                                        // Populate service details
-                                        document.getElementById('detail-service-type').textContent = booking.service.name;
-                                        const serviceDateTime = new Date(booking.service.date).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        });
-                                        document.getElementById('detail-service-datetime').textContent = serviceDateTime;
-                                        document.getElementById('detail-service-description').textContent = booking.service.description;
-
-                                        // Populate provider information
-                                        const providerInfoContainer = document.getElementById('detail-provider-info');
-                                        if (bookingType === 'freelance') {
-                                            providerInfoContainer.innerHTML = `
-                                                <div class="provider-name">${booking.freelancer.name}</div>
-                                                <div class="provider-location">${booking.freelancer.specialization}</div>
-                                                <div class="provider-contact">${booking.freelancer.phone} • ${booking.freelancer.email}</div>
-                                                <div class="provider-experience">Experience: ${booking.freelancer.experience}</div>
-                                                <div class="provider-rating">Rating: ${booking.freelancer.rating}/5</div>
-                                            `;
-                                        } else {
-                                            providerInfoContainer.innerHTML = `
-                                                <div class="provider-name">${booking.salon.name}</div>
-                                                <div class="provider-location">${booking.salon.address}</div>
-                                                <div class="provider-contact">${booking.salon.phone} • ${booking.salon.email}</div>
-                                                <div class="provider-hours">Hours: ${booking.salon.hours}</div>
-                                                <div class="provider-rating">Rating: ${booking.salon.rating}/5</div>
-                                            `;
-                                        }
-
-                                        // Populate booking timeline
-                                        const timelineContainer = document.getElementById('detail-booking-timeline');
-                                        timelineContainer.innerHTML = '';
-                                        
-                                        booking.timeline.forEach((event, index) => {
-                                            const isActive = index === booking.timeline.length - 1;
-                                            const eventDate = new Date(event.date).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
-                                            
-                                            const eventElement = document.createElement('div');
-                                            eventElement.className = `timeline-item ${isActive ? 'active' : ''}`;
-                                            eventElement.innerHTML = `
-                                                <div class="timeline-icon">
-                                                    <i class="${getTimelineIcon(event.status)}"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <div class="timeline-date">${eventDate}</div>
-                                                    <div class="timeline-text">${event.description}</div>
-                                                </div>
-                                            `;
-                                            timelineContainer.appendChild(eventElement);
-                                        });
-
-                                        // Show modal
+                                    // Booking Details AJAX call
+                                    function showBookingDetails(bookingToken) {
                                         document.getElementById('booking-details-modal').style.display = 'block';
-                                    }
+                                        document.getElementById('booking-details-loader').style.display = 'block';
+                                        document.getElementById('booking-details-content').style.display = 'none';
+                                        document.getElementById('booking-details-content').innerHTML = '';
+                                        fetch('/freelance/booking/' + encodeURIComponent(bookingToken), {
+                                            credentials: 'same-origin'
+                                        })
+                                        .then(res => res.json())
+                                        .then(res => {
+                                            document.getElementById('booking-details-loader').style.display = 'none';
+                                            if (res.success && res.booking) {
+                                                const b = res.booking;
+                                                // Compose details
+                                                let html = '';
+                                                
+                                                // Customer Info
+                                                html += `<div class="booking-details-grid">
+                                                        <div class="form-section">
+                                                            <div class="section-header"><h4><i class="icon-user"></i> Customer Information</h4></div>
+                                                            <div class="form-grid">
+                                                                <div class="form-group"><label>Customer Name</label><div class="detail-value">${b.user?.name || '-'}</div></div>
+                                                                <div class="form-group"><label>Email</label><div class="detail-value">${b.user?.email || '-'}</div></div>
+                                                            </div>
+                                                            <div class="form-grid">
+                                                                <div class="form-group"><label>Phone</label><div class="detail-value">${b.user?.phone || '-'}</div></div>
+                                                                <div class="form-group"><label>Booking Date</label><div class="detail-value">${b.bookingDate ? new Date(b.bookingDate).toLocaleString('en-IN',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '-'}</div></div>
+                                                            </div>
+                                                            <div class="form-group"><label>Service Address</label><div class="detail-value">${b.address?.fullAddress || '-'}</div></div>
+                                                        </div>
+                                                    
+                                                        <div class="form-section">
+                                                            <div class="section-header"><h4><i class="icon-shopping-bag"></i> Booking Summary</h4></div>
+                                                            <div class="form-grid">
+                                                                <div class="form-group"><label>Booking ID</label><div class="detail-value">${b.bookingToken || b._id}</div></div>
+                                                                <div class="form-group"><label>Status</label>
+                                                                    <div class="detail-value">
+                                                                        <span class="status-badge ${b.status}">${
+                                                                            {
+                                                                                waiting_admin_approval: 'Waiting Admin Approval',
+                                                                                approved_by_admin: 'Approved by Admin',
+                                                                                rejected_by_admin: 'Rejected by Admin',
+                                                                                accepted_by_freelancer: 'Accepted by Freelancer',
+                                                                                cancelled_by_user: 'Cancelled by User',
+                                                                                completed: 'Completed'
+                                                                            }[b.status] || b.status
+                                                                        }</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-grid">
+                                                                <div class="form-group"><label>Payment Method</label><div class="detail-value">${b.payment?.method || '-'}</div></div>
+                                                                <div class="form-group"><label>Payment Status</label><div class="detail-value">${b.payment?.status || '-'}</div></div>
+                                                            </div>
+                                                            <div class="form-group"><label>Booking Total</label><div class="detail-value" style="font-size:18px;font-weight:600;color:#5c4d3b;">₹${b.service?.price ? Number(b.service.price).toFixed(2) : '0.00'}</div></div>
+                                                        </div>
+                                                    </div>`;
 
-                                    // Get timeline icon based on status
-                                    function getTimelineIcon(status) {
-                                        const icons = {
-                                            'pending': 'icon-clock',
-                                            'confirmed': 'icon-check',
-                                            'upcoming': 'icon-calendar',
-                                            'completed': 'icon-check-circle',
-                                            'cancelled': 'icon-x'
-                                        };
-                                        return icons[status] || 'icon-circle';
-                                    }
+                                                // Service Details
+                                                html += `<div class="form-section">
+                                                    <div class="section-header"><h4><i class="icon-scissors"></i> Service Details</h4></div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group"><label>Service Type</label><div class="detail-value">${b.service?.serviceName || '-'}</div></div>
+                                                        <div class="form-group"><label>Service Date & Time</label>
+                                                            <div class="detail-value">
+                                                                ${ b.bookingDate ? new Date(b.bookingDate).toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'}) : '' }
+                                                                ${ b.bookingTime ? ' • ' + b.bookingTime : '' }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group"><label>Service Description</label>
+                                                        <div class="detail-value">${b.notes || '-'}</div>
+                                                    </div>
+                                                </div>`;
 
-                                    // Show update status modal
-                                    function showUpdateStatusModal(bookingId, bookingType) {
-                                        const bookings = bookingType === 'freelance' ? freelanceBookings : salonBookings;
-                                        const booking = bookings.find(b => b.id === bookingId);
-                                        if (!booking) {
-                                            alert('Booking not found');
-                                            return;
-                                        }
+                                                // Provider
+                                                html += `<div class="form-section">
+                                                    <div class="section-header"><h4><i class="icon-users"></i> Service Provider Details</h4></div>
+                                                    <div class="booking-provider">
+                                                        <div class="provider-name">${b.freelancer?.freelancerName || '-'}</div>
+                                                        <div class="provider-contact">${b.freelancer?.freelancerPhone || ''}</div>
+                                                    </div>
+                                                </div>`;
 
-                                        document.getElementById('update-booking-id').value = booking.id;
-                                        document.getElementById('update-booking-type').value = bookingType;
-                                        document.getElementById('update-booking-status').value = booking.status;
-                                        document.getElementById('update-status-notes').value = '';
+                                                // Admin Action Timeline
+                                                html += `<div class="form-section">
+                                                    <div class="section-header"><h4><i class="icon-clock"></i> Booking Timeline</h4></div>
+                                                    <div class="booking-timeline">
+                                                        <div>
+                                                            <span><i class="icon-clock"></i></span>
+                                                            <b>Created:</b> ${b.createdAt ? new Date(b.createdAt).toLocaleString('en-IN') : '-'}
+                                                        </div>
+                                                        <% /* Show admin action if exists */ %>
+                                                        ${b.adminAction && b.adminAction.actionAt ? `
+                                                            <div>
+                                                                <span><i class="icon-edit-3"></i></span>
+                                                                <b>Admin: </b>${b.adminAction.message || '-'} 
+                                                                <small>at ${new Date(b.adminAction.actionAt).toLocaleString('en-IN')}</small>
+                                                            </div>
+                                                        ` : ''}
+                                                        ${b.freelancerResponse && b.freelancerResponse.respondedAt ? `
+                                                            <div>
+                                                                <span><i class="icon-user"></i></span>
+                                                                <b>Freelancer Responded:</b>
+                                                                <small>${new Date(b.freelancerResponse.respondedAt).toLocaleString('en-IN')}</small>
+                                                            </div>
+                                                        ` : ''}
+                                                    </div>
+                                                </div>`;
 
-                                        document.getElementById('update-status-modal').style.display = 'block';
-                                    }
-
-                                    // Update booking status
-                                    async function updateBookingStatus() {
-                                        const form = document.getElementById('update-status-form');
-                                        const formData = new FormData(form);
-                                        const bookingId = document.getElementById('update-booking-id').value;
-                                        const bookingType = document.getElementById('update-booking-type').value;
-                                        const newStatus = formData.get('status');
-                                        const notes = formData.get('notes');
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            console.log('Updating booking status:', {
-                                                id: bookingId,
-                                                type: bookingType,
-                                                status: newStatus,
-                                                notes: notes
-                                            });
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Update the booking in our mock data
-                                            const bookings = bookingType === 'freelance' ? freelanceBookings : salonBookings;
-                                            const bookingIndex = bookings.findIndex(b => b.id === bookingId);
-                                            if (bookingIndex !== -1) {
-                                                bookings[bookingIndex].status = newStatus;
-                                                bookings[bookingIndex].timeline.push({
-                                                    status: newStatus,
-                                                    date: new Date().toISOString(),
-                                                    description: `Booking status updated to ${newStatus}${notes ? `: ${notes}` : ''}`
-                                                });
+                                                html += `<div class="form-actions" style="margin-top: 24px;">
+                                                    <button type="button" class="btn btn-secondary" onclick="closeModal('booking-details-modal')">
+                                                        <i class="icon-x"></i> Close
+                                                    </button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                                                        <i class="icon-printer"></i> Print Booking
+                                                    </button>
+                                                </div>`;
+                                                document.getElementById('booking-details-content').innerHTML = html;
+                                                document.getElementById('booking-details-content').style.display = 'block';
+                                            } else {
+                                                document.getElementById('booking-details-content').innerHTML = `<div class="error-message">Failed to load booking details: ${res.message || 'Not found'}</div>`;
+                                                document.getElementById('booking-details-content').style.display = 'block';
                                             }
-
-                                            alert('Booking status updated successfully!');
-                                            closeModal('update-status-modal');
-                                            fetchBookings();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error updating booking status');
-                                        }
+                                        })
+                                        .catch(err => {
+                                            document.getElementById('booking-details-loader').style.display = 'none';
+                                            document.getElementById('booking-details-content').style.display = 'block';
+                                            document.getElementById('booking-details-content').innerHTML = `<div class="error-message">Failed to load booking details</div>`;
+                                        });
                                     }
 
-                                    // Confirm booking
-                                    function confirmBooking(bookingId, bookingType) {
-                                        if (!confirm('Are you sure you want to confirm this booking?')) return;
-
-                                        // In a real implementation, this would be an API call
-                                        const bookings = bookingType === 'freelance' ? freelanceBookings : salonBookings;
-                                        const bookingIndex = bookings.findIndex(b => b.id === bookingId);
-                                        if (bookingIndex !== -1) {
-                                            bookings[bookingIndex].status = 'confirmed';
-                                            bookings[bookingIndex].timeline.push({
-                                                status: 'confirmed',
-                                                date: new Date().toISOString(),
-                                                description: 'Booking confirmed by admin'
-                                            });
-                                        }
-
-                                        alert('Booking confirmed successfully!');
-                                        fetchBookings();
-                                    }
-
-                                    // Close modal
                                     function closeModal(modalId) {
                                         document.getElementById(modalId).style.display = 'none';
                                     }
 
-                                    // Pagination functions
-                                    function renderPagination(totalPages, currentPage) {
-                                        const paginationContainer = document.getElementById('pagination');
-                                        paginationContainer.innerHTML = '';
-
-                                        // Always show first page button
-                                        addPageButton(paginationContainer, 1, currentPage);
-
-                                        // Show previous ellipsis if needed
-                                        if (currentPage > 3) {
-                                            const ellipsis = document.createElement('li');
-                                            ellipsis.innerHTML = '<span>...</span>';
-                                            paginationContainer.appendChild(ellipsis);
-                                        }
-
-                                        // Show pages around current page
-                                        const startPage = Math.max(2, currentPage - 1);
-                                        const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-                                        for (let i = startPage; i <= endPage; i++) {
-                                            addPageButton(paginationContainer, i, currentPage);
-                                        }
-
-                                        // Show next ellipsis if needed
-                                        if (currentPage < totalPages - 2) {
-                                            const ellipsis = document.createElement('li');
-                                            ellipsis.innerHTML = '<span>...</span>';
-                                            paginationContainer.appendChild(ellipsis);
-                                        }
-
-                                        // Always show last page button if there are multiple pages
-                                        if (totalPages > 1) {
-                                            addPageButton(paginationContainer, totalPages, currentPage);
-                                        }
-                                    }
-
-                                    function addPageButton(container, pageNumber, currentPage) {
-                                        const pageItem = document.createElement('li');
-                                        if (pageNumber === currentPage) {
-                                            pageItem.className = 'active';
-                                        }
-
-                                        const pageLink = document.createElement('a');
-                                        pageLink.href = '#';
-                                        pageLink.textContent = pageNumber;
-                                        pageLink.onclick = (e) => {
-                                            e.preventDefault();
-                                            currentPage = pageNumber;
-                                            fetchBookings();
-                                        };
-
-                                        pageItem.appendChild(pageLink);
-                                        container.appendChild(pageItem);
-                                    }
-
-                                    // Mock data for demonstration
-                                    function getMockFreelanceBookings() {
-                                        return [
-                                            {
-                                                id: 'FBOOK-2023-001',
-                                                customer: {
-                                                    name: 'Priya Sharma',
-                                                    email: 'priya.sharma@example.com',
-                                                    phone: '+91 98765 43210'
-                                                },
-                                                bookingDate: '2023-10-15T10:30:00Z',
-                                                status: 'pending',
-                                                service: {
-                                                    name: 'Bridal Makeup',
-                                                    description: 'Complete bridal makeup package with trial session',
-                                                    date: '2023-10-20T08:00:00Z',
-                                                    duration: '4 hours',
-                                                    address: '123, Green Park, New Delhi, 110016'
-                                                },
-                                                freelancer: {
-                                                    name: 'Anjali Mehta',
-                                                    specialization: 'Bridal Makeup Artist',
-                                                    experience: '5 years',
-                                                    phone: '+91 98765 43211',
-                                                    email: 'anjali.mehta@example.com',
-                                                    rating: '4.8'
-                                                },
-                                                total: 8500,
-                                                payment: {
-                                                    method: 'Credit Card',
-                                                    status: 'Paid'
-                                                },
-                                                timeline: [
-                                                    {
-                                                        status: 'pending',
-                                                        date: '2023-10-15T10:30:00Z',
-                                                        description: 'Booking placed by customer'
-                                                    }
-                                                ]
+                                    // Approve or Reject booking (admin approval POST)
+                                    function adminApproveBooking(bookingId, action) {
+                                        let actionWord = action === 'approve' ? "Approve" : "Reject";
+                                        if (!confirm('Are you sure you want to ' + actionWord + ' this booking?')) return;
+                                        let message = prompt('Add a message/note for this action (optional):', '');
+                                        fetch('/freelance/adminApprove/' + encodeURIComponent(bookingId) + '/action', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'Accept': 'application/json'
                                             },
-                                            {
-                                                id: 'FBOOK-2023-002',
-                                                customer: {
-                                                    name: 'Rahul Verma',
-                                                    email: 'rahul.verma@example.com',
-                                                    phone: '+91 98765 43212'
-                                                },
-                                                bookingDate: '2023-10-14T14:20:00Z',
-                                                status: 'confirmed',
-                                                service: {
-                                                    name: 'Party Makeup',
-                                                    description: 'Evening party makeup with hair styling',
-                                                    date: '2023-10-18T17:00:00Z',
-                                                    duration: '2 hours',
-                                                    address: '456, Koramangala, Bangalore, 560034'
-                                                },
-                                                freelancer: {
-                                                    name: 'Sneha Kapoor',
-                                                    specialization: 'Party Makeup Artist',
-                                                    experience: '3 years',
-                                                    phone: '+91 98765 43213',
-                                                    email: 'sneha.kapoor@example.com',
-                                                    rating: '4.6'
-                                                },
-                                                total: 3500,
-                                                payment: {
-                                                    method: 'UPI',
-                                                    status: 'Paid'
-                                                },
-                                                timeline: [
-                                                    {
-                                                        status: 'pending',
-                                                        date: '2023-10-14T14:20:00Z',
-                                                        description: 'Booking placed by customer'
-                                                    },
-                                                    {
-                                                        status: 'confirmed',
-                                                        date: '2023-10-14T16:45:00Z',
-                                                        description: 'Booking confirmed by admin'
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                id: 'FBOOK-2023-003',
-                                                customer: {
-                                                    name: 'Anjali Patel',
-                                                    email: 'anjali.patel@example.com',
-                                                    phone: '+91 98765 43214'
-                                                },
-                                                bookingDate: '2023-10-13T09:15:00Z',
-                                                status: 'upcoming',
-                                                service: {
-                                                    name: 'Hair Styling',
-                                                    description: 'Professional hair styling for corporate event',
-                                                    date: '2023-10-17T10:00:00Z',
-                                                    duration: '1.5 hours',
-                                                    address: '789, Jubilee Hills, Hyderabad, 500033'
-                                                },
-                                                freelancer: {
-                                                    name: 'Riya Singh',
-                                                    specialization: 'Hair Stylist',
-                                                    experience: '4 years',
-                                                    phone: '+91 98765 43215',
-                                                    email: 'riya.singh@example.com',
-                                                    rating: '4.7'
-                                                },
-                                                total: 2500,
-                                                payment: {
-                                                    method: 'Debit Card',
-                                                    status: 'Paid'
-                                                },
-                                                timeline: [
-                                                    {
-                                                        status: 'pending',
-                                                        date: '2023-10-13T09:15:00Z',
-                                                        description: 'Booking placed by customer'
-                                                    },
-                                                    {
-                                                        status: 'confirmed',
-                                                        date: '2023-10-13T11:30:00Z',
-                                                        description: 'Booking confirmed by admin'
-                                                    },
-                                                    {
-                                                        status: 'upcoming',
-                                                        date: '2023-10-13T14:20:00Z',
-                                                        description: 'Booking marked as upcoming'
-                                                    }
-                                                ]
+                                            credentials: 'same-origin',
+                                            body: JSON.stringify({ action: action, message: message })
+                                        }).then(res => res.json())
+                                        .then(res => {
+                                            if (res.success) {
+                                                alert('Booking '+ actionWord +'d!');
+                                                window.location.reload();
+                                            } else {
+                                                alert('Error: ' + (res.message || 'Failed to '+actionWord.toLowerCase()+' booking'));
                                             }
-                                        ];
-                                    }
-
-                                    function getMockSalonBookings() {
-                                        return [
-                                            {
-                                                id: 'SBOOK-2023-001',
-                                                customer: {
-                                                    name: 'Sanjay Kumar',
-                                                    email: 'sanjay.kumar@example.com',
-                                                    phone: '+91 98765 43216'
-                                                },
-                                                bookingDate: '2023-10-15T11:30:00Z',
-                                                status: 'pending',
-                                                service: {
-                                                    name: 'Hair Spa & Treatment',
-                                                    description: 'Complete hair spa with deep conditioning treatment',
-                                                    date: '2023-10-19T14:00:00Z',
-                                                    duration: '2 hours',
-                                                    address: '321, Salt Lake City, Kolkata, 700091'
-                                                },
-                                                salon: {
-                                                    name: 'Glamour Salon',
-                                                    address: '45, Park Street, Kolkata',
-                                                    phone: '+91 98765 43217',
-                                                    email: 'info@glamoursalon.com',
-                                                    hours: '9 AM - 8 PM',
-                                                    rating: '4.5'
-                                                },
-                                                total: 1800,
-                                                payment: {
-                                                    method: 'Net Banking',
-                                                    status: 'Pending'
-                                                },
-                                                timeline: [
-                                                    {
-                                                        status: 'pending',
-                                                        date: '2023-10-15T11:30:00Z',
-                                                        description: 'Booking placed by customer'
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                id: 'SBOOK-2023-002',
-                                                customer: {
-                                                    name: 'Meera Nair',
-                                                    email: 'meera.nair@example.com',
-                                                    phone: '+91 98765 43218'
-                                                },
-                                                bookingDate: '2023-10-14T16:45:00Z',
-                                                status: 'confirmed',
-                                                service: {
-                                                    name: 'Facial & Cleanup',
-                                                    description: 'Gold facial with cleanup and massage',
-                                                    date: '2023-10-18T11:00:00Z',
-                                                    duration: '1.5 hours',
-                                                    address: '654, Anna Nagar, Chennai, 600040'
-                                                },
-                                                salon: {
-                                                    name: 'Bliss Beauty Lounge',
-                                                    address: '12, T Nagar, Chennai',
-                                                    phone: '+91 98765 43219',
-                                                    email: 'contact@blissbeauty.com',
-                                                    hours: '10 AM - 9 PM',
-                                                    rating: '4.7'
-                                                },
-                                                total: 2200,
-                                                payment: {
-                                                    method: 'Credit Card',
-                                                    status: 'Paid'
-                                                },
-                                                timeline: [
-                                                    {
-                                                        status: 'pending',
-                                                        date: '2023-10-14T16:45:00Z',
-                                                        description: 'Booking placed by customer'
-                                                    },
-                                                    {
-                                                        status: 'confirmed',
-                                                        date: '2023-10-14T18:20:00Z',
-                                                        description: 'Booking confirmed by admin'
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                id: 'SBOOK-2023-003',
-                                                customer: {
-                                                    name: 'Amit Joshi',
-                                                    email: 'amit.joshi@example.com',
-                                                    phone: '+91 98765 43220'
-                                                },
-                                                bookingDate: '2023-10-13T13:20:00Z',
-                                                status: 'completed',
-                                                service: {
-                                                    name: 'Men\'s Grooming Package',
-                                                    description: 'Haircut, facial, and beard styling',
-                                                    date: '2023-10-16T16:00:00Z',
-                                                    duration: '2 hours',
-                                                    address: '987, Baner Road, Pune, 411045'
-                                                },
-                                                salon: {
-                                                    name: 'Elite Men\'s Salon',
-                                                    address: '78, FC Road, Pune',
-                                                    phone: '+91 98765 43221',
-                                                    email: 'elite@mensalon.com',
-                                                    hours: '9 AM - 8 PM',
-                                                    rating: '4.4'
-                                                },
-                                                total: 1500,
-                                                payment: {
-                                                    method: 'UPI',
-                                                    status: 'Paid'
-                                                },
-                                                timeline: [
-                                                    {
-                                                        status: 'pending',
-                                                        date: '2023-10-13T13:20:00Z',
-                                                        description: 'Booking placed by customer'
-                                                    },
-                                                    {
-                                                        status: 'confirmed',
-                                                        date: '2023-10-13T15:30:00Z',
-                                                        description: 'Booking confirmed by admin'
-                                                    },
-                                                    {
-                                                        status: 'upcoming',
-                                                        date: '2023-10-13T17:45:00Z',
-                                                        description: 'Booking marked as upcoming'
-                                                    },
-                                                    {
-                                                        status: 'completed',
-                                                        date: '2023-10-16T18:30:00Z',
-                                                        description: 'Service completed successfully'
-                                                    }
-                                                ]
-                                            }
-                                        ];
+                                        }).catch(() => {
+                                            alert('Error performing action');
+                                        });
                                     }
                                 </script>
 

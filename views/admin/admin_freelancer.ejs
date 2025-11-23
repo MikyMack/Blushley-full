@@ -368,7 +368,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
-            padding: 20px;
+            /* padding: 20px; */
         }
 
         .freelancer-card {
@@ -959,7 +959,32 @@
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between gap-4 flex-nowrap" style="margin-bottom: 10px;">
+                                    <style>
+                                        @media (max-width: 768px) {
+                                            .responsive-row-controls {
+                                                flex-direction: column !important;
+                                                align-items: stretch !important;
+                                                gap: 12px !important;
+                                            }
+                                            .responsive-row-controls form {
+                                                flex-wrap: wrap !important;
+                                                gap: 10px !important;
+                                            }
+                                            .responsive-row-controls .form-search,
+                                            .responsive-row-controls .form-group {
+                                                min-width: 0 !important;
+                                                max-width: 100% !important;
+                                                width: 100% !important;
+                                                margin-left: 0 !important;
+                                            }
+                                            .responsive-row-controls .add-freelancer-btn {
+                                                min-width: 0 !important;
+                                                width: 100% !important;
+                                                margin-left: 0 !important;
+                                            }
+                                        }
+                                    </style>
+                                    <div class="flex items-center justify-between gap-4 flex-nowrap responsive-row-controls" style="margin-bottom: 10px;">
                                         <form id="list-filters" class="flex items-center gap-3 flex-nowrap" method="get" action="" style="flex-grow:1; min-width:0;">
                                             <div class="flex items-center gap-2" style="white-space: nowrap;">
                                                 <div class="text-tiny">Showing</div>
@@ -1171,47 +1196,26 @@
                                                             <div class="detail-row">
                                                                 <span class="detail-label">Services:</span>
                                                                 <span class="detail-value">
-                                                                    <div class="services-table-container" style="overflow-x:auto; max-width: 100%;">
-                                                                        <table class="services-table text-tiny">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>Service ID</th>
-                                                                                    <th>Base Price</th>
-                                                                                    <th>Admin Price</th>
-                                                                                    <th>Commission %</th>
-                                                                                    <th>Final Price</th>
-                                                                                    <th>Duration (min)</th>
-                                                                                    <th>Status</th>
-                                                                                    <th>Approved By</th>
-                                                                                    <th>Approved At</th>
-                                                                                    <th>Images</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <% freelancer.freelancerServices.forEach(function(svc) { %>
-                                                                                    <tr>
-                                                                                        <td><%= svc.serviceId %></td>
-                                                                                        <td><%= typeof svc.freelancerBasePrice !== "undefined" ? svc.freelancerBasePrice : '-' %></td>
-                                                                                        <td><%= typeof svc.adminPrice !== "undefined" ? svc.adminPrice : '-' %></td>
-                                                                                        <td><%= typeof svc.adminCommissionPercent !== "undefined" ? svc.adminCommissionPercent : '-' %></td>
-                                                                                        <td><%= typeof svc.finalPrice !== "undefined" ? svc.finalPrice : '-' %></td>
-                                                                                        <td><%= typeof svc.durationMinutes !== "undefined" ? svc.durationMinutes : '-' %></td>
-                                                                                        <td><%= svc.status ? svc.status.charAt(0).toUpperCase() + svc.status.slice(1) : '-' %></td>
-                                                                                        <td><%= svc.approvedBy || '-' %></td>
-                                                                                        <td><%= svc.approvedAt ? svc.approvedAt.toLocaleString() : '-' %></td>
-                                                                                        <td>
-                                                                                            <% if (svc.images && svc.images.length) { %>
-                                                                                                <% svc.images.forEach(function(img) { %>
-                                                                                                    <img src="<%= img %>" alt="Service Img" style="max-height:20px;">
-                                                                                                <% }) %>
-                                                                                            <% } else { %>
-                                                                                                -
-                                                                                            <% } %>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                <% }) %>
-                                                                            </tbody>
-                                                                        </table>
+                                                                    <div class="services-cards-list" style="display: flex; flex-wrap: wrap; gap: 16px;">
+                                                                        <% freelancer.freelancerServices.forEach(function(svc) { %>
+                                                                            <div class="service-card" style="background: #f6f4fb; border-radius: 10px; box-shadow: 0 1px 4px 0 rgba(93,35,128,.05); padding: 16px; min-width: 260px; flex: 1 1 260px; max-width: 320px;">
+                                                                                <div style="font-weight: bold; margin-bottom: 8px; font-size:1.06em">
+                                                                                    <i class="fa fa-briefcase" aria-hidden="true" style="opacity:.7;padding-right:5px"></i>
+                                                                                    <%= svc.serviceId %>
+                                                                                </div>
+                                                                                <ul style="font-size: .96em; margin: 0; padding: 0; list-style: none;">
+                                                                                    <li><b>Base Price:</b> <%= typeof svc.freelancerBasePrice !== "undefined" ? svc.freelancerBasePrice : '-' %></li>
+                                                                                    <li><b>Admin Price:</b> <%= typeof svc.adminPrice !== "undefined" ? svc.adminPrice : '-' %></li>
+                                                                                    <li><b>Commission %:</b> <%= typeof svc.adminCommissionPercent !== "undefined" ? svc.adminCommissionPercent : '-' %></li>
+                                                                                    <li><b>Final Price:</b> <%= typeof svc.finalPrice !== "undefined" ? svc.finalPrice : '-' %></li>
+                                                                                    <li><b>Duration:</b> <%= typeof svc.durationMinutes !== "undefined" ? svc.durationMinutes + ' min' : '-' %></li>
+                                                                                    <li><b>Status:</b> <span style="font-weight:500"><%= svc.status ? svc.status.charAt(0).toUpperCase() + svc.status.slice(1) : '-' %></span></li>
+                                                                                    <li><b>Approved By:</b> <%= svc.approvedBy || '-' %></li>
+                                                                                    <li><b>Approved At:</b> <%= svc.approvedAt ? svc.approvedAt.toLocaleString() : '-' %></li>
+                                                                              
+                                                                                </ul>
+                                                                            </div>
+                                                                        <% }) %>
                                                                     </div>
                                                                 </span>
                                                             </div>
@@ -1335,7 +1339,7 @@
                                         </div>
                                         
                                         <div class="modal-body">
-                                            <form id="add-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/add">
+                                            <form id="add-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/createFreelancer">
                                                 <div class="form-section">
                                                     <div class="section-header">
                                                         <h4><i class="icon-user"></i> Personal Information</h4>
@@ -1437,7 +1441,7 @@
 
                                 <!-- Edit Freelancer Modal -->
                                 <div id="edit-freelancer-modal" class="modal" style="display:none">
-                                    <div class="modal-content modern-modal">
+                                    <div class="modal-content modern-modal" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
                                         <div class="modal-header">
                                             <div class="modal-title">
                                                 <i class="icon-edit-3"></i>
@@ -1450,7 +1454,9 @@
                                         <div class="modal-body">
                                             <form id="edit-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/edit">
                                                 <input type="hidden" id="edit-freelancer-id" name="id">
-                                                <div id="edit-freelancer-fields"><!-- Populated by JS --></div>
+                                                <div id="edit-freelancer-fields">
+                                                    <!-- Fields will be populated by JavaScript -->
+                                                </div>
                                                 <div class="form-actions">
                                                     <button type="button" class="btn btn-secondary" onclick="closeModal('edit-freelancer-modal')">
                                                         <i class="icon-x"></i> Cancel
@@ -1491,184 +1497,860 @@
                                 </div>
 
                                 <script>
-                                // On filter change
-                                document.getElementById('limit-select').addEventListener('change', function() {
-                                    document.getElementById('list-filters').submit();
-                                });
-                                document.getElementById('search-input').addEventListener('keydown', function(e) {
-                                    if (e.key === 'Enter') {
+                                    // On filter change
+                                    document.getElementById('limit-select').addEventListener('change', function() {
                                         document.getElementById('list-filters').submit();
+                                    });
+                                    document.getElementById('search-input').addEventListener('keydown', function(e) {
+                                        if (e.key === 'Enter') {
+                                            document.getElementById('list-filters').submit();
+                                        }
+                                    });
+                                    
+                                    function closeModal(modalId) {
+                                        document.getElementById(modalId).style.display = 'none';
                                     }
-                                });
+                                    
+                                    function showAddFreelancerModal() {
+                                        document.getElementById('add-freelancer-form').reset();
+                                        document.getElementById('add-freelancer-modal').style.display = 'block';
+                                    }
+                                    
+                                    // Create (POST) /freelance/add
+                                    document.getElementById('add-freelancer-form').onsubmit = function(e) {
+                                        e.preventDefault();
+                                        let form = this;
+                                        let data = new FormData(form);
+                                        fetch("/freelance/createFreelancer", { method: 'POST', body: data })
+                                            .then(res => res.json())
+                                            .then(resp => {
+                                                if (resp.success) {
+                                                    window.location.reload();
+                                                } else {
+                                                    alert(resp.error || "Failed to add freelancer.");
+                                                }
+                                            })
+                                            .catch(() => alert("Server error while adding freelancer."));
+                                    };
 
-                                function closeModal(modalId) {
-                                    document.getElementById(modalId).style.display = 'none';
-                                }
+                                    // Helper to clean out empty/unfocused required slot fields before submit
+                                    function cleanupUnavailableSlots(containerId = 'edit-availability-container') {
+                                        // Hide and remove required for all slots for days that are not enabled
+                                        const container = document.getElementById(containerId);
+                                        if (!container) return;
+                                        // For each day block
+                                        Array.from(container.querySelectorAll('.availability-day')).forEach(dayBlock => {
+                                            // Find "Available" select
+                                            const availableSelect = dayBlock.querySelector('select[name^="availability"][name$="[enabled]"]');
+                                            // Find slot container
+                                            const slotsContainer = dayBlock.querySelector('.slots-container');
+                                            // If not enabled, remove name, required and values of all time inputs
+                                            if (availableSelect && availableSelect.value === 'false') {
+                                                if (slotsContainer) {
+                                                    // All input fields in slots list
+                                                    const slotInputs = slotsContainer.querySelectorAll('input[type="time"]');
+                                                    slotInputs.forEach(inp => {
+                                                        inp.removeAttribute('required');
+                                                        inp.value = ''; // clear value just in case
+                                                   
+                                                    });
+                                                }
+                                            } else {
+                                                // Ensure required present for enabled slots
+                                                if (slotsContainer) {
+                                                    const slotInputs = slotsContainer.querySelectorAll('input[type="time"]');
+                                                    slotInputs.forEach(inp => {
+                                                        inp.setAttribute('required', 'required');
+                                                        // Optionally: inp.removeAttribute('disabled');
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
 
-                                function showAddFreelancerModal() {
-                                    document.getElementById('add-freelancer-form').reset();
-                                    document.getElementById('add-freelancer-modal').style.display = 'block';
-                                }
-                                // Create (POST) /freelance/add
-                                document.getElementById('add-freelancer-form').onsubmit = function(e) {
-                                    e.preventDefault();
-                                    let form = this;
-                                    let data = new FormData(form);
-                                    fetch("/freelance/add", { method: 'POST', body: data })
+                                    // Enhanced Edit Modal Function matching your schema
+                                    function showEditFreelancerModal(freelancerId) {
+                                        fetch('/freelance/freelancer/' + freelancerId)
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                let f = data.freelancer || (data._id && data);
+                                                if (f && f._id) {
+                                                    let html = '';
+                                    
+                                                    // Personal Information Section - Matching your add modal structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-user"></i> Personal Information</h4>
+                                                        </div>
+                                                        <div class="form-grid">
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-name">Full Name*</label>
+                                                                <input type="text" id="edit-freelancer-name" name="fullName" value="${f.fullName || (f.userId && f.userId.name) || ''}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-email">Email*</label>
+                                                                <input type="email" id="edit-freelancer-email" name="email" value="${f.email || (f.userId && f.userId.email) || ''}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-grid">
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-phone">Phone Number*</label>
+                                                                <input type="tel" id="edit-freelancer-phone" name="phone" value="${f.phone || (f.userId && f.userId.phone) || ''}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-experience">Experience (Years)</label>
+                                                                <input type="number" id="edit-freelancer-experience" name="experience" min="0" max="50" value="${f.experience || 0}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="edit-freelancer-bio">Bio/Description</label>
+                                                            <textarea id="edit-freelancer-bio" name="bio" rows="4">${f.bio || ''}</textarea>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Profile Image Section - Matching your add modal structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-image"></i> Profile Image</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="file-upload-area" id="edit-file-upload-area">
+                                                                <div class="upload-content">
+                                                                    <i class="icon-upload"></i>
+                                                                    <p>Drag & drop profile image here or click to browse</p>
+                                                                    <small>Recommended: Square image, at least 300x300 pixels</small>
+                                                                </div>
+                                                                <input type="file" id="edit-freelancer-image" name="profileImage" accept="image/*">
+                                                            </div>
+                                                            ${f.profileImage ? `
+                                                                <div class="current-image-preview" style="margin-top: 15px;">
+                                                                    <p class="text-tiny">Current Profile Image:</p>
+                                                                    <img src="${f.profileImage}" alt="Current Profile" style="max-width: 100px; max-height: 100px; border-radius: 8px;">
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Portfolio Images Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-images"></i> Portfolio Images</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="file-upload-area">
+                                                                <div class="upload-content">
+                                                                    <i class="icon-upload"></i>
+                                                                    <p>Drag & drop portfolio images here or click to browse</p>
+                                                                    <small>You can select multiple images</small>
+                                                                </div>
+                                                                <input type="file" name="portfolioImages" accept="image/*" multiple>
+                                                            </div>
+                                                            ${f.portfolioImages && f.portfolioImages.length ? `
+                                                                <div class="current-images-preview" style="margin-top: 15px;">
+                                                                    <p class="text-tiny">Current Portfolio Images:</p>
+                                                                    <div class="image-preview-grid" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
+                                                                        ${f.portfolioImages.map(img => `
+                                                                            <div class="image-preview-item" style="position: relative;">
+                                                                                <img src="${img}" alt="Portfolio" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+                                                                                <button type="button" class="remove-image-btn" onclick="removePortfolioImage(this, '${img}')" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">×</button>
+                                                                            </div>
+                                                                        `).join('')}
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Skills Section - Enhanced with tag input
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-award"></i> Skills</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="edit-freelancer-skills">Skills*</label>
+                                                            <div class="tags-input-container">
+                                                                <input type="text" id="edit-freelancer-skills-input" class="tags-input" 
+                                                                    placeholder="Type a skill and press Enter or comma">
+                                                                <div class="tags-list" id="edit-skills-tags">
+                                                                    ${(f.skills || []).map(skill => `
+                                                                        <span class="tag">
+                                                                            ${skill}
+                                                                            <span class="tag-remove" onclick="removeTag(this)">×</span>
+                                                                            <input type="hidden" name="skills" value="${skill}">
+                                                                        </span>
+                                                                    `).join('')}
+                                                                </div>
+                                                            </div>
+                                                            <small class="text-tiny">Type skills and press Enter or comma to add</small>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Service Locations Section - Enhanced structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-map-pin"></i> Service Locations</h4>
+                                                        </div>
+                                                        <div id="edit-locations-container">
+                                                            ${(f.locations && f.locations.length ? f.locations.map((loc, index) => `
+                                                                <div class="location-item form-grid" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                                    <div class="form-group">
+                                                                        <label>City*</label>
+                                                                        <input type="text" name="locations[${index}][city]" value="${loc.city || ''}" required>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>State</label>
+                                                                        <input type="text" name="locations[${index}][state]" value="${loc.state || ''}">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Pincode</label>
+                                                                        <input type="text" name="locations[${index}][pincode]" value="${loc.pincode || ''}">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Service Radius (km)</label>
+                                                                        <input type="number" name="locations[${index}][radius]" value="${loc.radius || 5}" min="1" max="100">
+                                                                    </div>
+                                                                    ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeLocation(this)" style="align-self: end;">Remove</button>' : ''}
+                                                                </div>
+                                                            `).join('') : `
+                                                                <div class="location-item form-grid" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                                    <div class="form-group">
+                                                                        <label>City*</label>
+                                                                        <input type="text" name="locations[0][city]" required>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>State</label>
+                                                                        <input type="text" name="locations[0][state]">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Pincode</label>
+                                                                        <input type="text" name="locations[0][pincode]">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Service Radius (km)</label>
+                                                                        <input type="number" name="locations[0][radius]" value="5" min="1" max="100">
+                                                                    </div>
+                                                                </div>
+                                                            `)}
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-secondary" onclick="addLocation()" style="margin-top: 10px;">
+                                                            <i class="icon-plus"></i> Add Another Location
+                                                        </button>
+                                                    </div>`;
+                                    
+                                                    // Availability Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-clock"></i> Availability</h4>
+                                                        </div>
+                                                        <div id="edit-availability-container">
+                                                            ${generateAvailabilityFields(f.availability || [])}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Freelancer Services Section - Complete pricing structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-settings"></i> Services & Pricing</h4>
+                                                        </div>
+                                                        <div id="edit-services-container">
+                                                            ${generateServiceFields(f.freelancerServices || [])}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Documents Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-file-text"></i> Documents</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="file-upload-area">
+                                                                <div class="upload-content">
+                                                                    <i class="icon-upload"></i>
+                                                                    <p>Drag & drop documents here or click to browse</p>
+                                                                    <small>Supported formats: PDF, DOC, DOCX, JPG, PNG</small>
+                                                                </div>
+                                                                <input type="file" name="documents" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                            </div>
+                                                            ${f.documents && f.documents.length ? `
+                                                                <div class="current-documents" style="margin-top: 15px;">
+                                                                    <p class="text-tiny">Current Documents:</p>
+                                                                    <div class="documents-list">
+                                                                        ${f.documents.map(doc => `
+                                                                            <div class="document-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8f9fa; border-radius: 4px; margin: 5px 0;">
+                                                                                <a href="${doc}" target="_blank" style="flex: 1;">${doc.split('/').pop()}</a>
+                                                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeDocument(this, '${doc}')">Remove</button>
+                                                                            </div>
+                                                                        `).join('')}
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Proof Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-id"></i> Identity Proof</h4>
+                                                        </div>
+                                                        <div class="form-grid">
+                                                            <div class="form-group">
+                                                                <label>Proof Type</label>
+                                                                <select name="proofType">
+                                                                    <option value="">Select Proof Type</option>
+                                                                    <option value="aadhar" ${f.proof && f.proof.type === 'aadhar' ? 'selected' : ''}>Aadhar Card</option>
+                                                                    <option value="pan" ${f.proof && f.proof.type === 'pan' ? 'selected' : ''}>PAN Card</option>
+                                                                    <option value="driving" ${f.proof && f.proof.type === 'driving' ? 'selected' : ''}>Driving License</option>
+                                                                    <option value="voter" ${f.proof && f.proof.type === 'voter' ? 'selected' : ''}>Voter ID</option>
+                                                                    <option value="passport" ${f.proof && f.proof.type === 'passport' ? 'selected' : ''}>Passport</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Proof Number</label>
+                                                                <input type="text" name="proofNumber" value="${f.proof && f.proof.number ? f.proof.number : ''}">
+                                                            </div>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Status Section - Matching your add modal
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-toggle-right"></i> Status</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="edit-freelancer-status">Status</label>
+                                                            <div class="status-toggle">
+                                                                <select id="edit-freelancer-status" name="status" required>
+                                                                    <option value="pending" ${f.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                                                    <option value="approved" ${f.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                                                    <option value="rejected" ${f.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                                                    <option value="inactive" ${f.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    document.getElementById('edit-freelancer-fields').innerHTML = html;
+                                                    document.getElementById('edit-freelancer-id').value = f._id;
+                                                    
+                                                    // Initialize interactive components
+                                                    initializeEditTagInput();
+                                                    initializeFileUploadAreas();
+                                                    
+                                                    document.getElementById('edit-freelancer-modal').style.display = 'block';
+                                                } else {
+                                                    console.error("Edit fetch response:", data);
+                                                    alert((data && data.error) ? data.error : "Failed to load freelancer details.");
+                                                }
+                                            })
+                                            .catch((err) => {
+                                                alert("Server error loading freelancer details.");
+                                                console.error("Fetch freelancer error:", err);
+                                            });
+                                    }
+                                    
+                                    // Helper Functions for Enhanced Edit Modal
+                                    function generateAvailabilityFields(availability) {
+                                        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                        
+                                        // Ensure we have all 7 days
+                                        let fullAvailability = [];
+                                        for (let i = 0; i < 7; i++) {
+                                            const existingDay = availability.find(a => a.dayOfWeek === i);
+                                            fullAvailability.push(existingDay || { dayOfWeek: i, slots: [] });
+                                        }
+                                        
+                                        return fullAvailability.map((day, index) => `
+                                            <div class="availability-day" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Day</label>
+                                                        <select name="availability[${index}][dayOfWeek]" required>
+                                                            ${days.map((dayName, dayIndex) => `
+                                                                <option value="${dayIndex}" ${day.dayOfWeek === dayIndex ? 'selected' : ''}>${dayName}</option>
+                                                            `).join('')}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Available</label>
+                                                        <select name="availability[${index}][enabled]" onchange="toggleDaySlots(this, ${index})">
+                                                            <option value="true" ${day.slots && day.slots.length > 0 ? 'selected' : ''}>Yes</option>
+                                                            <option value="false" ${!day.slots || day.slots.length === 0 ? 'selected' : ''}>No</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div id="edit-slots-container-${index}" class="slots-container" style="${(!day.slots || day.slots.length === 0) ? 'display: none;' : ''}">
+                                                    <div class="slots-list" id="edit-slots-list-${index}">
+                                                        ${(day.slots && day.slots.length > 0 ? day.slots.map((slot, slotIndex) => `
+                                                            <div class="form-grid slot-item" style="margin-bottom: 10px;">
+                                                                <div class="form-group">
+                                                                    <label>Start Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][${slotIndex}][start]" value="${slot.start || ''}" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>End Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][${slotIndex}][end]" value="${slot.end || ''}" required>
+                                                                </div>
+                                                                <div class="form-group" style="align-self: end;">
+                                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeSlot(${index}, ${slotIndex})">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                        `).join('') : `
+                                                            <div class="form-grid slot-item" style="margin-bottom: 10px;">
+                                                                <div class="form-group">
+                                                                    <label>Start Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][0][start]">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>End Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][0][end]">
+                                                                </div>
+                                                            </div>
+                                                        `)}
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-secondary" onclick="addSlot(${index})">
+                                                        <i class="icon-plus"></i> Add Time Slot
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        `).join('');
+                                    }
+                                    
+                                    function generateServiceFields(services) {
+                                        if (services.length === 0) {
+                                            return `
+                                                <div class="no-services" style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                                                    <p>No services added yet.</p>
+                                                    <button type="button" class="btn btn-sm btn-primary" onclick="addService()">
+                                                        <i class="icon-plus"></i> Add First Service
+                                                    </button>
+                                                </div>
+                                            `;
+                                        }
+                                    
+                                        return services.map((service, index) => `
+                                            <div class="service-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Service ID*</label>
+                                                        <input type="text" name="services[${index}][serviceId]" value="${service.serviceId || ''}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Status</label>
+                                                        <select name="services[${index}][status]">
+                                                            <option value="pending" ${service.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                                            <option value="approved" ${service.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                                            <option value="rejected" ${service.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                                            <option value="inactive" ${service.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Base Price (₹)*</label>
+                                                        <input type="number" name="services[${index}][freelancerBasePrice]" 
+                                                            value="${service.freelancerBasePrice || 0}" min="0" step="0.01" required
+                                                            onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Admin Price (₹)</label>
+                                                        <input type="number" name="services[${index}][adminPrice]" 
+                                                            value="${service.adminPrice || 0}" min="0" step="0.01"
+                                                            onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Commission (%)</label>
+                                                        <input type="number" name="services[${index}][adminCommissionPercent]" 
+                                                            value="${service.adminCommissionPercent || 0}" min="0" max="100" step="0.1"
+                                                            onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Final Price (₹)</label>
+                                                        <input type="number" name="services[${index}][finalPrice]" 
+                                                            value="${service.finalPrice || 0}" min="0" step="0.01" readonly 
+                                                            style="background-color: #f8f9fa; font-weight: bold;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Duration (minutes)</label>
+                                                        <input type="number" name="services[${index}][durationMinutes]" 
+                                                            value="${service.durationMinutes || 0}" min="0">
+                                                    </div>                                           
+                                                </div>
+                                                ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeService(this)">Remove Service</button>' : ''}
+                                            </div>
+                                        `).join('') + `
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="addService()">
+                                            <i class="icon-plus"></i> Add Another Service
+                                        </button>`;
+                                    }
+                                    
+                                    // Interactive Functions for Enhanced Edit Modal
+                                    function initializeEditTagInput() {
+                                        const skillsInput = document.getElementById('edit-freelancer-skills-input');
+                                        const skillsTags = document.getElementById('edit-skills-tags');
+                                        
+                                        skillsInput.addEventListener('keypress', function(e) {
+                                            if (e.key === 'Enter' || e.key === ',') {
+                                                e.preventDefault();
+                                                const skill = this.value.trim().replace(',', '');
+                                                if (skill && !Array.from(skillsTags.querySelectorAll('input[type="hidden"]')).some(input => input.value === skill)) {
+                                                    addSkillTag(skill, skillsTags);
+                                                    this.value = '';
+                                                }
+                                            }
+                                        });
+                                    }
+                                    
+                                    function addSkillTag(skill, container) {
+                                        const tag = document.createElement('span');
+                                        tag.className = 'tag';
+                                        tag.innerHTML = `
+                                            ${skill}
+                                            <span class="tag-remove" onclick="removeTag(this)">×</span>
+                                            <input type="hidden" name="skills" value="${skill}">
+                                        `;
+                                        container.appendChild(tag);
+                                    }
+                                    
+                                    function removeTag(element) {
+                                        element.parentElement.remove();
+                                    }
+                                    
+                                    function initializeFileUploadAreas() {
+                                        // Initialize file upload areas with drag & drop
+                                        const uploadAreas = document.querySelectorAll('.file-upload-area');
+                                        uploadAreas.forEach(area => {
+                                            const input = area.querySelector('input[type="file"]');
+                                            const content = area.querySelector('.upload-content');
+                                            
+                                            area.addEventListener('click', () => input.click());
+                                            
+                                            area.addEventListener('dragover', (e) => {
+                                                e.preventDefault();
+                                                area.style.backgroundColor = '#f0f0f0';
+                                            });
+                                            
+                                            area.addEventListener('dragleave', () => {
+                                                area.style.backgroundColor = '';
+                                            });
+                                            
+                                            area.addEventListener('drop', (e) => {
+                                                e.preventDefault();
+                                                area.style.backgroundColor = '';
+                                                input.files = e.dataTransfer.files;
+                                                // Trigger change event
+                                                input.dispatchEvent(new Event('change'));
+                                            });
+                                        });
+                                    }
+                                    
+                                    // Location Management
+                                    function addLocation() {
+                                        const container = document.getElementById('edit-locations-container');
+                                        const index = container.children.length;
+                                        
+                                        const locationHtml = `
+                                            <div class="location-item form-grid" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-group">
+                                                    <label>City*</label>
+                                                    <input type="text" name="locations[${index}][city]" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>State</label>
+                                                    <input type="text" name="locations[${index}][state]">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Pincode</label>
+                                                    <input type="text" name="locations[${index}][pincode]">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Service Radius (km)</label>
+                                                    <input type="number" name="locations[${index}][radius]" value="5" min="1" max="100">
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeLocation(this)" style="align-self: end;">Remove</button>
+                                            </div>
+                                        `;
+                                        
+                                        container.insertAdjacentHTML('beforeend', locationHtml);
+                                    }
+                                    
+                                    function removeLocation(button) {
+                                        button.closest('.location-item').remove();
+                                        // Reindex locations
+                                        const container = document.getElementById('edit-locations-container');
+                                        Array.from(container.children).forEach((child, index) => {
+                                            const inputs = child.querySelectorAll('input, select');
+                                            inputs.forEach(input => {
+                                                input.name = input.name.replace(/locations\[\d+\]/, `locations[${index}]`);
+                                            });
+                                        });
+                                    }
+                                    
+                                    // Availability Management
+                                    function toggleDaySlots(select, index) {
+                                        const slotsContainer = document.getElementById(`edit-slots-container-${index}`);
+                                        if (select.value === 'true') {
+                                            slotsContainer.style.display = 'block';
+                                        } else {
+                                            slotsContainer.style.display = 'none';
+                                        }
+                                    }
+                                    
+                                    function addSlot(dayIndex) {
+                                        const slotsList = document.getElementById(`edit-slots-list-${dayIndex}`);
+                                        const slotIndex = slotsList.children.length;
+                                        
+                                        const slotHtml = `
+                                            <div class="form-grid slot-item" style="margin-bottom: 10px;">
+                                                <div class="form-group">
+                                                    <label>Start Time</label>
+                                                    <input type="time" name="availability[${dayIndex}][slots][${slotIndex}][start]">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>End Time</label>
+                                                    <input type="time" name="availability[${dayIndex}][slots][${slotIndex}][end]">
+                                                </div>
+                                                <div class="form-group" style="align-self: end;">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeSlot(${dayIndex}, ${slotIndex})">Remove</button>
+                                                </div>
+                                            </div>
+                                        `;
+                                        
+                                        slotsList.insertAdjacentHTML('beforeend', slotHtml);
+                                    }
+                                    
+                                    function removeSlot(dayIndex, slotIndex) {
+                                        const slotsList = document.getElementById(`edit-slots-list-${dayIndex}`);
+                                        if (slotsList.children.length > 1) {
+                                            slotsList.children[slotIndex].remove();
+                                            // Reindex slots
+                                            Array.from(slotsList.children).forEach((child, index) => {
+                                                const inputs = child.querySelectorAll('input');
+                                                inputs.forEach(input => {
+                                                    input.name = input.name.replace(/slots\[\d+\]/, `slots[${index}]`);
+                                                });
+                                            });
+                                        }
+                                    }
+                                    
+                                    // Service Management
+                                    function addService() {
+                                        const container = document.getElementById('edit-services-container');
+                                        const index = container.querySelectorAll('.service-item').length;
+                                        
+                                        const serviceHtml = `
+                                            <div class="service-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Service ID*</label>
+                                                        <input type="text" name="services[${index}][serviceId]" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Status</label>
+                                                        <select name="services[${index}][status]">
+                                                            <option value="pending">Pending</option>
+                                                            <option value="approved">Approved</option>
+                                                            <option value="rejected">Rejected</option>
+                                                            <option value="inactive">Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Base Price (₹)*</label>
+                                                        <input type="number" name="services[${index}][freelancerBasePrice]" value="0" min="0" step="0.01" required onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Admin Price (₹)</label>
+                                                        <input type="number" name="services[${index}][adminPrice]" value="0" min="0" step="0.01" onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Commission (%)</label>
+                                                        <input type="number" name="services[${index}][adminCommissionPercent]" value="0" min="0" max="100" step="0.1" onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Final Price (₹)</label>
+                                                        <input type="number" name="services[${index}][finalPrice]" value="0" min="0" step="0.01" readonly style="background-color: #f8f9fa; font-weight: bold;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Duration (minutes)</label>
+                                                        <input type="number" name="services[${index}][durationMinutes]" value="0" min="0">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Service Images</label>
+                                                        <input type="file" name="serviceImages_${index}" multiple accept="image/*">
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeService(this)">Remove Service</button>
+                                            </div>
+                                        `;
+                                        
+                                        if (container.querySelector('.no-services')) {
+                                            container.innerHTML = serviceHtml;
+                                        } else {
+                                            container.insertAdjacentHTML('beforeend', serviceHtml);
+                                        }
+                                        
+                                        // Add the "Add Another Service" button if not present
+                                        if (!container.querySelector('.btn-primary')) {
+                                            container.insertAdjacentHTML('beforeend', `
+                                                <button type="button" class="btn btn-sm btn-primary" onclick="addService()">
+                                                    <i class="icon-plus"></i> Add Another Service
+                                                </button>
+                                            `);
+                                        }
+                                    }
+                                    
+                                    function removeService(button) {
+                                        const container = document.getElementById('edit-services-container');
+                                        const serviceItems = container.querySelectorAll('.service-item');
+                                        
+                                        if (serviceItems.length > 1) {
+                                            button.closest('.service-item').remove();
+                                            
+                                            // Reindex services
+                                            Array.from(container.querySelectorAll('.service-item')).forEach((item, index) => {
+                                                const inputs = item.querySelectorAll('input, select');
+                                                inputs.forEach(input => {
+                                                    input.name = input.name.replace(/services\[\d+\]/, `services[${index}]`);
+                                                    if (input.name.includes('serviceImages_')) {
+                                                        input.name = `serviceImages_${index}`;
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    }
+                                    
+                                    // Price Calculation
+                                    function calculateFinalPrice(serviceIndex) {
+                                        const basePrice = parseFloat(document.querySelector(`input[name="services[${serviceIndex}][freelancerBasePrice]"]`).value) || 0;
+                                        const adminPrice = parseFloat(document.querySelector(`input[name="services[${serviceIndex}][adminPrice]"]`).value) || 0;
+                                        const commission = parseFloat(document.querySelector(`input[name="services[${serviceIndex}][adminCommissionPercent]"]`).value) || 0;
+                                        
+                                        let finalPrice = basePrice;
+                                        
+                                        // Use admin price if set, otherwise calculate from commission
+                                        if (adminPrice > 0) {
+                                            finalPrice = adminPrice;
+                                        } else if (commission > 0) {
+                                            finalPrice = basePrice + (basePrice * commission / 100);
+                                        }
+                                        
+                                        document.querySelector(`input[name="services[${serviceIndex}][finalPrice]"]`).value = finalPrice.toFixed(2);
+                                    }
+                                    
+                                    // File Management
+                                    function removePortfolioImage(button, imageUrl) {
+                                        // Add hidden input to mark image for deletion
+                                        const form = document.getElementById('edit-freelancer-form');
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = 'removedPortfolioImages';
+                                        input.value = imageUrl;
+                                        form.appendChild(input);
+                                        
+                                        button.closest('.image-preview-item').remove();
+                                    }
+                                    
+                                    function removeServiceImage(button, imageUrl, serviceIndex) {
+                                        // Add hidden input to mark service image for deletion
+                                        const form = document.getElementById('edit-freelancer-form');
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = `removedServiceImages[${serviceIndex}]`;
+                                        input.value = imageUrl;
+                                        form.appendChild(input);
+                                        
+                                        button.closest('.image-preview-item').remove();
+                                    }
+                                    
+                                    function removeDocument(button, docUrl) {
+                                        // Add hidden input to mark document for deletion
+                                        const form = document.getElementById('edit-freelancer-form');
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = 'removedDocuments';
+                                        input.value = docUrl;
+                                        form.appendChild(input);
+                                        
+                                        button.closest('.document-item').remove();
+                                    }
+                                    
+                                    // Edit (POST) /freelance/edit
+                                    document.getElementById('edit-freelancer-form').onsubmit = function(e) {
+                                        e.preventDefault();
+                                        // Clean up all unavailable slots (remove required, clear value)
+                                        cleanupUnavailableSlots('edit-availability-container');
+                                        let form = this;
+                                        let data = new FormData(form);
+                                        const freelancerId = document.getElementById('edit-freelancer-id').value;
+                                        fetch(`/freelance/updateFreelancer/${freelancerId}`, {
+                                            method: 'PUT',
+                                            body: data
+                                        })
                                         .then(res => res.json())
                                         .then(resp => {
-                                            if (resp.success) {
+                                            if(resp.success) {
                                                 window.location.reload();
                                             } else {
-                                                alert(resp.error || "Failed to add freelancer.");
+                                                alert(resp.error || "Failed to update freelancer.");
                                             }
                                         })
-                                        .catch(() => alert("Server error while adding freelancer."));
-                                };
-
-                                // Edit (fetch by ID) - GET /freelance/:id
-                                function showEditFreelancerModal(freelancerId) {
-                                    fetch('/freelance/freelancer/' + freelancerId)
+                                        .catch(() => alert("Server error while updating freelancer."));
+                                    };
+                                    
+                                    // Delete /freelance/delete
+                                    function confirmDeleteFreelancer(freelancerId) {
+                                        document.getElementById('delete-freelancer-id').value = freelancerId;
+                                        document.getElementById('delete-confirm-modal').style.display = 'block';
+                                    }
+                                    document.getElementById('delete-freelancer-form').onsubmit = function(e){
+                                        e.preventDefault();
+                                        const form = this;
+                                        const freelancerId = document.getElementById('delete-freelancer-id').value;
+                                        fetch(`/freelance/deleteFreelancer/${freelancerId}`, { 
+                                            method: 'DELETE'
+                                        })
                                         .then(res => res.json())
-                                        .then(data => {
-                                            // Fix: Try showing data in the form even if "success" is missing but structure is valid
-                                            let f = data.freelancer || (data._id && data); // fallback if not wrapped in .freelancer
-                                            if (f && f._id) {
-                                                let html = '';
-                                                // Personal Info
-                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-user"></i> Personal Info</h4></div><div class="form-grid">';
-                                                html += `<div class="form-group"><label>Full Name*</label><input type="text" name="fullName" value="` + (f.fullName|| (f.userId && f.userId.name) || '') + `" required></div>`;
-                                                html += `<div class="form-group"><label>Email*</label><input type="email" name="email" value="` + (f.email|| (f.userId && f.userId.email) || '') + `" required></div>`;
-                                                html += '</div><div class="form-grid">';
-                                                html += `<div class="form-group"><label>Phone Number*</label><input type="tel" name="phone" value="`+ (f.phone || (f.userId && f.userId.phone) || '') +`" required></div>`;
-                                                // Location - support f.location or f.locations
-                                                let loc = '';
-                                                if (f.location) loc = f.location;
-                                                else if (Array.isArray(f.locations) && f.locations.length)
-                                                    loc = f.locations.map(l => l.city).join(', ');
-                                                html += `<div class="form-group"><label>Location*</label><input type="text" name="location" value="`+ (loc || '') +`" required></div>`;
-                                                html += '</div>';
-                                                html += `<div class="form-group"><label>Bio*</label><textarea name="bio" rows="4" required>`+(f.bio||'')+`</textarea></div>`;
-                                                html += '</div>';
-                                                // Professional Info
-                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-briefcase"></i> Professional Info</h4></div>';
-                                                html += `<div class="form-group"><label>Skills*</label><input type="text" name="skills" value="`+((Array.isArray(f.skills) ? f.skills.join(', ') : (f.skills || '')))+`" required><small>Separate with commas</small></div>`;
-                                                html += `<div class="form-group"><label>Experience (Years)*</label><input type="number" name="experience" min="0" max="50" value="`+(f.experience||'')+`" required></div>`;
-                                                // For service locations - if f.locations exists, join cities, else use field
-                                                let svcLocs = '';
-                                                if (Array.isArray(f.locations) && f.locations.length)
-                                                    svcLocs = f.locations.map(l => l.city).join(', ');
-                                                else if (f.serviceLocations) svcLocs = f.serviceLocations;
-                                                html += `<div class="form-group"><label>Service Locations*</label><input type="text" name="serviceLocations" value="`+(svcLocs||'')+`" required><small>Separate with commas</small></div>`;
-                                                html += '</div>';
-                                                // Profile Image
-                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-image"></i> Profile Image</h4></div>';
-                                                html += `<div class="form-group"><input type="file" name="profileImage" accept="image/*">`;
-                                                if(f.profileImage){html+=`<br><img src="${f.profileImage}" style="max-width:80px">`;}
-                                                html+=`</div></div>`;
-                                                // Status
-                                                html += '<div class="form-section"><div class="section-header"><h4><i class="icon-toggle-right"></i> Status</h4></div>';
-                                                html += `<div class="form-group"><select name="status" required>`;
-                                                ['pending','approved','rejected','inactive'].forEach(function(s){
-                                                    html+=`<option value="${s}"`+((f.status===s)?' selected':'')+`>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`;
-                                                });
-                                                html+='</select></div></div></div>';
-                                                // Proof (if available)
-                                                if (f.proof && (f.proof.type || f.proof.number)) {
-                                                    html += '<div class="form-section"><div class="section-header"><h4><i class="icon-id"></i> Proof</h4></div>';
-                                                    html += `<div class="form-group"><label>Proof Type</label><input type="text" name="proofType" value="${f.proof.type||''}" readonly></div>`;
-                                                    html += `<div class="form-group"><label>Proof Number</label><input type="text" name="proofNumber" value="${f.proof.number||''}" readonly></div>`;
-                                                    html += '</div>';
-                                                }
-                                                // Portfolio Images (if any)
-                                                if(Array.isArray(f.portfolioImages) && f.portfolioImages.length){
-                                                    html += '<div class="form-section"><div class="section-header"><h4><i class="icon-images"></i> Portfolio Images</h4></div>';
-                                                    html += '<div class="image-preview-grid">';
-                                                    f.portfolioImages.forEach(function(img){
-                                                        html += `<img src="${img}" style="max-width:70px;max-height:70px;margin:4px;border-radius:4px;">`;
-                                                    });
-                                                    html += '</div></div>';
-                                                }
-                                                // Availability (if any)
-                                                if(Array.isArray(f.availability) && f.availability.length){
-                                                    html += '<div class="form-section"><div class="section-header"><h4><i class="icon-clock"></i> Availability</h4></div>';
-                                                    html += '<table class="table table-bordered table-small" style="margin-bottom:0;background:#f8f8f8"><thead><tr><th>Day</th><th>Slots</th></tr></thead><tbody>';
-                                                    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-                                                    f.availability.forEach(function(a){
-                                                        html += `<tr><td>${days[a.dayOfWeek%7]||a.dayOfWeek}</td><td>`;
-                                                        if(a.slots && a.slots.length) {
-                                                            html += a.slots.map(s=>`${s.start} - ${s.end}`).join(', ');
-                                                        } else {
-                                                            html += 'No Slots';
-                                                        }
-                                                        html += '</td></tr>';
-                                                    });
-                                                    html += '</tbody></table></div>';
-                                                }
-                                                document.getElementById('edit-freelancer-fields').innerHTML = html;
-                                                document.getElementById('edit-freelancer-id').value = f._id;
-                                                document.getElementById('edit-freelancer-modal').style.display = 'block';
-                                            } else {
-                                                // If server sent a proper object, show as fallback
-                                                console.error("Edit fetch response:", data);
-                                                alert((data && data.error) ? data.error : "Failed to load freelancer details.");
-                                            }
-                                        })
-                                        .catch((err)=>{
-                                            alert("Server error loading freelancer details.");
-                                            console.error("Fetch freelancer error:", err);
-                                        });
-                                }
-                                // Edit (POST) /freelance/edit
-                                document.getElementById('edit-freelancer-form').onsubmit = function(e){
-                                    e.preventDefault();
-                                    let form = this;
-                                    let data = new FormData(form);
-                                    fetch("/freelance/edit", { method: 'POST', body: data })
-                                    .then(res=>res.json())
-                                    .then(resp=>{
-                                        if(resp.success){ window.location.reload();}
-                                        else{alert(resp.error||"Failed to update freelancer.");}
-                                    }).catch(()=>alert("Server error while updating freelancer."));
-                                };
-
-                                // Delete /freelance/delete
-                                function confirmDeleteFreelancer(freelancerId) {
-                                    document.getElementById('delete-freelancer-id').value = freelancerId;
-                                    document.getElementById('delete-confirm-modal').style.display = 'block';
-                                }
-                                document.getElementById('delete-freelancer-form').onsubmit = function(e){
-                                    e.preventDefault();
-                                    let form = this;
-                                    let data = new FormData(form);
-                                    fetch("/freelance/delete", { method: 'POST', body: data })
-                                        .then(res=>res.json())
-                                        .then(resp=>{
+                                        .then(resp => {
                                             if(resp.success){
                                                 window.location.reload();
                                             } else {
-                                                alert(resp.error||"Failed to delete freelancer.");
+                                                alert(resp.error || "Failed to delete freelancer.");
                                             }
                                         })
-                                        .catch(()=>alert("Server error while deleting freelancer."));
-                                };
-
-                                // Update status /freelance/update-status
-                                function toggleFreelancerStatus(freelancerId, currentStatus){
-                                    let newStatus = (currentStatus === 'approved') ? 'inactive' : 'approved';
-                                    if(!confirm("Are you sure you want to set status to "+newStatus+"?")) return;
-                                    fetch(`/freelance/${freelancerId}/status`, {
-                                        method: 'PATCH',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ status: newStatus })
-                                    })
-                                    .then(res => res.json())
-                                    .then(resp => {
-                                        if(resp.success){ window.location.reload();}
-                                        else{ alert(resp.error || "Failed to update status."); }
-                                    })
-                                    .catch(() => alert("Server error while updating status."));
-                                }
+                                        .catch(() => alert("Server error while deleting freelancer."));
+                                    };
+                                    
+                                    // Update status /freelance/update-status
+                                    function toggleFreelancerStatus(freelancerId, currentStatus){
+                                        let newStatus = (currentStatus === 'approved') ? 'inactive' : 'approved';
+                                        if(!confirm("Are you sure you want to set status to "+newStatus+"?")) return;
+                                        fetch(`/freelance/${freelancerId}/status`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ status: newStatus })
+                                        })
+                                        .then(res => res.json())
+                                        .then(resp => {
+                                            if(resp.success){ window.location.reload();}
+                                            else{ alert(resp.error || "Failed to update status."); }
+                                        })
+                                        .catch(() => alert("Server error while updating status."));
+                                    }
                                 </script>
 
                                 <!-- /main-content-wrap -->

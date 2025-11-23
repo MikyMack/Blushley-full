@@ -5,6 +5,8 @@ const Otp = require("../models/Otp");
 const { genOtp,verifyOtpHash } = require("../services/otpService");
 const { sendOtpEmail } = require("../services/otpService");
 const nodemailer = require("nodemailer");
+const generateBookingToken = require('../utils/bookingToken');
+const FreelancerBooking = require('../models/FreelancerBooking');
 
 const OTP_TTL_MINUTES = 5;
 
@@ -19,6 +21,92 @@ const dayMap = {
   Thursday: 4,
   Friday: 5,
   Saturday: 6
+};
+
+exports.getFreelancerDashboard = async (req, res) => {
+  try {
+    const freelancerUserId = req.session.user._id;
+
+    // Get freelancer profile
+    const freelancer = await Freelancer.findOne({ userId: freelancerUserId });
+
+    if (!freelancer) {
+      return res.status(404).render('error', { error: "Freelancer profile not found" });
+    }
+
+    const freelancerId = freelancer._id;
+
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const startOfMonth = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1
+    );
+
+    // Fetch all bookings for this freelancer
+    const bookings = await FreelancerBooking.find({
+      "freelancer.freelancerId": freelancerId
+    }).sort({ createdAt: -1 });
+
+    // Today's bookings
+    const todaysBookings = await FreelancerBooking.find({
+      "freelancer.freelancerId": freelancerId,
+      bookingDate: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    // Pending confirmations
+    const pendingBookings = await FreelancerBooking.find({
+      "freelancer.freelancerId": freelancerId,
+      status: "approved_by_admin"
+    });
+
+    // Completed bookings this month
+    const completedThisMonth = await FreelancerBooking.find({
+      "freelancer.freelancerId": freelancerId,
+      status: "completed",
+      updatedAt: { $gte: startOfMonth }
+    });
+
+    // Total earnings calculation
+    const completedBookings = await FreelancerBooking.find({
+      "freelancer.freelancerId": freelancerId,
+      status: "completed",
+      "payment.status": "paid"
+    });
+
+    const totalEarnings = completedBookings.reduce((total, booking) => {
+      return total + (booking.service?.price || 0);
+    }, 0);
+
+    // Today's earnings
+    const todayEarnings = todaysBookings
+      .filter(b => b.status === "completed" && b.payment?.status === "paid")
+      .reduce((sum, b) => sum + (b.service?.price || 0), 0);
+
+    // Pending payout amount
+    const pendingAmount = completedBookings
+      .filter(b => b.payment?.status !== "paid")
+      .reduce((sum, b) => sum + (b.service?.price || 0), 0);
+
+    // Send everything to dashboard with proper defaults
+    res.render("freelancer/beautician_dashboard", {
+      freelancer: freelancer || {},
+      allBookings: bookings || [],
+      todaysBookings: todaysBookings || [],
+      pendingConfirmations: pendingBookings || [],
+      completedThisMonth: completedThisMonth?.length || 0,
+      totalEarnings: totalEarnings || 0,
+      todayEarnings: todayEarnings || 0,
+      pendingAmount: pendingAmount || 0
+    });
+
+  } catch (error) {
+    console.error("Freelancer Dashboard Error:", error);
+    res.status(500).render('error', { error: "Failed to load dashboard" });
+  }
 };
 
 exports.register = async (req, res) => {
@@ -218,47 +306,85 @@ exports.updateFreelancer = async (req, res) => {
       phone,
       email,
       bio,
+      experience,
       skills,
       proofType,
       proofNumber,
       locations,
-      availability
+      availability,
+      services,
+      removedPortfolioImages,
+      status
     } = req.body;
 
+    // BASIC INFO
     freelancer.fullName = fullName || freelancer.fullName;
     freelancer.phone = phone || freelancer.phone;
     freelancer.email = email || freelancer.email;
     freelancer.bio = bio || freelancer.bio;
 
+    // EXPERIENCE
+    if (experience) {
+      freelancer.experience = Number(experience) || 0;
+    }
+
+    // SKILLS
     if (skills) {
       freelancer.skills = Array.isArray(skills) ? skills : JSON.parse(skills);
     }
 
-    // Proof
+    // PROOF
     freelancer.proof = {
       type: proofType || freelancer.proof?.type,
       number: proofNumber || freelancer.proof?.number
     };
 
-    // Locations
+    // LOCATIONS
     if (locations) {
-      const parsedLocations = JSON.parse(locations).map(loc => ({
+      const parsed = typeof locations === "string" ? JSON.parse(locations) : locations;
+      freelancer.locations = parsed.map(loc => ({
         city: loc.city,
-        state: loc.state,
-        pincode: loc.pincode,
-        radius: loc.radius || 5
+        state: loc.state || "",
+        pincode: loc.pincode || "",
+        radius: Number(loc.radius) || 5
       }));
-      freelancer.locations = parsedLocations;
     }
 
+    // AVAILABILITY
     if (availability) {
-      const raw = JSON.parse(availability);
-      freelancer.availability = raw.days.map(day => ({
-        dayOfWeek: dayMap[day],
-        slots: [{ start: raw.start, end: raw.end }]
+      const parsed = typeof availability === "string" ? JSON.parse(availability) : availability;
+      freelancer.availability = parsed
+        .map(day => ({
+          ...day,
+          enabled: day.enabled === true || day.enabled === "true"
+        }))
+        .map(day => ({
+          dayOfWeek: Number(day.dayOfWeek),
+          enabled: day.enabled,
+          slots: Array.isArray(day.slots) ? day.slots.map(slot => ({
+            start: slot.start,
+            end: slot.end
+          })) : []
+        }));
+    }
+
+    // SERVICES (rewrite all, preserving correct status)
+    if (services) {
+      const parsedServices = typeof services === "string" ? JSON.parse(services) : services;
+
+      freelancer.freelancerServices = parsedServices.map(service => ({
+        serviceId: service.serviceId,
+        freelancerBasePrice: Number(service.freelancerBasePrice),
+        adminPrice: Number(service.adminPrice),
+        adminCommissionPercent: Number(service.adminCommissionPercent || 0),
+        finalPrice: Number(service.finalPrice),
+        durationMinutes: Number(service.durationMinutes),
+        // Use supplied status ("approved", "pending", "rejected", etc.)
+        status: typeof service.status !== "undefined" ? service.status : "pending"
       }));
     }
 
+    // PROFILE IMAGE
     if (req.files?.profileImage?.[0]) {
       const file = req.files.profileImage[0];
       const uploaded = await uploadBuffer(file.buffer, {
@@ -268,6 +394,24 @@ exports.updateFreelancer = async (req, res) => {
       freelancer.profileImage = uploaded.location;
     }
 
+    // PORTFOLIO IMAGES
+    if (removedPortfolioImages) {
+      let toRemove = removedPortfolioImages;
+      if (typeof toRemove === "string") {
+        try {
+          toRemove = JSON.parse(toRemove);
+        } catch {
+          toRemove = [toRemove];
+        }
+      }
+      if (!Array.isArray(toRemove)) toRemove = [toRemove];
+
+      if (freelancer.portfolioImages && Array.isArray(freelancer.portfolioImages)) {
+        freelancer.portfolioImages = freelancer.portfolioImages.filter(
+          img => !toRemove.includes(img)
+        );
+      }
+    }
     if (req.files?.portfolioImages) {
       let portfolioUrls = [];
       for (let img of req.files.portfolioImages) {
@@ -277,24 +421,36 @@ exports.updateFreelancer = async (req, res) => {
         });
         portfolioUrls.push(uploaded.location);
       }
-      freelancer.portfolioImages = portfolioUrls;
+      freelancer.portfolioImages = [
+        ...(freelancer.portfolioImages || []),
+        ...portfolioUrls
+      ];
     }
 
+    // DOCUMENTS
     if (req.files?.documents) {
-      let docUrls = [];
+      const documentUrls = [];
       for (let doc of req.files.documents) {
         const uploaded = await uploadBuffer(doc.buffer, {
           KeyPrefix: "freelancers/documents/",
           contentType: doc.mimetype
         });
-        docUrls.push(uploaded.location);
+        documentUrls.push(uploaded.location);
       }
-      freelancer.documents = docUrls;
+      freelancer.documents = documentUrls;
+    }
+
+    if (typeof status !== "undefined" && status !== null && status !== "") {
+      freelancer.status = status;
     }
 
     await freelancer.save();
 
-    res.json({ success: true, message: "Freelancer updated successfully" });
+    res.json({
+      success: true,
+      message: "Freelancer updated successfully",
+      freelancer
+    });
 
   } catch (error) {
     console.error("Update Freelancer Error:", error);
@@ -302,14 +458,15 @@ exports.updateFreelancer = async (req, res) => {
   }
 };
 
-
 exports.updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
     const freelancer = await Freelancer.findById(req.params.id);
 
-    if (!freelancer) return res.status(404).json({ message: "Freelancer not found" });
+    if (!freelancer) {
+      return res.status(404).json({ message: "Freelancer not found" });
+    }
 
     freelancer.status = status;
 
@@ -321,6 +478,80 @@ exports.updateStatus = async (req, res) => {
     }
 
     await freelancer.save();
+
+    // Send status update email if approved or inactive
+    if (status === "approved" || status === "inactive") {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        }
+      });
+
+      let subject, html;
+      if (status === "approved") {
+        subject = "🎉 You're Now a Verified Blushley Freelancer!";
+        html = `
+          <div style="max-width:430px;margin:auto;border-radius:14px;overflow:hidden;box-shadow:0 4px 32px 0 rgba(51,34,64,.12);border:1.2px solid #eee;font-family:system-ui,sans-serif;">
+            <div style="background:linear-gradient(90deg, #ff85a2 0, #a583fe 100%);padding:26px 0;text-align:center;">
+              <h2 style="margin:0;font-weight:700;color:white;">Congratulations!</h2>
+            </div>
+            <div style="padding:30px 32px 24px 32px;text-align:center;">
+              <p style="font-size:18px;color:#444;margin-bottom:22px;">
+                Hi <b>${freelancer.fullName}</b>,<br>
+                Welcome aboard! Your freelancer profile has been <span style="color:#19be71;font-weight:600">approved</span> by the Blushley team.<br><br>
+                You can now start offering your services, connect with clients, and shine in the Blushley community.<br>
+                We're excited to have you with us 🚀✨
+              </p>
+              <a href="https://blushley.com/freelance/beautician_register" style="background:#753abf;color:white;padding:13px 36px;border-radius:6px;font-size:17px;font-weight:600;text-decoration:none;display:inline-block;margin-top:10px;">
+                Start Your Journey
+              </a>
+            </div>
+            <div style="font-size:14px;color:#8a95ad;text-align:center;padding-bottom:12px;">
+              &copy; ${new Date().getFullYear()} Blushley. All rights reserved.
+            </div>
+          </div>
+        `.replace(/\s{2,}/g, ' ');
+      } else if (status === "inactive") {
+        subject = "Account Status Update – Blushley Freelancer";
+        html = `
+          <div style="max-width:430px;margin:auto;border-radius:14px;overflow:hidden;box-shadow:0 4px 32px 0 rgba(51,34,64,.12);border:1.2px solid #eee;font-family:system-ui,sans-serif;">
+            <div style="background:linear-gradient(90deg, #ffd6d2 0, #efeefa 100%);padding:26px 0;text-align:center;">
+              <h2 style="margin:0;font-weight:700;color:#bb2649;">Your Blushley freelance status is now Inactive</h2>
+            </div>
+            <div style="padding:30px 32px 24px 32px;text-align:center;">
+              <p style="font-size:17px;color:#444;margin-bottom:22px;">
+                Hi <b>${freelancer.fullName}</b>,<br>
+                Your Blushley freelancer account status has been changed to <span style="color:#fa5858;font-weight:600">inactive</span>.<br>
+                If you believe this was a mistake, or want to reactivate your status, please get in touch with our support team.<br>
+                We're always here to assist you! 💌
+              </p>
+              <a href="tel:+917994907723" style="background:#bb2649;color:white;padding:11px 30px;border-radius:6px;font-size:16px;font-weight:600;text-decoration:none;display:inline-block;margin-top:8px;">
+                Contact Support
+              </a>
+            </div>
+            <div style="font-size:14px;color:#b1b6bf;text-align:center;padding-bottom:12px;">
+              &copy; ${new Date().getFullYear()} Blushley. All rights reserved.
+            </div>
+          </div>
+        `.replace(/\s{2,}/g, ' ');
+      }
+
+      if (freelancer.email) {
+        try {
+          await transporter.sendMail({
+            from: `"Blushley Team" <${process.env.SMTP_USER}>`,
+            to: freelancer.email,
+            subject,
+            html
+          });
+        } catch (mailErr) {
+          console.error("Status Email Error:", mailErr);
+        }
+      }
+    }
 
     res.json({
       success: true,
@@ -618,5 +849,289 @@ exports.verifyLoginOtp = async (req, res) => {
       success: false,
       message: "OTP verification failed"
     });
+  }
+};
+
+
+exports.createBooking = async (req, res) => {
+  try {
+    const {
+      freelancerId,
+      serviceId,
+      serviceName,
+      durationMinutes,
+      price,
+      bookingDate,
+      bookingTime,
+      fullAddress,
+      city,
+      state,
+      pincode,
+      lat,
+      lng,
+      notes
+    } = req.body;
+
+    const freelancer = await Freelancer.findById(freelancerId);
+    if (!freelancer) {
+      return res.status(404).json({ success: false, message: "Freelancer not found" });
+    }
+
+    const token = generateBookingToken();
+
+    const booking = await FreelancerBooking.create({
+
+      bookingToken: token,
+
+      user: {
+        userId: req.session.user._id,
+        name: req.session.user.name,
+        phone: req.session.user.phone,
+        email: req.session.user.email
+      },
+
+      freelancer: {
+        freelancerId: freelancer._id,
+        freelancerName: freelancer.fullName,
+        freelancerPhone: freelancer.phone
+      },
+
+      service: {
+        serviceId,
+        serviceName,
+        durationMinutes,
+        price
+      },
+
+      address: {
+        fullAddress,
+        city,
+        state,
+        pincode,
+        lat,
+        lng
+      },
+
+      bookingDate: new Date(bookingDate),
+      bookingTime,
+      notes
+
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Booking created successfully. Waiting for admin approval.",
+      bookingToken: token
+    });
+
+  } catch (err) {
+    console.error("Create Booking Error:", err);
+    res.status(500).json({ success: false, message: "Booking creation failed" });
+  }
+};
+
+exports.adminApproveBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { action, message } = req.body;
+
+    const booking = await FreelancerBooking.findById(bookingId);
+
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (action === 'approve') {
+      booking.status = "approved_by_admin";
+    } else {
+      booking.status = "rejected_by_admin";
+    }
+
+    booking.adminAction = {
+      actionBy: req.session.user._id,
+      actionAt: new Date(),
+      message
+    };
+
+    await booking.save();
+
+    res.json({
+      success: true,
+      message: `Booking ${booking.status}`
+    });
+
+  } catch (err) {
+    console.error("Admin Approval Error:", err);
+    res.status(500).json({ message: "Admin action failed" });
+  }
+};
+
+exports.freelancerAcceptBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+
+    const booking = await FreelancerBooking.findById(bookingId);
+
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (booking.status !== "approved_by_admin") {
+      return res.status(400).json({ message: "Booking not approved by admin yet" });
+    }
+
+    booking.status = "accepted_by_freelancer";
+    booking.freelancerResponse.accepted = true;
+    booking.freelancerResponse.respondedAt = new Date();
+
+    await booking.save();
+
+    res.json({ success: true, message: "Booking accepted" });
+
+  } catch (err) {
+    console.error("Freelancer Accept Error:", err);
+    res.status(500).json({ message: "Failed to accept booking" });
+  }
+};
+
+exports.getBookingDetails = async (req, res) => {
+  try {
+    const { bookingToken } = req.params;
+
+    const booking = await FreelancerBooking.findOne({ bookingToken });
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+
+    const userId = req.session.user && req.session.user._id ? req.session.user._id.toString() : null;
+    if (
+      booking.user.userId?.toString() !== userId &&
+      booking.freelancer.freelancerId?.toString() !== userId
+    ) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    res.json({ success: true, booking });
+  } catch (err) {
+    console.error("Get Booking Details Error:", err);
+    res.status(500).json({ success: false, message: "Failed to get booking details" });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const {
+      fullName,
+      professionalTitle,
+      bio,
+      experience,
+      email,
+      phone
+    } = req.body;
+
+    const freelancer = await Freelancer.findOne({ userId });
+    if (!freelancer) return res.status(404).json({ message: "Profile not found" });
+
+    freelancer.fullName = fullName;
+    freelancer.bio = bio;
+    freelancer.experience = Number(experience);
+    freelancer.email = email;
+    freelancer.phone = phone;
+    freelancer.professionalTitle = professionalTitle; // ADD this field to schema
+
+    await freelancer.save();
+
+    res.json({ success: true, message: "Profile updated" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Profile update failed" });
+  }
+};
+
+
+// UPDATE AVAILABILITY
+exports.updateAvailability = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const { availability } = req.body; // array
+
+    const freelancer = await Freelancer.findOne({ userId });
+
+    freelancer.availability = availability.map(a => ({
+      dayOfWeek: Number(a.dayOfWeek),
+      slots: a.slots
+    }));
+
+    await freelancer.save();
+
+    res.json({ success: true, message: "Availability updated" });
+  } catch (err) {
+    res.status(500).json({ error: "Availability update failed" });
+  }
+};
+
+
+// ADD SERVICE
+exports.addService = async (req, res) => {
+  try {
+    const { serviceName, price, durationMinutes } = req.body;
+    const userId = req.session.user._id;
+
+    const freelancer = await Freelancer.findOne({ userId });
+
+    freelancer.freelancerServices.push({
+      serviceId: serviceName,
+      freelancerBasePrice: price,
+      finalPrice: price,
+      durationMinutes
+    });
+
+    await freelancer.save();
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add service" });
+  }
+};
+
+
+// REMOVE SERVICE
+exports.removeService = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const { serviceId } = req.params;
+
+    const freelancer = await Freelancer.findOne({ userId });
+
+    freelancer.freelancerServices = freelancer.freelancerServices.filter(
+      s => s.serviceId !== serviceId
+    );
+
+    await freelancer.save();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Delete failed" });
+  }
+};
+
+
+// UPDATE LOCATIONS
+exports.updateLocations = async (req, res) => {
+  try {
+    const { locations } = req.body;
+    const userId = req.session.user._id;
+
+    const freelancer = await Freelancer.findOne({ userId });
+
+    freelancer.locations = locations.map(loc => ({
+      city: loc,
+      state: "",
+      pincode: "",
+      radius: 5
+    }));
+
+    await freelancer.save();
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update locations" });
   }
 };

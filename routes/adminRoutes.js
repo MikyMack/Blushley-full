@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Freelancer = require('../models/Freelancer');
 const { isAdmin } = require("../middlewares/auth");
+const FreelancerBooking = require('../models/FreelancerBooking');
 
 router.get('/adminLogin', (req, res) => {
     res.render('admin/admin_login');
@@ -20,8 +21,51 @@ router.get('/blogs', (req, res) => {
     res.render('admin/admin_blogs');
 });
 
-router.get('/bookings', (req, res) => {
-    res.render('admin/admin_bookings');
+
+
+router.get('/bookings', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+        const limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
+        const skip = (page - 1) * limit;
+
+        const filter = {};
+        if (req.query.status && req.query.status !== 'all') {
+            filter.status = req.query.status;
+        }
+
+        const [bookings, total] = await Promise.all([
+            FreelancerBooking.find(filter)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            FreelancerBooking.countDocuments(filter)
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        res.render('admin/admin_bookings', {
+            bookings,
+            page,
+            totalPages,
+            total,
+            limit,
+            filterStatus: req.query.status || 'all',
+            error: null
+        });
+    } catch (err) {
+        console.error('Error fetching bookings:', err);
+        res.status(500).render('admin/admin_bookings', {
+            bookings: [],
+            page: 1,
+            totalPages: 1,
+            total: 0,
+            limit: 10,
+            filterStatus: req.query.status || 'all',
+            error: 'Failed to load bookings'
+        });
+    }
 });
 
 router.get('/categories', (req, res) => {
