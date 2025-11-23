@@ -1030,12 +1030,13 @@ exports.updateProfile = async (req, res) => {
     const freelancer = await Freelancer.findOne({ userId });
     if (!freelancer) return res.status(404).json({ message: "Profile not found" });
 
-    freelancer.fullName = fullName;
-    freelancer.bio = bio;
-    freelancer.experience = Number(experience);
-    freelancer.email = email;
-    freelancer.phone = phone;
-    freelancer.professionalTitle = professionalTitle; // ADD this field to schema
+    // Only update fields if they're provided
+    if (fullName !== undefined) freelancer.fullName = fullName;
+    if (bio !== undefined) freelancer.bio = bio;
+    if (experience !== undefined) freelancer.experience = Number(experience);
+    if (email !== undefined) freelancer.email = email;
+    if (phone !== undefined) freelancer.phone = phone;
+    if (professionalTitle !== undefined) freelancer.professionalTitle = professionalTitle;
 
     await freelancer.save();
 
@@ -1135,3 +1136,161 @@ exports.updateLocations = async (req, res) => {
     res.status(500).json({ error: "Failed to update locations" });
   }
 };
+
+// UPLOAD PROFILE IMAGE
+
+exports.uploadProfileImage = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const freelancer = await Freelancer.findOne({ userId });
+
+    if (!freelancer) {
+      return res.status(404).json({ error: "Freelancer not found" });
+    }
+
+    const file = req.files?.profileImage?.[0];
+    if (!file) {
+      return res.status(400).json({ error: "No profile image uploaded" });
+    }
+
+    // Upload to S3 manually
+    const uploaded = await uploadBuffer(file.buffer, {
+      KeyPrefix: "freelancers/profile/",
+      contentType: file.mimetype
+    });
+
+    freelancer.profileImage = uploaded.location;
+
+    await freelancer.save();
+
+    res.json({
+      success: true,
+      profileImage: freelancer.profileImage
+    });
+
+  } catch (err) {
+    console.error("Upload Profile Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+// UPLOAD PORTFOLIO IMAGES
+exports.uploadPortfolioImages = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const freelancer = await Freelancer.findOne({ userId });
+
+    if (!freelancer) {
+      return res.status(404).json({ error: "Freelancer not found" });
+    }
+
+    if (!req.files?.portfolioImages?.length) {
+      // If null or no files, remove the field from the database
+      freelancer.portfolioImages = undefined;
+      await freelancer.save();
+      return res.status(400).json({ error: "No portfolio images uploaded", removed: true });
+    }
+
+    const uploadedUrls = [];
+
+    for (let file of req.files.portfolioImages) {
+      const uploaded = await uploadBuffer(file.buffer, {
+        KeyPrefix: "freelancers/portfolio/",
+        contentType: file.mimetype
+      });
+
+      uploadedUrls.push(uploaded.location);
+    }
+
+    freelancer.portfolioImages = [
+      ...(freelancer.portfolioImages || []),
+      ...uploadedUrls
+    ];
+
+    await freelancer.save();
+
+    res.json({
+      success: true,
+      portfolioImages: freelancer.portfolioImages
+    });
+
+  } catch (err) {
+    console.error("Upload Portfolio Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+// REMOVE PORTFOLIO IMAGE
+exports.removePortfolioImage = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const imageUrl = req.body.imageUrl || req.body.imgUrl;
+
+    const freelancer = await Freelancer.findOne({ userId });
+
+    if (!freelancer) {
+      return res.status(404).json({ error: "Freelancer not found" });
+    }
+
+    if (typeof imageUrl === 'undefined') {
+      if (freelancer.portfolioImages !== undefined) {
+        freelancer.portfolioImages = undefined;
+        await freelancer.save();
+      }
+      return res.json({
+        success: true,
+        portfolioImages: []
+      });
+    }
+
+    // Explicit null handling for imageUrl/imgUrl (removes the field)
+    if (imageUrl === null) {
+      if (freelancer.portfolioImages !== undefined) {
+        freelancer.portfolioImages = undefined;
+        await freelancer.save();
+      }
+      return res.json({
+        success: true,
+        portfolioImages: []
+      });
+    }
+
+    // If field is missing or empty, treat as already removed
+    if (!Array.isArray(freelancer.portfolioImages) || freelancer.portfolioImages.length === 0) {
+      freelancer.portfolioImages = undefined;
+      await freelancer.save();
+      return res.json({
+        success: true,
+        portfolioImages: []
+      });
+    }
+
+    // Check if image exists in portfolioImages
+    const imageIndex = freelancer.portfolioImages.indexOf(imageUrl);
+    if (imageIndex === -1) {
+      return res.status(404).json({ error: "Image not found in portfolio" });
+    }
+
+    // Remove the image from the array
+    freelancer.portfolioImages.splice(imageIndex, 1);
+
+    // If the resulting array is empty, remove the field from db
+    if (!freelancer.portfolioImages.length) {
+      freelancer.portfolioImages = undefined;
+    }
+
+    await freelancer.save();
+
+    res.json({
+      success: true,
+      portfolioImages: Array.isArray(freelancer.portfolioImages) ? freelancer.portfolioImages : []
+    });
+  } catch (err) {
+    console.error("Remove Portfolio Image Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+

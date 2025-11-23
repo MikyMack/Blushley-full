@@ -104,4 +104,31 @@ router.put(
   freelancerCtrl.updateLocations
 );
 
+
+
+
+router.post(
+  '/freelancer/upload-profile-image',
+  isLoggedIn,
+  isRole('freelancer'),
+  upload.fields([{ name: "profileImage", maxCount: 1 }]),
+  freelancerCtrl.uploadProfileImage
+);
+
+router.post(
+  '/freelancer/upload-portfolio-images',
+  isLoggedIn,
+  isRole('freelancer'),
+  upload.fields([{ name: "portfolioImages", maxCount: 5 }]),
+  freelancerCtrl.uploadPortfolioImages
+);
+
+router.delete(
+  '/freelancer/remove-portfolio-image',
+  isLoggedIn,
+  isRole('freelancer'),
+  freelancerCtrl.removePortfolioImage
+);
+
+
 module.exports = router;

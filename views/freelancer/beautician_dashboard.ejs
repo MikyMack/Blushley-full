@@ -1449,1035 +1449,1292 @@
     </div>
     
     <script>
-    let freelancerData = null;
-    let isProfileEditMode = false;
-    let isAvailabilityEditMode = false;
-    let currentAvailability = [];
-
-    function safeQuerySelector(selector) {
-        const element = document.querySelector(selector);
-        return element;
-    }
-
-    function safeAddEventListener(selector, event, handler) {
-        const element = safeQuerySelector(selector);
-        if (element) {
-            element.addEventListener(event, handler);
+        let freelancerData = null;
+        let isProfileEditMode = false;
+        let isAvailabilityEditMode = false;
+        let currentAvailability = [];
+    
+        function safeQuerySelector(selector) {
+            const element = document.querySelector(selector);
+            return element;
         }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeDashboard();
-        setupEventListeners();
-        setupNavigation();
-        loadInitialData();
-    });
-
-    function loadInitialData() {
-        try {
-            freelancerData = {
-                freelancer: {
-                    _id: '<%= freelancer._id || "" %>',
-                    fullName: '<%= freelancer.fullName || "" %>',
-                    professionalTitle: '<%= freelancer.professionalTitle || "" %>',
-                    email: '<%= freelancer.email || "" %>',
-                    phone: '<%= freelancer.phone || "" %>',
-                    bio: '<%= freelancer.bio || "" %>',
-                    experience: <%= freelancer.experience || 0 %>,
-                    skills: <%- JSON.stringify(freelancer.skills || []) %>,
-                    rating: <%= freelancer.rating || 0 %>,
-                    totalReviews: <%= freelancer.totalReviews || 0 %>,
-                    locations: <%- JSON.stringify(freelancer.locations || []) %>,
-                    availability: <%- JSON.stringify(freelancer.availability || []) %>,
-                    freelancerServices: <%- JSON.stringify(freelancer.freelancerServices || []) %>,
-                    profileImage: '<%= freelancer.profileImage || "" %>',
-                    portfolioImages: <%- JSON.stringify(freelancer.portfolioImages || []) %>,
-                    createdAt: '<%= freelancer.createdAt || "" %>'
-                }
-            };
-            currentAvailability = freelancerData.freelancer.availability || [];
-            if (document.getElementById('profile-page').classList.contains('active')) {
-                loadProfileInfo();
-                loadAvailability();
-                loadServices();
-                loadLocations();
-                loadProfilePreview();
+    
+        function safeAddEventListener(selector, event, handler) {
+            const element = safeQuerySelector(selector);
+            if (element) {
+                element.addEventListener(event, handler);
             }
-        } catch (error) {}
-    }
-
-    function initializeDashboard() {
-    }
-
-    function setupEventListeners() {
-        safeAddEventListener('#edit-profile-btn', 'click', enterProfileEditMode);
-        safeAddEventListener('#save-profile-btn', 'click', saveProfile);
-        safeAddEventListener('#cancel-profile-btn', 'click', exitProfileEditMode);
-
-        safeAddEventListener('#edit-availability-btn', 'click', enterAvailabilityEditMode);
-        safeAddEventListener('#save-availability-btn', 'click', saveAvailability);
-        safeAddEventListener('#cancel-availability-btn', 'click', exitAvailabilityEditMode);
-
-        safeAddEventListener('#add-service-btn', 'click', showAddServiceModal);
-        safeAddEventListener('#add-service-form', 'submit', handleAddService);
-
-        safeAddEventListener('#add-location-btn', 'click', showAddLocationModal);
-        safeAddEventListener('#add-location-form', 'submit', handleAddLocation);
-
-        safeAddEventListener('#edit-profile-link', 'click', function(e) {
-            e.preventDefault();
-            switchToPage('profile');
-        });
-
-        safeAddEventListener('#view-all-bookings', 'click', function(e) {
-            e.preventDefault();
-            switchToPage('bookings');
-        });
-
-        safeAddEventListener('#view-all-payments', 'click', function(e) {
-            e.preventDefault();
-            switchToPage('payments');
-        });
-
-        safeAddEventListener('#view-calendar', 'click', function(e) {
-            e.preventDefault();
-            switchToPage('bookings');
-        });
-
-        // For portfolio/profile image edits
-        document.body.addEventListener('change', async function (e) {
-            if (e.target && e.target.matches('#profile-pic-input')) {
-                await uploadProfileImage(e);
-            } else if (e.target && e.target.matches('#portfolio-images-input')) {
-                await uploadPortfolioImages(e);
-            }
-        });
-        document.body.addEventListener('click', async function (e) {
-            if (e.target.classList.contains('remove-portfolio-img-btn')) {
-                const img = e.target.getAttribute('data-img');
-                await removePortfolioImage(img);
-            }
-        });
-    }
-
-    function setupNavigation() {
-        const navItems = document.querySelectorAll('.nav-item');
-        const pageContents = document.querySelectorAll('.page-content');
-        const pageTitle = safeQuerySelector('#current-page-title');
-        const pageDescription = safeQuerySelector('#current-page-description');
-
-        if (!navItems.length || !pageContents.length || !pageTitle || !pageDescription) {
-            return;
         }
-
-        const pageData = {
-            'dashboard': {
-                title: 'Beautician Dashboard',
-                description: 'Welcome back! Here\'s your beauty business overview.'
-            },
-            'bookings': {
-                title: 'Appointment Management',
-                description: 'Manage your current and upcoming beauty appointments.'
-            },
-            'profile': {
-                title: 'My Profile',
-                description: 'Update your profile information and services.'
-            },
-            'payments': {
-                title: 'Payment Dashboard',
-                description: 'View your earnings and payment history.'
-            }
-        };
-
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const pageId = this.getAttribute('data-page');
-                navItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                pageContents.forEach(page => page.classList.remove('active'));
-                const targetPage = document.getElementById(`${pageId}-page`);
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                    if (pageId === 'profile') {
-                        setTimeout(() => {
-                            loadProfileInfo();
-                            loadAvailability();
-                            loadServices();
-                            loadLocations();
-                            loadProfilePreview();
-                        }, 100);
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            setupEventListeners();
+            setupNavigation();
+            loadInitialData();
+        });
+    
+        function loadInitialData() {
+            try {
+                freelancerData = {
+                    freelancer: {
+                        _id: '<%= freelancer._id || "" %>',
+                        fullName: '<%= freelancer.fullName || "" %>',
+                        professionalTitle: '<%= freelancer.professionalTitle || "" %>',
+                        email: '<%= freelancer.email || "" %>',
+                        phone: '<%= freelancer.phone || "" %>',
+                        bio: '<%= freelancer.bio || "" %>',
+                        experience: <%= freelancer.experience || 0 %>,
+                        skills: <%- JSON.stringify(freelancer.skills || []) %>,
+                        rating: <%= freelancer.rating || 0 %>,
+                        totalReviews: <%= freelancer.totalReviews || 0 %>,
+                        locations: <%- JSON.stringify(freelancer.locations || []) %>,
+                        availability: <%- JSON.stringify(freelancer.availability || []) %>,
+                        freelancerServices: <%- JSON.stringify(freelancer.freelancerServices || []) %>,
+                        profileImage: '<%= freelancer.profileImage || "" %>',
+                        portfolioImages: <%- JSON.stringify(freelancer.portfolioImages || []) %>,
+                        createdAt: '<%= freelancer.createdAt || "" %>'
                     }
+                };
+                currentAvailability = freelancerData.freelancer.availability || [];
+                if (document.getElementById('profile-page').classList.contains('active')) {
+                    loadProfileInfo();
+                    loadAvailability();
+                    loadServices();
+                    loadLocations();
+                    loadProfilePreview();
                 }
-                if (pageData[pageId]) {
-                    pageTitle.textContent = pageData[pageId].title;
-                    pageDescription.textContent = pageData[pageId].description;
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+            }
+        }
+    
+        function initializeDashboard() {
+            // Initialize any dashboard-specific functionality
+        }
+    
+        function setupEventListeners() {
+            safeAddEventListener('#edit-profile-btn', 'click', enterProfileEditMode);
+            safeAddEventListener('#save-profile-btn', 'click', saveProfile);
+            safeAddEventListener('#cancel-profile-btn', 'click', exitProfileEditMode);
+    
+            safeAddEventListener('#edit-availability-btn', 'click', enterAvailabilityEditMode);
+            safeAddEventListener('#save-availability-btn', 'click', saveAvailability);
+            safeAddEventListener('#cancel-availability-btn', 'click', exitAvailabilityEditMode);
+    
+            safeAddEventListener('#add-service-btn', 'click', showAddServiceModal);
+            safeAddEventListener('#add-service-form', 'submit', handleAddService);
+    
+            safeAddEventListener('#add-location-btn', 'click', showAddLocationModal);
+            safeAddEventListener('#add-location-form', 'submit', handleAddLocation);
+    
+            safeAddEventListener('#edit-profile-link', 'click', function(e) {
+                e.preventDefault();
+                switchToPage('profile');
+            });
+    
+            safeAddEventListener('#view-all-bookings', 'click', function(e) {
+                e.preventDefault();
+                switchToPage('bookings');
+            });
+    
+            safeAddEventListener('#view-all-payments', 'click', function(e) {
+                e.preventDefault();
+                switchToPage('payments');
+            });
+    
+            safeAddEventListener('#view-calendar', 'click', function(e) {
+                e.preventDefault();
+                switchToPage('bookings');
+            });
+    
+            // For portfolio/profile image edits
+            document.body.addEventListener('change', async function (e) {
+                if (e.target && e.target.matches('#profile-pic-input')) {
+                    await uploadProfileImage(e);
+                } else if (e.target && e.target.matches('#portfolio-images-input')) {
+                    await uploadPortfolioImages(e);
                 }
             });
-        });
-    }
-
-    function profileImgHtml(freelancer, editable) {
-        let html = `<div class="profile-pic-block" style="text-align:center;margin-bottom:15px;">
-            <img src="${freelancer.profileImage ? freelancer.profileImage : '/images/user-placeholder.svg'}" alt="Profile" style="height:90px;width:90px;border-radius:50%;border: 1.5px solid #b6b6b6;object-fit:cover;" id="current-profile-pic">
-            ${editable ? `<div>
-               <label class="action-button secondary-button" style="margin-top: 6px; font-size: 0.925rem;">
-                   Change
-                   <input type="file" accept="image/*" id="profile-pic-input" style="display:none;" />
-               </label>
-            </div>` : ""}
-        </div>`;
-        return html;
-    }
-
-    function portfolioImagesHtml(freelancer, editable) {
-        let html = `<div class="portfolio-section" style="margin-bottom: 18px;">
-            <div style="font-size:1.01rem;font-weight:500;margin-bottom:8px">Portfolio Images:</div>
-            <div class="portfolio-images-gallery" style="display: flex; flex-wrap: wrap; gap: 10px;">`;
-
-        // Display existing images
-        (freelancer.portfolioImages || []).forEach(img => {
-            html += `<div style="position: relative;">
-                <img src="${img}" alt="Portfolio" style="width: 70px; height: 70px; object-fit: cover; border-radius:8px; border:1px solid #e5e5e5">
-                ${editable ? `<button class="remove-portfolio-img-btn" data-img="${img}" style="position:absolute;top:1px;right:1px;background:#9b1b1b;color:#fff;border:none;border-radius:50%;padding:2px 6px;cursor:pointer;min-width:22px;line-height:15px;">&times;</button>` : ""}
-            </div>`;
-        });
-
-        html += `</div>`;
-        if (editable) {
-            html += `<div style="margin-top:10px;">
-                <label class="action-button secondary-button" style="font-size:0.98rem;">
-                    Add Images
-                    <input type="file" id="portfolio-images-input" accept="image/*" multiple style="display:none;">
-                </label>
-            </div>`;
+            document.body.addEventListener('click', async function (e) {
+                if (e.target.classList.contains('remove-portfolio-img-btn')) {
+                    const img = e.target.getAttribute('data-img');
+                    await removePortfolioImage(img);
+                }
+            });
         }
-        html += `</div>`;
-        return html;
-    }
-
-    function loadProfileInfo() {
-        const container = safeQuerySelector('#profile-info');
-        if (!container || !freelancerData || !freelancerData.freelancer) {
-            return;
-        }
-        const freelancer = freelancerData.freelancer;
-        const editable = isProfileEditMode;
-
-        let html = profileImgHtml(freelancer, editable);
-        html += `
-            <div class="profile-field">
-                <span class="field-label">Full Name *</span>
-                <span class="field-value">${escapeHtml(freelancer.fullName || 'Not set')}</span>
-                <input type="text" class="form-input" value="${escapeHtml(freelancer.fullName || '')}" data-field="fullName" style="display:none;">
-            </div>
-            <div class="profile-field">
-                <span class="field-label">Professional Title</span>
-                <span class="field-value">${escapeHtml(freelancer.professionalTitle || 'Not set')}</span>
-                <input type="text" class="form-input" value="${escapeHtml(freelancer.professionalTitle || '')}" data-field="professionalTitle" style="display:none;">
-            </div>
-            <div class="profile-field">
-                <span class="field-label">Bio</span>
-                <span class="field-value">${escapeHtml(freelancer.bio || 'Not set')}</span>
-                <textarea class="form-input form-textarea" data-field="bio" style="display:none;">${escapeHtml(freelancer.bio || '')}</textarea>
-            </div>
-            <div class="profile-field">
-                <span class="field-label">Experience (Years) *</span>
-                <span class="field-value">${freelancer.experience || 0} years</span>
-                <input type="number" class="form-input" value="${freelancer.experience || 0}" data-field="experience" min="0" max="50" style="display:none;">
-            </div>
-            <div class="profile-field">
-                <span class="field-label">Contact Email *</span>
-                <span class="field-value">${escapeHtml(freelancer.email || 'Not set')}</span>
-                <input type="email" class="form-input" value="${escapeHtml(freelancer.email || '')}" data-field="email" style="display:none;">
-            </div>
-            <div class="profile-field">
-                <span class="field-label">Phone Number *</span>
-                <span class="field-value">${escapeHtml(freelancer.phone || 'Not set')}</span>
-                <input type="tel" class="form-input" value="${escapeHtml(freelancer.phone || '')}" data-field="phone" style="display:none;">
-            </div>
-        `;
-        html += portfolioImagesHtml(freelancer, editable);
-        container.innerHTML = html;
-    }
-
-    function enterProfileEditMode() {
-        isProfileEditMode = true;
-        const profileFields = document.querySelectorAll('#profile-info .profile-field');
-        profileFields.forEach(field => {
-            const staticValue = field.querySelector('.field-value');
-            const formInput = field.querySelector('.form-input');
-            if (staticValue && formInput) {
-                staticValue.style.display = 'none';
-                formInput.style.display = 'block';
-            }
-        });
-        // Show/hide upload UI for pic/portfolio handled by loadProfileInfo
-        loadProfileInfo();
-        const editBtn = safeQuerySelector('#edit-profile-btn');
-        const saveBtn = safeQuerySelector('#save-profile-btn');
-        const cancelBtn = safeQuerySelector('#cancel-profile-btn');
-        if (editBtn) editBtn.style.display = 'none';
-        if (saveBtn) saveBtn.style.display = 'inline-block';
-        if (cancelBtn) cancelBtn.style.display = 'inline-block';
-    }
-
-    function exitProfileEditMode() {
-        isProfileEditMode = false;
-        const profileFields = document.querySelectorAll('#profile-info .profile-field');
-        profileFields.forEach(field => {
-            const staticValue = field.querySelector('.field-value');
-            const formInput = field.querySelector('.form-input');
-            if (staticValue && formInput) {
-                staticValue.style.display = 'block';
-                formInput.style.display = 'none';
-            }
-        });
-        loadProfileInfo();
-        const editBtn = safeQuerySelector('#edit-profile-btn');
-        const saveBtn = safeQuerySelector('#save-profile-btn');
-        const cancelBtn = safeQuerySelector('#cancel-profile-btn');
-        if (editBtn) editBtn.style.display = 'inline-block';
-        if (saveBtn) saveBtn.style.display = 'none';
-        if (cancelBtn) cancelBtn.style.display = 'none';
-    }
-
-    async function saveProfile() {
-        try {
-            const fullNameInput = safeQuerySelector('input[data-field="fullName"]');
-            const professionalTitleInput = safeQuerySelector('input[data-field="professionalTitle"]');
-            const bioInput = safeQuerySelector('textarea[data-field="bio"]');
-            const experienceInput = safeQuerySelector('input[data-field="experience"]');
-            const emailInput = safeQuerySelector('input[data-field="email"]');
-            const phoneInput = safeQuerySelector('input[data-field="phone"]');
-            if (!fullNameInput || !emailInput || !phoneInput) {
-                alert('Required form fields not found');
+    
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = safeQuerySelector('#current-page-title');
+            const pageDescription = safeQuerySelector('#current-page-description');
+    
+            if (!navItems.length || !pageContents.length || !pageTitle || !pageDescription) {
                 return;
             }
-            const profileData = {
-                fullName: fullNameInput.value,
-                professionalTitle: professionalTitleInput ? professionalTitleInput.value : '',
-                bio: bioInput ? bioInput.value : '',
-                experience: experienceInput ? parseInt(experienceInput.value) || 0 : 0,
-                email: emailInput.value,
-                phone: phoneInput.value
-            };
-            if (!profileData.fullName || !profileData.email || !profileData.phone) {
-                alert('Please fill all required fields (marked with *)');
-                return;
-            }
-            const response = await fetch('/freelance/freelancer/update-profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
+    
+            const pageData = {
+                'dashboard': {
+                    title: 'Beautician Dashboard',
+                    description: 'Welcome back! Here\'s your beauty business overview.'
                 },
-                body: JSON.stringify(profileData)
+                'bookings': {
+                    title: 'Appointment Management',
+                    description: 'Manage your current and upcoming beauty appointments.'
+                },
+                'profile': {
+                    title: 'My Profile',
+                    description: 'Update your profile information and services.'
+                },
+                'payments': {
+                    title: 'Payment Dashboard',
+                    description: 'View your earnings and payment history.'
+                }
+            };
+    
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    pageContents.forEach(page => page.classList.remove('active'));
+                    const targetPage = document.getElementById(`${pageId}-page`);
+                    if (targetPage) {
+                        targetPage.classList.add('active');
+                        if (pageId === 'profile') {
+                            setTimeout(() => {
+                                loadProfileInfo();
+                                loadAvailability();
+                                loadServices();
+                                loadLocations();
+                                loadProfilePreview();
+                            }, 100);
+                        }
+                    }
+                    if (pageData[pageId]) {
+                        pageTitle.textContent = pageData[pageId].title;
+                        pageDescription.textContent = pageData[pageId].description;
+                    }
+                });
             });
-            if (!response.ok) throw new Error('Failed to update profile');
-            const result = await response.json();
-            if (result.success) {
-                alert('Profile updated successfully!');
-                exitProfileEditMode();
-                window.location.reload();
-            } else {
-                throw new Error(result.error || 'Profile update failed');
-            }
-        } catch (error) {
-            alert('Failed to update profile: ' + error.message);
         }
-    }
-
-    async function uploadProfileImage(e) {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-        try {
-            const formData = new FormData();
-            formData.append('profileImage', file);
-            const resp = await fetch('/freelance/freelancer/upload-profile-image', {
-                method: 'POST',
-                body: formData
+    
+        // --- Profile Picture Block ---
+        function profileImgHtml(freelancer, editable) {
+            let html = `<div class="profile-pic-block" style="text-align:center;margin-bottom:15px;">
+                <div style="position:relative;display:inline-block;">
+                    <img src="${freelancer.profileImage ? freelancer.profileImage : '/images/user-placeholder.svg'}" alt="Profile" style="height:90px;width:90px;border-radius:50%;border: 1.5px solid #b6b6b6;object-fit:cover;" id="current-profile-pic">
+                    ${editable ? `
+                    <label class="camera-icon" style="position:absolute;bottom:0;right:0;background:#1976d2;color:white;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid white;">
+                        <i class="fas fa-camera" style="font-size:12px;"></i>
+                        <input type="file" accept="image/*" id="profile-pic-input" style="display:none;" />
+                    </label>
+                    <div style="color:#808080;font-size:0.85rem;margin-top:4px;">Click camera to change photo</div>
+                    ` : ""}
+                </div>
+            </div>`;
+            return html;
+        }
+        
+        // --- Portfolio Images Block ---
+        function portfolioImagesHtml(freelancer, editable) {
+            let html = `<div class="portfolio-section" style="margin-bottom: 18px;">
+                <div style="font-size:1.01rem;font-weight:500;margin-bottom:8px">Portfolio Images:</div>
+                <div class="portfolio-images-gallery" style="display: flex; flex-wrap: wrap; gap: 10px;">`;
+            const portfolioImages = (freelancer.portfolioImages || []).slice(0, 5);
+            portfolioImages.forEach(img => {
+                html += `<div style="position: relative;">
+                    <img src="${img}" alt="Portfolio" style="width: 70px; height: 70px; object-fit: cover; border-radius:8px; border:1px solid #e5e5e5">
+                    ${editable ? `<button class="remove-portfolio-img-btn" data-img="${img}" style="position:absolute;top:1px;right:1px;background:#9b1b1b;color:#fff;border:none;border-radius:50%;padding:2px 6px;cursor:pointer;min-width:22px;line-height:15px;">&times;</button>` : ""}
+                </div>`;
             });
-            const data = await resp.json();
-            if (data.success && data.url) {
-                // Update on the client side for immediate feedback, but reload after saveProfile
-                freelancerData.freelancer.profileImage = data.url;
-                // Replace the current image
-                const img = safeQuerySelector('#current-profile-pic');
-                if (img) img.src = data.url;
-                alert('Profile image updated! Save your profile to keep the change.');
-            } else {
-                alert('Failed to upload profile image. ' + (data.error || ''));
+            const remainingSlots = 5 - portfolioImages.length;
+            for (let i = 0; i < remainingSlots; i++) {
+                html += `<div style="width:70px;height:70px;border:1px dashed #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#888;">
+                    <i class="fas fa-image" style="font-size:20px;"></i>
+                </div>`;
             }
-        } catch (err) {
-            alert('Error uploading image');
-        }
-    }
-
-    async function uploadPortfolioImages(e) {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-        try {
-            const formData = new FormData();
-            for (let i = 0; i < files.length; i++) {
-                formData.append('portfolioImages', files[i]);
+            html += `</div>`;
+            if (editable) {
+                html += `<div style="margin-top:10px;">
+                    <button type="button" class="action-button secondary-button" id="add-portfolio-btn" style="font-size:0.98rem;" ${portfolioImages.length >= 5 ? 'disabled' : ''}>
+                        ${portfolioImages.length >= 5 ? 'Max 5 Images Reached' : 'Add Images'}
+                    </button>
+                    <label style="display:none;">
+                        <input type="file" id="portfolio-images-input" accept="image/*" multiple style="display:none;">
+                    </label>
+                    <div style="margin-top:5px;color:#888;font-size:0.82rem;">Supported: JPG/PNG, maximum 5MB each. Up to 5 images.</div>
+                </div>`;
             }
-            const resp = await fetch('/freelance/freelancer/upload-portfolio-images', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await resp.json();
-            if (data.success && Array.isArray(data.urls)) {
-                // Update on the client for immediate feedback, but reload after saveProfile
-                freelancerData.freelancer.portfolioImages = [
-                    ...(freelancerData.freelancer.portfolioImages || []),
-                    ...data.urls
-                ];
-                loadProfileInfo();
-                alert('Portfolio images uploaded! Save your profile to keep the changes.');
-            } else {
-                alert('Failed to upload images. ' + (data.error || ''));
+            html += `</div>`;
+            return html;
+        }
+        
+        // --- Load Profile Info: handles input fields visibility and their values ---
+        function loadProfileInfo() {
+            const container = safeQuerySelector('#profile-info');
+            if (!container || !freelancerData || !freelancerData.freelancer) {
+                return;
             }
-        } catch (err) {
-            alert('Error uploading images');
-        }
-    }
-
-    async function removePortfolioImage(imgUrl) {
-        if (!confirm('Remove this portfolio image?')) return;
-        try {
-            // Immediate remove from local for feedback before server
-            const images = freelancerData.freelancer.portfolioImages || [];
-            freelancerData.freelancer.portfolioImages = images.filter(img => img !== imgUrl);
-            loadProfileInfo();
-            const resp = await fetch('/freelance/freelancer/remove-portfolio-image', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imgUrl })
-            });
-            const data = await resp.json();
-            if (!data.success) {
-                alert('Failed to remove image. ' + (data.error || ''));
-            }
-        } catch (err) {
-            alert('Error removing image');
-        }
-    }
-
-    function loadAvailability() {
-        const container = safeQuerySelector('#availability-container');
-        if (!container) {
-            return;
-        }
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        let html = '<div class="availability-display">';
-        days.forEach((day, index) => {
-            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === index) || { dayOfWeek: index, slots: [] };
-            const timeDisplay = dayAvailability.slots && dayAvailability.slots.length > 0 
-                ? dayAvailability.slots.map(slot => `${slot.start} - ${slot.end}`).join(', ')
-                : 'Not Available';
+            const freelancer = freelancerData.freelancer;
+            const editable = isProfileEditMode;
+            
+            let html = profileImgHtml(freelancer, editable);
+            html += `<form id="edit-profile-form" autocomplete="off" spellcheck="false" onsubmit="return false;">`;
+            
+            // Full Name
             html += `
-                <div class="availability-day">
-                    <span class="day-name">${day}</span>
-                    <span class="day-time">${timeDisplay}</span>
+                <div class="profile-field">
+                    <label class="field-label" for="input-profile-fullName">Full Name <span style="color:red;">*</span></label>
+                    ${editable ? 
+                        `<input type="text" id="input-profile-fullName" class="form-input" value="${escapeHtml(freelancer.fullName || '')}" data-field="fullName" placeholder="Enter your name" required autofocus>` : 
+                        `<div class="field-value" style="min-height:30px;">${escapeHtml(freelancer.fullName || 'Not set')}</div>`
+                    }
                 </div>
             `;
-        });
-        html += '</div>';
-        html += `
-            <div class="availability-edit-form" style="display: none;">
-                ${generateAvailabilityForm()}
-            </div>
-        `;
-        container.innerHTML = html;
-    }
+            // Professional Title
+            html += `
+                <div class="profile-field">
+                    <label class="field-label" for="input-profile-title">Professional Title</label>
+                    ${editable ? 
+                        `<input type="text" id="input-profile-title" class="form-input" value="${escapeHtml(freelancer.professionalTitle || '')}" data-field="professionalTitle" placeholder="e.g. Hairstylist, MUA">` : 
+                        `<div class="field-value" style="min-height:30px;">${escapeHtml(freelancer.professionalTitle || 'Not set')}</div>`
+                    }
+                </div>
+            `;
+            // Bio
+            html += `
+                <div class="profile-field">
+                    <label class="field-label" for="input-profile-bio">Bio</label>
+                    ${editable ? 
+                        `<textarea id="input-profile-bio" class="form-input form-textarea" data-field="bio" rows="3" placeholder="Type a short bio...">${escapeHtml(freelancer.bio || '')}</textarea>` :
+                        `<div class="field-value" style="min-height:30px;">${escapeHtml(freelancer.bio || 'Not set')}</div>`
+                    }
+                </div>
+            `;
+            // Experience
+            html += `
+                <div class="profile-field">
+                    <label class="field-label" for="input-profile-experience">Experience (Years) <span style="color:red;">*</span></label>
+                    ${editable ? 
+                        `<input type="number" id="input-profile-experience" class="form-input" data-field="experience" value="${freelancer.experience || ''}" min="0" max="50" placeholder="Years of experience" required>` :
+                        `<div class="field-value" style="min-height:30px;">${freelancer.experience || 0} years</div>`
+                    }
+                </div>
+            `;
+            // Email
+            html += `
+                <div class="profile-field">
+                    <label class="field-label" for="input-profile-email">Contact Email <span style="color:red;">*</span></label>
+                    ${editable ? 
+                        `<input type="email" id="input-profile-email" class="form-input" data-field="email" value="${escapeHtml(freelancer.email || '')}" placeholder="your@email.com" required>` :
+                        `<div class="field-value" style="min-height:30px;">${escapeHtml(freelancer.email || 'Not set')}</div>`
+                    }
+                </div>
+            `;
+            // Phone Number
+            html += `
+                <div class="profile-field">
+                    <label class="field-label" for="input-profile-phone">Phone Number <span style="color:red;">*</span></label>
+                    ${editable ? 
+                        `<input type="tel" id="input-profile-phone" class="form-input" data-field="phone" value="${escapeHtml(freelancer.phone || '')}" placeholder="Enter your phone" required>` :
+                        `<div class="field-value" style="min-height:30px;">${escapeHtml(freelancer.phone || 'Not set')}</div>`
+                    }
+                </div>
+            `;
+            html += `</form>`;
+            html += portfolioImagesHtml(freelancer, editable);
+            if (editable) {
+                html += `<div style="margin-top:16px; color:#a94442;font-size:0.95rem;font-weight:500;">
+                <b>Make your changes in the input fields above, then click Save to update.<br>
+                Fields with <span style="color:red;">*</span> are required.</b>
+                </div>`;
+            }
+            container.innerHTML = html;
+        
+            // Add event listener for portfolio button in edit mode
+            if (editable) {
+                const addPortfolioBtn = document.getElementById('add-portfolio-btn');
+                if (addPortfolioBtn && (freelancer.portfolioImages || []).length < 5) {
+                    addPortfolioBtn.addEventListener('click', function() {
+                        document.getElementById('portfolio-images-input').click();
+                    });
+                }
+            }
+        }
+        
+        function enterProfileEditMode() {
+            isProfileEditMode = true;
+            loadProfileInfo();
+            const editBtn = safeQuerySelector('#edit-profile-btn');
+            const saveBtn = safeQuerySelector('#save-profile-btn');
+            const cancelBtn = safeQuerySelector('#cancel-profile-btn');
+            if (editBtn) editBtn.style.display = 'none';
+            if (saveBtn) saveBtn.style.display = 'inline-block';
+            if (cancelBtn) cancelBtn.style.display = 'inline-block';
+        }
+        
+        function exitProfileEditMode() {
+            isProfileEditMode = false;
+            loadProfileInfo();
+            const editBtn = safeQuerySelector('#edit-profile-btn');
+            const saveBtn = safeQuerySelector('#save-profile-btn');
+            const cancelBtn = safeQuerySelector('#cancel-profile-btn');
+            if (editBtn) editBtn.style.display = 'inline-block';
+            if (saveBtn) saveBtn.style.display = 'none';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+        }
+        
+        async function saveProfile() {
+            try {
+                // Use ID selectors for clarity in edit mode
+                const fullNameInput = document.getElementById('input-profile-fullName');
+                const professionalTitleInput = document.getElementById('input-profile-title');
+                const bioInput = document.getElementById('input-profile-bio');
+                const experienceInput = document.getElementById('input-profile-experience');
+                const emailInput = document.getElementById('input-profile-email');
+                const phoneInput = document.getElementById('input-profile-phone');
 
-    function generateAvailabilityForm() {
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        return days.map((day, index) => {
-            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === index) || { dayOfWeek: index, slots: [] };
-            const hasSlots = dayAvailability.slots && dayAvailability.slots.length > 0;
-            return `
-                <div class="availability-edit-day">
-                    <div class="day-header">
+                if (!fullNameInput || !emailInput || !phoneInput) {
+                    alert('Form fields not found. Make sure to click [Edit] to enable input fields!');
+                    return;
+                }
+
+                const profileData = {
+                    fullName: fullNameInput.value,
+                    professionalTitle: professionalTitleInput ? professionalTitleInput.value : '',
+                    bio: bioInput ? bioInput.value : '',
+                    experience: experienceInput ? parseInt(experienceInput.value) || 0 : 0,
+                    email: emailInput.value,
+                    phone: phoneInput.value
+                };
+
+                if (!profileData.fullName || !profileData.email || !profileData.phone) {
+                    alert('Please fill ALL required fields (with *).');
+                    return;
+                }
+
+                const response = await fetch('/freelance/freelancer/update-profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                if (!response.ok) throw new Error('Failed to update profile');
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Profile updated successfully!');
+                    exitProfileEditMode();
+                    window.location.reload();
+                } else {
+                    throw new Error(result.error || 'Profile update failed');
+                }
+            } catch (error) {
+                alert('Failed to update profile: ' + error.message);
+            }
+        }
+        
+        async function uploadProfileImage(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size too large. Please select an image under 5MB.');
+                return;
+            }
+            try {
+                const formData = new FormData();
+                formData.append('profileImage', file);
+                const resp = await fetch('/freelance/freelancer/upload-profile-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                let data = {};
+                try { data = await resp.json(); } catch (err2) {}
+                if ((resp.ok && data.success) || data.success) {
+                    window.location.reload();
+                } else if (resp.ok && !data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to upload profile image. ' + (data && data.error ? data.error : ''));
+                }
+            } catch (err) {
+                window.location.reload();
+            }
+        }
+        
+        async function uploadPortfolioImages(e) {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+            const currentImages = freelancerData.freelancer.portfolioImages || [];
+            if (currentImages.length + files.length > 5) {
+                alert(`You can only have up to 5 portfolio images. You currently have ${currentImages.length} and are trying to add ${files.length}.`);
+                return;
+            }
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > 5 * 1024 * 1024) {
+                    alert('One or more files are too large. Please select images under 5MB each.');
+                    return;
+                }
+            }
+            try {
+                const formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('portfolioImages', files[i]);
+                }
+                const resp = await fetch('/freelance/freelancer/upload-portfolio-images', {
+                    method: 'POST',
+                    body: formData
+                });
+                let data = {};
+                try { data = await resp.json(); } catch (err2) {}
+                if ((resp.ok && data.success) || data.success) {
+                    window.location.reload();
+                } else if (resp.ok && !data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to upload images. ' + (data && data.error ? data.error : ''));
+                }
+            } catch (err) {
+                window.location.reload();
+            }
+        }
+        
+        async function removePortfolioImage(imgUrl) {
+            if (!confirm('Remove this portfolio image?')) return;
+            try {
+                const resp = await fetch('/freelance/freelancer/remove-portfolio-image', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imgUrl })
+                });
+                let data = {};
+                try { data = await resp.json(); } catch (err2) {}
+                if ((resp.ok && data.success) || data.success) {
+                    window.location.reload();
+                } else if (resp.ok && !data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to remove image. ' + (data && data.error ? data.error : ''));
+                }
+            } catch (err) {
+                window.location.reload();
+            }
+        }
+        function loadAvailability() {
+            const container = safeQuerySelector('#availability-container');
+            if (!container) {
+                return;
+            }
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            let html = '<div class="availability-display">';
+            days.forEach((day, index) => {
+                const dayAvailability = currentAvailability.find(a => a.dayOfWeek === index) || { dayOfWeek: index, slots: [] };
+                const timeDisplay = dayAvailability.slots && dayAvailability.slots.length > 0 
+                    ? dayAvailability.slots.map(slot => `${slot.start} - ${slot.end}`).join(', ')
+                    : 'Not Available';
+                html += `
+                    <div class="availability-day">
                         <span class="day-name">${day}</span>
-                        <label class="availability-toggle">
-                            <input type="checkbox" ${hasSlots ? 'checked' : ''} onchange="toggleDayAvailability(${index}, this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <span class="day-time">${timeDisplay}</span>
                     </div>
-                    <div class="time-slots" id="slots-${index}" style="${hasSlots ? '' : 'display: none;'}">
-                        ${hasSlots ? dayAvailability.slots.map((slot, slotIndex) => `
-                            <div class="time-slot">
-                                <input type="time" value="${slot.start}" onchange="updateSlot(${index}, ${slotIndex}, 'start', this.value)">
-                                <span>to</span>
-                                <input type="time" value="${slot.end}" onchange="updateSlot(${index}, ${slotIndex}, 'end', this.value)">
-                                <button type="button" class="remove-slot-btn" onclick="removeSlot(${index}, ${slotIndex})">×</button>
-                            </div>
-                        `).join('') : ''}
-                        <button type="button" class="add-slot-btn" onclick="addSlot(${index})">+ Add Time Slot</button>
-                    </div>
+                `;
+            });
+            html += '</div>';
+            html += `
+                <div class="availability-edit-form" style="display: none;">
+                    ${generateAvailabilityForm()}
                 </div>
             `;
-        }).join('');
-    }
-
-    function enterAvailabilityEditMode() {
-        isAvailabilityEditMode = true;
-        const display = safeQuerySelector('.availability-display');
-        const editForm = safeQuerySelector('.availability-edit-form');
-        const editBtn = safeQuerySelector('#edit-availability-btn');
-        const saveBtn = safeQuerySelector('#save-availability-btn');
-        const cancelBtn = safeQuerySelector('#cancel-availability-btn');
-        if (display) display.style.display = 'none';
-        if (editForm) editForm.style.display = 'block';
-        if (editBtn) editBtn.style.display = 'none';
-        if (saveBtn) saveBtn.style.display = 'inline-block';
-        if (cancelBtn) cancelBtn.style.display = 'inline-block';
-    }
-
-    function exitAvailabilityEditMode() {
-        isAvailabilityEditMode = false;
-        const display = safeQuerySelector('.availability-display');
-        const editForm = safeQuerySelector('.availability-edit-form');
-        const editBtn = safeQuerySelector('#edit-availability-btn');
-        const saveBtn = safeQuerySelector('#save-availability-btn');
-        const cancelBtn = safeQuerySelector('#cancel-availability-btn');
-        if (display) display.style.display = 'block';
-        if (editForm) editForm.style.display = 'none';
-        if (editBtn) editBtn.style.display = 'inline-block';
-        if (saveBtn) saveBtn.style.display = 'none';
-        if (cancelBtn) cancelBtn.style.display = 'none';
-        currentAvailability = freelancerData.freelancer.availability || [];
-        loadAvailability();
-    }
-
-    async function saveAvailability() {
-        try {
-            const availability = [];
-            for (let i = 0; i < 7; i++) {
-                const slotsContainer = document.getElementById(`slots-${i}`);
-                if (slotsContainer && slotsContainer.style.display !== 'none') {
-                    const slots = [];
-                    const timeSlots = slotsContainer.querySelectorAll('.time-slot');
-                    timeSlots.forEach(slot => {
-                        const inputs = slot.querySelectorAll('input[type="time"]');
-                        if (inputs[0].value && inputs[1].value) {
-                            slots.push({
-                                start: inputs[0].value,
-                                end: inputs[1].value
+            container.innerHTML = html;
+        }
+    
+        function generateAvailabilityForm() {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            return days.map((day, index) => {
+                const dayAvailability = currentAvailability.find(a => a.dayOfWeek === index) || { dayOfWeek: index, slots: [] };
+                const hasSlots = dayAvailability.slots && dayAvailability.slots.length > 0;
+                return `
+                    <div class="availability-edit-day">
+                        <div class="day-header">
+                            <span class="day-name">${day}</span>
+                            <label class="availability-toggle">
+                                <input type="checkbox" ${hasSlots ? 'checked' : ''} onchange="toggleDayAvailability(${index}, this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="time-slots" id="slots-${index}" style="${hasSlots ? '' : 'display: none;'}">
+                            ${hasSlots ? dayAvailability.slots.map((slot, slotIndex) => `
+                                <div class="time-slot">
+                                    <input type="time" value="${slot.start}" onchange="updateSlot(${index}, ${slotIndex}, 'start', this.value)">
+                                    <span>to</span>
+                                    <input type="time" value="${slot.end}" onchange="updateSlot(${index}, ${slotIndex}, 'end', this.value)">
+                                    <button type="button" class="remove-slot-btn" onclick="removeSlot(${index}, ${slotIndex})">×</button>
+                                </div>
+                            `).join('') : ''}
+                            <button type="button" class="add-slot-btn" onclick="addSlot(${index})">+ Add Time Slot</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    
+        function enterAvailabilityEditMode() {
+            isAvailabilityEditMode = true;
+            const display = safeQuerySelector('.availability-display');
+            const editForm = safeQuerySelector('.availability-edit-form');
+            const editBtn = safeQuerySelector('#edit-availability-btn');
+            const saveBtn = safeQuerySelector('#save-availability-btn');
+            const cancelBtn = safeQuerySelector('#cancel-availability-btn');
+            if (display) display.style.display = 'none';
+            if (editForm) editForm.style.display = 'block';
+            if (editBtn) editBtn.style.display = 'none';
+            if (saveBtn) saveBtn.style.display = 'inline-block';
+            if (cancelBtn) cancelBtn.style.display = 'inline-block';
+        }
+    
+        function exitAvailabilityEditMode() {
+            isAvailabilityEditMode = false;
+            const display = safeQuerySelector('.availability-display');
+            const editForm = safeQuerySelector('.availability-edit-form');
+            const editBtn = safeQuerySelector('#edit-availability-btn');
+            const saveBtn = safeQuerySelector('#save-availability-btn');
+            const cancelBtn = safeQuerySelector('#cancel-availability-btn');
+            if (display) display.style.display = 'block';
+            if (editForm) editForm.style.display = 'none';
+            if (editBtn) editBtn.style.display = 'inline-block';
+            if (saveBtn) saveBtn.style.display = 'none';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            currentAvailability = freelancerData.freelancer.availability || [];
+            loadAvailability();
+        }
+    
+        async function saveAvailability() {
+            try {
+                const availability = [];
+                for (let i = 0; i < 7; i++) {
+                    const slotsContainer = document.getElementById(`slots-${i}`);
+                    if (slotsContainer && slotsContainer.style.display !== 'none') {
+                        const slots = [];
+                        const timeSlots = slotsContainer.querySelectorAll('.time-slot');
+                        timeSlots.forEach(slot => {
+                            const inputs = slot.querySelectorAll('input[type="time"]');
+                            if (inputs[0].value && inputs[1].value) {
+                                slots.push({
+                                    start: inputs[0].value,
+                                    end: inputs[1].value
+                                });
+                            }
+                        });
+                        if (slots.length > 0) {
+                            availability.push({
+                                dayOfWeek: i,
+                                slots: slots
                             });
                         }
-                    });
-                    if (slots.length > 0) {
-                        availability.push({
-                            dayOfWeek: i,
-                            slots: slots
-                        });
                     }
                 }
+                const response = await fetch('/freelance/freelancer/update-availability', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ availability })
+                });
+                if (!response.ok) throw new Error('Failed to update availability');
+                const result = await response.json();
+                if (result.success) {
+                    alert('Availability updated successfully!');
+                    currentAvailability = availability;
+                    exitAvailabilityEditMode();
+                    loadAvailability();
+                    loadProfilePreview();
+                } else {
+                    throw new Error(result.error || 'Availability update failed');
+                }
+            } catch (error) {
+                alert('Failed to update availability: ' + error.message);
             }
-            const response = await fetch('/freelance/freelancer/update-availability', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ availability })
-            });
-            if (!response.ok) throw new Error('Failed to update availability');
-            const result = await response.json();
-            if (result.success) {
-                alert('Availability updated successfully!');
-                currentAvailability = availability;
-                exitAvailabilityEditMode();
-                loadAvailability();
-                loadProfilePreview();
+        }
+    
+        function loadServices() {
+            const container = safeQuerySelector('#services-management');
+            if (!container) {
+                return;
+            }
+            const services = freelancerData.freelancer.freelancerServices || [];
+            let html = '<div class="services-list">';
+            if (services.length === 0) {
+                html += '<p class="no-data">No services added yet. Click "Add Service" to get started.</p>';
             } else {
-                throw new Error(result.error || 'Availability update failed');
-            }
-        } catch (error) {
-            alert('Failed to update availability: ' + error.message);
-        }
-    }
-
-    function loadServices() {
-        const container = safeQuerySelector('#services-management');
-        if (!container) {
-            return;
-        }
-        const services = freelancerData.freelancer.freelancerServices || [];
-        let html = '<div class="services-list">';
-        if (services.length === 0) {
-            html += '<p class="no-data">No services added yet. Click "Add Service" to get started.</p>';
-        } else {
-            services.forEach(service => {
-                html += `
-                    <div class="service-item" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0;">
-                        <div class="service-info" style="flex:1;">
-                            <h4 style="margin: 0 0 4px 0;">${escapeHtml(service.serviceId)}</h4>
-                            <div class="service-details" style="display: flex; align-items: center; gap: 10px;">
-                                <span class="service-price">₹${service.freelancerBasePrice || 0}</span>
-                                <span class="service-duration">${service.durationMinutes || 0} min</span>
-                                <span class="service-status status-${service.status || 'pending'}">${service.status || 'pending'}</span>
+                services.forEach(service => {
+                    html += `
+                        <div class="service-item" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0;">
+                            <div class="service-info" style="flex:1;">
+                                <h4 style="margin: 0 0 4px 0;">${escapeHtml(service.serviceId)}</h4>
+                                <div class="service-details" style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="service-price">₹${service.freelancerBasePrice || 0}</span>
+                                    <span class="service-duration">${service.durationMinutes || 0} min</span>
+                                    <span class="service-status status-${service.status || 'pending'}">${service.status || 'pending'}</span>
+                                </div>
+                            </div>
+                            <div class="service-actions" style="display: flex; align-items: center; margin-left: 12px;">
+                                <button class="action-button small-danger" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; padding: 0; font-size: 18px;" onclick="removeService('${service.serviceId}')" title="Delete Service">
+                                    <i class="fas fa-trash" style="margin: 0; color: #9B1B1B;"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="service-actions" style="display: flex; align-items: center; margin-left: 12px;">
-                            <button class="action-button small-danger" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; padding: 0; font-size: 18px;" onclick="removeService('${service.serviceId}')" title="Delete Service">
-                                <i class="fas fa-trash" style="margin: 0; color: #9B1B1B;"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    function showAddServiceModal() {
-        const modal = safeQuerySelector('#add-service-modal');
-        if (modal) modal.style.display = 'block';
-    }
-
-    function closeModal(modalId) {
-        const modal = safeQuerySelector(`#${modalId}`);
-        if (modal) modal.style.display = 'none';
-    }
-
-    async function handleAddService(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const serviceData = {
-            serviceName: formData.get('serviceName'),
-            price: parseFloat(formData.get('price')),
-            durationMinutes: parseInt(formData.get('durationMinutes'))
-        };
-        if (!serviceData.serviceName || !serviceData.price || !serviceData.durationMinutes) {
-            alert('Please fill all required fields');
-            return;
-        }
-        try {
-            const response = await fetch('/freelance/freelancer/add-service', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(serviceData)
-            });
-            if (!response.ok) throw new Error('Failed to add service');
-            const result = await response.json();
-            if (result.success) {
-                alert('Service added successfully!');
-                closeModal('add-service-modal');
-                e.target.reset();
-                window.location.reload();
-            } else {
-                throw new Error(result.error || 'Add service failed');
+                    `;
+                });
             }
-        } catch (error) {
-            alert('Failed to add service: ' + error.message);
+            html += '</div>';
+            container.innerHTML = html;
         }
-    }
-
-    async function removeService(serviceId) {
-        if (!confirm('Are you sure you want to remove this service?')) return;
-        try {
-            const response = await fetch(`/freelance/freelancer/remove-service/${encodeURIComponent(serviceId)}`, {
-                method: 'DELETE'
-            });
-            if (!response.ok) throw new Error('Failed to remove service');
-            const result = await response.json();
-            if (result.success) {
-                alert('Service removed successfully!');
-                window.location.reload();
-            } else {
-                throw new Error(result.error || 'Remove service failed');
+    
+        function showAddServiceModal() {
+            const modal = safeQuerySelector('#add-service-modal');
+            if (modal) modal.style.display = 'block';
+        }
+    
+        function closeModal(modalId) {
+            const modal = safeQuerySelector(`#${modalId}`);
+            if (modal) modal.style.display = 'none';
+        }
+    
+        async function handleAddService(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const serviceData = {
+                serviceName: formData.get('serviceName'),
+                price: parseFloat(formData.get('price')),
+                durationMinutes: parseInt(formData.get('durationMinutes'))
+            };
+            if (!serviceData.serviceName || !serviceData.price || !serviceData.durationMinutes) {
+                alert('Please fill all required fields');
+                return;
             }
-        } catch (error) {
-            alert('Failed to remove service: ' + error.message);
+            try {
+                const response = await fetch('/freelance/freelancer/add-service', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(serviceData)
+                });
+                if (!response.ok) throw new Error('Failed to add service');
+                const result = await response.json();
+                if (result.success) {
+                    alert('Service added successfully!');
+                    closeModal('add-service-modal');
+                    e.target.reset();
+                    window.location.reload();
+                } else {
+                    throw new Error(result.error || 'Add service failed');
+                }
+            } catch (error) {
+                alert('Failed to add service: ' + error.message);
+            }
         }
-    }
-
-    function loadLocations() {
-        const container = safeQuerySelector('#locations-management');
-        if (!container) {
-            return;
+    
+        async function removeService(serviceId) {
+            if (!confirm('Are you sure you want to remove this service?')) return;
+            try {
+                const response = await fetch(`/freelance/freelancer/remove-service/${encodeURIComponent(serviceId)}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Failed to remove service');
+                const result = await response.json();
+                if (result.success) {
+                    alert('Service removed successfully!');
+                    window.location.reload();
+                } else {
+                    throw new Error(result.error || 'Remove service failed');
+                }
+            } catch (error) {
+                alert('Failed to remove service: ' + error.message);
+            }
         }
-        const locations = freelancerData.freelancer.locations || [];
-        let html = '<div class="locations-list">';
-        if (locations.length === 0) {
-            html += '<p class="no-data">No locations added yet. Click "Add Location" to get started.</p>';
-        } else {
-            locations.forEach(location => {
-                const locationText = [location.city, location.state, location.pincode].filter(Boolean).join(', ');
-                html += `
-                    <div class="location-item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                        <div class="location-info" style="display: flex; flex-direction: column;">
-                            <div style="display: flex; align-items: center;">
-                                <h4 style="margin: 0; font-size: 1rem;">${escapeHtml(locationText)}</h4>
-                                <span class="location-radius" style="margin-left: 12px; color: #1976d2; font-size: 0.98rem;">Radius: ${location.radius || 5} km</span>
+    
+        function loadLocations() {
+            const container = safeQuerySelector('#locations-management');
+            if (!container) {
+                return;
+            }
+            const locations = freelancerData.freelancer.locations || [];
+            let html = '<div class="locations-list">';
+            if (locations.length === 0) {
+                html += '<p class="no-data">No locations added yet. Click "Add Location" to get started.</p>';
+            } else {
+                locations.forEach(location => {
+                    const locationText = [location.city, location.state, location.pincode].filter(Boolean).join(', ');
+                    html += `
+                        <div class="location-item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="location-info" style="display: flex; flex-direction: column;">
+                                <div style="display: flex; align-items: center;">
+                                    <h4 style="margin: 0; font-size: 1rem;">${escapeHtml(locationText)}</h4>
+                                    <span class="location-radius" style="margin-left: 12px; color: #1976d2; font-size: 0.98rem;">Radius: ${location.radius || 5} km</span>
+                                </div>
+                            </div>
+                            <div class="location-actions" style="margin-left: 16px; display: flex; align-items: center;">
+                                <button class="action-button small-danger" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; padding: 0; font-size: 18px;" onclick="removeLocation('${location.city}')" title="Remove Location" 
+                                    style="margin-left: 0; display:flex; align-items: center;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="location-actions" style="margin-left: 16px; display: flex; align-items: center;">
-                            <button class="action-button small-danger" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; padding: 0; font-size: 18px;" onclick="removeLocation('${location.city}')" title="Remove Location" 
-                                style="margin-left: 0; display:flex; align-items: center;">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                    `;
+                });
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+    
+        function showAddLocationModal() {
+            const modal = safeQuerySelector('#add-location-modal');
+            if (modal) modal.style.display = 'block';
+        }
+    
+        async function handleAddLocation(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const locationData = {
+                city: formData.get('city'),
+                state: formData.get('state'),
+                pincode: formData.get('pincode'),
+                radius: parseInt(formData.get('radius')) || 5
+            };
+            if (!locationData.city) {
+                alert('Please enter at least the city name');
+                return;
+            }
+            try {
+                const currentLocations = freelancerData.freelancer.locations || [];
+                const updatedLocations = [...currentLocations.map(loc => loc.city), locationData.city];
+                const response = await fetch('/freelance/freelancer/update-locations', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        locations: updatedLocations
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to add location');
+                const result = await response.json();
+                if (result.success) {
+                    alert('Location added successfully!');
+                    closeModal('add-location-modal');
+                    e.target.reset();
+                    window.location.reload();
+                } else {
+                    throw new Error(result.error || 'Add location failed');
+                }
+            } catch (error) {
+                alert('Failed to add location: ' + error.message);
+            }
+        }
+    
+        async function removeLocation(locationCity) {
+            if (!confirm('Are you sure you want to remove this location?')) return;
+            try {
+                const currentLocations = freelancerData.freelancer.locations || [];
+                const updatedLocations = currentLocations.filter(loc => loc.city !== locationCity).map(loc => loc.city);
+                const response = await fetch('/freelance/freelancer/update-locations', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        locations: updatedLocations
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to remove location');
+                const result = await response.json();
+                if (result.success) {
+                    alert('Location removed successfully!');
+                    window.location.reload();
+                } else {
+                    throw new Error(result.error || 'Remove location failed');
+                }
+            } catch (error) {
+                alert('Failed to remove location: ' + error.message);
+            }
+        }
+    
+        function loadProfilePreview() {
+            const container = safeQuerySelector('#profile-preview');
+            if (!container || !freelancerData || !freelancerData.freelancer) {
+                return;
+            }
+            const freelancer = freelancerData.freelancer;
+            const locationsText = (freelancer.locations || []).map(loc => loc.city).join(', ') || 'Not set';
+            const servicesCount = (freelancer.freelancerServices || []).length;
+            let html = `
+                <div class="preview-section">
+                    <h4>Basic Information</h4>
+                    <div class="preview-field">
+                        <strong>Name:</strong> ${escapeHtml(freelancer.fullName || 'Not set')}
+                    </div>
+                    <div class="preview-field">
+                        <strong>Title:</strong> ${escapeHtml(freelancer.professionalTitle || 'Not set')}
+                    </div>
+                    <div class="preview-field">
+                        <strong>Experience:</strong> ${freelancer.experience || 0} years
+                    </div>
+                    <div class="preview-field">
+                        <strong>Profile Picture:</strong> <img src="${freelancer.profileImage || '/images/user-placeholder.svg'}" alt="Profile" style="height:45px;width:45px;border-radius:50%;border:1.5px solid #b6b6b6;object-fit:cover;">
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <h4>Portfolio Images</h4>
+                    <div class="preview-field">
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            ${(freelancer.portfolioImages || []).slice(0, 5).map(img => 
+                                `<img src="${img}" alt="Portfolio" style="width:45px;height:45px;object-fit:cover;border-radius:8px;border:1px solid #ddd;" />`
+                            ).join('') || '<span style="color:#888;">No portfolio images</span>'}
                         </div>
                     </div>
-                `;
-            });
-        }
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    function showAddLocationModal() {
-        const modal = safeQuerySelector('#add-location-modal');
-        if (modal) modal.style.display = 'block';
-    }
-
-    async function handleAddLocation(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const locationData = {
-            city: formData.get('city'),
-            state: formData.get('state'),
-            pincode: formData.get('pincode'),
-            radius: parseInt(formData.get('radius')) || 5
-        };
-        if (!locationData.city) {
-            alert('Please enter at least the city name');
-            return;
-        }
-        try {
-            const currentLocations = freelancerData.freelancer.locations || [];
-            const updatedLocations = [...currentLocations.map(loc => loc.city), locationData.city];
-            const response = await fetch('/freelance/freelancer/update-locations', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    locations: updatedLocations
-                })
-            });
-            if (!response.ok) throw new Error('Failed to add location');
-            const result = await response.json();
-            if (result.success) {
-                alert('Location added successfully!');
-                closeModal('add-location-modal');
-                e.target.reset();
-                window.location.reload();
-            } else {
-                throw new Error(result.error || 'Add location failed');
-            }
-        } catch (error) {
-            alert('Failed to add location: ' + error.message);
-        }
-    }
-
-    async function removeLocation(locationCity) {
-        if (!confirm('Are you sure you want to remove this location?')) return;
-        try {
-            const currentLocations = freelancerData.freelancer.locations || [];
-            const updatedLocations = currentLocations.filter(loc => loc.city !== locationCity).map(loc => loc.city);
-            const response = await fetch('/freelance/freelancer/update-locations', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    locations: updatedLocations
-                })
-            });
-            if (!response.ok) throw new Error('Failed to remove location');
-            const result = await response.json();
-            if (result.success) {
-                alert('Location removed successfully!');
-                window.location.reload();
-            } else {
-                throw new Error(result.error || 'Remove location failed');
-            }
-        } catch (error) {
-            alert('Failed to remove location: ' + error.message);
-        }
-    }
-
-    function loadProfilePreview() {
-        const container = safeQuerySelector('#profile-preview');
-        if (!container || !freelancerData || !freelancerData.freelancer) {
-            return;
-        }
-        const freelancer = freelancerData.freelancer;
-        const locationsText = (freelancer.locations || []).map(loc => loc.city).join(', ') || 'Not set';
-        const servicesCount = (freelancer.freelancerServices || []).length;
-        let html = `
-            <div class="preview-section">
-                <h4>Basic Information</h4>
-                <div class="preview-field">
-                    <strong>Name:</strong> ${escapeHtml(freelancer.fullName || 'Not set')}
                 </div>
-                <div class="preview-field">
-                    <strong>Title:</strong> ${escapeHtml(freelancer.professionalTitle || 'Not set')}
-                </div>
-                <div class="preview-field">
-                    <strong>Experience:</strong> ${freelancer.experience || 0} years
-                </div>
-                <div class="preview-field">
-                    <strong>Profile Picture:</strong> <img src="${freelancer.profileImage || '/images/user-placeholder.svg'}" alt="Profile" style="height:45px;width:45px;border-radius:50%;border:1.5px solid #b6b6b6;object-fit:cover;">
-                </div>
-            </div>
-            <div class="preview-section">
-                <h4>Portfolio Images</h4>
-                <div class="preview-field">
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        ${(freelancer.portfolioImages || []).map(img => 
-                            `<img src="${img}" alt="Portfolio" style="width:45px;height:45px;object-fit:cover;border-radius:8px;border:1px solid #ddd;" />`
-                        ).join('') || '<span style="color:#888;">No portfolio images</span>'}
+                <div class="preview-section">
+                    <h4>Service Details</h4>
+                    <div class="preview-field">
+                        <strong>Total Services:</strong> ${servicesCount}
+                    </div>
+                    <div class="preview-field">
+                        <strong>Service Locations:</strong> ${escapeHtml(locationsText)}
                     </div>
                 </div>
-            </div>
-            <div class="preview-section">
-                <h4>Service Details</h4>
-                <div class="preview-field">
-                    <strong>Total Services:</strong> ${servicesCount}
+                <div class="preview-section">
+                    <h4>Availability</h4>
+                    <div class="preview-field">
+                        <strong>Working Days:</strong> ${getAvailableDaysCount()} days/week
+                    </div>
                 </div>
-                <div class="preview-field">
-                    <strong>Service Locations:</strong> ${escapeHtml(locationsText)}
-                </div>
-            </div>
-            <div class="preview-section">
-                <h4>Availability</h4>
-                <div class="preview-field">
-                    <strong>Working Days:</strong> ${getAvailableDaysCount()} days/week
-                </div>
-            </div>
-        `;
-        container.innerHTML = html;
-    }
-
-    function getAvailableDaysCount() {
-        return currentAvailability.filter(day => day.slots && day.slots.length > 0).length;
-    }
-
-    function escapeHtml(unsafe) {
-        if (!unsafe) return '';
-        return String(unsafe)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function switchToPage(page) {
-        const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
-        if (navItem) navItem.click();
-    }
-
-    async function confirmAppointment(bookingId) {
-        if (!confirm('Are you sure you want to confirm this appointment?')) return;
-        try {
-            const response = await fetch(`/freelance/bookings/${bookingId}/confirm`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!response.ok) throw new Error('Failed to confirm appointment');
-            const result = await response.json();
-            if (result.success) {
-                alert('Appointment confirmed successfully!');
-                window.location.reload();
-            } else {
-                throw new Error(result.error || 'Confirmation failed');
-            }
-        } catch (error) {
-            alert('Failed to confirm appointment: ' + error.message);
+            `;
+            container.innerHTML = html;
         }
-    }
-
-    function toggleDayAvailability(dayIndex, isAvailable) {
-        const slotsContainer = document.getElementById(`slots-${dayIndex}`);
-        if (slotsContainer) {
-            if (isAvailable) {
-                slotsContainer.style.display = 'block';
-                if (slotsContainer.querySelectorAll('.time-slot').length === 0) {
-                    addSlot(dayIndex);
+    
+        function getAvailableDaysCount() {
+            return currentAvailability.filter(day => day.slots && day.slots.length > 0).length;
+        }
+    
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    
+        function switchToPage(page) {
+            const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+            if (navItem) navItem.click();
+        }
+    
+        async function confirmAppointment(bookingId) {
+            if (!confirm('Are you sure you want to confirm this appointment?')) return;
+            try {
+                const response = await fetch(`/freelance/bookings/${bookingId}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (!response.ok) throw new Error('Failed to confirm appointment');
+                const result = await response.json();
+                if (result.success) {
+                    alert('Appointment confirmed successfully!');
+                    window.location.reload();
+                } else {
+                    throw new Error(result.error || 'Confirmation failed');
                 }
-            } else {
-                slotsContainer.style.display = 'none';
-                currentAvailability = currentAvailability.filter(a => a.dayOfWeek !== dayIndex);
+            } catch (error) {
+                alert('Failed to confirm appointment: ' + error.message);
             }
         }
-    }
-
-    function addSlot(dayIndex) {
-        const slotsContainer = document.getElementById(`slots-${dayIndex}`);
-        if (!slotsContainer) return;
-        const slotIndex = slotsContainer.querySelectorAll('.time-slot').length;
-        const slotHtml = `
-            <div class="time-slot">
-                <input type="time" value="09:00" onchange="updateSlot(${dayIndex}, ${slotIndex}, 'start', this.value)">
-                <span>to</span>
-                <input type="time" value="17:00" onchange="updateSlot(${dayIndex}, ${slotIndex}, 'end', this.value)">
-                <button type="button" class="remove-slot-btn" onclick="removeSlot(${dayIndex}, ${slotIndex})">×</button>
-            </div>
-        `;
-        slotsContainer.insertAdjacentHTML('beforeend', slotHtml);
-        let dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
-        if (!dayAvailability) {
-            dayAvailability = { dayOfWeek: dayIndex, slots: [] };
-            currentAvailability.push(dayAvailability);
-        }
-        dayAvailability.slots.push({ start: "09:00", end: "17:00" });
-    }
-
-    function removeSlot(dayIndex, slotIndex) {
-        const slotsContainer = document.getElementById(`slots-${dayIndex}`);
-        if (!slotsContainer) return;
-        const slots = slotsContainer.querySelectorAll('.time-slot');
-        if (slots.length > 1) {
-            slots[slotIndex].remove();
-            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
-            if (dayAvailability) {
-                dayAvailability.slots.splice(slotIndex, 1);
-                if (dayAvailability.slots.length === 0) {
+    
+        function toggleDayAvailability(dayIndex, isAvailable) {
+            const slotsContainer = document.getElementById(`slots-${dayIndex}`);
+            if (slotsContainer) {
+                if (isAvailable) {
+                    slotsContainer.style.display = 'block';
+                    if (slotsContainer.querySelectorAll('.time-slot').length === 0) {
+                        addSlot(dayIndex);
+                    }
+                } else {
+                    slotsContainer.style.display = 'none';
                     currentAvailability = currentAvailability.filter(a => a.dayOfWeek !== dayIndex);
                 }
             }
         }
-    }
-
-    function updateSlot(dayIndex, slotIndex, type, value) {
-        const dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
-        if (dayAvailability && dayAvailability.slots[slotIndex]) {
-            dayAvailability.slots[slotIndex][type] = value;
+    
+        function addSlot(dayIndex) {
+            const slotsContainer = document.getElementById(`slots-${dayIndex}`);
+            if (!slotsContainer) return;
+            const slotIndex = slotsContainer.querySelectorAll('.time-slot').length;
+            const slotHtml = `
+                <div class="time-slot">
+                    <input type="time" value="09:00" onchange="updateSlot(${dayIndex}, ${slotIndex}, 'start', this.value)">
+                    <span>to</span>
+                    <input type="time" value="17:00" onchange="updateSlot(${dayIndex}, ${slotIndex}, 'end', this.value)">
+                    <button type="button" class="remove-slot-btn" onclick="removeSlot(${dayIndex}, ${slotIndex})">×</button>
+                </div>
+            `;
+            slotsContainer.insertAdjacentHTML('beforeend', slotHtml);
+            let dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
+            if (!dayAvailability) {
+                dayAvailability = { dayOfWeek: dayIndex, slots: [] };
+                currentAvailability.push(dayAvailability);
+            }
+            dayAvailability.slots.push({ start: "09:00", end: "17:00" });
         }
-    }
+    
+        function removeSlot(dayIndex, slotIndex) {
+            const slotsContainer = document.getElementById(`slots-${dayIndex}`);
+            if (!slotsContainer) return;
+            const slots = slotsContainer.querySelectorAll('.time-slot');
+            if (slots.length > 1) {
+                slots[slotIndex].remove();
+                const dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
+                if (dayAvailability) {
+                    dayAvailability.slots.splice(slotIndex, 1);
+                    if (dayAvailability.slots.length === 0) {
+                        currentAvailability = currentAvailability.filter(a => a.dayOfWeek !== dayIndex);
+                    }
+                }
+            }
+        }
+    
+        function updateSlot(dayIndex, slotIndex, type, value) {
+            const dayAvailability = currentAvailability.find(a => a.dayOfWeek === dayIndex);
+            if (dayAvailability && dayAvailability.slots[slotIndex]) {
+                dayAvailability.slots[slotIndex][type] = value;
+            }
+        }
     </script>
-     <style>
-    /* Modal Styles: fixes centering and backdrop for service/location modals */
-    #add-service-modal, #add-location-modal {
-        display: none;
-        position: fixed;
-        z-index: 2000;
-        inset: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(30,40,60,0.22);
 
-        display: flex; /* Use flex to center */
-        justify-content: center;
-        align-items: flex-start; /* Start at the top */
-        transition: all 0.15s;
-    }
-    #add-service-modal.open, #add-location-modal.open {
-        display: flex;
-    }
-    #add-service-modal:not(.open), #add-location-modal:not(.open) {
-        display: none;
-    }
-    #add-service-modal .modal-content, #add-location-modal .modal-content {
-        background: #fff;
-        border-radius: 14px;
-        max-width: 400px;
-        width: 98vw;
-        box-shadow: 0 6px 32px rgba(0,0,0,0.19);
-        padding: 32px 28px 20px 28px;
-        animation: modalPopIn 0.18s;
-        position: relative;
-        margin: 8vh auto 0 auto; /* 8vh from top centers the modal lower on the page */
-    }
-    #add-service-modal .modal-header, #add-location-modal .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #EFEFEF;
-        margin-bottom: 14px;
-    }
-    #add-service-modal .modal-header h3, #add-location-modal .modal-header h3 {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: #0e1a2b;
-        margin: 0;
-    }
-    #add-service-modal .close-btn, #add-location-modal .close-btn {
-        font-size: 1.7rem;
-        border: none;
-        background: transparent;
-        color: #999;
-        cursor: pointer;
-        line-height: 1;
-        margin-left: 10px;
-        transition: color 0.2s;
-    }
-    #add-service-modal .close-btn:hover, #add-location-modal .close-btn:hover {
-        color: #1976d2;
-    }
-    #add-service-modal .form-group, #add-location-modal .form-group {
-        margin-bottom: 16px;
-    }
-    #add-service-modal input, #add-service-modal select,
-    #add-location-modal input, #add-location-modal select {
-        width: 100%;
-        padding: 7px 11px;
-        border-radius: 6px;
-        border: 1px solid #e2e2e2;
-        font-size: 1rem;
-        margin-top: 5px;
-    }
-    #add-service-modal label, #add-location-modal label {
-        font-weight: 500;
-        margin-bottom: 3px;
-        display: block;
-    }
-    #add-service-modal .form-actions, #add-location-modal .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 14px;
-        margin-top: 15px;
-    }
-    #add-service-modal .primary-button, #add-location-modal .primary-button {
-        background: #1976d2;
-        color: #fff;
-        padding: 8px 18px;
-        border-radius: 5px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-    }
-    #add-service-modal .secondary-button, #add-location-modal .secondary-button {
-        background: #e3f2fd;
-        color: #1976d2;
-        padding: 8px 18px;
-        border-radius: 5px;
-        border: none;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    /* Pop-in animation for modal */
-    @keyframes modalPopIn {
-        0% {transform: scale(0.89);}
-        85% {transform: scale(1.03);}
-        100% {transform: scale(1);}
-    }
-    </style>
-    <style>
-    .add-service-form input, #add-location-form input,
-    #profile-form input, #profile-form textarea, #availability-form input, #availability-form select {
-        margin-bottom:8px; width:100%;
-    }
-    .action-button.small-secondary { background:#E3F2FD; color:#1976d2; padding:2px 8px; font-size:12px; margin-left:7px;}
-    .action-button.small-danger { background:#ffc6c6; color:#9B1B1B; padding:2px 8px; font-size:12px; }
-    .services-container .service-tag, .locations-container .location-tag {display:inline-flex;align-items:center;margin:4px 3px 4px 0;padding:7px 13px;background:#e3f2fd;color:#1976d2;border-radius:19px;}
-    .services-container .service-tag i, .locations-container .location-tag i {margin-left:10px;cursor:pointer;opacity:0.7;}
-    .services-container .service-tag i:hover, .locations-container .location-tag i:hover {opacity:1;}
-    .service-price,.service-duration{margin-left:6px;background:#1976d2;color:#fff;padding:1px 7px;border-radius:8px;font-size:13px;}
-    .hour-item input[type="time"]{font-size:13px;}
-    .action-button.primary-button {background: #1976d2; color: #fff;}
-    .action-button.secondary-button {background: #f2f2f2; color: #393939;}
-    .action-button.edit-button {background: #fff; color: #1976d2; border:1px solid #1976d2;}
-    </style>
+<style>
+    .add-service-form input,
+#add-location-form input,
+#profile-form input,
+#profile-form textarea,
+#availability-form input,
+#availability-form select {
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+/* ✅ Critical fix: NEVER disable form-input */
+.form-input {
+    display: block !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+/* If you WANT to hide inputs manually later, use this */
+.hidden-input {
+    display: none !important;
+}
+
+.action-button.small-secondary {
+    background:#E3F2FD;
+    color:#1976d2;
+    padding:2px 8px;
+    font-size:12px;
+    margin-left:7px;
+}
+
+.action-button.small-danger {
+    background:#ffc6c6;
+    color:#9B1B1B;
+    padding:2px 8px;
+    font-size:12px;
+}
+
+.services-container .service-tag,
+.locations-container .location-tag {
+    display:inline-flex;
+    align-items:center;
+    margin:4px 3px 4px 0;
+    padding:7px 13px;
+    background:#e3f2fd;
+    color:#1976d2;
+    border-radius:19px;
+}
+
+.services-container .service-tag i,
+.locations-container .location-tag i {
+    margin-left:10px;
+    cursor:pointer;
+    opacity:0.7;
+}
+
+.services-container .service-tag i:hover,
+.locations-container .location-tag i:hover {
+    opacity:1;
+}
+
+.service-price,
+.service-duration {
+    margin-left:6px;
+    background:#1976d2;
+    color:#fff;
+    padding:1px 7px;
+    border-radius:8px;
+    font-size:13px;
+}
+
+.hour-item input[type="time"] {
+    font-size:13px;
+}
+
+.action-button.primary-button {
+    background: #1976d2;
+    color: #fff;
+}
+
+.action-button.secondary-button {
+    background: #f2f2f2;
+    color: #393939;
+}
+
+.action-button.edit-button {
+    background: #fff;
+    color: #1976d2;
+    border:1px solid #1976d2;
+}
+/* Modal Styles for profile edit and others */
+#edit-profile-modal, #add-service-modal, #add-location-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30,40,60,0.22);
+}
+
+#edit-profile-modal.open,
+#add-service-modal.open,
+#add-location-modal.open {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#edit-profile-modal .modal-content,
+#add-service-modal .modal-content,
+#add-location-modal .modal-content {
+    background: #fff;
+    border-radius: 14px;
+    max-width: 420px;
+    width: 98vw;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.19);
+    padding: 32px 28px 20px 28px;
+    animation: modalPopIn 0.18s;
+    position: relative;
+    margin: 8vh auto 0 auto;
+}
+
+#edit-profile-modal .modal-header,
+#add-service-modal .modal-header,
+#add-location-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #EFEFEF;
+    margin-bottom: 14px;
+}
+
+#edit-profile-modal .modal-header h3,
+#add-service-modal .modal-header h3,
+#add-location-modal .modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #0e1a2b;
+    margin: 0;
+}
+
+#edit-profile-modal .form-group,
+#add-service-modal .form-group,
+#add-location-modal .form-group {
+    margin-bottom: 16px;
+}
+
+/* ✅ Important fix */
+#edit-profile-modal input,
+#edit-profile-modal select,
+#edit-profile-modal textarea,
+#add-service-modal input,
+#add-service-modal select,
+#add-location-modal input,
+#add-location-modal select {
+    width: 100%;
+    padding: 7px 11px;
+    border-radius: 6px;
+    border: 1px solid #e2e2e2;
+    font-size: 1rem;
+    margin-top: 5px;
+
+    /* ✅ FORCE ENABLE */
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    display: block !important;
+    background: #fff;
+    color: #000;
+}
+
+#edit-profile-modal label,
+#add-service-modal label,
+#add-location-modal label {
+    font-weight: 500;
+    margin-bottom: 3px;
+    display: block;
+}
+
+#edit-profile-modal .form-actions,
+#add-service-modal .form-actions,
+#add-location-modal .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 15px;
+}
+
+#edit-profile-modal .primary-button,
+#add-service-modal .primary-button,
+#add-location-modal .primary-button {
+    background: #1976d2;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 5px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#edit-profile-modal .secondary-button,
+#add-service-modal .secondary-button,
+#add-location-modal .secondary-button {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 8px 18px;
+    border-radius: 5px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+@keyframes modalPopIn {
+    0% {transform: scale(0.89);}
+    85% {transform: scale(1.03);}
+    100% {transform: scale(1);}
+}
+
+</style>
+
+    <!-- Profile Edit Modal markup -->
+    <div id="edit-profile-modal" class="">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit Profile</h3>
+          <button type="button" class="close-btn" onclick="closeProfileModal()">&times;</button>
+        </div>
+        <form id="profile-form">
+          <div class="form-group">
+            <label for="profile-fullName">Full Name <span style="color:red">*</span></label>
+            <input type="text" id="profile-fullName" name="fullName" required value="<%= freelancer.fullName %>" />
+          </div>
+          <div class="form-group">
+            <label for="profile-professionalTitle">Professional Title</label>
+            <input type="text" id="profile-professionalTitle" name="professionalTitle" value="<%= freelancer.professionalTitle || '' %>" />
+          </div>
+          <div class="form-group">
+            <label for="profile-bio">Bio</label>
+            <textarea rows="3" id="profile-bio" name="bio"><%= freelancer.bio || '' %></textarea>
+          </div>
+          <div class="form-group">
+            <label for="profile-experience">Experience (Years) <span style="color:red">*</span></label>
+            <input type="number" min="0" id="profile-experience" name="experience" required value="<%= freelancer.experience %>" />
+          </div>
+          <div class="form-group">
+            <label for="profile-email">Contact Email <span style="color:red">*</span></label>
+            <input type="email" id="profile-email" name="email" required value="<%= freelancer.email %>" />
+          </div>
+          <div class="form-group">
+            <label for="profile-phone">Phone Number <span style="color:red">*</span></label>
+            <input type="text" id="profile-phone" name="phone" required value="<%= freelancer.phone %>" />
+          </div>
+          <div class="form-actions">
+            <button type="button" class="secondary-button" onclick="closeProfileModal()">Cancel</button>
+            <button type="submit" class="primary-button">Save Changes</button>
+          </div>
+        </form>
+        <div id="profile-save-result" style="margin-top:10px;color:#1976d2;font-weight:600;display:none"></div>
+      </div>
+    </div>
+
+    <script>
+      // Open/Close handlers - call openProfileModal() on Edit button click
+      function openProfileModal() {
+        document.getElementById('edit-profile-modal').classList.add('open');
+      }
+      function closeProfileModal() {
+        document.getElementById('edit-profile-modal').classList.remove('open');
+        document.getElementById('profile-save-result').style.display = 'none';
+      }
+
+      // Handle edit button - attach to appropriate trigger elsewhere in EJS
+      // Example: <button onclick="openProfileModal()" ...>Edit</button>
+
+      // Submit form via AJAX
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("profile-form");
+        if (form) {
+          form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const data = {
+              fullName: form.fullName.value,
+              professionalTitle: form.professionalTitle.value,
+              bio: form.bio.value,
+              experience: form.experience.value,
+              email: form.email.value,
+              phone: form.phone.value
+            };
+            fetch('/freelancer/update-profile', {
+              method: 'PUT',
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              body: JSON.stringify(data)
+            }).then(response => response.json())
+              .then(res => {
+                const resultMsg = document.getElementById('profile-save-result');
+                if (res.success) {
+                  resultMsg.textContent = "Profile updated successfully!";
+                  resultMsg.style.display = 'block';
+                  setTimeout(() => {
+                    closeProfileModal();
+                    window.location.reload();
+                  }, 900);
+                } else {
+                  resultMsg.textContent = res.error || res.message || "Update failed";
+                  resultMsg.style.display = 'block';
+                }
+              }).catch(() => {
+                const resultMsg = document.getElementById('profile-save-result');
+                resultMsg.textContent = "Network error: profile update failed.";
+                resultMsg.style.display = 'block';
+              });
+          });
+        }
+      });
+    </script>
 </body>
 </html>
