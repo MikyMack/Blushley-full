@@ -264,6 +264,7 @@
                 padding: 10px !important;
             }
         }
+
     </style>
 </head>
 
@@ -528,18 +529,14 @@
                         </form>
 
                         <!-- Salon Login Form -->
-                        <form action="#" class="form-login form-has-password login-form" id="salon-login">
+                        <form action="#" class="form-login form-has-password login-form" id="salon-login" autocomplete="off">
                             <div class="wrap">
                                 <fieldset class="">
-                                    <input type="text" name="salon-name" placeholder="Salon Name*" tabindex="2"
-                                        aria-required="true" required />
-                                </fieldset>
-                                <fieldset class="">
-                                    <input type="email" name="salon-email" placeholder="Business Email*" tabindex="2"
+                                    <input type="text" name="username" id="salon-username" placeholder="Salon Username*" tabindex="2"
                                         aria-required="true" required />
                                 </fieldset>
                                 <fieldset class="position-relative password-item">
-                                    <input type="password" name="salon-password" placeholder="Password*" tabindex="2"
+                                    <input type="password" name="password" id="salon-password" placeholder="Password*" tabindex="2"
                                         aria-required="true" required />
                                     <span class="toggle-password unshow">
                                         <i class="icon-eye-hide-line"></i>
@@ -558,53 +555,87 @@
                                             Remember me
                                         </label>
                                     </div>
-                                    <a href="forget-password.html"
+                                    <a href=""
                                         class="font-2 text-button forget-password link">Forgot Password?</a>
                                 </div>
                             </div>
                             <div class="button-submit">
-                                <a href="salon-dashboard.html" style="width: 100%!important;"  class="tf-btn btn-fill">
-                              
-                            <!--    <button style="width: 100%!important;" class="tf-btn btn-fill" type="submit">-->
-                                      
+                                <button style="width: 100%!important;" class="tf-btn btn-fill" type="submit" id="salon-login-btn">
                                     <span class="text text-button">Login as Salon</span>
-                                      
-                              
-                              </a>
+                                </button>
                             </div>
                         </form>
 
-                        <!-- Freelance Beautician Login Form -->
-                        <form action="#" class="form-login form-has-password login-form" id="freelance-login">
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            document.getElementById('salon-login').addEventListener('submit', async function(e) {
+                                e.preventDefault();
+
+                                const username = document.getElementById('salon-username').value.trim();
+                                const password = document.getElementById('salon-password').value;
+
+                                if (!username || !password) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Missing credentials',
+                                        text: 'Please provide both username and password.',
+                                        confirmButtonColor: '#e63946'
+                                    });
+                                    return;
+                                }
+
+                                try {
+                                    const res = await fetch('/salon/salonlogin', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            username,
+                                            password
+                                        })
+                                    });
+                                    const data = await res.json();
+
+                                    if (res.ok && data.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Login successful!',
+                                            text: 'Redirecting to your dashboard...',
+                                            timer: 1200,
+                                            showConfirmButton: false
+                                        }).then(() => {
+                                            window.location.href = "/salon/salon_dashboard";
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Login failed',
+                                            text: (data && data.error) ? data.error : 'Something went wrong, please try again.',
+                                            confirmButtonColor: '#e63946'
+                                        });
+                                    }
+                                } catch (err) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Network error',
+                                        text: 'Unable to login. Please check your internet connection.',
+                                        confirmButtonColor: '#e63946'
+                                    });
+                                }
+                            });
+                        </script>
+
+                        <!-- Freelance Beautician Login (Email + OTP + Verification) -->
+                        <form class="form-login login-form" id="freelance-login-form" autocomplete="off" method="post" action="/freelance/send-login-otp">
                             <div class="wrap">
                                 <fieldset class="">
-                                    <input type="text" name="freelance-name" placeholder="Your Name*" tabindex="2"
-                                        aria-required="true" required />
-                                </fieldset>
-                                <fieldset class="position-relative password-item">
-                                    <input type="tel" name="freelance-mobile" placeholder="Mobile Number*"
-                                        pattern="[0-9]{10}" maxlength="10" inputmode="numeric" required />
-                                    <span class="toggle-password unshow">
-                                        <i class="icon-eye-hide-line"></i>
-                                    </span>
-                                </fieldset>
-                                <fieldset class="">
-                                    <select name="service-type" required
-                                        style="width: 100%; padding: 14px 16px; border: 1px solid #e0e0e0; border-radius: 8px;">
-                                        <option value="" disabled selected>Select Your Service*</option>
-                                        <option value="hair-styling">Hair Styling</option>
-                                        <option value="makeup">Makeup Artist</option>
-                                        <option value="skincare">Skincare Specialist</option>
-                                        <option value="nails">Nail Technician</option>
-                                        <option value="massage">Massage Therapist</option>
-                                        <option value="other">Other</option>
-                                    </select>
+                                    <input type="email" name="email" id="freelance-login-email" placeholder="Email Address*" tabindex="2" aria-required="true" required autocomplete="off" />
                                 </fieldset>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="tf-cart-checkbox">
                                         <div class="tf-checkbox-wrapp">
-                                            <input checked class="" type="checkbox" id="freelance-login-form_agree"
-                                                name="agree_checkbox">
+                                            <input checked class="" type="checkbox" id="freelance-login-form_agree" name="agree_checkbox">
                                             <div>
                                                 <i class="icon-check"></i>
                                             </div>
@@ -619,11 +650,432 @@
                                 </div>
                             </div>
                             <div class="button-submit">
-                                <a style="width: 100%!important;" class="tf-btn btn-fill" href="freelance-dashboard.html">
-                                    <span class="text text-button">Login as Beautician</span>
-                                </a>
+                                <button style="width:100%!important;" type="submit" class="tf-btn btn-fill" id="freelance-send-otp-btn">
+                                    <span class="text text-button">Send OTP</span>
+                                </button>
                             </div>
                         </form>
+
+                        <!-- OTP Verification UI: Hidden by default, shown after email submit -->
+                        <div class="otp-section" id="freelance-otp-section" style="display: none;">
+                            <h5 class="mb-2" id="freelance-otp-title">Enter OTP</h5>
+                            <p id="freelance-otp-message" style="margin-bottom:18px;"></p>
+                            <!-- Always show email input in OTP section, so user can edit/change it if needed -->
+                            <div class="mb-3" id="freelance-otp-email-input-wrap" style="display: flex; align-items: center; gap: 10px;">
+                                <input
+                                    type="email"
+                                    id="freelance-otp-email"
+                                    class="form-control"
+                                    placeholder="Enter email"
+                                    style="max-width: 280px;"
+                                    autocomplete="off"
+                                    required
+                                />
+                                <!-- Hide/show this button based on usage, but never try to access classList if it doesn't exist -->
+                                <button type="button" class="btn btn-link" id="freelance-edit-email-btn" style="padding: 0; color: #b50957; display: none;">Edit</button>
+                            </div>
+                            <div class="otp-inputs d-flex mb-3" style="gap:10px;">
+                                <input type="text" class="otp-input" maxlength="1" data-index="0" inputmode="numeric" pattern="\d*" style="width:36px;text-align:center;font-size:20px;">
+                                <input type="text" class="otp-input" maxlength="1" data-index="1" inputmode="numeric" pattern="\d*" style="width:36px;text-align:center;font-size:20px;">
+                                <input type="text" class="otp-input" maxlength="1" data-index="2" inputmode="numeric" pattern="\d*" style="width:36px;text-align:center;font-size:20px;">
+                                <input type="text" class="otp-input" maxlength="1" data-index="3" inputmode="numeric" pattern="\d*" style="width:36px;text-align:center;font-size:20px;">
+                                <input type="text" class="otp-input" maxlength="1" data-index="4" inputmode="numeric" pattern="\d*" style="width:36px;text-align:center;font-size:20px;">
+                                <input type="text" class="otp-input" maxlength="1" data-index="5" inputmode="numeric" pattern="\d*" style="width:36px;text-align:center;font-size:20px;">
+                            </div>
+                            <button class="tf-btn btn-fill mb-2" id="freelance-verify-otp-btn" style="width:100%;">Verify OTP</button>
+                            <button type="button" class="btn-link-like" id="freelance-resend-otp-btn" style="width:100%; margin-top:8px; background:none; border:none; color:#b50957;font-weight:600;">
+                                Resend OTP
+                            </button>
+                        </div>
+                        <script>
+                      // Freelance Beautician Login Script - CORRECTED VERSION
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Initializing freelance login...');
+    
+    // Elements - with null checks
+    const freelanceLoginForm = document.getElementById('freelance-login-form');
+    const freelanceLoginEmail = document.getElementById('freelance-login-email');
+    const sendOtpBtn = document.getElementById('freelance-send-otp-btn');
+    const otpSection = document.getElementById('freelance-otp-section');
+    const otpInputs = otpSection ? otpSection.querySelectorAll('.otp-input') : [];
+    const verifyOtpBtn = document.getElementById('freelance-verify-otp-btn');
+    const resendOtpBtn = document.getElementById('freelance-resend-otp-btn');
+    const otpMsg = document.getElementById('freelance-otp-message');
+    const otpTitle = document.getElementById('freelance-otp-title');
+    const otpEmailInputWrap = document.getElementById('freelance-otp-email-input-wrap');
+    const otpEmailInput = document.getElementById('freelance-otp-email');
+    const editOtpEmailBtn = document.getElementById('freelance-edit-email-btn');
+
+    console.log('Elements found:', {
+        freelanceLoginForm: !!freelanceLoginForm,
+        otpSection: !!otpSection,
+        otpInputs: otpInputs.length,
+        verifyOtpBtn: !!verifyOtpBtn
+    });
+
+    // Helper functions
+    function safeShow(elem) {
+        if (elem) elem.style.display = 'block';
+    }
+
+    function safeHide(elem) {
+        if (elem) elem.style.display = 'none';
+    }
+
+    // Show OTP section and fill the OTP email input
+    function showOtpSection(email) {
+        console.log('Showing OTP section for email:', email);
+        
+        // Hide the email form
+        safeHide(freelanceLoginForm);
+        
+        // Show the OTP section
+        safeShow(otpSection);
+        
+        // Set the email in OTP section
+        if (otpEmailInput) {
+            otpEmailInput.value = email || '';
+            otpEmailInput.disabled = false;
+        }
+        
+        // Update OTP message
+        if (otpMsg) {
+            otpMsg.textContent = 'Please enter the 6-digit OTP sent to your email: ' + (email || '');
+        }
+        
+        // Clear and focus first OTP input
+        if (otpInputs.length > 0) {
+            otpInputs.forEach(input => input.value = '');
+            otpInputs[0].focus();
+        }
+        
+        // Hide edit button (email is editable directly)
+        safeHide(editOtpEmailBtn);
+    }
+
+    function showLoginForm() {
+        console.log('Showing login form');
+        safeShow(freelanceLoginForm);
+        safeHide(otpSection);
+        
+        // Clear OTP inputs when going back to login
+        if (otpInputs.length > 0) {
+            otpInputs.forEach(input => input.value = '');
+        }
+    }
+
+    function setLoading(btn, isLoading, text) {
+        if (!btn) return;
+        
+        if (isLoading) {
+            btn.dataset.origText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="vertical-align:middle;"></span> ' + (text || 'Loading...');
+        } else {
+            if (btn.dataset.origText) {
+                btn.innerHTML = btn.dataset.origText;
+            }
+            btn.disabled = false;
+        }
+    }
+
+    // Submit: Send OTP
+    if (freelanceLoginForm) {
+        freelanceLoginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            console.log('Sending OTP...');
+            
+            const email = freelanceLoginEmail ? freelanceLoginEmail.value.trim() : '';
+            
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Email',
+                    text: 'Please enter your email address.'
+                });
+                return;
+            }
+
+            setLoading(sendOtpBtn, true, 'Sending OTP...');
+            
+            try {
+                const res = await fetch('/freelance/send-login-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await res.json();
+                setLoading(sendOtpBtn, false);
+                
+                if (res.ok && data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'OTP Sent!',
+                        text: 'Check your email for the 6-digit OTP code.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    
+                    // Show OTP section after successful OTP send
+                    showOtpSection(email);
+                    
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to Send OTP',
+                        text: data.message || 'Could not send OTP. Please try again.'
+                    });
+                }
+            } catch (err) {
+                setLoading(sendOtpBtn, false);
+                console.error('OTP send error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Network Error',
+                    text: 'Unable to send OTP. Please check your connection.'
+                });
+            }
+        });
+    }
+
+    // OTP Input UX - Auto-focus and navigation
+    if (otpInputs.length > 0) {
+        otpInputs.forEach((input, idx) => {
+            input.addEventListener('input', function (e) {
+                const value = this.value;
+                
+                // Only allow numbers
+                if (value && !/^\d$/.test(value)) {
+                    this.value = '';
+                    return;
+                }
+                
+                // Auto-focus next input
+                if (value && idx < otpInputs.length - 1) {
+                    otpInputs[idx + 1].focus();
+                }
+                
+                // Auto-verify when last digit is entered
+                if (value && idx === otpInputs.length - 1) {
+                    const allFilled = Array.from(otpInputs).every(input => input.value);
+                    if (allFilled) {
+                        // Small delay to let user see the last digit
+                        setTimeout(() => {
+                            if (verifyOtpBtn) verifyOtpBtn.click();
+                        }, 300);
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function (e) {
+                // Handle backspace
+                if (e.key === 'Backspace' && !this.value && idx > 0) {
+                    otpInputs[idx - 1].focus();
+                }
+                
+                // Handle paste
+                if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+                    setTimeout(() => {
+                        const pastedText = this.value;
+                        if (pastedText.length === 6 && /^\d+$/.test(pastedText)) {
+                            for (let i = 0; i < 6; i++) {
+                                if (otpInputs[i]) {
+                                    otpInputs[i].value = pastedText[i];
+                                }
+                            }
+                            if (verifyOtpBtn) verifyOtpBtn.click();
+                        }
+                    }, 10);
+                }
+            });
+            
+            input.addEventListener('focus', function () {
+                this.select();
+            });
+        });
+    }
+
+    // Verify OTP
+    if (verifyOtpBtn) {
+        verifyOtpBtn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            console.log('Verifying OTP...');
+            
+            // Get OTP from inputs
+            let otp = '';
+            if (otpInputs.length > 0) {
+                otpInputs.forEach(input => otp += input.value.trim());
+            }
+            
+            if (otp.length !== 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid OTP',
+                    text: 'Please enter the complete 6-digit OTP.'
+                });
+                return;
+            }
+            
+            // Get email from OTP section or login form
+            const email = otpEmailInput ? otpEmailInput.value.trim() : 
+                         (freelanceLoginEmail ? freelanceLoginEmail.value.trim() : '');
+            
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Email',
+                    text: 'Please enter your email address.'
+                });
+                return;
+            }
+
+            setLoading(verifyOtpBtn, true, 'Verifying...');
+            
+            try {
+                const response = await fetch('/freelance/verify-login-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const result = await response.json();
+                setLoading(verifyOtpBtn, false);
+                
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login Successful!',
+                        text: 'Redirecting to your dashboard...',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Redirect to dashboard
+                        window.location.href = result.redirect || result.redirectTo || '/freelance/beautician_dashboard';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'OTP Verification Failed',
+                        text: result.message || 'Invalid OTP. Please try again.'
+                    });
+                    
+                    // Clear OTP inputs and refocus
+                    if (otpInputs.length > 0) {
+                        otpInputs.forEach(input => input.value = '');
+                        otpInputs[0].focus();
+                    }
+                }
+            } catch (err) {
+                setLoading(verifyOtpBtn, false);
+                console.error('OTP verification error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Verification Error',
+                    text: 'Unable to verify OTP. Please try again.'
+                });
+                
+                // Clear OTP inputs
+                if (otpInputs.length > 0) {
+                    otpInputs.forEach(input => input.value = '');
+                    otpInputs[0].focus();
+                }
+            }
+        });
+    }
+
+    // Resend OTP
+    if (resendOtpBtn) {
+        resendOtpBtn.addEventListener('click', async function () {
+            console.log('Resending OTP...');
+            
+            // Get email from OTP section or login form
+            const email = otpEmailInput ? otpEmailInput.value.trim() : 
+                         (freelanceLoginEmail ? freelanceLoginEmail.value.trim() : '');
+            
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Email',
+                    text: 'Please enter your email address.'
+                });
+                return;
+            }
+
+            setLoading(resendOtpBtn, true, 'Resending...');
+            
+            try {
+                const res = await fetch('/freelance/send-login-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await res.json();
+                setLoading(resendOtpBtn, false);
+                
+                if (res.ok && data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'OTP Resent!',
+                        text: 'New OTP has been sent to your email.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    
+                    // Update OTP message
+                    if (otpMsg) {
+                        otpMsg.textContent = 'Please enter the 6-digit OTP sent to your email: ' + email;
+                    }
+                    
+                    // Clear and refocus OTP inputs
+                    if (otpInputs.length > 0) {
+                        otpInputs.forEach(input => input.value = '');
+                        otpInputs[0].focus();
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to Resend OTP',
+                        text: data.message || 'Could not resend OTP. Please try again.'
+                    });
+                }
+            } catch (err) {
+                setLoading(resendOtpBtn, false);
+                console.error('Resend OTP error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Resend Error',
+                    text: 'Unable to resend OTP. Please try again.'
+                });
+            }
+        });
+    }
+
+    // Edit email in OTP section
+    if (editOtpEmailBtn) {
+        editOtpEmailBtn.addEventListener('click', function () {
+            if (otpEmailInput) {
+                otpEmailInput.disabled = false;
+                otpEmailInput.focus();
+                safeHide(editOtpEmailBtn);
+            }
+        });
+    }
+
+    // Initialize - ensure OTP section is hidden on page load
+    if (otpSection) {
+        otpSection.style.display = 'none';
+    }
+    
+    // Ensure login form is visible
+    if (freelanceLoginForm) {
+        freelanceLoginForm.style.display = 'block';
+    }
+
+    console.log('Freelance login initialization complete');
+});
+                        </script>
 
                         <!-- Seller Login Form -->
                         <form action="#" class="form-login form-has-password login-form" id="seller-login">
@@ -2178,171 +2630,215 @@
         <!-- /wishlist -->
 
         <script>
-            // Login type selector functionality
-            document.addEventListener('DOMContentLoaded', function () {
-                const loginTypeBtns = document.querySelectorAll('.login-type-btn');
-                const loginForms = document.querySelectorAll('.login-form');
-                const sellerRegisterPanel = document.getElementById('seller-register-panel');
-                const sellerLoginForm = document.getElementById('seller-login');
-                const openSellerRegisterBtn = document.getElementById('openSellerRegister');
-                const backToSellerLoginBtn = document.getElementById('backToSellerLogin');
-    
-                loginTypeBtns.forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        // Remove active class from all buttons and forms
-                        loginTypeBtns.forEach(b => b.classList.remove('active'));
-                        loginForms.forEach(form => form.classList.remove('active'));
-    
-                        // Add active class to clicked button
-                        this.classList.add('active');
-    
-                        // Show corresponding form
-                        const loginType = this.getAttribute('data-type');
-                        document.getElementById(`${loginType}-login`).classList.add('active');
-    
-                        // When switching type, ensure seller register panel is hidden and seller login is visible
-                        if (sellerRegisterPanel) {
-                            sellerRegisterPanel.classList.remove('active');
-                        }
-                        if (sellerLoginForm) {
-                            sellerLoginForm.style.display = '';
-                        }
-                    });
-                });
-    
-                // Form validation
-                document.querySelectorAll('.login-form').forEach(form => {
-                    form.addEventListener('submit', function (e) {
-                        e.preventDefault();
-    
-                        // Get all required inputs in this form
-                        const requiredInputs = this.querySelectorAll('input[required], select[required]');
-                        let isValid = true;
-    
-                        requiredInputs.forEach(input => {
-                            if (!input.value.trim()) {
-                                isValid = false;
-                                input.style.borderColor = 'red';
-                            } else {
-                                input.style.borderColor = '#e0e0e0';
-                            }
-                        });
-    
-                        if (isValid) {
-                            const formType = this.id.split('-')[0];
-                            alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} login successful!`);
-                            // In a real application, you would submit the form here
-                        } else {
-                            alert('Please fill in all required fields.');
-                        }
-                    });
-                });
-    
-                // Seller Register toggle
-                if (openSellerRegisterBtn && backToSellerLoginBtn && sellerRegisterPanel && sellerLoginForm) {
-                    openSellerRegisterBtn.addEventListener('click', function () {
-                        sellerRegisterPanel.classList.add('active');
-                        sellerLoginForm.style.display = 'none';
-                    });
-    
-                    backToSellerLoginBtn.addEventListener('click', function () {
-                        sellerRegisterPanel.classList.remove('active');
-                        sellerLoginForm.style.display = '';
-                    });
-                }
-    
-                // Seller Categories chips
-                const categoryInput = document.getElementById('seller-category-input');
-                const addCategoryBtn = document.getElementById('addCategoryBtn');
-                const chipsWrap = document.getElementById('seller-category-chips');
-                const categories = new Set();
-    
-                function addCategoryFromInput() {
-                    const value = (categoryInput?.value || '').trim();
-                    if (!value) return;
-                    if (categories.has(value.toLowerCase())) {
-                        categoryInput.value = '';
-                        return;
-                    }
-                    categories.add(value.toLowerCase());
-    
-                    const chip = document.createElement('span');
-                    chip.className = 'seller-chip';
-                    chip.innerHTML = `${value} <span class="remove-chip" aria-label="Remove">×</span>`;
-                    chip.querySelector('.remove-chip').addEventListener('click', () => {
-                        categories.delete(value.toLowerCase());
-                        chip.remove();
-                    });
-                    chipsWrap?.appendChild(chip);
-    
-                    // also create hidden input to submit
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = 'product-categories[]';
-                    hidden.value = value;
-                    document.getElementById('seller-register-form')?.appendChild(hidden);
-    
-                    categoryInput.value = '';
-                }
-    
-                addCategoryBtn?.addEventListener('click', addCategoryFromInput);
-                categoryInput?.addEventListener('keydown', function (ev) {
-                    if (ev.key === 'Enter') {
-                        ev.preventDefault();
-                        addCategoryFromInput();
-                    }
-                });
-    
-                // Seller Register form validation
-                const sellerRegisterForm = document.getElementById('seller-register-form');
-                sellerRegisterForm?.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const requiredInputs = this.querySelectorAll('input[required], select[required], textarea[required]');
-                    let isValid = true;
-                    requiredInputs.forEach(input => {
-                        if (!input.value.trim()) {
-                            isValid = false;
-                            input.style.borderColor = 'red';
-                        } else {
-                            input.style.borderColor = '#e0e0e0';
-                        }
-                    });
-                    if (isValid) {
-                        alert('Seller registration submitted!');
-                    } else {
-                        alert('Please complete all required fields in the registration form.');
-                    }
-                });
+           // Login type selector functionality - CORRECTED VERSION
+document.addEventListener('DOMContentLoaded', function () {
+    const loginTypeBtns = document.querySelectorAll('.login-type-btn');
+    const loginForms = document.querySelectorAll('.login-form');
+    const sellerRegisterPanel = document.getElementById('seller-register-panel');
+    const sellerLoginForm = document.getElementById('seller-login');
+    const openSellerRegisterBtn = document.getElementById('openSellerRegister');
+    const backToSellerLoginBtn = document.getElementById('backToSellerLogin');
+
+    // Form ID mapping for each login type
+    const formIds = {
+        'customer': 'customer-login',
+        'salon': 'salon-login',
+        'freelance': 'freelance-login-form', // Corrected ID
+        'seller': 'seller-login'
+    };
+
+    loginTypeBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            // Remove active class from all buttons and forms
+            loginTypeBtns.forEach(b => b.classList.remove('active'));
+            loginForms.forEach(form => {
+                form.classList.remove('active');
+                form.style.display = 'none'; // Hide all forms
             });
+
+            // Add active class to clicked button
+            this.classList.add('active');
+
+            // Show corresponding form
+            const loginType = this.getAttribute('data-type');
+            const formId = formIds[loginType];
+            
+            if (formId) {
+                const formEl = document.getElementById(formId);
+                if (formEl) {
+                    formEl.classList.add('active');
+                    formEl.style.display = 'block'; // Show the form
+                    
+                    // Special handling for freelance form - ensure OTP section is hidden initially
+                    if (loginType === 'freelance') {
+                        const otpSection = document.getElementById('freelance-otp-section');
+                        if (otpSection) {
+                            otpSection.style.display = 'none';
+                        }
+                        const freelanceForm = document.getElementById('freelance-login-form');
+                        if (freelanceForm) {
+                            freelanceForm.style.display = 'block';
+                        }
+                    }
+                }
+            }
+
+            // When switching type, ensure seller register panel is hidden and seller login is visible
+            if (sellerRegisterPanel) {
+                sellerRegisterPanel.classList.remove('active');
+                sellerRegisterPanel.style.display = 'none';
+            }
+            if (sellerLoginForm) {
+                sellerLoginForm.style.display = loginType === 'seller' ? 'block' : 'none';
+            }
+        });
+    });
+
+    // Initialize - show customer form by default
+    const customerBtn = document.querySelector('.login-type-btn[data-type="customer"]');
+    if (customerBtn) {
+        customerBtn.click(); // Trigger click to show customer form
+    }
+
+    // Rest of your existing code for form validation and seller registration...
+    // Form validation
+    document.querySelectorAll('.login-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Get all required inputs in this form
+            const requiredInputs = this.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.style.borderColor = 'red';
+                } else {
+                    input.style.borderColor = '#e0e0e0';
+                }
+            });
+
+            if (isValid) {
+                const formType = this.id.split('-')[0];
+                alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} login successful!`);
+                // In a real application, you would submit the form here
+            } else {
+                alert('Please fill in all required fields.');
+            }
+        });
+    });
+
+    // Seller Register toggle
+    if (openSellerRegisterBtn && backToSellerLoginBtn && sellerRegisterPanel && sellerLoginForm) {
+        openSellerRegisterBtn.addEventListener('click', function () {
+            sellerRegisterPanel.classList.add('active');
+            sellerRegisterPanel.style.display = 'block';
+            sellerLoginForm.style.display = 'none';
+        });
+
+        backToSellerLoginBtn.addEventListener('click', function () {
+            sellerRegisterPanel.classList.remove('active');
+            sellerRegisterPanel.style.display = 'none';
+            sellerLoginForm.style.display = 'block';
+        });
+    }
+
+    // Seller Categories chips
+    const categoryInput = document.getElementById('seller-category-input');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    const chipsWrap = document.getElementById('seller-category-chips');
+    const categories = new Set();
+
+    function addCategoryFromInput() {
+        const value = (categoryInput?.value || '').trim();
+        if (!value) return;
+        if (categories.has(value.toLowerCase())) {
+            categoryInput.value = '';
+            return;
+        }
+        categories.add(value.toLowerCase());
+
+        const chip = document.createElement('span');
+        chip.className = 'seller-chip';
+        chip.innerHTML = `${value} <span class="remove-chip" aria-label="Remove">×</span>`;
+        chip.querySelector('.remove-chip').addEventListener('click', () => {
+            categories.delete(value.toLowerCase());
+            chip.remove();
+        });
+        chipsWrap?.appendChild(chip);
+
+        // also create hidden input to submit
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'product-categories[]';
+        hidden.value = value;
+        document.getElementById('seller-register-form')?.appendChild(hidden);
+
+        categoryInput.value = '';
+    }
+
+    addCategoryBtn?.addEventListener('click', addCategoryFromInput);
+    categoryInput?.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            addCategoryFromInput();
+        }
+    });
+
+    // Seller Register form validation
+    const sellerRegisterForm = document.getElementById('seller-register-form');
+    sellerRegisterForm?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const requiredInputs = this.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+        requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+                input.style.borderColor = 'red';
+            } else {
+                input.style.borderColor = '#e0e0e0';
+            }
+        });
+        if (isValid) {
+            alert('Seller registration submitted!');
+        } else {
+            alert('Please complete all required fields in the registration form.');
+        }
+    });
+});
         </script>
     
         <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const navAccount = document.querySelector('.nav-account');
-        const navIconItem = navAccount.querySelector('.nav-icon-item');
-        
-        // Toggle dropdown on click
-        navIconItem.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            navAccount.classList.toggle('show-dropdown');
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!navAccount.contains(e.target)) {
-                navAccount.classList.remove('show-dropdown');
+            const navAccount = document.querySelector('.nav-account');
+            if (!navAccount) return;
+            const navIconItem = navAccount.querySelector('.nav-icon-item');
+            if (!navIconItem) return;
+
+            // Toggle dropdown on click
+            navIconItem.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                navAccount.classList.toggle('show-dropdown');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!navAccount.contains(e.target)) {
+                    navAccount.classList.remove('show-dropdown');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside it
+            const dropdown = navAccount.querySelector('.dropdown-account');
+            if (dropdown) {
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
             }
         });
-        
-        // Prevent dropdown from closing when clicking inside it
-        const dropdown = navAccount.querySelector('.dropdown-account');
-        dropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    });
-    
-    </script>
+        </script>
 
     <!-- Javascript -->
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>

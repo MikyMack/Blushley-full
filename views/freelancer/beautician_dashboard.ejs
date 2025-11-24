@@ -1513,6 +1513,12 @@
         }
     
         function setupEventListeners() {
+            safeAddEventListener('#mobileMenuToggle', 'click', function() {
+            const sidebar = document.getElementById('sidebarNavigation');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-hidden');
+            }
+        });
             safeAddEventListener('#edit-profile-btn', 'click', enterProfileEditMode);
             safeAddEventListener('#save-profile-btn', 'click', saveProfile);
             safeAddEventListener('#cancel-profile-btn', 'click', exitProfileEditMode);

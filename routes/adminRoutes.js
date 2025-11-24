@@ -4,6 +4,9 @@ const router = express.Router();
 const Freelancer = require('../models/Freelancer');
 const { isAdmin } = require("../middlewares/auth");
 const FreelancerBooking = require('../models/FreelancerBooking');
+const Category = require('../models/Category');
+const SubCategory = require('../models/SubCategory');
+const ChildCategory = require('../models/ChildCategory');
 
 router.get('/adminLogin', (req, res) => {
     res.render('admin/admin_login');
@@ -23,7 +26,7 @@ router.get('/blogs', (req, res) => {
 
 
 
-router.get('/bookings', async (req, res) => {
+router.get('/bookings',isAdmin, async (req, res) => {
     try {
         const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
         const limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
@@ -68,8 +71,28 @@ router.get('/bookings', async (req, res) => {
     }
 });
 
-router.get('/categories', (req, res) => {
-    res.render('admin/admin_categories');
+
+
+router.get('/categories',isAdmin, async (req, res) => {
+    try {
+        const categories = await Category.find({}).lean();
+        const subcategories = await SubCategory.find({}).lean();
+        const childcategories = await ChildCategory.find({}).lean();
+
+        res.render('admin/admin_categories', {
+            categories,
+            subcategories,
+            childcategories
+        });
+    } catch (err) {
+        console.error('Error loading categories:', err);
+        res.status(500).render('admin/admin_categories', {
+            categories: [],
+            subcategories: [],
+            childcategories: [],
+            error: 'Failed to load category data'
+        });
+    }
 });
 
 

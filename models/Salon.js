@@ -37,6 +37,14 @@ const DailyAvailabilitySchema = new mongoose.Schema({
   }]
 });
 
+/* ---- Review ---- */
+const ReviewSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  rating: { type: Number, min: 1, max: 5, required: true },
+  comment: { type: String },
+  createdAt: { type: Date, default: Date.now }
+}, { _id: true });
+
 /* ---- Main Salon ---- */
 const SalonSchema = new mongoose.Schema({
 
@@ -63,8 +71,19 @@ const SalonSchema = new mongoose.Schema({
   googleMapLink: String,
 
   description: String,
-  images: [String],
-
+  images: {
+    type: [String],
+    validate: [arr => arr.length <= 5, 'Maximum 5 images allowed']
+  },
+  serviceMode: {
+    inSalon: { type: Boolean, default: true },
+    homeService: { type: Boolean, default: false },
+    homeServiceRadiusKm: { type: Number, default: 0 },
+    homeServiceExtraCharge: { type: Number, default: 0 }
+  },
+  
+  totalBookings: { type: Number, default: 0 },
+  totalEarnings: { type: Number, default: 0 },
   // BOOKING SYSTEM
   availability: [DailyAvailabilitySchema],
   slotDurationMinutes: { type: Number, default: 30 },
@@ -80,6 +99,9 @@ const SalonSchema = new mongoose.Schema({
 
   staff: [SalonStaffSchema],
 
+  // REVIEWS
+  reviews: [ReviewSchema],
+
   status: {
     type: String,
     enum: ['active', 'inactive', 'disabled'],
@@ -93,7 +115,6 @@ const SalonSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-/* PASSWORD COMPARISON METHOD */
 SalonSchema.methods.comparePassword = function (password) {
   return bcrypt.compare(password, this.passwordHash);
 };

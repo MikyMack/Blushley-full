@@ -1099,7 +1099,7 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar-navigation" id="sidebarNavigation">
             <div class="brand-logo">
-                <img style="background-color: white; padding: 5px; height: 56px; border-radius: 50px;" src="images/logo/blushley-png-without-shade.png" alt="">
+                <img style="background-color: white; padding: 5px; height: 56px; border-radius: 50px;" src="/images/logo/blushley-png-without-shade.png" alt="Blushley">
                 <h1>Blushley</h1>
             </div>
             <ul class="nav-menu">
@@ -1111,7 +1111,6 @@
                     <i class="fas fa-calendar-alt"></i>
                     <span>Appointments</span>
                 </li>
-
                 <li class="nav-item" data-page="earnings">
                     <i class="fas fa-chart-line"></i>
                     <span>Earnings</span>
@@ -1119,6 +1118,12 @@
                 <li class="nav-item" data-page="profile">
                     <i class="fas fa-user-circle"></i>
                     <span>Salon Profile</span>
+                </li>
+                <li class="nav-item">
+                    <a href="/logout" style="display: flex; align-items: center; color: inherit; text-decoration: none;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span style="margin-left: 8px;">Logout</span>
+                    </a>
                 </li>
             </ul>
         </nav>
@@ -1129,15 +1134,15 @@
             <div class="header-bar">
                 <div class="page-title">
                     <h2 id="current-page-title">Salon Dashboard</h2>
-                    <p id="current-page-description">Welcome back, Sarah! Here's your salon business overview.</p>
+                    <p id="current-page-description">Welcome back! Here's your salon business overview.</p>
                 </div>
                 <div class="user-profile">
                     <div class="user-avatar">
-                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah">
+                        <img src="https://ui-avatars.com/api/?name=<%= salon.name %>&background=6366f1&color=fff" alt="<%= salon.name %>">
                     </div>
                     <div class="user-info">
-                        <h4>Sarah Johnson</h4>
-                        <p>Salon Manager</p>
+                        <h4><%= salon.name %></h4>
+                        <p>Salon Owner</p>
                     </div>
                 </div>
             </div>
@@ -1150,35 +1155,35 @@
                         <div class="card-icon primary">
                             <i class="fas fa-calendar-check"></i>
                         </div>
-                        <div class="card-value">24</div>
+                        <div class="card-value"><%= bookingStats.today %></div>
                         <div class="card-label">Today's Appointments</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon success">
                             <i class="fas fa-users"></i>
                         </div>
-                        <div class="card-value">1,248</div>
-                        <div class="card-label">Total Clients</div>
+                        <div class="card-value"><%= bookingStats.total %></div>
+                        <div class="card-label">Total Bookings</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon warning">
                             <i class="fas fa-rupee-sign"></i>
                         </div>
-                        <div class="card-value">₹42,850</div>
-                        <div class="card-label">Monthly Earnings</div>
+                        <div class="card-value">₹<%= earnings.totalSalonEarnings.toLocaleString() %></div>
+                        <div class="card-label">Total Earnings</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon danger">
                             <i class="fas fa-star"></i>
                         </div>
-                        <div class="card-value">4.8</div>
+                        <div class="card-value"><%= salon.reviews && salon.reviews.length > 0 ? (salon.reviews.reduce((acc, review) => acc + review.rating, 0) / salon.reviews.length).toFixed(1) : '0.0' %></div>
                         <div class="card-label">Average Rating</div>
                     </div>
                 </div>
 
                 <!-- Dashboard Sections -->
                 <div class="dashboard-sections">
-                    <!-- Recent Appointments -->
+                    <!-- Today's Appointments -->
                     <div class="section-card">
                         <div class="section-header">
                             <h3 class="section-title">Today's Appointments</h3>
@@ -1197,73 +1202,73 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <% todaysBookings.forEach(booking => { %>
                                     <tr>
-                                        <td>Emily Johnson</td>
-                                        <td>Haircut & Color</td>
-                                        <td>9:00 AM</td>
-                                        <td>
+                                        <td data-label="Client"><%= booking.user.name %></td>
+                                        <td data-label="Service">
+                                            <% if (booking.services && booking.services.length > 0) { %>
+                                                <%= booking.services[0].serviceName %>
+                                                <% if (booking.services.length > 1) { %> +<%= booking.services.length - 1 %> more<% } %>
+                                            <% } %>
+                                        </td>
+                                        <td data-label="Time"><%= booking.bookingTime %></td>
+                                        <td data-label="Duration">
                                             <div class="duration-input">
-                                                <input type="number" value="90" min="15" step="15">
+                                                <input type="number" value="<%= booking.services ? booking.services.reduce((total, service) => total + (service.durationMinutes || 0), 0) : 0 %>" min="15" step="15">
                                                 <span>mins</span>
                                             </div>
                                         </td>
-                                        <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                        <td>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-001">Details</button>
+                                        <td data-label="Status">
+                                            <span class="status-badge status-<%= booking.status %>">
+                                                <%= booking.status.replace(/_/g, ' ') %>
+                                            </span>
+                                        </td>
+                                        <td data-label="Actions">
+                                            <button class="action-button details-button view-appointment-details-btn" data-id="<%= booking._id %>">Details</button>
                                         </td>
                                     </tr>
+                                    <% }); %>
+                                    <% if (todaysBookings.length === 0) { %>
                                     <tr>
-                                        <td>Michael Brown</td>
-                                        <td>Beard Trim</td>
-                                        <td>10:30 AM</td>
-                                        <td>
-                                            <div class="duration-input">
-                                                <input type="number" value="30" min="15" step="15">
-                                                <span>mins</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge status-pending">Pending</span></td>
-                                        <td>
-                                            <button class="action-button confirm-button confirm-appointment-btn" data-id="APP-002">Confirm</button>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-002">Details</button>
-                                        </td>
+                                        <td colspan="6" style="text-align: center; color: #64748b;">No appointments today</td>
                                     </tr>
-                                    <tr>
-                                        <td>Sophia Williams</td>
-                                        <td>Hair Treatment</td>
-                                        <td>11:30 AM</td>
-                                        <td>
-                                            <div class="duration-input">
-                                                <input type="number" value="60" min="15" step="15">
-                                                <span>mins</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                        <td>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-003">Details</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>James Miller</td>
-                                        <td>Haircut</td>
-                                        <td>1:00 PM</td>
-                                        <td>
-                                            <div class="duration-input">
-                                                <input type="number" value="45" min="15" step="15">
-                                                <span>mins</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge status-completed">Completed</span></td>
-                                        <td>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-004">Details</button>
-                                        </td>
-                                    </tr>
+                                    <% } %>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                 
+                    <!-- Popular Services -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">Popular Services</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Service Name</th>
+                                        <th>Bookings Count</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% popularServices.forEach(service => { %>
+                                    <tr>
+                                        <td data-label="Service Name"><%= service[0] %></td>
+                                        <td data-label="Bookings Count"><%= service[1] %></td>
+                                        <td data-label="Revenue">₹<%= (service[1] * 500).toLocaleString() %></td>
+                                    </tr>
+                                    <% }); %>
+                                    <% if (popularServices.length === 0) { %>
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; color: #64748b;">No service data available</td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1271,10 +1276,7 @@
             <div class="page-content" id="appointments-page">
                 <div class="section-card">
                     <div class="section-header">
-                        <h3 class="section-title">Appointment Management</h3>
-                        <button class="action-button add-button" id="add-appointment-btn">
-                            <i class="fas fa-plus"></i> New Appointment
-                        </button>
+                        <h3 class="section-title">All Appointments</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -1284,102 +1286,49 @@
                                     <th>Client</th>
                                     <th>Service</th>
                                     <th>Time</th>
-                                    <th>Duration</th>
-                                    <th>Stylist</th>
+                                    <th>Amount</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <% allBookings.forEach(booking => { %>
                                 <tr>
-                                    <td>Oct 15, 2023</td>
-                                    <td>Emily Johnson</td>
-                                    <td>Haircut & Color</td>
-                                    <td>9:00 AM</td>
-                                    <td>
-                                        <div class="duration-input">
-                                            <input type="number" value="90" min="15" step="15">
-                                            <span>mins</span>
-                                        </div>
+                                    <td data-label="Date"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
+                                    <td data-label="Client"><%= booking.user.name %></td>
+                                    <td data-label="Service">
+                                        <% if (booking.services && booking.services.length > 0) { %>
+                                            <%= booking.services[0].serviceName %>
+                                            <% if (booking.services.length > 1) { %> +<%= booking.services.length - 1 %> more<% } %>
+                                        <% } %>
                                     </td>
-                                    <td>Sarah</td>
-                                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                    <td>
-                                        <div style="display: flex; gap: 8px;">
-                                            <button class="action-button edit-button update-appointment-btn" data-id="APP-001">Update</button>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-001">Details</button>
+                                    <td data-label="Time"><%= booking.bookingTime %></td>
+                                    <td data-label="Amount">₹<%= (booking.paymentBreakdown?.customerPaid || 0).toLocaleString() %></td>
+                                    <td data-label="Status">
+                                        <span class="status-badge status-<%= booking.status %>">
+                                            <%= booking.status.replace(/_/g, ' ') %>
+                                        </span>
+                                    </td>
+                                    <td data-label="Actions">
+                                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                            <% if (booking.status === 'pending') { %>
+                                                <button class="action-button confirm-button confirm-appointment-btn" data-id="<%= booking._id %>">Confirm</button>
+                                            <% } %>
+                                            <button class="action-button details-button view-appointment-details-btn" data-id="<%= booking._id %>">Details</button>
                                         </div>
                                     </td>
                                 </tr>
+                                <% }); %>
+                                <% if (allBookings.length === 0) { %>
                                 <tr>
-                                    <td>Oct 15, 2023</td>
-                                    <td>Michael Brown</td>
-                                    <td>Beard Trim</td>
-                                    <td>10:30 AM</td>
-                                    <td>
-                                        <div class="duration-input">
-                                            <input type="number" value="30" min="15" step="15">
-                                            <span>mins</span>
-                                        </div>
-                                    </td>
-                                    <td>Sarah</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td>
-                                        <div style="display: flex; gap: 8px;">
-                                            <button class="action-button confirm-button confirm-appointment-btn" data-id="APP-002">Confirm</button>
-                                            <button class="action-button edit-button update-appointment-btn" data-id="APP-002">Update</button>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-002">Details</button>
-                                        </div>
-                                    </td>
+                                    <td colspan="7" style="text-align: center; color: #64748b;">No appointments found</td>
                                 </tr>
-                                <tr>
-                                    <td>Oct 15, 2023</td>
-                                    <td>Sophia Williams</td>
-                                    <td>Hair Treatment</td>
-                                    <td>11:30 AM</td>
-                                    <td>
-                                        <div class="duration-input">
-                                            <input type="number" value="60" min="15" step="15">
-                                            <span>mins</span>
-                                        </div>
-                                    </td>
-                                    <td>Mike</td>
-                                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                    <td>
-                                        <div style="display: flex; gap: 8px;">
-                                            <button class="action-button edit-button update-appointment-btn" data-id="APP-003">Update</button>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-003">Details</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Oct 14, 2023</td>
-                                    <td>James Miller</td>
-                                    <td>Haircut</td>
-                                    <td>1:00 PM</td>
-                                    <td>
-                                        <div class="duration-input">
-                                            <input type="number" value="45" min="15" step="15">
-                                            <span>mins</span>
-                                        </div>
-                                    </td>
-                                    <td>Sarah</td>
-                                    <td><span class="status-badge status-completed">Completed</span></td>
-                                    <td>
-                                        <div style="display: flex; gap: 8px;">
-                                            <button class="action-button confirm-button" disabled>Completed</button>
-                                            <button class="action-button details-button view-appointment-details-btn" data-id="APP-004">Details</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
-            <!-- Clients Page -->
-       
 
             <!-- Earnings Page -->
             <div class="page-content" id="earnings-page">
@@ -1388,80 +1337,59 @@
                         <div class="card-icon primary">
                             <i class="fas fa-rupee-sign"></i>
                         </div>
-                        <div class="card-value">₹3,840</div>
-                        <div class="card-label">This Month</div>
+                        <div class="card-value">₹<%= earnings.totalSalonEarnings.toLocaleString() %></div>
+                        <div class="card-label">Total Earnings</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon success">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <div class="card-value">₹42,150</div>
-                        <div class="card-label">This Year</div>
+                        <div class="card-value"><%= earnings.totalOrders %></div>
+                        <div class="card-label">Completed Orders</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon warning">
                             <i class="fas fa-user-clock"></i>
                         </div>
-                        <div class="card-value">128</div>
-                        <div class="card-label">Services This Month</div>
+                        <div class="card-value"><%= completedBookings.length %></div>
+                        <div class="card-label">Services Completed</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon danger">
                             <i class="fas fa-percentage"></i>
                         </div>
-                        <div class="card-value">18%</div>
-                        <div class="card-label">Growth from Last Month</div>
+                        <div class="card-value">
+                            <% const completionRate = allBookings.length > 0 ? ((completedBookings.length / allBookings.length) * 100).toFixed(0) : 0 %>
+                            <%= completionRate %>%
+                        </div>
+                        <div class="card-label">Completion Rate</div>
                     </div>
                 </div>
                 
                 <div class="section-card">
                     <div class="section-header">
-                        <h3 class="section-title">Salary Breakdown</h3>
+                        <h3 class="section-title">Earnings Breakdown</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Base Salary</th>
-                                    <th>Commission</th>
-                                    <th>Tips</th>
-                                    <th>Bonus</th>
-                                    <th>Total</th>
+                                    <th>Metric</th>
+                                    <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>October 2023</td>
-                                    <td>₹2,500</td>
-                                    <td>₹890</td>
-                                    <td>₹350</td>
-                                    <td>₹100</td>
-                                    <td>₹3,840</td>
+                                    <td data-label="Metric">Total Customer Payments</td>
+                                    <td data-label="Amount">₹<%= earnings.totalCustomerPaid.toLocaleString() %></td>
                                 </tr>
                                 <tr>
-                                    <td>September 2023</td>
-                                    <td>₹2,500</td>
-                                    <td>₹720</td>
-                                    <td>₹280</td>
-                                    <td>₹0</td>
-                                    <td>₹3,500</td>
+                                    <td data-label="Metric">Salon Earnings</td>
+                                    <td data-label="Amount">₹<%= earnings.totalSalonEarnings.toLocaleString() %></td>
                                 </tr>
                                 <tr>
-                                    <td>August 2023</td>
-                                    <td>₹2,500</td>
-                                    <td>₹810</td>
-                                    <td>₹310</td>
-                                    <td>₹50</td>
-                                    <td>₹3,670</td>
-                                </tr>
-                                <tr>
-                                    <td>July 2023</td>
-                                    <td>₹2,500</td>
-                                    <td>₹690</td>
-                                    <td>₹260</td>
-                                    <td>₹0</td>
-                                    <td>₹3,450</td>
+                                    <td data-label="Metric">Completed Orders</td>
+                                    <td data-label="Amount"><%= earnings.totalOrders %></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1474,123 +1402,231 @@
                 <div class="dashboard-sections">
                     <div class="section-card">
                         <div class="profile-header">
-                            <div class="profile-avatar">
-                                <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Glamour Studio">
-                            </div>
+                          
                             <div class="profile-info">
-                                <h3>Glamour Studio</h3>
-                                <p>Premium Hair & Beauty Salon</p>
-                                <p>Member since January 2020</p>
+                                <h3><%= salon.name %></h3>
+                                <p><%= salon.salonType || 'Beauty Salon' %></p>
+                                <p>Member since <%= new Date(salon.createdAt).toLocaleDateString() %></p>
                                 <div class="profile-stats">
                                     <div class="profile-stat">
-                                        <div class="stat-value">4.5</div>
+                                        <div class="stat-value">
+                                            <%= salon.reviews && salon.reviews.length > 0 ? (salon.reviews.reduce((acc, review) => acc + review.rating, 0) / salon.reviews.length).toFixed(1) : '0.0' %>
+                                        </div>
                                         <div class="stat-label">Customer Rating</div>
                                     </div>
                                     <div class="profile-stat">
-                                        <div class="stat-value">1,248</div>
-                                        <div class="stat-label">Total Clients</div>
+                                        <div class="stat-value"><%= bookingStats.total %></div>
+                                        <div class="stat-label">Total Bookings</div>
                                     </div>
                                     <div class="profile-stat">
-                                        <div class="stat-value">₹42,850</div>
-                                        <div class="stat-label">Monthly Revenue</div>
+                                        <div class="stat-value">₹<%= earnings.totalSalonEarnings.toLocaleString() %></div>
+                                        <div class="stat-label">Total Revenue</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <% if (salon.images && salon.images.length > 1) { %>
+                            <div class="profile-image-gallery" style="margin:1rem 0;display:flex;gap:8px;">
+                                <% salon.images.forEach((img, idx) => { if(idx>0){ %>
+                                    <img src="<%= img %>" alt="Salon image <%= idx+1 %>" style="width:65px;height:65px;object-fit:cover;border-radius:6px;">
+                                <% } }) %>
+                            </div>
+                        <% } %>
                         <div class="section-header">
                             <h3 class="section-title">Salon Information</h3>
                             <button class="action-button edit-btn" id="edit-salon-btn">Edit Salon</button>
                         </div>
                         <div class="profile-details">
                             <div class="profile-field">
+                                <span class="field-label">Username</span>
+                                <span class="field-value"><%= salon.username %></span>
+                            </div>
+                            <div class="profile-field">
                                 <span class="field-label">Salon Name</span>
-                                <span class="field-value" id="salon-name">Glamour Studio</span>
+                                <span class="field-value" id="salon-name"><%= salon.name %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Salon Type</span>
+                                <span class="field-value"><%= salon.salonType || 'Not specified' %></span>
                             </div>
                             <div class="profile-field">
                                 <span class="field-label">Owner Name</span>
-                                <span class="field-value" id="owner-name">Sarah Johnson</span>
+                                <span class="field-value" id="owner-name"><%= salon.ownerName || 'Not specified' %></span>
                             </div>
                             <div class="profile-field">
                                 <span class="field-label">Email Address</span>
-                                <span class="field-value" id="email-address">info@glamourstudio.com</span>
+                                <span class="field-value" id="email-address"><%= salon.email || 'Not specified' %></span>
                             </div>
                             <div class="profile-field">
                                 <span class="field-label">Phone Number</span>
-                                <span class="field-value" id="phone-number">(555) 123-4567</span>
+                                <span class="field-value" id="phone-number"><%= salon.phone || 'Not specified' %></span>
                             </div>
                             <div class="profile-field">
                                 <span class="field-label">Business Address</span>
-                                <span class="field-value" id="business-address">123 Beauty Street, New York, NY</span>
+                                <span class="field-value" id="business-address">
+                                    <% if(salon.address) { %>
+                                        <%= salon.address.line1 || '' %>
+                                        <% if (salon.address.city) { %>, <%= salon.address.city %><% } %>
+                                        <% if (salon.address.state) { %>, <%= salon.address.state %><% } %>
+                                        <% if (salon.address.pincode) { %> - <%= salon.address.pincode %><% } %>
+                                        <% if (salon.address.country) { %>, <%= salon.address.country %><% } %>
+                                    <% } else { %>
+                                        Not specified
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Google Map Link</span>
+                                <span class="field-value">
+                                    <% if (salon.googleMapLink) { %>
+                                        <a href="<%= salon.googleMapLink %>" target="_blank">View on Map</a>
+                                    <% } else { %>
+                                        Not specified
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Description</span>
+                                <span class="field-value"><%= salon.description || 'Not specified' %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Service Mode</span>
+                                <span class="field-value" id="service-mode">
+                                    <%= salon.serviceMode ? 
+                                        `${salon.serviceMode.inSalon ? 'In-Salon' : ''}${salon.serviceMode.inSalon && salon.serviceMode.homeService ? ', ' : ''}${salon.serviceMode.homeService ? 'Home Service' : ''}` 
+                                        : 'In-Salon' %>
+                                    <% if(salon.serviceMode && salon.serviceMode.homeService){ %>
+                                        <span style="color:#888;font-size:13px;">
+                                            (Radius: <%= salon.serviceMode.homeServiceRadiusKm %> km, Extra charge: ₹<%= salon.serviceMode.homeServiceExtraCharge %>)
+                                        </span>
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Total Bookings</span>
+                                <span class="field-value"><%= salon.totalBookings || 0 %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Total Earnings</span>
+                                <span class="field-value">₹<%= salon.totalEarnings ? salon.totalEarnings.toLocaleString() : '0' %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Closed Dates</span>
+                                <span class="field-value">
+                                    <% if(salon.closedDates && salon.closedDates.length){ %>
+                                        <%= salon.closedDates.map(d => new Date(d).toLocaleDateString()).join(', ') %>
+                                    <% } else { %>
+                                        None
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Slot Duration</span>
+                                <span class="field-value"><%= salon.slotDurationMinutes || 30 %> minutes</span>
                             </div>
                             <div class="profile-field">
                                 <span class="field-label">Services Offered</span>
-                                <span class="field-value" id="services-offered">Haircuts, Coloring, Styling, Manicure, Pedicure, Facials, Waxing</span>
+                                <span class="field-value" id="services-offered">
+                                    <% if (salon.services && salon.services.length) { %>
+                                        <ul style="margin:0;padding-left:18px;">
+                                            <% salon.services.forEach(function(s){ %>
+                                                <li>
+                                                    <%= s.serviceName %>
+                                                    (₹<%= s.price %>, <%= s.durationMinutes %> min)
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %>
+                                        No services added
+                                    <% } %>
+                                </span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Team Size</span>
-                                <span class="field-value" id="team-size">8 professionals</span>
+                                <span class="field-label">Staff</span>
+                                <span class="field-value">
+                                    <% if (salon.staff && salon.staff.length) { %>
+                                        <ul style="margin:0; padding-left:18px;">
+                                            <% salon.staff.forEach(function(staff) { %>
+                                                <li>
+                                                    <strong><%= staff.name %></strong>
+                                                    (<%= staff.role %>)
+                                                    <% if (staff.phone) { %> - <%= staff.phone %><% } %>
+                                                    <% if (staff.active === false) { %> - <span style="color:#b00;">Inactive</span><% } %>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %>
+                                        No staff
+                                    <% } %>
+                                </span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Years in Business</span>
-                                <span class="field-value" id="years-business">7 years</span>
+                                <span class="field-label">Availability</span>
+                                <span class="field-value">
+                                    <% if (salon.availability && salon.availability.length) { %>
+                                        <ul style="margin:0; padding-left:18px;">
+                                            <% const weekdayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; %>
+                                            <% salon.availability.forEach(function(day) { %>
+                                                <li>
+                                                    <strong><%= weekdayNames[day.dayOfWeek] %>:</strong>
+                                                    <% if(day.isOpen){ %>
+                                                        <%= day.openingTime %> - <%= day.closingTime %>
+                                                        <% if(day.slots && day.slots.length){ %>
+                                                            | Slots: <%= day.slots.length %>
+                                                        <% } %>
+                                                        <% if(day.breakSlots && day.breakSlots.length){ %>
+                                                            | Breaks: 
+                                                            <%= day.breakSlots.map(b => b.start + '-' + b.end).join(', ') %>
+                                                        <% } %>
+                                                    <% } else { %>Closed<% } %>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %>
+                                        Not specified
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Reviews</span>
+                                <span class="field-value">
+                                    <% if (salon.reviews && salon.reviews.length) { %>
+                                        <ul style="margin:0; padding-left:18px;">
+                                            <% salon.reviews.slice(0,3).forEach(function(r) { %>
+                                                <li>
+                                                    <strong>★ <%= r.rating %></strong>
+                                                    <span style="color:#888;font-size:12px;">
+                                                        <%= r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '' %>
+                                                    </span>
+                                                    <br>
+                                                    <%= r.comment || '' %>
+                                                </li>
+                                            <% }) %>
+                                            <% if (salon.reviews.length > 3) { %>
+                                                <li>...more reviews</li>
+                                            <% } %>
+                                        </ul>
+                                    <% } else { %>
+                                        No reviews
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Status</span>
+                                <span class="field-value"><%= salon.status %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Created At</span>
+                                <span class="field-value"><%= salon.createdAt ? new Date(salon.createdAt).toLocaleString() : 'Not specified' %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Updated At</span>
+                                <span class="field-value"><%= salon.updatedAt ? new Date(salon.updatedAt).toLocaleString() : 'Not specified' %></span>
                             </div>
                         </div>
                         <div class="profile-actions" id="profile-actions" style="display: none;">
                             <button class="cancel-btn" id="cancel-salon-btn">Cancel</button>
                             <button class="save-btn" id="save-salon-btn">Save Changes</button>
-                        </div>
-                    </div>
-
-                    <div class="section-card">
-                        <div class="section-header">
-                            <h3 class="section-title">Salon Statistics</h3>
-                        </div>
-                        <div class="profile-details">
-                            <div class="profile-field">
-                                <span class="field-label">Total Appointments</span>
-                                <span class="field-value">428</span>
-                            </div>
-                            <div class="profile-field">
-                                <span class="field-label">Active Clients</span>
-                                <span class="field-value">1,248</span>
-                            </div>
-                            <div class="profile-field">
-                                <span class="field-label">Services Offered</span>
-                                <span class="field-value">12</span>
-                            </div>
-                            <div class="profile-field">
-                                <span class="field-label">Team Members</span>
-                                <span class="field-value">8</span>
-                            </div>
-                            <div class="profile-field">
-                                <span class="field-label">Customer Rating</span>
-                                <span class="field-value">4.5/5.0</span>
-                            </div>
-                            <div class="profile-field">
-                                <span class="field-label">Monthly Revenue</span>
-                                <span class="field-value">₹42,850</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Available Slots Section -->
-                    <div class="section-card">
-                        <div class="section-header">
-                            <h3 class="section-title">Available Time Slots</h3>
-                            <button class="action-button edit-btn" id="edit-slots-btn">Edit Slots</button>
-                        </div>
-                        <div class="available-slots-container">
-                            <div class="form-group">
-                                <label class="form-label">Select Date</label>
-                                <input type="date" class="form-input" id="slots-date" value="2023-10-15">
-                            </div>
-                            <div class="slots-grid" id="slots-grid">
-                                <!-- Available slots will be populated by JavaScript -->
-                            </div>
-                        </div>
-                        <div class="profile-actions" id="slots-actions" style="display: none; margin-top: 20px;">
-                            <button class="cancel-btn" id="cancel-slots-btn">Cancel</button>
-                            <button class="save-btn" id="save-slots-btn">Save Slots</button>
                         </div>
                     </div>
                 </div>
@@ -1602,749 +1638,377 @@
     <div class="modal-overlay" id="appointment-details-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">Appointment Details - <span id="appointment-details-id"></span></h3>
+                <h3 class="modal-title">Appointment Details</h3>
                 <button class="modal-close" id="close-appointment-details-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="order-details-container">
-                    <div class="client-info-section">
-                        <h4 class="section-subtitle">Client Information</h4>
-                        <div class="client-details">
-                            <div class="client-field">
-                                <span class="field-name">Full Name:</span>
-                                <span class="field-value" id="client-name">Emily Johnson</span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Email:</span>
-                                <span class="field-value" id="client-email">emily.johnson@example.com</span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Phone:</span>
-                                <span class="field-value" id="client-phone">+91 98765 43210</span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Preferred Contact:</span>
-                                <span class="field-value" id="client-contact">Phone</span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Appointment Date:</span>
-                                <span class="field-value" id="appointment-date">October 15, 2023</span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Appointment Time:</span>
-                                <span class="field-value" id="appointment-time">9:00 AM</span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Appointment Status:</span>
-                                <span class="field-value"><span class="status-badge status-confirmed">Confirmed</span></span>
-                            </div>
-                            <div class="client-field">
-                                <span class="field-name">Stylist:</span>
-                                <span class="field-value" id="stylist-name">Sarah Johnson</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="order-items-section">
-                        <h4 class="section-subtitle">Service Details</h4>
-                        <div class="order-items">
-                            <div class="order-item">
-                                <div class="item-details">
-                                    <div class="item-name">Haircut & Color</div>
-                                    <div class="item-category">Hair Service</div>
-                                    <div class="item-price">₹1,250</div>
-                                </div>
-                                <div class="item-quantity">
-                                    <span class="quantity-badge">1</span>
-                                </div>
-                            </div>
-                            <div class="order-item">
-                                <div class="item-details">
-                                    <div class="item-name">Scalp Treatment</div>
-                                    <div class="item-category">Treatment</div>
-                                    <div class="item-price">₹450</div>
-                                </div>
-                                <div class="item-quantity">
-                                    <span class="quantity-badge">1</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-summary">
-                            <div class="summary-row">
-                                <span>Service Duration:</span>
-                                <span>90 minutes</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Subtotal:</span>
-                                <span>₹1,700</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Tax (5%):</span>
-                                <span>₹85</span>
-                            </div>
-                            <div class="summary-row summary-total">
-                                <span>Total:</span>
-                                <span>₹1,785</span>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 20px;">
-                            <h4 class="section-subtitle">Client Notes</h4>
-                            <p style="padding: 15px; background-color: white; border-radius: 8px; margin-top: 10px;">
-                                Client requested a balayage technique with caramel tones. Has sensitive scalp, please use gentle products.
-                            </p>
-                        </div>
-                    </div>
+                <div class="order-details-container" id="appointment-details-content">
+                    <!-- Dynamic content will be loaded here -->
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="action-button secondary-button" id="close-appointment-details-btn">Close</button>
-                <button class="action-button edit-button">Edit Appointment</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Update Appointment Modal -->
-    <div class="modal-overlay" id="update-appointment-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Update Appointment - <span id="update-appointment-id"></span></h3>
-                <button class="modal-close" id="close-update-appointment-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Select Date</label>
-                    <input type="date" class="form-input" id="update-appointment-date" value="2023-10-15">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Available Time Slots</label>
-                    <div class="slots-grid" id="update-slots-grid">
-                        <!-- Available slots will be populated by JavaScript -->
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Appointment Status</label>
-                    <select class="form-select" id="update-appointment-status">
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Service Duration (minutes)</label>
-                    <input type="number" class="form-input" id="update-appointment-duration" min="15" step="15" value="90">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Stylist</label>
-                    <select class="form-select" id="update-appointment-stylist">
-                        <option value="sarah">Sarah Johnson</option>
-                        <option value="mike">Mike Williams</option>
-                        <option value="lisa">Lisa Brown</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Client Notes</label>
-                    <textarea class="form-input form-textarea" id="update-appointment-notes">Client requested a balayage technique with caramel tones. Has sensitive scalp, please use gentle products.</textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="action-button secondary-button" id="close-update-appointment-btn">Cancel</button>
-                <button class="action-button confirm-button" id="save-update-appointment-btn">Save Changes</button>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize sidebar state for small screens
-            const sidebarNavigation = document.getElementById('sidebarNavigation');
-            const mainContentArea = document.getElementById('mainContentArea');
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const mobileIcon = mobileMenuToggle.querySelector('i');
+      // --- UPDATED: Logic now handled by updated controller at salonController.js (294–394) ---
+      document.addEventListener('DOMContentLoaded', function () {
+        // Sidebar and responsive
+        const sidebarNavigation = document.getElementById('sidebarNavigation');
+        const mainContentArea = document.getElementById('mainContentArea');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileIcon = mobileMenuToggle ? mobileMenuToggle.querySelector('i') : null;
 
-            function applyMobileLayoutState() {
-                if (window.innerWidth <= 992) {
-                    // Hide sidebar and make content full-width by default on small screens
-                    sidebarNavigation.classList.add('mobile-hidden');
-                    mainContentArea.classList.add('full-width');
-                    mobileIcon.className = 'fas fa-bars';
-                } else {
-                    // Desktop view
-                    sidebarNavigation.classList.remove('mobile-hidden');
-                    mainContentArea.classList.remove('full-width');
-                    mobileIcon.className = 'fas fa-bars';
-                }
-            }
+        function setSidebarState() {
+          if (!sidebarNavigation || !mainContentArea || !mobileIcon) return;
+          if (window.innerWidth <= 992) {
+            sidebarNavigation.classList.add('mobile-hidden');
+            mainContentArea.classList.add('full-width');
+            mobileIcon.className = 'fas fa-bars';
+          } else {
+            sidebarNavigation.classList.remove('mobile-hidden');
+            mainContentArea.classList.remove('full-width');
+            mobileIcon.className = 'fas fa-bars';
+          }
+        }
+        setSidebarState();
+        window.addEventListener('resize', setSidebarState);
 
-            applyMobileLayoutState();
-            window.addEventListener('resize', applyMobileLayoutState);
+        if (mobileMenuToggle) {
+          mobileMenuToggle.addEventListener('click', function () {
+            if (!sidebarNavigation || !mainContentArea) return;
+            sidebarNavigation.classList.toggle('mobile-hidden');
+            mainContentArea.classList.toggle('full-width');
+            const icon = this.querySelector('i');
+            if (!icon) return;
+            icon.className = sidebarNavigation.classList.contains('mobile-hidden') ? 'fas fa-bars' : 'fas fa-times';
+          });
+        }
 
-            // Make data tables responsive by adding data-labels to each cell
-            (function addTableDataLabels() {
-                const tables = document.querySelectorAll('table.data-table');
-                tables.forEach(table => {
-                    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
-                    const rows = table.querySelectorAll('tbody tr');
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll('td');
-                        cells.forEach((cell, idx) => {
-                            const label = headers[idx] || '';
-                            cell.setAttribute('data-label', label);
-                        });
-                    });
-                });
-            })();
-            // Mobile menu toggle
-            // Mobile menu toggle (after initial layout init above)
-            
-            mobileMenuToggle.addEventListener('click', function() {
-                sidebarNavigation.classList.toggle('mobile-hidden');
-                mainContentArea.classList.toggle('full-width');
-                
-                // Change icon based on menu state
-                const icon = this.querySelector('i');
-                if (sidebarNavigation.classList.contains('mobile-hidden')) {
-                    icon.className = 'fas fa-bars';
-                } else {
-                    icon.className = 'fas fa-times';
-                }
+        // Add data-labels for accessibility on tables
+        (function makeTablesResponsive() {
+          const tables = document.querySelectorAll('table.data-table');
+          tables.forEach(table => {
+            const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+            table.querySelectorAll('tbody tr').forEach(row => {
+              row.querySelectorAll('td').forEach((cell, idx) => {
+                cell.setAttribute('data-label', headers[idx] || '');
+              });
             });
-            
-            // Page Navigation
-            const navItems = document.querySelectorAll('.nav-item');
-            const pageContents = document.querySelectorAll('.page-content');
-            const pageTitle = document.getElementById('current-page-title');
-            const pageDescription = document.getElementById('current-page-description');
-            
-            // Page titles and descriptions
-            const pageData = {
-                'dashboard': {
-                    title: 'Salon Dashboard',
-                    description: 'Welcome back, Sarah! Here\'s your salon business overview.'
-                },
-                'appointments': {
-                    title: 'Appointment Management',
-                    description: 'Manage your appointments and client schedules.'
-                },
-                'clients': {
-                    title: 'Client Management',
-                    description: 'View and manage your client information.'
-                },
-                'earnings': {
-                    title: 'Earnings & Salary',
-                    description: 'Track your earnings and salary breakdown.'
-                },
-                'profile': {
-                    title: 'Salon Profile',
-                    description: 'Manage your salon information and settings.'
-                }
-            };
-            
-            // Navigation click handler
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const pageId = this.getAttribute('data-page');
-                    
-                    // Update active nav item
-                    navItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show selected page
-                    pageContents.forEach(page => page.classList.remove('active'));
-                    document.getElementById(`${pageId}-page`).classList.add('active');
-                    
-                    // Update page title and description
-                    pageTitle.textContent = pageData[pageId].title;
-                    pageDescription.textContent = pageData[pageId].description;
-                    
-                    // Close mobile menu on navigation
-                    if (window.innerWidth <= 992) {
-                        sidebarNavigation.classList.add('mobile-hidden');
-                        mainContentArea.classList.add('full-width');
-                        mobileMenuToggle.querySelector('i').className = 'fas fa-bars';
-                    }
-                });
-            });
-            
-            // Appointment Details Modal
-            const appointmentDetailsModal = document.getElementById('appointment-details-modal');
-            const closeAppointmentDetailsModal = document.getElementById('close-appointment-details-modal');
-            const closeAppointmentDetailsBtn = document.getElementById('close-appointment-details-btn');
-            const viewAppointmentDetailsBtns = document.querySelectorAll('.view-appointment-details-btn');
-            const appointmentDetailsId = document.getElementById('appointment-details-id');
-            
-            // Sample appointment data
-            const appointmentDetailsData = {
-                'APP-001': {
-                    clientName: 'Emily Johnson',
-                    clientEmail: 'emily.johnson@example.com',
-                    clientPhone: '+91 98765 43210',
-                    clientContact: 'Phone',
-                    appointmentDate: 'October 15, 2023',
-                    appointmentTime: '9:00 AM',
-                    appointmentStatus: 'confirmed',
-                    stylistName: 'Sarah Johnson',
-                    services: [
-                        { name: 'Haircut & Color', category: 'Hair Service', price: 1250, quantity: 1 },
-                        { name: 'Scalp Treatment', category: 'Treatment', price: 450, quantity: 1 }
-                    ],
-                    duration: 90,
-                    subtotal: 1700,
-                    tax: 85,
-                    total: 1785,
-                    notes: 'Client requested a balayage technique with caramel tones. Has sensitive scalp, please use gentle products.'
-                },
-                'APP-002': {
-                    clientName: 'Michael Brown',
-                    clientEmail: 'michael.brown@example.com',
-                    clientPhone: '+91 98765 43211',
-                    clientContact: 'Email',
-                    appointmentDate: 'October 15, 2023',
-                    appointmentTime: '10:30 AM',
-                    appointmentStatus: 'pending',
-                    stylistName: 'Sarah Johnson',
-                    services: [
-                        { name: 'Beard Trim', category: 'Grooming', price: 350, quantity: 1 }
-                    ],
-                    duration: 30,
-                    subtotal: 350,
-                    tax: 17.5,
-                    total: 367.5,
-                    notes: 'First-time client. Prefers a classic beard shape.'
-                }
-            };
-            
-            // Open appointment details modal
-            viewAppointmentDetailsBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    const appointmentData = appointmentDetailsData[appointmentId] || appointmentDetailsData['APP-001'];
-                    
-                    // Update modal title
-                    appointmentDetailsId.textContent = appointmentId;
-                    
-                    // Update client information
-                    document.getElementById('client-name').textContent = appointmentData.clientName;
-                    document.getElementById('client-email').textContent = appointmentData.clientEmail;
-                    document.getElementById('client-phone').textContent = appointmentData.clientPhone;
-                    document.getElementById('client-contact').textContent = appointmentData.clientContact;
-                    document.getElementById('appointment-date').textContent = appointmentData.appointmentDate;
-                    document.getElementById('appointment-time').textContent = appointmentData.appointmentTime;
-                    document.getElementById('stylist-name').textContent = appointmentData.stylistName;
-                    
-                    // Update appointment status
-                    const statusElement = document.querySelector('#appointment-details-modal .client-field:nth-child(7) .field-value');
-                    statusElement.innerHTML = `<span class="status-badge status-${appointmentData.appointmentStatus}">${appointmentData.appointmentStatus.charAt(0).toUpperCase() + appointmentData.appointmentStatus.slice(1)}</span>`;
-                    
-                    // Update services
-                    const servicesContainer = document.querySelector('#appointment-details-modal .order-items');
-                    servicesContainer.innerHTML = '';
-                    
-                    appointmentData.services.forEach(service => {
-                        const serviceElement = document.createElement('div');
-                        serviceElement.className = 'order-item';
-                        serviceElement.innerHTML = `
-                            <div class="item-details">
-                                <div class="item-name">${service.name}</div>
-                                <div class="item-category">${service.category}</div>
-                                <div class="item-price">₹${service.price}</div>
-                            </div>
-                            <div class="item-quantity">
-                                <span class="quantity-badge">${service.quantity}</span>
-                            </div>
-                        `;
-                        servicesContainer.appendChild(serviceElement);
-                    });
-                    
-                    // Update appointment summary
-                    document.querySelector('#appointment-details-modal .summary-row:nth-child(1) span:last-child').textContent = `${appointmentData.duration} minutes`;
-                    document.querySelector('#appointment-details-modal .summary-row:nth-child(2) span:last-child').textContent = `₹${appointmentData.subtotal}`;
-                    document.querySelector('#appointment-details-modal .summary-row:nth-child(3) span:last-child').textContent = `₹${appointmentData.tax}`;
-                    document.querySelector('#appointment-details-modal .summary-total span:last-child').textContent = `₹${appointmentData.total}`;
-                    
-                    // Update client notes
-                    document.querySelector('#appointment-details-modal p').textContent = appointmentData.notes;
-                    
-                    appointmentDetailsModal.classList.add('active');
-                });
-            });
-            
-            // Close appointment details modal
-            function closeAppointmentDetailsModalFunc() {
-                appointmentDetailsModal.classList.remove('active');
+          });
+        })();
+
+        // Page navigation and meta
+        const navItems = document.querySelectorAll('.nav-item');
+        const pageContents = document.querySelectorAll('.page-content');
+        const pageTitle = document.getElementById('current-page-title');
+        const pageDescription = document.getElementById('current-page-description');
+
+        const pageMeta = {
+          dashboard: {
+            title: 'Salon Dashboard',
+            description: 'Welcome back! Here\'s your salon business overview.'
+          },
+          appointments: {
+            title: 'Appointment Management',
+            description: 'Manage your appointments and client schedules.'
+          },
+          earnings: {
+            title: 'Earnings & Revenue',
+            description: 'Track your earnings and revenue breakdown.'
+          },
+          profile: {
+            title: 'Salon Profile',
+            description: 'Manage your salon information and settings.'
+          }
+        };
+
+        navItems.forEach(item => {
+          item.addEventListener('click', function () {
+            const pageId = this.getAttribute('data-page');
+            navItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            pageContents.forEach(p => p.classList.remove('active'));
+            const showPage = document.getElementById(`${pageId}-page`);
+            if (showPage) showPage.classList.add('active');
+            if (pageTitle && pageDescription && pageMeta[pageId]) {
+              pageTitle.textContent = pageMeta[pageId].title;
+              pageDescription.textContent = pageMeta[pageId].description;
             }
-            
-            closeAppointmentDetailsModal.addEventListener('click', closeAppointmentDetailsModalFunc);
-            closeAppointmentDetailsBtn.addEventListener('click', closeAppointmentDetailsModalFunc);
-            
-            // Salon Profile Management
-            const editSalonBtn = document.getElementById('edit-salon-btn');
-            const saveSalonBtn = document.getElementById('save-salon-btn');
-            const cancelSalonBtn = document.getElementById('cancel-salon-btn');
-            const profileActions = document.getElementById('profile-actions');
-            const profileFields = document.querySelectorAll('#profile-page .profile-field');
-            
-            let originalValues = {};
-            
-            // Enable editing for salon details
-            editSalonBtn.addEventListener('click', function() {
-                // Store original values
-                originalValues = {
-                    salonName: document.getElementById('salon-name').textContent,
-                    ownerName: document.getElementById('owner-name').textContent,
-                    emailAddress: document.getElementById('email-address').textContent,
-                    phoneNumber: document.getElementById('phone-number').textContent,
-                    businessAddress: document.getElementById('business-address').textContent,
-                    servicesOffered: document.getElementById('services-offered').textContent,
-                    teamSize: document.getElementById('team-size').textContent,
-                    yearsBusiness: document.getElementById('years-business').textContent
-                };
-                
-                // Convert fields to editable inputs
-                profileFields.forEach(field => {
-                    const fieldValue = field.querySelector('.field-value');
-                    const fieldId = fieldValue.id;
-                    
-                    if (fieldId) {
-                        const currentValue = fieldValue.textContent;
-                        field.classList.add('editing');
-                        
-                        if (fieldId === 'business-address' || fieldId === 'services-offered') {
-                            fieldValue.innerHTML = `<textarea style="width: 100%; min-height: 80px;">${currentValue}</textarea>`;
-                        } else {
-                            fieldValue.innerHTML = `<input type="text" value="${currentValue}" style="width: 100%;">`;
-                        }
-                    }
-                });
-                
-                // Show save/cancel buttons
-                profileActions.style.display = 'flex';
-                // Hide edit button
-                editSalonBtn.style.display = 'none';
-            });
-            
-            // Save salon changes
-            saveSalonBtn.addEventListener('click', function() {
-                // Collect updated values
-                const updatedValues = {};
-                
-                profileFields.forEach(field => {
-                    const fieldValue = field.querySelector('.field-value');
-                    const fieldId = fieldValue.id;
-                    
-                    if (fieldId) {
-                        const input = fieldValue.querySelector('input, textarea');
-                        updatedValues[fieldId] = input.value;
-                    }
-                });
-                
-                // Update the displayed values
-                for (const [fieldId, value] of Object.entries(updatedValues)) {
-                    document.getElementById(fieldId).textContent = value;
-                }
-                
-                // In a real app, you would save to a database here
-                alert('Salon details updated successfully!');
-                
-                // Exit edit mode
-                exitEditMode();
-            });
-            
-            // Cancel salon editing
-            cancelSalonBtn.addEventListener('click', function() {
-                // Restore original values
-                for (const [fieldId, value] of Object.entries(originalValues)) {
-                    document.getElementById(fieldId).textContent = value;
-                }
-                
-                // Exit edit mode
-                exitEditMode();
-            });
-            
-            // Helper function to exit edit mode
-            function exitEditMode() {
-                profileFields.forEach(field => {
-                    field.classList.remove('editing');
-                });
-                
-                // Hide save/cancel buttons
-                profileActions.style.display = 'none';
-                // Show edit button
-                editSalonBtn.style.display = 'block';
+            if (window.innerWidth <= 992 && sidebarNavigation && mainContentArea && mobileMenuToggle) {
+              sidebarNavigation.classList.add('mobile-hidden');
+              mainContentArea.classList.add('full-width');
+              const icon = mobileMenuToggle.querySelector('i');
+              if (icon) icon.className = 'fas fa-bars';
             }
-            
-            // Duration input handling
-            const durationInputs = document.querySelectorAll('.duration-input input');
-            durationInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    const newDuration = this.value;
-                    // In a real app, you would save this to the database
-                    console.log(`Duration updated to ${newDuration} minutes`);
-                });
-            });
-            
-            // Available Slots Management
-            const editSlotsBtn = document.getElementById('edit-slots-btn');
-            const saveSlotsBtn = document.getElementById('save-slots-btn');
-            const cancelSlotsBtn = document.getElementById('cancel-slots-btn');
-            const slotsActions = document.getElementById('slots-actions');
-            const slotsGrid = document.getElementById('slots-grid');
-            const updateSlotsGrid = document.getElementById('update-slots-grid');
-            const slotsDate = document.getElementById('slots-date');
-            
-            // Sample available slots data
-            const availableSlotsData = {
-                '2023-10-15': {
-                    '9:00 AM': { available: false, appointmentId: 'APP-001' },
-                    '9:30 AM': { available: true },
-                    '10:00 AM': { available: true },
-                    '10:30 AM': { available: false, appointmentId: 'APP-002' },
-                    '11:00 AM': { available: true },
-                    '11:30 AM': { available: false, appointmentId: 'APP-003' },
-                    '12:00 PM': { available: true },
-                    '12:30 PM': { available: true },
-                    '1:00 PM': { available: false, appointmentId: 'APP-004' },
-                    '1:30 PM': { available: true },
-                    '2:00 PM': { available: true },
-                    '2:30 PM': { available: true },
-                    '3:00 PM': { available: true },
-                    '3:30 PM': { available: true },
-                    '4:00 PM': { available: true },
-                    '4:30 PM': { available: true },
-                    '5:00 PM': { available: true }
-                }
-            };
-            
-            // Function to render available slots
-            function renderAvailableSlots(date, gridElement, isEditable = false) {
-                const slots = availableSlotsData[date] || {};
-                gridElement.innerHTML = '';
-                
-                const timeSlots = [
-                    '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
-                    '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM',
-                    '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM'
-                ];
-                
-                timeSlots.forEach(time => {
-                    const slot = slots[time] || { available: true };
-                    const slotElement = document.createElement('div');
-                    slotElement.className = `slot-item ${slot.available ? '' : 'unavailable'} ${isEditable ? 'editable' : ''}`;
-                    
-                    if (isEditable) {
-                        slotElement.innerHTML = `
-                            <div class="slot-time">${time}</div>
-                            <div class="slot-status">${slot.available ? 'Available' : 'Booked'}</div>
-                        `;
-                        
-                        slotElement.addEventListener('click', function() {
-                            if (slot.available) {
-                                slot.available = false;
-                                slotElement.classList.add('unavailable');
-                                slotElement.querySelector('.slot-status').textContent = 'Booked';
-                            } else {
-                                slot.available = true;
-                                slotElement.classList.remove('unavailable');
-                                slotElement.querySelector('.slot-status').textContent = 'Available';
-                            }
-                        });
-                    } else {
-                        slotElement.innerHTML = `
-                            <div class="slot-time">${time}</div>
-                            <div class="slot-status">${slot.available ? 'Available' : 'Booked'}</div>
-                        `;
-                    }
-                    
-                    gridElement.appendChild(slotElement);
-                });
+          });
+        });
+
+        // --- Show Appointment Details Modal ---
+        const appointmentDetailsModal = document.getElementById('appointment-details-modal');
+        const closeAppointmentDetailsModal = document.getElementById('close-appointment-details-modal');
+        const closeAppointmentDetailsBtn = document.getElementById('close-appointment-details-btn');
+        const viewAppointmentDetailsBtns = document.querySelectorAll('.view-appointment-details-btn');
+        const appointmentDetailsContent = document.getElementById('appointment-details-content');
+
+        // Rehydrate booking data from EJS-rendered object (should be kept in sync with controller logic)
+        const bookingData = {
+          <% allBookings.forEach(booking => { %>
+            '<%= booking._id %>': {
+              clientName: '<%= booking.user.name %>',
+              clientEmail: '<%= booking.user.email %>',
+              clientPhone: '<%= booking.user.phone %>',
+              appointmentDate: '<%= new Date(booking.bookingDate).toLocaleDateString() %>',
+              appointmentTime: '<%= booking.bookingTime %>',
+              appointmentStatus: '<%= booking.status %>',
+              services: [
+                <% booking.services.forEach((service, index) => { %>
+                {
+                  name: '<%= service.serviceName %>',
+                  category: 'Salon Service',
+                  price: <%= service.basePrice || service.adminPrice || 0 %>,
+                  duration: <%= service.durationMinutes || 0 %>,
+                  quantity: 1
+                }<%= index < booking.services.length - 1 ? ',' : '' %>
+                <% }); %>
+              ],
+              totalAmount: <%= booking.paymentBreakdown?.customerPaid || 0 %>,
+              salonEarning: <%= booking.paymentBreakdown?.salonEarning || 0 %>,
+              paymentMethod: '<%= booking.payment?.method || "online" %>',
+              paymentStatus: '<%= booking.payment?.status || "pending" %>',
+              bookingType: '<%= booking.bookingType %>'
+            },
+          <% }); %>
+        };
+
+        function formatRupee(val) {
+          return `₹${(+val).toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+        }
+
+        viewAppointmentDetailsBtns.forEach(btn => {
+          btn.addEventListener('click', function () {
+            const appointmentId = this.getAttribute('data-id');
+            const appointment = bookingData[appointmentId];
+            if (!appointment || !appointmentDetailsContent) {
+              alert('Appointment details not found');
+              return;
             }
-            
-            // Initial render of available slots
-            renderAvailableSlots(slotsDate.value, slotsGrid);
-            
-            // Date change handler for available slots
-            slotsDate.addEventListener('change', function() {
-                renderAvailableSlots(this.value, slotsGrid);
-            });
-            
-            // Edit slots button handler
-            editSlotsBtn.addEventListener('click', function() {
-                // Enable editing mode
-                const slotItems = slotsGrid.querySelectorAll('.slot-item');
-                slotItems.forEach(item => {
-                    item.classList.add('editable');
-                    item.addEventListener('click', function() {
-                        if (this.classList.contains('unavailable')) {
-                            this.classList.remove('unavailable');
-                            this.querySelector('.slot-status').textContent = 'Available';
-                        } else {
-                            this.classList.add('unavailable');
-                            this.querySelector('.slot-status').textContent = 'Booked';
-                        }
-                    });
-                });
-                
-                // Show save/cancel buttons
-                slotsActions.style.display = 'flex';
-                // Hide edit button
-                editSlotsBtn.style.display = 'none';
-            });
-            
-            // Save slots button handler
-            saveSlotsBtn.addEventListener('click', function() {
-                // Collect updated slot availability
-                const slotItems = slotsGrid.querySelectorAll('.slot-item');
-                const updatedSlots = {};
-                
-                slotItems.forEach(item => {
-                    const time = item.querySelector('.slot-time').textContent;
-                    const isAvailable = !item.classList.contains('unavailable');
-                    updatedSlots[time] = { available: isAvailable };
-                });
-                
-                // Update the slots data
-                availableSlotsData[slotsDate.value] = updatedSlots;
-                
-                // In a real app, you would save to a database here
-                alert('Available slots updated successfully!');
-                
-                // Exit edit mode
-                exitSlotsEditMode();
-            });
-            
-            // Cancel slots editing
-            cancelSlotsBtn.addEventListener('click', function() {
-                // Restore original slots
-                renderAvailableSlots(slotsDate.value, slotsGrid);
-                
-                // Exit edit mode
-                exitSlotsEditMode();
-            });
-            
-            // Helper function to exit slots edit mode
-            function exitSlotsEditMode() {
-                // Remove editable class and event listeners
-                const slotItems = slotsGrid.querySelectorAll('.slot-item');
-                slotItems.forEach(item => {
-                    item.classList.remove('editable');
-                    // Remove all click event listeners
-                    const newItem = item.cloneNode(true);
-                    item.parentNode.replaceChild(newItem, item);
-                });
-                
-                // Hide save/cancel buttons
-                slotsActions.style.display = 'none';
-                // Show edit button
-                editSlotsBtn.style.display = 'block';
-            }
-            
-            // Update Appointment Modal
-            const updateAppointmentModal = document.getElementById('update-appointment-modal');
-            const closeUpdateAppointmentModal = document.getElementById('close-update-appointment-modal');
-            const closeUpdateAppointmentBtn = document.getElementById('close-update-appointment-btn');
-            const updateAppointmentBtns = document.querySelectorAll('.update-appointment-btn');
-            const updateAppointmentId = document.getElementById('update-appointment-id');
-            const updateAppointmentDate = document.getElementById('update-appointment-date');
-            const updateAppointmentStatus = document.getElementById('update-appointment-status');
-            const updateAppointmentDuration = document.getElementById('update-appointment-duration');
-            const updateAppointmentStylist = document.getElementById('update-appointment-stylist');
-            const updateAppointmentNotes = document.getElementById('update-appointment-notes');
-            const saveUpdateAppointmentBtn = document.getElementById('save-update-appointment-btn');
-            
-            // Open update appointment modal
-            updateAppointmentBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    const appointmentData = appointmentDetailsData[appointmentId] || appointmentDetailsData['APP-001'];
-                    
-                    // Update modal title
-                    updateAppointmentId.textContent = appointmentId;
-                    
-                    // Set form values
-                    updateAppointmentDate.value = '2023-10-15'; // In a real app, this would come from the appointment data
-                    updateAppointmentStatus.value = appointmentData.appointmentStatus;
-                    updateAppointmentDuration.value = appointmentData.duration;
-                    updateAppointmentStylist.value = 'sarah'; // In a real app, this would come from the appointment data
-                    updateAppointmentNotes.value = appointmentData.notes;
-                    
-                    // Render available slots for the selected date
-                    renderAvailableSlots(updateAppointmentDate.value, updateSlotsGrid, false);
-                    
-                    // Date change handler for update modal
-                    updateAppointmentDate.addEventListener('change', function() {
-                        renderAvailableSlots(this.value, updateSlotsGrid, false);
-                    });
-                    
-                    updateAppointmentModal.classList.add('active');
-                });
-            });
-            
-            // Close update appointment modal
-            function closeUpdateAppointmentModalFunc() {
-                updateAppointmentModal.classList.remove('active');
-            }
-            
-            closeUpdateAppointmentModal.addEventListener('click', closeUpdateAppointmentModalFunc);
-            closeUpdateAppointmentBtn.addEventListener('click', closeUpdateAppointmentModalFunc);
-            
-            // Save updated appointment
-            saveUpdateAppointmentBtn.addEventListener('click', function() {
-                const appointmentId = updateAppointmentId.textContent;
-                const selectedDate = updateAppointmentDate.value;
-                const selectedStatus = updateAppointmentStatus.value;
-                const selectedDuration = updateAppointmentDuration.value;
-                const selectedStylist = updateAppointmentStylist.value;
-                const selectedNotes = updateAppointmentNotes.value;
-                
-                // In a real app, you would save these changes to the database
-                console.log(`Updating appointment ${appointmentId}:`, {
-                    date: selectedDate,
-                    status: selectedStatus,
-                    duration: selectedDuration,
-                    stylist: selectedStylist,
-                    notes: selectedNotes
-                });
-                
-                alert('Appointment updated successfully!');
-                closeUpdateAppointmentModalFunc();
-                
-                // Update the UI to reflect changes
-                // In a real app, you would refresh the appointment data
-            });
-            
-            // Appointment Confirmation
-            const confirmAppointmentBtns = document.querySelectorAll('.confirm-appointment-btn');
-            
-            confirmAppointmentBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    
-                    // In a real app, you would update the appointment status in the database
-                    console.log(`Confirming appointment ${appointmentId}`);
-                    
-                    // Update the UI
-                    this.textContent = 'Confirmed';
-                    this.disabled = true;
-                    this.classList.remove('confirm-button');
-                    this.classList.add('secondary-button');
-                    
-                    // Update the status badge
-                    const row = this.closest('tr');
-                    const statusCell = row.querySelector('.status-badge');
+            // Calculate subtotal, tax, total
+            const subtotal = appointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+            const tax = +(subtotal * 0.05).toFixed(2);
+            const total = subtotal + tax;
+            const totalDuration = appointment.services.reduce((sum, s) => sum + (s.duration || 0), 0);
+            appointmentDetailsContent.innerHTML = `
+              <div class="client-info-section">
+                <h4 class="section-subtitle">Client Information</h4>
+                <div class="client-details">
+                  <div class="client-field"><span class="field-name">Full Name:</span> <span class="field-value">${appointment.clientName}</span></div>
+                  <div class="client-field"><span class="field-name">Email:</span> <span class="field-value">${appointment.clientEmail}</span></div>
+                  <div class="client-field"><span class="field-name">Phone:</span> <span class="field-value">${appointment.clientPhone}</span></div>
+                  <div class="client-field"><span class="field-name">Appointment Date:</span> <span class="field-value">${appointment.appointmentDate}</span></div>
+                  <div class="client-field"><span class="field-name">Appointment Time:</span> <span class="field-value">${appointment.appointmentTime}</span></div>
+                  <div class="client-field">
+                    <span class="field-name">Appointment Status:</span>
+                    <span class="field-value">
+                      <span class="status-badge status-${appointment.appointmentStatus}">${appointment.appointmentStatus.replace(/_/g,' ')}</span>
+                    </span>
+                  </div>
+                  <div class="client-field"><span class="field-name">Service Type:</span> <span class="field-value">${appointment.bookingType === 'home' ? 'Home Service':'In-Salon'}</span></div>
+                </div>
+              </div>
+              <div class="order-items-section">
+                <h4 class="section-subtitle">Service Details</h4>
+                <div class="order-items">
+                  ${appointment.services.map(service => `
+                    <div class="order-item">
+                      <div class="item-details">
+                        <div class="item-name">${service.name}</div>
+                        <div class="item-category">${service.category}</div>
+                        <div class="item-price">${formatRupee(service.price)}</div>
+                      </div>
+                      <div class="item-quantity"><span class="quantity-badge">${service.quantity}</span></div>
+                    </div>
+                  `).join('')}
+                </div>
+                <div class="order-summary">
+                  <div class="summary-row"><span>Service Duration:</span><span>${totalDuration} minutes</span></div>
+                  <div class="summary-row"><span>Subtotal:</span><span>${formatRupee(subtotal)}</span></div>
+                  <div class="summary-row"><span>Tax (5%):</span><span>${formatRupee(tax)}</span></div>
+                  <div class="summary-row"><span>Payment Method:</span><span>${appointment.paymentMethod ? appointment.paymentMethod.toUpperCase() : ''}</span></div>
+                  <div class="summary-row"><span>Payment Status:</span><span class="status-badge status-${appointment.paymentStatus}">${appointment.paymentStatus}</span></div>
+                  <div class="summary-row summary-total"><span>Total Amount:</span><span>${formatRupee(total)}</span></div>
+                  <div class="summary-row"><span>Salon Earnings:</span><span>${formatRupee(appointment.salonEarning)}</span></div>
+                </div>
+              </div>
+            `;
+            appointmentDetailsModal && appointmentDetailsModal.classList.add('active');
+          });
+        });
+
+        function closeDetailsModal() {
+          if (appointmentDetailsModal) appointmentDetailsModal.classList.remove('active');
+        }
+        closeAppointmentDetailsModal && closeAppointmentDetailsModal.addEventListener('click', closeDetailsModal);
+        closeAppointmentDetailsBtn && closeAppointmentDetailsBtn.addEventListener('click', closeDetailsModal);
+
+        // --- Appointment Confirmation ---
+        document.querySelectorAll('.confirm-appointment-btn').forEach(btn => {
+          btn.addEventListener('click', async function () {
+            const appointmentId = this.getAttribute('data-id');
+            const row = this.closest('tr');
+            try {
+              const response = await fetch('/salon/confirm-booking', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bookingId: appointmentId })
+              });
+              const result = await response.json();
+              if (result.success) {
+                this.textContent = 'Confirmed';
+                this.disabled = true;
+                this.classList.remove('confirm-button');
+                this.classList.add('secondary-button');
+                if (row) {
+                  const statusCell = row.querySelector('.status-badge');
+                  if (statusCell) {
                     statusCell.textContent = 'Confirmed';
                     statusCell.className = 'status-badge status-confirmed';
-                    
-                    alert('Appointment confirmed successfully!');
-                });
-            });
+                  }
+                }
+                alert('Appointment confirmed successfully!');
+              } else {
+                alert('Failed to confirm appointment: ' + result.message);
+              }
+            } catch (error) {
+              console.error('Error confirming appointment:', error);
+              alert('Error confirming appointment. Please try again.');
+            }
+          });
         });
+
+        // --- Salon Profile Edit Management ---
+        const editSalonBtn = document.getElementById('edit-salon-btn');
+        const saveSalonBtn = document.getElementById('save-salon-btn');
+        const cancelSalonBtn = document.getElementById('cancel-salon-btn');
+        const profileActions = document.getElementById('profile-actions');
+        const profileFields = document.querySelectorAll('#profile-page .profile-field');
+        let originalValues = {};
+
+        if (editSalonBtn) {
+          editSalonBtn.addEventListener('click', function () {
+            originalValues = {
+              salonName: document.getElementById('salon-name')?.textContent || '',
+              ownerName: document.getElementById('owner-name')?.textContent || '',
+              emailAddress: document.getElementById('email-address')?.textContent || '',
+              phoneNumber: document.getElementById('phone-number')?.textContent || '',
+              businessAddress: document.getElementById('business-address')?.textContent || '',
+              servicesOffered: document.getElementById('services-offered')?.textContent || '',
+              serviceMode: document.getElementById('service-mode')?.textContent || ''
+            };
+            profileFields.forEach(field => {
+              const fieldValue = field.querySelector('.field-value');
+              if (!fieldValue) return;
+              const fieldId = fieldValue.id;
+              if (fieldId) {
+                const currentValue = fieldValue.textContent;
+                field.classList.add('editing');
+                if (fieldId === 'business-address' || fieldId === 'services-offered') {
+                  fieldValue.innerHTML = `<textarea style="width:100%;min-height:80px;padding:8px;border:1px solid #d1d5db;border-radius:4px;">${currentValue}</textarea>`;
+                } else {
+                  fieldValue.innerHTML = `<input type="text" value="${currentValue}" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:4px;">`;
+                }
+              }
+            });
+            if (profileActions) profileActions.style.display = 'flex';
+            editSalonBtn.style.display = 'none';
+          });
+        }
+
+        if (saveSalonBtn) {
+          saveSalonBtn.addEventListener('click', async function () {
+            const updatedValues = {};
+            profileFields.forEach(field => {
+              const fieldValue = field.querySelector('.field-value');
+              if (!fieldValue) return;
+              const fieldId = fieldValue.id;
+              if (fieldId) {
+                const input = fieldValue.querySelector('input, textarea');
+                if (input) {
+                  updatedValues[fieldId] = input.value;
+                }
+              }
+            });
+            try {
+              const response = await fetch('/salon/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedValues)
+              });
+              const result = await response.json();
+              if (result.success) {
+                for (const [fieldId, value] of Object.entries(updatedValues)) {
+                  const el = document.getElementById(fieldId);
+                  if (el) el.textContent = value;
+                }
+                alert('Salon details updated successfully!');
+                exitEditMode();
+              } else {
+                alert('Failed to update salon details: ' + result.message);
+              }
+            } catch (error) {
+              console.error('Error updating salon:', error);
+              alert('Error updating salon details. Please try again.');
+            }
+          });
+        }
+
+        if (cancelSalonBtn) {
+          cancelSalonBtn.addEventListener('click', function () {
+            for (const [fieldId, value] of Object.entries(originalValues)) {
+              const el = document.getElementById(fieldId);
+              if (el) el.textContent = value;
+            }
+            exitEditMode();
+          });
+        }
+
+        function exitEditMode() {
+          profileFields.forEach(field => field.classList.remove('editing'));
+          if (profileActions) profileActions.style.display = 'none';
+          if (editSalonBtn) editSalonBtn.style.display = 'block';
+        }
+
+        // --- Appointment Service Duration Change ---
+        document.querySelectorAll('.duration-input input').forEach(input => {
+          input.addEventListener('change', async function () {
+            const newDuration = this.value;
+            const row = this.closest('tr');
+            if (!row) return;
+            const viewBtn = row.querySelector('.view-appointment-details-btn');
+            if (!viewBtn) return;
+            const appointmentId = viewBtn.getAttribute('data-id');
+            if (!appointmentId) return;
+            try {
+              const response = await fetch('/salon/update-duration', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bookingId: appointmentId, duration: newDuration })
+              });
+              const result = await response.json();
+              if (!result.success) {
+                alert('Failed to update duration: ' + result.message);
+                this.value = this.defaultValue;
+              }
+            } catch (error) {
+              console.error('Error updating duration:', error);
+              alert('Error updating duration. Please try again.');
+              this.value = this.defaultValue;
+            }
+          });
+        });
+      });
     </script>
 </body>
 </html>
