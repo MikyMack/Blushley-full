@@ -13,7 +13,8 @@ const OtpSchema = new mongoose.Schema({
       'login',              
       'reseller_verify',  
       'freelancer_verify' ,
-      'freelancer_login'  
+      'freelancer_login'  ,
+     'reseller_login'
     ], 
     required: true 
   },

@@ -1,83 +1,106 @@
-// models/Product.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const SizeVariantSchema = new mongoose.Schema({
-  size: String,
-  sku: String,
-  resellerPrice: { type: Number, default: 0 },
-  adminPrice: { type: Number },
+const VariantOptionSchema = new mongoose.Schema({
+  value: String,        
   stock: { type: Number, default: 0 },
-  warehouseStock: [{
-    warehouseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Reseller.warehouses' },
-    qty: { type: Number, default: 0 }
-  }],
-  images: [String]
+  sku: String,           
+  price: Number,           
+  adminBasePrice: Number,  
+  adminSalePrice: Number,  
+  images: [String]        
 }, { _id: true });
 
-const ColorVariantSchema = new mongoose.Schema({
-  colorName: String,
-  colorCode: String,
-  sku: String,
-  images: [String],
-  resellerPrice: { type: Number, default: 0 },
-  adminPrice: { type: Number },
-  stock: { type: Number, default: 0 },
-  sizeVariants: [SizeVariantSchema] 
+
+const VariantSchema = new mongoose.Schema({
+  name: { type: String, required: true }, 
+  options: [VariantOptionSchema]
 }, { _id: true });
+
 
 const ProductSchema = new mongoose.Schema({
-  resellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Reseller', required: true },
-  name: { type: String, required: true, trim: true },
-  slug: { type: String, unique: true, index: true },
 
-  brand: String,
-  shortDescription: String,
+  // BASIC INFO
+  title: { type: String, required: true },
+  slug: { type: String, unique: true },
   description: String,
-  highlights: [String],
-  images: [String], 
+  shortDescription: String,
+
+  // CATEGORY
+  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+  subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
+  childCategory: { type: mongoose.Schema.Types.ObjectId, ref: "ChildCategory" },
 
 
-  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-  subCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'SubCategory' },
-  childCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'ChildCategory' },
-
-  variantType: { type: String, enum: ['none','color','size','color_size'], default: 'none' },
-
-  colorVariants: [ColorVariantSchema],
-  sizeVariants: [SizeVariantSchema],
-
-  baseResellerPrice: { type: Number, default: 0 },
-  adminPrice: { type: Number },  
-  adminCommissionPercent: { type: Number, default: 0 },
-  adminPriceHistory: [{
-    previousPrice: Number,
-    newPrice: Number,
-    changedAt: Date,
-    changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  beautyTips: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "BeautyTip"
   }],
 
-  sku: String,
+  // BRAND
+  brand: String,
+
+  productType: {
+    type: String,
+    enum: ["admin", "salon", "reseller"],
+    default: "admin"
+  },
+
+  ownerRef: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: "productType"
+  },
+
+  // UNIVERSAL PRICING
+  basePrice: { type: Number, required: true },
+  salePrice: Number,
+
+  // ADMIN PRICE CONTROL ✅
+  adminBasePrice: Number,
+  adminSalePrice: Number,
+
+  // TOTAL STOCK (Ignored when variants exist)
   totalStock: { type: Number, default: 0 },
 
-  warranty: String,
-  returnPolicy: String,
-  specifications: [{ key: String, value: String }],
-  dimensions: { height: Number, width: Number, length: Number, weight: Number },
+  // VARIANTS: Color / Size / Volume etc ✅
+  variants: [VariantSchema],
 
-  metaTitle: String,
-  metaDescription: String,
-  metaKeywords: [String],
+  // MAIN PRODUCT IMAGES
+  images: [String],
 
-  status: { type: String, enum: ['pending','approved','rejected','disabled'], default: 'pending' },
-  approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  approvedAt: Date,
+  // PRODUCT PROPERTIES
+  tags: [String],
+  ingredients: [String],
+  howToUse: String,
+  benefits: [String],
 
+  // SHIPPING
+  weight: Number,
+  dimensions: {
+    length: Number,
+    width: Number,
+    height: Number
+  },
+
+  // RATINGS
   rating: { type: Number, default: 0 },
-  totalReviews: { type: Number, default: 0 }
+  totalReviews: { type: Number, default: 0 },
+
+  // STATUS
+  status: {
+    type: String,
+    enum: ["draft", "pending", "approved", "rejected", "disabled"],
+    default: "pending"
+  },
+
+  // SEO
+  seo: {
+    title: String,
+    description: String,
+    keywords: [String]
+  },
+
+  totalSold: { type: Number, default: 0 },
 
 }, { timestamps: true });
 
-ProductSchema.index({ resellerId: 1, status: 1 });
-ProductSchema.index({ slug: 1 });
-
-module.exports = mongoose.model('Product', ProductSchema);
+module.exports = mongoose.model("Product", ProductSchema);

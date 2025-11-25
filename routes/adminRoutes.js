@@ -7,6 +7,7 @@ const FreelancerBooking = require('../models/FreelancerBooking');
 const Category = require('../models/Category');
 const SubCategory = require('../models/SubCategory');
 const ChildCategory = require('../models/ChildCategory');
+const SalonBooking = require('../models/SalonBooking');
 
 router.get('/adminLogin', (req, res) => {
     res.render('admin/admin_login');
@@ -26,10 +27,12 @@ router.get('/blogs', (req, res) => {
 
 
 
-router.get('/bookings',isAdmin, async (req, res) => {
+
+
+router.get('/bookings', isAdmin, async (req, res) => {
     try {
-        const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
-        const limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
+        const page = parseInt(req.query.page, 10) > 0 ? parseInt(req.query.page, 10) : 1;
+        const limit = parseInt(req.query.limit, 10) > 0 ? parseInt(req.query.limit, 10) : 10;
         const skip = (page - 1) * limit;
 
         const filter = {};
@@ -37,16 +40,61 @@ router.get('/bookings',isAdmin, async (req, res) => {
             filter.status = req.query.status;
         }
 
-        const [bookings, total] = await Promise.all([
-            FreelancerBooking.find(filter)
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit)
-                .lean(),
-            FreelancerBooking.countDocuments(filter)
-        ]);
+        const bookingType = req.query.type || 'all';
+        let freelancerBookings = [];
+        let salonBookings = [];
+        let freelancerTotal = 0;
+        let salonTotal = 0;
 
-        const totalPages = Math.ceil(total / limit);
+        let bookings, total, totalPages;
+
+        if (bookingType === 'freelance') {
+            [freelancerBookings, freelancerTotal] = await Promise.all([
+                FreelancerBooking.find(filter)
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                FreelancerBooking.countDocuments(filter)
+            ]);
+            bookings = freelancerBookings.map(b => ({ ...b, bookingSource: 'freelance' }));
+            total = freelancerTotal;
+            totalPages = Math.ceil(total / limit);
+        } else if (bookingType === 'salon') {
+            [salonBookings, salonTotal] = await Promise.all([
+                SalonBooking.find(filter)
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                SalonBooking.countDocuments(filter)
+            ]);
+            bookings = salonBookings.map(b => ({ ...b, bookingSource: 'salon' }));
+            total = salonTotal;
+            totalPages = Math.ceil(total / limit);
+        } else {
+    
+            const [allFreelancer, allSalon, countFreelancer, countSalon] = await Promise.all([
+                FreelancerBooking.find(filter)
+                    .sort({ createdAt: -1 })
+                    .lean(),
+                SalonBooking.find(filter)
+                    .sort({ createdAt: -1 })
+                    .lean(),
+                FreelancerBooking.countDocuments(filter),
+                SalonBooking.countDocuments(filter)
+            ]);
+        
+            const freelancerWithType = allFreelancer.map(b => ({ ...b, bookingSource: 'freelance' }));
+            const salonWithType = allSalon.map(b => ({ ...b, bookingSource: 'salon' }));
+     
+            const merged = [...freelancerWithType, ...salonWithType];
+            merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+            bookings = merged.slice(skip, skip + limit);
+            total = merged.length;
+            totalPages = Math.ceil(total / limit);
+        }
 
         res.render('admin/admin_bookings', {
             bookings,
@@ -55,6 +103,8 @@ router.get('/bookings',isAdmin, async (req, res) => {
             total,
             limit,
             filterStatus: req.query.status || 'all',
+            filterType: bookingType,
+            bookingType, 
             error: null
         });
     } catch (err) {
@@ -66,10 +116,13 @@ router.get('/bookings',isAdmin, async (req, res) => {
             total: 0,
             limit: 10,
             filterStatus: req.query.status || 'all',
+            filterType: req.query.type || 'all',
+            bookingType: req.query.type || 'all',
             error: 'Failed to load bookings'
         });
     }
 });
+
 
 
 
@@ -159,8 +212,55 @@ router.get('/orders', (req, res) => {
     res.render('admin/admin_orders');
 });
 
-router.get('/reseller_products', (req, res) => {
-    res.render('admin/admin_reseller_product');
+const Reseller = require('../models/Reseller');
+
+
+router.get('/reseller_products', async (req, res) => {
+    try {
+        let { page = 1, limit = 20, search = "", status } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+
+        const query = {};
+
+        if (status) {
+            query.status = status;
+        }
+
+        if (search && search.trim() !== "") {
+            const searchRegex = new RegExp(search.trim(), "i");
+            query.$or = [
+                { companyName: searchRegex },
+                { contactName: searchRegex },
+                { phone: searchRegex },
+                { email: searchRegex }
+            ];
+        }
+
+        const [resellers, total] = await Promise.all([
+            Reseller.find(query)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+            Reseller.countDocuments(query)
+        ]);
+        const totalPages = Math.ceil(total / limit);
+
+        res.render('admin/admin_reseller_product', {
+            resellers,
+            page,
+            totalPages,
+            total,
+            query: req.query
+        });
+    } catch (err) {
+        console.error('Error fetching resellers:', err);
+        res.status(500).render('admin/admin_reseller_product', {
+            resellers: [],
+            error: 'Failed to load resellers'
+        });
+    }
 });
 
 

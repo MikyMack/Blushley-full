@@ -3,7 +3,7 @@ const { body, validationResult } = require('express-validator');
 const Otp = require('../models/Otp');
 const User = require('../models/User');
 const Salon = require('../models/Salon');
-
+const mongoose = require("mongoose");
 const {
   genOtp,
   sendOtpSms,
@@ -20,11 +20,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ;
 const OTP_TTL_MINUTES = 5;
 const MAX_OTP_ATTEMPTS = 5;
 
-/* ============================================================
-   SEND OTP (PHONE → SMS, EMAIL → EMAIL OTP)
-   POST /auth/send-otp
-   POST /auth/send-email-otp
-============================================================ */
+
 exports.sendOtp = async (req, res) => {
   const { phone, email, purpose = "login" } = req.body;
 
@@ -55,10 +51,7 @@ exports.sendOtp = async (req, res) => {
   }
 };
 
-/* ============================================================
-   VERIFY OTP (PHONE OR EMAIL)
-   POST /auth/verify-otp
-============================================================ */
+
 exports.verifyOtp = async (req, res) => {
   const { phone, email, otp, purpose = "login" } = req.body;
 
@@ -157,9 +150,7 @@ exports.verifyOtp = async (req, res) => {
 };
 
 
-/* ============================================================
-   LOGOUT
-============================================================ */
+
 exports.logout = async (req, res) => {
   req.session.destroy(err => {
     if (err) console.error("Session destroy error:", err);
@@ -168,21 +159,19 @@ exports.logout = async (req, res) => {
   });
 };
 
-/* ============================================================
-   ADMIN LOGIN (ENV based)
-   POST /auth/admin-login
-============================================================ */
+
 exports.adminLogin = async (req, res) => {
   const { email, password } = req.body;
 
-  // Using ENV instead of DB
   if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
     return res.status(400).render("admin/adminLogin", { error: "Invalid admin credentials" });
   }
 
-  // Create ADMIN session
+ 
+  const fixedAdminId = new mongoose.Types.ObjectId('000000000000000000000001');
+
   req.session.user = {
-    _id: "admin",
+    _id: fixedAdminId.toString(), 
     name: "Super Admin",
     email: ADMIN_EMAIL,
     role: "admin"
@@ -191,9 +180,7 @@ exports.adminLogin = async (req, res) => {
   return res.redirect("/admin/dashboard");
 };
 
-/* ============================================================
-   SALON LOGIN (username + password)
-============================================================ */
+
 exports.salonLogin = async (req, res) => {
   const { username, password } = req.body;
 
