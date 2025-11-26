@@ -1768,3 +1768,29 @@ $(document).ready(function() {
         }
     });
 });
+
+
+ document.addEventListener('DOMContentLoaded', function () {
+                const megaDropdown = document.querySelector('.menu-item.dropdown');
+                if (!megaDropdown) return;
+
+                let hideTimer;
+                const show = () => {
+                    clearTimeout(hideTimer);
+                    megaDropdown.classList.add('show-dropdown');
+                };
+
+                const hide = () => {
+                    hideTimer = setTimeout(() => {
+                        megaDropdown.classList.remove('show-dropdown');
+                    }, 150);
+                };
+
+                megaDropdown.addEventListener('mouseenter', show);
+                megaDropdown.addEventListener('mouseleave', hide);
+
+                megaDropdown.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('focus', show);
+                    link.addEventListener('blur', hide);
+                });
+            });
