@@ -8,6 +8,9 @@ const Category = require('../models/Category');
 const SubCategory = require('../models/SubCategory');
 const ChildCategory = require('../models/ChildCategory');
 const SalonBooking = require('../models/SalonBooking');
+const Product = require('../models/Product');
+const Reseller = require('../models/Reseller');
+
 
 router.get('/adminLogin', (req, res) => {
     res.render('admin/admin_login');
@@ -24,9 +27,6 @@ router.get('/banner', (req, res) => {
 router.get('/blogs', (req, res) => {
     res.render('admin/admin_blogs');
 });
-
-
-
 
 
 router.get('/bookings', isAdmin, async (req, res) => {
@@ -124,8 +124,6 @@ router.get('/bookings', isAdmin, async (req, res) => {
 });
 
 
-
-
 router.get('/categories',isAdmin, async (req, res) => {
     try {
         const categories = await Category.find({}).lean();
@@ -147,7 +145,6 @@ router.get('/categories',isAdmin, async (req, res) => {
         });
     }
 });
-
 
 
 router.get('/freelance',isAdmin, async (req, res) => {
@@ -203,16 +200,97 @@ router.get('/testimonials', (req, res) => {
 router.get('/users', (req, res) => {
     res.render('admin/admin_users');
 });
+router.get('/beautyTips', isAdmin, async (req, res) => {
+    try {
+        const categories = await Category.find({}).lean();
+        res.render('admin/admin_beautytips', { categories });
+    } catch (err) {
+        console.error("Error fetching categories for beautyTips:", err);
+        res.render('admin/admin_beautytips', { categories: [], error: 'Failed to load categories' });
+    }
+});
 
-router.get('/products', (req, res) => {
-    res.render('admin/admin_products');
+
+router.get('/products', isAdmin, async (req, res) => {
+    try {
+        let { page = 1, search = "", status, category, subCategory, childCategory, brand, productType } = req.query;
+        let limit = req.query.limit ? parseInt(req.query.limit) : 20;
+        page = parseInt(page);
+
+        const query = {};
+
+        if (search && search.trim() !== "") {
+            const searchRegex = new RegExp(search.trim(), "i");
+            query.$or = [
+                { title: searchRegex },
+                { slug: searchRegex },
+                { description: searchRegex },
+                { shortDescription: searchRegex }
+            ];
+        }
+
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+        if (category && category !== "all") {
+            query.category = category;
+        }
+        if (subCategory && subCategory !== "all") {
+            query.subCategory = subCategory;
+        }
+        if (childCategory && childCategory !== "all") {
+            query.childCategory = childCategory;
+        }
+
+        if (brand && brand.trim() !== "") {
+            query.brand = brand.trim();
+        }
+
+        if (productType && productType !== "all") {
+            query.productType = productType;
+        }
+
+        const Category = require('../models/Category');
+        const SubCategory = require('../models/SubCategory');
+        const ChildCategory = require('../models/ChildCategory');
+
+        const [products, total, categories, subcategories, childcategories] = await Promise.all([
+            Product.find(query)
+                .populate("category subCategory childCategory beautyTips")
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+            Product.countDocuments(query),
+            Category.find({ status: { $ne: 'deleted' } }).lean(),
+            SubCategory.find({ status: { $ne: 'deleted' } }).lean(),
+            ChildCategory.find({ status: { $ne: 'deleted' } }).lean()
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        res.render('admin/admin_products', {
+            products,
+            page,
+            totalPages,
+            total,
+            limit,
+            query: req.query,
+            categories,
+            subcategories,
+            childcategories
+        });
+    } catch (err) {
+        console.error('Error fetching products:', err);
+        res.status(500).render('admin/admin_products', { products: [], error: 'Failed to load products', limit: 20, categories: [], subcategories: [], childcategories: [] });
+    }
 });
 
 router.get('/orders', (req, res) => {
     res.render('admin/admin_orders');
 });
 
-const Reseller = require('../models/Reseller');
 
 
 router.get('/reseller_products', async (req, res) => {
@@ -262,6 +340,7 @@ router.get('/reseller_products', async (req, res) => {
         });
     }
 });
+
 
 
 module.exports = router;
