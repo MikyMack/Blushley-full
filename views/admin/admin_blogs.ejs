@@ -423,6 +423,39 @@
                                                 <input type="text" id="blogTitle" name="title" required class="w-full">
                                             </div>
                                             <div class="form-group">
+                            <label for="blogShortDescription">Short Description*</label>
+                            <textarea id="blogShortDescription" name="shortDescription" class="w-full" rows="3" required></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="blogFullDescription">Full Content*</label>
+                                                <textarea id="blogFullDescription" name="fullDescription" required
+                                                    class="w-full" rows="6"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="blogAuthor">Author Name*</label>
+                                                <input type="text" id="blogAuthor" name="author" required
+                                                    class="w-full">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="blogCategory">Category*</label>
+                                                <select id="blogCategory" name="category" class="w-full" required>
+                                                    <option value="">Select category</option>
+                                                    <% (categories || []).forEach(function(cat) { %>
+                                                        <option value="<%= cat._id %>"><%= cat.name %></option>
+                                                    <% }) %>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="blogTags">Tags (comma separated)</label>
+                                                <input type="text" id="blogTags" name="tags" class="w-full"
+                                                    placeholder="e.g. beauty, skincare">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="blogHighlights">Highlights (comma separated)</label>
+                                                <input type="text" id="blogHighlights" name="highlights" class="w-full"
+                                                    placeholder="e.g. Tip 1, Tip 2">
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="blogMetaTitle">Meta Title*</label>
                                                 <input type="text" id="blogMetaTitle" name="metaTitle" required
                                                     class="w-full">
@@ -438,14 +471,19 @@
                                                     class="w-full">
                                             </div>
                                             <div class="form-group">
-                                                <label for="blogContent">Content*</label>
-                                                <textarea id="blogContent" name="content" required class="w-full"
-                                                    rows="5"></textarea>
+                                                <label for="blogOgTitle">OG Title</label>
+                                                <input type="text" id="blogOgTitle" class="w-full"
+                                                    placeholder="Optional">
                                             </div>
                                             <div class="form-group">
-                                                <label for="blogAuthor">Author*</label>
-                                                <input type="text" id="blogAuthor" name="author" required
-                                                    class="w-full">
+                                                <label for="blogOgDescription">OG Description</label>
+                                                <textarea id="blogOgDescription" class="w-full" rows="2"
+                                                    placeholder="Optional"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="blogCanonicalUrl">Canonical URL</label>
+                                                <input type="url" id="blogCanonicalUrl" class="w-full"
+                                                    placeholder="https://example.com/blog">
                                             </div>
                                             <div class="form-group">
                                                 <label for="blogImage">Image*</label>
@@ -472,6 +510,39 @@
                                                     class="w-full">
                                             </div>
                                             <div class="form-group">
+                                                <label for="editBlogShortDescription">Short Description*</label>
+                                                <textarea id="editBlogShortDescription" name="shortDescription"
+                                                    class="w-full" rows="3" required></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogFullDescription">Full Content*</label>
+                                                <textarea id="editBlogFullDescription" name="fullDescription" required
+                                                    class="w-full" rows="6"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogAuthor">Author Name*</label>
+                                                <input type="text" id="editBlogAuthor" name="author" required
+                                                    class="w-full">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogCategory">Category*</label>
+                                                <select id="editBlogCategory" name="category" class="w-full" required>
+                                                    <option value="">Select category</option>
+                                                    <% (categories || []).forEach(function(cat) { %>
+                                                        <option value="<%= cat._id %>"><%= cat.name %></option>
+                                                    <% }) %>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogTags">Tags (comma separated)</label>
+                                                <input type="text" id="editBlogTags" name="tags" class="w-full">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogHighlights">Highlights (comma separated)</label>
+                                                <input type="text" id="editBlogHighlights" name="highlights"
+                                                    class="w-full">
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="editBlogMetaTitle">Meta Title*</label>
                                                 <input type="text" id="editBlogMetaTitle" name="metaTitle" required
                                                     class="w-full">
@@ -488,14 +559,24 @@
                                                     required class="w-full">
                                             </div>
                                             <div class="form-group">
-                                                <label for="editBlogContent">Content*</label>
-                                                <textarea id="editBlogContent" name="content" required class="w-full"
-                                                    rows="5"></textarea>
+                                                <label for="editBlogOgTitle">OG Title</label>
+                                                <input type="text" id="editBlogOgTitle" class="w-full">
                                             </div>
                                             <div class="form-group">
-                                                <label for="editBlogAuthor">Author*</label>
-                                                <input type="text" id="editBlogAuthor" name="author" required
-                                                    class="w-full">
+                                                <label for="editBlogOgDescription">OG Description</label>
+                                                <textarea id="editBlogOgDescription" class="w-full" rows="2"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogCanonicalUrl">Canonical URL</label>
+                                                <input type="url" id="editBlogCanonicalUrl" class="w-full">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editBlogStatus">Status</label>
+                                                <select id="editBlogStatus" class="w-full">
+                                                    <option value="draft">Draft</option>
+                                                    <option value="published">Published</option>
+                                                    <option value="archived">Archived</option>
+                                                </select>
                                             </div>
                                             <div class="form-group">
                                                 <label for="editBlogImage">Image</label>
@@ -513,190 +594,285 @@
                     </div>
 
                     <script>
-                        // Global variables
+                        const CATEGORY_OPTIONS = <%- JSON.stringify(categories || []) %>;
                         let blogs = [];
 
-                        // DOM Ready
-                        document.addEventListener('DOMContentLoaded', function () {
+                        const parseCommaList = (value = "") =>
+                            value
+                                .split(",")
+                                .map((item) => item.trim())
+                                .filter(Boolean);
+
+                        const toCommaSeparated = (items = []) => {
+                            if (Array.isArray(items)) return items.join(", ");
+                            if (typeof items === "string") return items;
+                            return "";
+                        };
+
+                        const formatCategoryName = (category) => {
+                            if (!category) return "Uncategorized";
+                            if (typeof category === "string") {
+                                const found = CATEGORY_OPTIONS.find((cat) => cat._id === category);
+                                return found ? found.name : "Uncategorized";
+                            }
+                            return category.name || "Uncategorized";
+                        };
+
+                        const formatDate = (value) => {
+                            if (!value) return "";
+                            try {
+                                return new Date(value).toLocaleDateString();
+                            } catch {
+                                return "";
+                            }
+                        };
+
+                        document.addEventListener("DOMContentLoaded", function () {
                             fetchBlogs();
                             setupBlogFormHandlers();
                         });
 
-                        // Fetch all blogs
                         async function fetchBlogs() {
                             try {
-                                const response = await fetch('/get-admin-blogs');
-                                if (!response.ok) throw new Error('Failed to fetch blogs');
-
-                                const responseData = await response.text();
-                                try {
-                                    blogs = JSON.parse(responseData);
-                                } catch (error) {
-                                    throw new Error('Invalid JSON response');
-                                }
+                                const response = await fetch("/blogs");
+                                if (!response.ok) throw new Error("Failed to fetch blogs");
+                                const payload = await response.json();
+                                blogs = Array.isArray(payload) ? payload : payload.blogs || [];
                                 renderBlogs();
                             } catch (error) {
-                                console.error('Error loading blogs:', error);
-                                alert('Error loading blogs');
+                                console.error("Error loading blogs:", error);
+                                alert(error.message || "Error loading blogs");
                             }
                         }
 
-                        // Render blogs to the cards
                         function renderBlogs() {
-                            const blogList = document.getElementById('blog-list');
-                            blogList.innerHTML = '';
+                            const blogList = document.getElementById("blog-list");
+                            if (!blogList) return;
 
-                            blogs.forEach(blog => {
-                                const blogCard = document.createElement('div');
-                                blogCard.className = 'card';
+                            if (!blogs.length) {
+                                blogList.innerHTML = '<div class="text-center text-secondary py-4">No blogs found yet.</div>';
+                                return;
+                            }
+
+                            blogList.innerHTML = "";
+
+                            blogs.forEach((blog) => {
+                                const blogCard = document.createElement("div");
+                                blogCard.className = "card";
+
+                                const imageSrc = blog.image || blog.imageUrl || "/images/logo/blushley-png-without-shade.png";
+                                const statusLabel = (blog.status || "draft").toUpperCase();
+                                const tagsList = Array.isArray(blog.tags) ? blog.tags : parseCommaList(blog.tags || "");
+                                const highlightsList = Array.isArray(blog.highlights) ? blog.highlights : parseCommaList(blog.highlights || "");
+                                const categoryLabel = formatCategoryName(blog.category);
+                                const authorName = blog.author?.name || blog.author || "Unknown";
+                                const summarySource = blog.shortDescription || blog.fullDescription || "";
+                                const summary =
+                                    blog.shortDescription || (summarySource ? `${summarySource.substring(0, 140)}${summarySource.length > 140 ? "…" : ""}` : "");
+
                                 blogCard.innerHTML = `
-            <div class="card-image" style="text-align:center;">
-                <img src="${blog.imageUrl}" alt="${blog.title}" style="width:200px; height:150px; object-fit:cover; border-radius:5px;">
-            </div>
-            <div class="card-content" style="padding:10px;">
-                <h4 class="card-title" style="margin:0; font-size:16px; font-weight:bold;">${blog.title}</h4>
-                <p class="card-meta" style="margin:5px 0; color:gray;">${blog.metaTitle}</p>
-                <p class="card-author" style="margin:5px 0; color:darkgray;">${blog.author}</p>
-            </div>
-            <div class="card-actions" style="display:flex; justify-content:space-between; padding:10px;">
-                <button style="background-color:#007bff; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="showEditBlogModal('${blog._id}')">
-                    <i class="icon-edit"></i> Edit
-                </button>
-                <button style="background-color:#dc3545; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="confirmDeleteBlog('${blog._id}')">
-                    <i class="icon-trash-2"></i> Delete
-                </button>
-            </div>
-        `;
+                                    <div class="card-image" style="text-align:center;">
+                                        <img src="${imageSrc}" alt="${blog.title}" style="width:100%; max-width:220px; height:150px; object-fit:cover; border-radius:5px;">
+                                    </div>
+                                    <div class="card-content" style="padding:12px;">
+                                        <div class="flex items-center justify-between gap10 mb-2">
+                                            <span class="badge bg-light text-main" style="text-transform:uppercase;">${statusLabel}</span>
+                                            <span class="text-tiny text-gray-500">${formatDate(blog.createdAt)}</span>
+                                        </div>
+                                        <h4 class="card-title" style="margin:0 0 6px; font-size:16px; font-weight:bold;">${blog.title}</h4>
+                                        <p class="card-meta" style="margin:0 0 4px; color:gray;">Category: ${categoryLabel}</p>
+                                        <p class="card-author" style="margin:0 0 6px; color:darkgray;">By ${authorName}</p>
+                                        <p class="card-description" style="margin:0 0 8px; color:#555;">${summary}</p>
+                                    </div>
+                                    <div class="card-meta-block" style="padding:0 12px 12px;">
+                                        <div class="text-tiny text-secondary mb-1">Tags: ${tagsList.length ? tagsList.join(", ") : "—"}</div>
+                                        <div class="text-tiny text-secondary">Highlights: ${highlightsList.length ? highlightsList.join(", ") : "—"}</div>
+                                    </div>
+                                    <div class="card-actions" style="display:flex; justify-content:space-between; gap:10px; padding:10px 12px 15px;">
+                                        <button style="background-color:#007bff; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; flex:1;" onclick="showEditBlogModal('${blog._id}')">
+                                            <i class="icon-edit"></i> Edit
+                                        </button>
+                                        <button style="background-color:#dc3545; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; flex:1;" onclick="confirmDeleteBlog('${blog._id}')">
+                                            <i class="icon-trash-2"></i> Delete
+                                        </button>
+                                    </div>
+                                `;
                                 blogList.appendChild(blogCard);
                             });
                         }
-                        // Show Add Blog Modal
+
                         function showAddBlogModal() {
-                            document.getElementById('addBlogForm').reset();
-                            document.getElementById('addBlogModal').style.display = 'block';
+                            const form = document.getElementById("addBlogForm");
+                            if (form) form.reset();
+                            const categorySelect = document.getElementById("blogCategory");
+                            if (categorySelect) categorySelect.value = "";
+                            document.getElementById("addBlogModal").style.display = "block";
                         }
 
-                        // Show Edit Blog Modal
-                        async function showEditBlogModal(id) {
-                            const blog = blogs.find(b => b._id === id);
+                        function showEditBlogModal(id) {
+                            const blog = blogs.find((b) => b._id === id);
                             if (!blog) return;
 
-                            document.getElementById('editBlogId').value = blog._id;
-                            document.getElementById('editBlogTitle').value = blog.title;
-                            document.getElementById('editBlogMetaTitle').value = blog.metaTitle;
-                            document.getElementById('editBlogMetaDescription').value = blog.metaDescription;
-                            document.getElementById('editBlogMetaKeywords').value = blog.metaKeywords.join(',');
-                            document.getElementById('editBlogContent').value = blog.content;
-                            document.getElementById('editBlogAuthor').value = blog.author;
+                            document.getElementById("editBlogId").value = blog._id;
+                            document.getElementById("editBlogTitle").value = blog.title || "";
+                            document.getElementById("editBlogShortDescription").value = blog.shortDescription || blog.metaDescription || "";
+                            document.getElementById("editBlogFullDescription").value = blog.fullDescription || blog.content || "";
+                            document.getElementById("editBlogAuthor").value = blog.author?.name || blog.author || "";
 
-                            const preview = document.getElementById('currentBlogImagePreview');
-                            preview.innerHTML = `
-        <p class="text-tiny">Current Image:</p>
-        <img src="${blog.imageUrl}" alt="${blog.title}" class="w-full h-32 object-contain mt-1">
-    `;
+                            const categorySelect = document.getElementById("editBlogCategory");
+                            if (categorySelect) {
+                                const categoryValue = typeof blog.category === "object" ? blog.category?._id : blog.category;
+                                categorySelect.value = categoryValue || "";
+                            }
 
-                            document.getElementById('editBlogModal').style.display = 'block';
+                            document.getElementById("editBlogTags").value = toCommaSeparated(blog.tags);
+                            document.getElementById("editBlogHighlights").value = toCommaSeparated(blog.highlights);
+
+                            document.getElementById("editBlogMetaTitle").value = blog.seo?.metaTitle || "";
+                            document.getElementById("editBlogMetaDescription").value = blog.seo?.metaDescription || "";
+                            document.getElementById("editBlogMetaKeywords").value = toCommaSeparated(blog.seo?.keywords);
+                            document.getElementById("editBlogOgTitle").value = blog.seo?.ogTitle || "";
+                            document.getElementById("editBlogOgDescription").value = blog.seo?.ogDescription || "";
+                            document.getElementById("editBlogCanonicalUrl").value = blog.seo?.canonicalUrl || "";
+                            document.getElementById("editBlogStatus").value = blog.status || "draft";
+
+                            const preview = document.getElementById("currentBlogImagePreview");
+                            if (preview) {
+                                const previewImage = blog.image || blog.imageUrl;
+                                preview.innerHTML = previewImage
+                                    ? `<p class="text-tiny">Current Image:</p>
+                                       <img src="${previewImage}" alt="${blog.title}" class="w-full h-32 object-contain mt-1">`
+                                    : '<p class="text-tiny text-gray-500">No image uploaded yet.</p>';
+                            }
+
+                            document.getElementById("editBlogModal").style.display = "block";
                         }
 
-                        // Close any modal
                         function closeModal(modalId) {
-                            document.getElementById(modalId).style.display = 'none';
+                            document.getElementById(modalId).style.display = "none";
                         }
 
-                        // Setup form handlers
                         function setupBlogFormHandlers() {
-                            // Add Blog Form
-                            document.getElementById('addBlogForm').addEventListener('submit', async function (e) {
-                                e.preventDefault();
+                            const addForm = document.getElementById("addBlogForm");
+                            const editForm = document.getElementById("editBlogForm");
 
-                                const formData = new FormData();
-                                formData.append('title', document.getElementById('blogTitle').value);
-                                formData.append('metaTitle', document.getElementById('blogMetaTitle').value);
-                                formData.append('metaDescription', document.getElementById('blogMetaDescription').value);
-                                formData.append('metaKeywords', document.getElementById('blogMetaKeywords').value);
-                                formData.append('content', document.getElementById('blogContent').value);
-                                formData.append('author', document.getElementById('blogAuthor').value);
-                                formData.append('image', document.getElementById('blogImage').files[0]);
+                            if (addForm) {
+                                addForm.addEventListener("submit", async function (e) {
+                                    e.preventDefault();
 
-                                try {
-                                    const response = await fetch('/admin-blogs', {
-                                        method: 'POST',
-                                        body: formData
-                                    });
+                                    const formData = new FormData();
+                                    formData.append("title", document.getElementById("blogTitle").value.trim());
+                                    formData.append("shortDescription", document.getElementById("blogShortDescription").value.trim());
+                                    formData.append("fullDescription", document.getElementById("blogFullDescription").value.trim());
+                                    formData.append("authorName", document.getElementById("blogAuthor").value.trim());
 
-                                    if (!response.ok) throw new Error('Failed to add blog');
+                                    const categoryValue = document.getElementById("blogCategory").value;
+                                    if (categoryValue) formData.append("category", categoryValue);
 
-                                    const newBlog = await response.json();
-                                    blogs.unshift(newBlog);
-                                    renderBlogs();
-                                    closeModal('addBlogModal');
-                                    alert('Blog added successfully');
-                                    location.reload();
-                                } catch (error) {
-                                    console.error('Error:', error);
-                                    alert('Error adding blog');
-                                }
-                            });
+                                    formData.append("tags", JSON.stringify(parseCommaList(document.getElementById("blogTags").value)));
+                                    formData.append("highlights", JSON.stringify(parseCommaList(document.getElementById("blogHighlights").value)));
 
-                            // Edit Blog Form
-                            document.getElementById('editBlogForm').addEventListener('submit', async function (e) {
-                                e.preventDefault();
+                                    const seoPayload = {
+                                        metaTitle: document.getElementById("blogMetaTitle").value,
+                                        metaDescription: document.getElementById("blogMetaDescription").value,
+                                        keywords: parseCommaList(document.getElementById("blogMetaKeywords").value),
+                                        ogTitle: document.getElementById("blogOgTitle").value,
+                                        ogDescription: document.getElementById("blogOgDescription").value,
+                                        canonicalUrl: document.getElementById("blogCanonicalUrl").value
+                                    };
+                                    formData.append("seo", JSON.stringify(seoPayload));
 
-                                const id = document.getElementById('editBlogId').value;
-                                const formData = new FormData();
-                                formData.append('title', document.getElementById('editBlogTitle').value);
-                                formData.append('metaTitle', document.getElementById('editBlogMetaTitle').value);
-                                formData.append('metaDescription', document.getElementById('editBlogMetaDescription').value);
-                                formData.append('metaKeywords', document.getElementById('editBlogMetaKeywords').value);
-                                formData.append('content', document.getElementById('editBlogContent').value);
-                                formData.append('author', document.getElementById('editBlogAuthor').value);
+                                    const imageFile = document.getElementById("blogImage").files[0];
+                                    if (imageFile) formData.append("image", imageFile);
 
-                                const imageFile = document.getElementById('editBlogImage').files[0];
-                                if (imageFile) {
-                                    formData.append('image', imageFile);
-                                }
-
-                                try {
-                                    const response = await fetch(`/admin-blogs/${id}`, {
-                                        method: 'PUT',
-                                        body: formData
-                                    });
-
-                                    if (!response.ok) throw new Error('Failed to update blog');
-
-                                    const updatedBlog = await response.json();
-                                    const index = blogs.findIndex(b => b._id === id);
-                                    if (index !== -1) {
-                                        blogs[index] = updatedBlog;
+                                    try {
+                                        const response = await fetch("/blog/create", {
+                                            method: "POST",
+                                            body: formData
+                                        });
+                                        const data = await response.json();
+                                        if (!response.ok || !data.success) {
+                                            throw new Error(data.error || "Failed to create blog");
+                                        }
+                                        blogs.unshift(data.blog);
+                                        renderBlogs();
+                                        closeModal("addBlogModal");
+                                        addForm.reset();
+                                        alert("Blog created successfully");
+                                    } catch (error) {
+                                        console.error("Error:", error);
+                                        alert(error.message || "Error adding blog");
                                     }
-                                    renderBlogs();
-                                    closeModal('editBlogModal');
-                                    alert('Blog updated successfully');
-                                    location.reload();
-                                } catch (error) {
-                                    console.error('Error:', error);
-                                    alert('Error updating blog');
-                                }
-                            });
+                                });
+                            }
+
+                            if (editForm) {
+                                editForm.addEventListener("submit", async function (e) {
+                                    e.preventDefault();
+
+                                    const id = document.getElementById("editBlogId").value;
+                                    const formData = new FormData();
+                                    formData.append("title", document.getElementById("editBlogTitle").value.trim());
+                                    formData.append("shortDescription", document.getElementById("editBlogShortDescription").value.trim());
+                                    formData.append("fullDescription", document.getElementById("editBlogFullDescription").value.trim());
+                                    formData.append("authorName", document.getElementById("editBlogAuthor").value.trim());
+
+                                    const categoryValue = document.getElementById("editBlogCategory").value;
+                                    if (categoryValue) formData.append("category", categoryValue);
+
+                                    formData.append("tags", JSON.stringify(parseCommaList(document.getElementById("editBlogTags").value)));
+                                    formData.append("highlights", JSON.stringify(parseCommaList(document.getElementById("editBlogHighlights").value)));
+
+                                    const seoPayload = {
+                                        metaTitle: document.getElementById("editBlogMetaTitle").value,
+                                        metaDescription: document.getElementById("editBlogMetaDescription").value,
+                                        keywords: parseCommaList(document.getElementById("editBlogMetaKeywords").value),
+                                        ogTitle: document.getElementById("editBlogOgTitle").value,
+                                        ogDescription: document.getElementById("editBlogOgDescription").value,
+                                        canonicalUrl: document.getElementById("editBlogCanonicalUrl").value
+                                    };
+                                    formData.append("seo", JSON.stringify(seoPayload));
+                                    formData.append("status", document.getElementById("editBlogStatus").value);
+
+                                    const imageFile = document.getElementById("editBlogImage").files[0];
+                                    if (imageFile) formData.append("image", imageFile);
+
+                                    try {
+                                        const response = await fetch(`/blog/update/${id}`, {
+                                            method: "PUT",
+                                            body: formData
+                                        });
+                                        const data = await response.json();
+                                        if (!response.ok || !data.success) {
+                                            throw new Error(data.error || "Failed to update blog");
+                                        }
+                                        const index = blogs.findIndex((b) => b._id === id);
+                                        if (index !== -1) blogs[index] = data.blog;
+                                        renderBlogs();
+                                        closeModal("editBlogModal");
+                                        alert("Blog updated successfully");
+                                    } catch (error) {
+                                        console.error("Error:", error);
+                                        alert(error.message || "Error updating blog");
+                                    }
+                                });
+                            }
                         }
 
-                        // Confirm and delete blog
                         async function confirmDeleteBlog(id) {
-                            if (!confirm('Are you sure you want to delete this blog?')) return;
-
+                            if (!confirm("Are you sure you want to delete this blog?")) return;
                             try {
-                                const response = await fetch(`/admin-blogs/${id}`, {
-                                    method: 'DELETE'
-                                });
-
-                                if (!response.ok) throw new Error('Failed to delete blog');
-
-                                blogs = blogs.filter(blog => blog._id !== id);
+                                const response = await fetch(`/blog/delete/${id}`, { method: "DELETE" });
+                                const data = await response.json();
+                                if (!response.ok || !data.success) {
+                                    throw new Error(data.error || "Failed to delete blog");
+                                }
+                                blogs = blogs.filter((blog) => blog._id !== id);
                                 renderBlogs();
-                                alert('Blog deleted successfully');
+                                alert("Blog deleted successfully");
                             } catch (error) {
-                                console.error('Error:', error);
-                                alert('Error deleting blog');
+                                console.error("Error:", error);
+                                alert(error.message || "Error deleting blog");
                             }
                         }
                     </script>
