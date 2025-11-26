@@ -137,20 +137,57 @@
 
                                     <img src="/images/icons/search.svg" alt="search icon">
                                 </a></li>
-                            <li class="nav-account">
-                                <a href="#" class="nav-icon-item">
-
-                                    <img src="/images/icons/user.svg" alt="user icon">
-                                </a>
-                                <div class="dropdown-account dropdown-login">
-                                    <div class="sub-top">
-                                        <a href="/userLogin" class="nav-acc-link">My Account</a>
-                                          <a href="/user-orders" class="nav-acc-link"> Orders</a>
-                                            <a href="/userBookings" class="nav-acc-link">My Bookings</a>
-                                     
+                                <li class="nav-account">
+                                    <a href="#" class="nav-icon-item">
+                                        <img src="/images/icons/user.svg" alt="user">
+                                    </a>
+                                
+                                    <div class="dropdown-account dropdown-login">
+                                        <div class="sub-top">
+                                
+                                            <% if (!user) { %>
+                                
+                                                <!-- NOT LOGGED IN -->
+                                                <a href="/userLogin" class="nav-acc-link">Login</a>
+                                
+                                            <% } else if (user.role === "user") { %>
+                                
+                                                <!-- NORMAL USER -->
+                                                <a href="/user-account" class="nav-acc-link">My Account</a>
+                                                <a href="/user-orders" class="nav-acc-link">Orders</a>
+                                                <a href="/user-addresses" class="nav-acc-link">Addresses</a>
+                                                <a href="/userBookings" class="nav-acc-link">My Bookings</a>
+                                                <a href="/logout" class="nav-acc-link">Logout</a>
+                                
+                                            <% } else if (user.role === "reseller") { %>
+                                
+                                                <!-- RESELLER -->
+                                                <a href="/reseller/dashboard" class="nav-acc-link">Reseller Dashboard</a>
+                                                <a href="/logout" class="nav-acc-link">Logout</a>
+                                
+                                            <% } else if (user.role === "freelancer") { %>
+                                
+                                                <!-- FREELANCER -->
+                                                <a href="/freelance/beautician_dashboard" class="nav-acc-link">Freelancer Dashboard</a>
+                                                <a href="/logout" class="nav-acc-link">Logout</a>
+                                
+                                            <% } else if (user.role === "salon") { %>
+                                
+                                                <!-- SALON -->
+                                                <a href="/salon/salon_dashboard" class="nav-acc-link">Salon Dashboard</a>
+                                                <a href="/logout" class="nav-acc-link">Logout</a>
+                                
+                                            <% } else if (["admin", "superadmin", "staff"].includes(user.role)) { %>
+                                
+                                                <!-- ADMIN -->
+                                                <a href="/admin/dashboard" class="nav-acc-link">Admin</a>
+                                                <a href="/logout" class="nav-acc-link">Logout</a>
+                                
+                                            <% } %>
+                                
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
                             <li class="nav-wishlist"><a href="/wishlist" class="nav-icon-item">
                                     <img src="/images/icons/heart.svg" alt="wish list">
 

@@ -305,8 +305,9 @@
                                             <% } else if (user.role === "user") { %>
                                 
                                                 <!-- NORMAL USER -->
-                                                <a href="/user/dashboard" class="nav-acc-link">My Account</a>
+                                                <a href="/user-account" class="nav-acc-link">My Account</a>
                                                 <a href="/user-orders" class="nav-acc-link">Orders</a>
+                                                <a href="/user-addresses" class="nav-acc-link">Addresses</a>
                                                 <a href="/userBookings" class="nav-acc-link">My Bookings</a>
                                                 <a href="/logout" class="nav-acc-link">Logout</a>
                                 
@@ -325,7 +326,7 @@
                                             <% } else if (user.role === "salon") { %>
                                 
                                                 <!-- SALON -->
-                                                <a href="/salon/dashboard" class="nav-acc-link">Salon Dashboard</a>
+                                                <a href="/salon/salon_dashboard" class="nav-acc-link">Salon Dashboard</a>
                                                 <a href="/logout" class="nav-acc-link">Logout</a>
                                 
                                             <% } else if (["admin", "superadmin", "staff"].includes(user.role)) { %>

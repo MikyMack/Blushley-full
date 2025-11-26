@@ -1119,10 +1119,7 @@
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </li>
-                <li class="nav-item" data-page="categories">
-                    <i class="fas fa-tags"></i>
-                    <span>Category Management</span>
-                </li>
+             
                 <li class="nav-item" data-page="products">
                     <i class="fas fa-box-open"></i>
                     <span>Product Management</span>
@@ -1135,6 +1132,12 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Account Details</span>
                 </li>
+                <li class="nav-item">
+                    <a href="/logout" style="display: flex; align-items: center; color: inherit; text-decoration: none;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span style="margin-left: 8px;">Logout</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
@@ -1143,16 +1146,26 @@
             <!-- Header Bar -->
             <div class="header-bar">
                 <div class="page-title">
-                    <h2 id="current-page-title">Retailer Dashboard</h2>
-                    <p id="current-page-description">Welcome back, Sarah! Here's your beauty products business overview.</p>
+                    <h2 id="current-page-title">Reseller Dashboard</h2>
+                    <p id="current-page-description">
+                        Welcome back
+                        <% if (resellers && resellers[0] && resellers[0].contactName) { %>
+                            , <%= resellers[0].contactName %>
+                        <% } %>!
+                        Here&#39;s your reseller business overview.
+                    </p>
                 </div>
                 <div class="user-profile">
                     <div class="user-avatar">
-                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="<%= resellers && resellers[0] && resellers[0].contactName ? resellers[0].contactName : 'Reseller' %>">
                     </div>
                     <div class="user-info">
-                        <h4>Sarah Johnson</h4>
-                        <p>Beauty Products Retailer</p>
+                        <h4>
+                            <%= resellers && resellers[0] && resellers[0].contactName ? resellers[0].contactName : (resellers && resellers[0] && resellers[0].companyName ? resellers[0].companyName : 'Reseller') %>
+                        </h4>
+                        <p>
+                            <%= resellers && resellers[0] && resellers[0].companyName ? resellers[0].companyName : '' %>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1165,230 +1178,136 @@
                         <div class="card-icon primary">
                             <i class="fas fa-boxes"></i>
                         </div>
-                        <div class="card-value">142</div>
+                        <div class="card-value"><%= (resellers && resellers[0] && typeof resellers[0].totalSales !== "undefined") ? resellers[0].totalSales : 0 %></div>
                         <div class="card-label">Total Products</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon success">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
-                        <div class="card-value">28</div>
+                        <div class="card-value"><%= (resellers && resellers[0] && typeof resellers[0].totalOrders !== "undefined") ? resellers[0].totalOrders : 0 %></div>
                         <div class="card-label">New Orders</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon warning">
                             <i class="fas fa-tags"></i>
                         </div>
-                        <div class="card-value">12</div>
-                        <div class="card-label">Product Categories</div>
+                        <div class="card-value"><%= (resellers && resellers[0] && Array.isArray(resellers[0].warehouses)) ? resellers[0].warehouses.length : 0 %></div>
+                        <div class="card-label">Product Warehouses</div>
                     </div>
                     <div class="stat-card">
                         <div class="card-icon danger">
                             <i class="fas fa-rupee-sign"></i>
                         </div>
-                        <div class="card-value">₹42,850</div>
-                        <div class="card-label">Revenue This Month</div>
+                        <div class="card-value">
+                            ₹<%= (resellers && resellers[0] && typeof resellers[0].totalEarnings !== "undefined") ? resellers[0].totalEarnings.toLocaleString("en-IN") : "0" %>
+                        </div>
+                        <div class="card-label">Revenue To Date</div>
                     </div>
                 </div>
 
                 <!-- Dashboard Sections -->
                 <div class="dashboard-sections">
-                    <!-- Recent Orders -->
+                    <!-- Reseller Account Info -->
                     <div class="section-card">
                         <div class="section-header">
-                            <h3 class="section-title">Recent Orders</h3>
-                            <a href="#" class="view-all-link">View All</a>
+                            <h3 class="section-title">Reseller Account Info</h3>
                         </div>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Customer</th>
-                                        <th>Date</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#ORD-7842</td>
-                                        <td>Emma Johnson</td>
-                                        <td>Oct 15, 2023</td>
-                                        <td>₹1,250</td>
-                                        <td><span class="status-badge status-pending">Pending</span></td>
-                                        <td><button class="action-button edit-button">Update</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#ORD-7839</td>
-                                        <td>Mia Williams</td>
-                                        <td>Oct 14, 2023</td>
-                                        <td>₹850</td>
-                                        <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                                        <td><button class="action-button edit-button">Update</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#ORD-7835</td>
-                                        <td>Olivia Brown</td>
-                                        <td>Oct 13, 2023</td>
-                                        <td>₹2,150</td>
-                                        <td><span class="status-badge status-completed">Shipped</span></td>
-                                        <td><button class="action-button edit-button">Track</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#ORD-7828</td>
-                                        <td>Ava Davis</td>
-                                        <td>Oct 12, 2023</td>
-                                        <td>₹650</td>
-                                        <td><span class="status-badge status-completed">Delivered</span></td>
-                                        <td><button class="action-button confirm-button" disabled>Completed</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <% if (resellers && resellers[0]) { %>
+                        <div class="profile-details">
+                            <div class="profile-field">
+                                <span class="field-label">Business Name</span>
+                                <span class="field-value"><%= resellers[0].companyName %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">GST No.</span>
+                                <span class="field-value"><%= resellers[0].gstNo || "—" %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Contact Name</span>
+                                <span class="field-value"><%= resellers[0].contactName %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Email</span>
+                                <span class="field-value"><%= resellers[0].email %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Phone</span>
+                                <span class="field-value"><%= resellers[0].phone %></span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Status</span>
+                                <span class="field-value">
+                                    <% if (resellers[0].status === "approved") { %>
+                                        <span class="status-badge status-confirmed">Approved</span>
+                                    <% } else if (resellers[0].status === "pending") { %>
+                                        <span class="status-badge status-pending">Pending</span>
+                                    <% } else if (resellers[0].status === "rejected") { %>
+                                        <span class="status-badge status-rejected">Rejected</span>
+                                    <% } else if (resellers[0].status === "disabled") { %>
+                                        <span class="status-badge status-disabled">Disabled</span>
+                                    <% } %>
+                                </span>
+                            </div>
+                            <% if(resellers[0].status === "rejected" && resellers[0].rejectionReason) { %>
+                            <div class="profile-field">
+                                <span class="field-label">Rejection Reason</span>
+                                <span class="field-value"><%= resellers[0].rejectionReason %></span>
+                            </div>
+                            <% } %>
                         </div>
+                        <% } else { %>
+                        <div class="profile-details">
+                            <div>No reseller data found.</div>
+                        </div>
+                        <% } %>
                     </div>
-
-                    <!-- Low Stock Products -->
+                    <!-- Warehouses (if any) -->
                     <div class="section-card">
                         <div class="section-header">
-                            <h3 class="section-title">Low Stock Products</h3>
-                            <a href="#" class="view-all-link">View All Products</a>
+                            <h3 class="section-title">Warehouses</h3>
+                            <% if (resellers && resellers[0] && Array.isArray(resellers[0].warehouses) && resellers[0].warehouses.length > 0) { %>
+                                <span class="field-value" style="font-size: 90%; color: #888;">Total: <%= resellers[0].warehouses.length %></span>
+                            <% } %>
                         </div>
-                        <div class="product-grid">
-                            <div class="product-card">
-                                <div class="product-image">
-                                    <img src="https://via.placeholder.com/300" alt="Vitamin C Serum">
-                                </div>
-                                <div class="product-details">
-                                    <div class="product-name">Vitamin C Serum</div>
-                                    <div class="product-category">Skincare</div>
-                                    <div class="product-price">₹1,299</div>
-                                    <div class="product-stock">
-                                        <span>Stock:</span>
-                                        <span style="color: var(--warning-color);">8 units</span>
-                                    </div>
-                                    <div class="product-actions">
-                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0421">Edit</button>
-                                        <button class="action-button secondary-button">Restock</button>
-                                    </div>
-                                </div>
+                        <% if (resellers && resellers[0] && Array.isArray(resellers[0].warehouses) && resellers[0].warehouses.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Address</th>
+                                            <th>City</th>
+                                            <th>State</th>
+                                            <th>Pincode</th>
+                                            <th>Phone</th>
+                                            <th>Is Default</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% resellers[0].warehouses.forEach(function(wh) { %>
+                                            <tr>
+                                                <td><%= wh.name %></td>
+                                                <td><%= wh.address || '-' %></td>
+                                                <td><%= wh.city || '-' %></td>
+                                                <td><%= wh.state || '-' %></td>
+                                                <td><%= wh.pincode || '-' %></td>
+                                                <td><%= wh.phone || '-' %></td>
+                                                <td>
+                                                    <% if (wh.isDefault) { %>
+                                                        <span class="status-badge status-confirmed">Default</span>
+                                                    <% } else { %>
+                                                        <span class="status-badge status-secondary">No</span>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="product-card">
-                                <div class="product-image">
-                                    <img src="https://via.placeholder.com/300" alt="Matte Lipstick">
-                                </div>
-                                <div class="product-details">
-                                    <div class="product-name">Matte Lipstick - Ruby</div>
-                                    <div class="product-category">Makeup</div>
-                                    <div class="product-price">₹599</div>
-                                    <div class="product-stock">
-                                        <span>Stock:</span>
-                                        <span style="color: var(--warning-color);">5 units</span>
-                                    </div>
-                                    <div class="product-actions">
-                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0387">Edit</button>
-                                        <button class="action-button secondary-button">Restock</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="product-card">
-                                <div class="product-image">
-                                    <img src="https://via.placeholder.com/300" alt="Hair Growth Oil">
-                                </div>
-                                <div class="product-details">
-                                    <div class="product-name">Hair Growth Oil</div>
-                                    <div class="product-category">Haircare</div>
-                                    <div class="product-price">₹899</div>
-                                    <div class="product-stock">
-                                        <span>Stock:</span>
-                                        <span style="color: var(--warning-color);">12 units</span>
-                                    </div>
-                                    <div class="product-actions">
-                                        <button class="action-button edit-button edit-product-btn" data-id="PROD-0256">Edit</button>
-                                        <button class="action-button secondary-button">Restock</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Categories Page -->
-            <div class="page-content" id="categories-page">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3 class="section-title">Product Categories</h3>
-                        <button class="action-button add-button" id="add-category-btn">
-                            <i class="fas fa-plus"></i> Add Category
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Category ID</th>
-                                    <th>Category Name</th>
-                                    <th>Description</th>
-                                    <th>Products</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>CAT-001</td>
-                                    <td>Skincare</td>
-                                    <td>Face creams, serums, cleansers</td>
-                                    <td>42</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
-                                    <td>
-                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-001">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CAT-002</td>
-                                    <td>Makeup</td>
-                                    <td>Lipsticks, foundations, eyeshadows</td>
-                                    <td>38</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
-                                    <td>
-                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-002">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CAT-003</td>
-                                    <td>Haircare</td>
-                                    <td>Shampoos, conditioners, hair oils</td>
-                                    <td>25</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
-                                    <td>
-                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-003">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CAT-004</td>
-                                    <td>Fragrances</td>
-                                    <td>Perfumes, body mists</td>
-                                    <td>18</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
-                                    <td>
-                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-004">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CAT-005</td>
-                                    <td>Bath & Body</td>
-                                    <td>Body washes, lotions, scrubs</td>
-                                    <td>19</td>
-                                    <td><span class="status-badge status-pending">Inactive</span></td>
-                                    <td>
-                                        <button class="action-button edit-button edit-category-btn" data-id="CAT-005">Edit</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <% } else { %>
+                            <div style="font-size: 90%; color: #999; margin:1em 0 1em 1em;">No warehouse records available.</div>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -1606,24 +1525,37 @@
                     <div class="section-card">
                         <div class="profile-header">
                             <div class="profile-avatar">
-                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="<%= resellers && resellers[0] && resellers[0].contactName ? resellers[0].contactName : 'Reseller' %>">
                             </div>
                             <div class="profile-info">
-                                <h3>Sarah Johnson</h3>
-                                <p>Beauty Products Retailer</p>
-                                <p>Member since January 2020</p>
+                                <h3>
+                                    <%= resellers && resellers[0] && resellers[0].contactName ? resellers[0].contactName : (resellers && resellers[0] && resellers[0].companyName ? resellers[0].companyName : 'Reseller') %>
+                                </h3>
+                                <p>
+                                    <%= resellers && resellers[0] && resellers[0].businessDescription ? resellers[0].businessDescription : (resellers && resellers[0] && resellers[0].companyName ? resellers[0].companyName : '') %>
+                                </p>
+                                <p>
+                                    Member since <%= resellers && resellers[0] && resellers[0].createdAt ? new Date(resellers[0].createdAt).toLocaleString('en-IN', { month: 'long', year: 'numeric' }) : '-' %>
+                                </p>
+                                <!-- Optional: add custom statistics cards if any new relevant fields-->
                                 <div class="profile-stats">
                                     <div class="profile-stat">
-                                        <div class="stat-value">4.7</div>
-                                        <div class="stat-label">Customer Rating</div>
+                                        <div class="stat-value">
+                                            ₹<%= (resellers && resellers[0] && typeof resellers[0].totalEarnings !== "undefined") ? resellers[0].totalEarnings.toLocaleString("en-IN") : "0" %>
+                                        </div>
+                                        <div class="stat-label">Total Revenue</div>
                                     </div>
                                     <div class="profile-stat">
-                                        <div class="stat-value">428</div>
+                                        <div class="stat-value">
+                                            <%= (resellers && resellers[0] && typeof resellers[0].totalOrders !== "undefined") ? resellers[0].totalOrders : 0 %>
+                                        </div>
                                         <div class="stat-label">Total Orders</div>
                                     </div>
                                     <div class="profile-stat">
-                                        <div class="stat-value">₹42,850</div>
-                                        <div class="stat-label">Monthly Revenue</div>
+                                        <div class="stat-value">
+                                            <%= (resellers && resellers[0] && typeof resellers[0].totalSales !== "undefined") ? resellers[0].totalSales : 0 %>
+                                        </div>
+                                        <div class="stat-label">Total Products</div>
                                     </div>
                                 </div>
                             </div>
@@ -1632,40 +1564,62 @@
                             <h3 class="section-title">Account Information</h3>
                             <button class="action-button edit-btn" id="edit-account-btn">Edit Account</button>
                         </div>
+                        <% if (resellers && resellers[0]) { %>
                         <div class="profile-details">
                             <div class="profile-field">
-                                <span class="field-label">Store Name</span>
-                                <span class="field-value" id="store-name">BeautyPro Retail</span>
+                                <span class="field-label">Business Name</span>
+                                <span class="field-value" id="store-name"><%= resellers[0].companyName %></span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Owner Name</span>
-                                <span class="field-value" id="owner-name">Sarah Johnson</span>
+                                <span class="field-label">GST No.</span>
+                                <span class="field-value" id="gst-number"><%= resellers[0].gstNo || "—" %></span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Email Address</span>
-                                <span class="field-value" id="email-address">sarah@beautyproretail.com</span>
+                                <span class="field-label">Contact Name</span>
+                                <span class="field-value" id="owner-name"><%= resellers[0].contactName %></span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Phone Number</span>
-                                <span class="field-value" id="phone-number">+91 98765 43210</span>
+                                <span class="field-label">Email</span>
+                                <span class="field-value" id="email-address"><%= resellers[0].email %></span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Business Address</span>
-                                <span class="field-value" id="business-address">123 Beauty Street, Cosmetics District, Mumbai, 400001</span>
+                                <span class="field-label">Phone</span>
+                                <span class="field-value" id="phone-number"><%= resellers[0].phone %></span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">GST Number</span>
-                                <span class="field-value" id="gst-number">27ABCDE1234F1Z5</span>
+                                <span class="field-label">Business Description</span>
+                                <span class="field-value" id="business-description"><%= resellers[0].businessDescription || '-' %></span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Business Type</span>
-                                <span class="field-value" id="business-type">Beauty Products Retailer</span>
+                                <span class="field-label">Status</span>
+                                <span class="field-value">
+                                    <% if (resellers[0].status === "approved") { %>
+                                        <span class="status-badge status-confirmed">Approved</span>
+                                    <% } else if (resellers[0].status === "pending") { %>
+                                        <span class="status-badge status-pending">Pending</span>
+                                    <% } else if (resellers[0].status === "rejected") { %>
+                                        <span class="status-badge status-cancelled">Rejected</span>
+                                    <% } else { %>
+                                        <span class="status-badge status-secondary"><%= resellers[0].status %></span>
+                                    <% } %>
+                                </span>
                             </div>
+                            <% if (resellers[0].status === "rejected" && resellers[0].rejectionReason) { %>
+                            <div class="profile-field">
+                                <span class="field-label">Rejection Reason</span>
+                                <span class="field-value"><%= resellers[0].rejectionReason %></span>
+                            </div>
+                            <% } %>
                             <div class="profile-field">
                                 <span class="field-label">Member Since</span>
-                                <span class="field-value" id="member-since">January 2020</span>
+                                <span class="field-value" id="member-since">
+                                    <%= resellers[0].createdAt ? new Date(resellers[0].createdAt).toLocaleString('en-IN', { month: 'long', year: 'numeric' }) : '-' %>
+                                </span>
                             </div>
                         </div>
+                        <% } else { %>
+                            <div style="color: #888; margin:1em;">No account information available.</div>
+                        <% } %>
                         <div class="profile-actions" id="profile-actions" style="display: none;">
                             <button class="cancel-btn" id="cancel-account-btn">Cancel</button>
                             <button class="save-btn" id="save-account-btn">Save Changes</button>
@@ -1674,72 +1628,94 @@
 
                     <div class="section-card">
                         <div class="section-header">
-                            <h3 class="section-title">Store Statistics</h3>
+                            <h3 class="section-title">More Account Details</h3>
                         </div>
+                        <% if (resellers && resellers[0]) { %>
                         <div class="profile-details">
                             <div class="profile-field">
                                 <span class="field-label">Total Products</span>
-                                <span class="field-value">142</span>
-                            </div>
-                            <div class="profile-field">
-                                <span class="field-label">Active Categories</span>
-                                <span class="field-value">12</span>
+                                <span class="field-value">
+                                    <%= typeof resellers[0].totalSales !== "undefined" ? resellers[0].totalSales : 0 %>
+                                </span>
                             </div>
                             <div class="profile-field">
                                 <span class="field-label">Total Orders</span>
-                                <span class="field-value">428</span>
+                                <span class="field-value">
+                                    <%= typeof resellers[0].totalOrders !== "undefined" ? resellers[0].totalOrders : 0 %>
+                                </span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Completed Orders</span>
-                                <span class="field-value">395</span>
+                                <span class="field-label">Total Revenue</span>
+                                <span class="field-value">
+                                    ₹<%= typeof resellers[0].totalEarnings !== "undefined" ? resellers[0].totalEarnings.toLocaleString("en-IN") : "0" %>
+                                </span>
                             </div>
                             <div class="profile-field">
-                                <span class="field-label">Customer Rating</span>
-                                <span class="field-value">4.7/5.0</span>
+                                <span class="field-label">Warehouses</span>
+                                <span class="field-value">
+                                    <%= Array.isArray(resellers[0].warehouses) ? resellers[0].warehouses.length : 0 %>
+                                </span>
                             </div>
+                            <% if (Array.isArray(resellers[0].warehouses) && resellers[0].warehouses.length > 0) { %>
+                            <div class="profile-field" style="flex-direction:column;align-items: flex-start;">
+                                <span class="field-label">Warehouse List:</span>
+                                <ul style="padding-left: 1.2em; margin: 0;">
+                                    <% resellers[0].warehouses.forEach(function(wh, idx) { %>
+                                        <li>
+                                            <b><%= wh.name %></b>
+                                            <span style="color: #888;">
+                                                (<%= wh.city || '-' %>, <%= wh.state || '-' %>)
+                                                <% if (wh.isDefault) { %> - <span class="status-badge status-confirmed">Default</span><% } %>
+                                            </span><br>
+                                            <span style="font-size:90%; color:#666;"><%= wh.address || '' %><% if(wh.pincode){ %>, <%= wh.pincode %><% } %></span>
+                                            <% if (wh.phone) { %>
+                                                <span style="font-size:90%;"> | 📞 <%= wh.phone %></span>
+                                            <% } %>
+                                            <% if (wh.googleMapLink) { %>
+                                                <span style="font-size:90%;"> | <a href="<%= wh.googleMapLink %>" target="_blank">Google Map</a></span>
+                                            <% } %>
+                                        </li>
+                                    <% }) %>
+                                </ul>
+                            </div>
+                            <% } %>
+
                             <div class="profile-field">
-                                <span class="field-label">Monthly Revenue</span>
-                                <span class="field-value">₹42,850</span>
+                                <span class="field-label">Documents</span>
+                                <span class="field-value">
+                                    <% if (Array.isArray(resellers[0].documents) && resellers[0].documents.length > 0) { %>
+                                        <ul style="padding-left:1.2em;margin:0;">
+                                            <% resellers[0].documents.forEach(function(doc) { %>
+                                                <li>
+                                                    <a href="<%= doc.url %>" target="_blank"><%= doc.name %></a>
+                                                    (<%= doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '' %>)
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %>
+                                        <span style="color: #aaa;">No documents uploaded</span>
+                                    <% } %>
+                                </span>
                             </div>
+                            <% if (resellers[0].verifiedByAdmin) { %>
+                            <div class="profile-field">
+                                <span class="field-label">Verified By Admin</span>
+                                <span class="field-value">
+                                    <%= resellers[0].verifiedByAdmin %>
+                                    <% if (resellers[0].verifiedAt) { %>
+                                        (on <%= new Date(resellers[0].verifiedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %>)
+                                    <% } %>
+                                </span>
+                            </div>
+                            <% } %>
                         </div>
+                        <% } else { %>
+                            <div style="color: #888; margin:1em;">No additional account details available.</div>
+                        <% } %>
                     </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Category Modal -->
-    <div class="modal-overlay" id="category-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="category-modal-title">Add Category</h3>
-                <button class="modal-close" id="close-category-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="category-form">
-                    <input type="hidden" id="category-id">
-                    <div class="form-group">
-                        <label class="form-label" for="category-name">Category Name</label>
-                        <input type="text" class="form-input" id="category-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="category-description">Description</label>
-                        <textarea class="form-input form-textarea" id="category-description"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="category-status">Status</label>
-                        <select class="form-select" id="category-status">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="action-button secondary-button" id="cancel-category-btn">Cancel</button>
-                <button class="action-button confirm-button" id="save-category-btn">Save Category</button>
-            </div>
-        </div>
     </div>
 
     <!-- Product Modal -->
