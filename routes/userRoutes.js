@@ -2,8 +2,22 @@ const express = require('express');
 const router = express.Router();
 
 // Home page
-router.get('/', (req, res) => {
-    res.render('user/home');
+const Category = require('../models/Category');
+const SubCategory = require('../models/SubCategory');
+const ChildCategory = require('../models/ChildCategory');
+
+router.get('/', async (req, res) => {
+    try {
+        const [categories, subcategories, childcategories] = await Promise.all([
+            Category.find({ isActive: true }).lean(),
+            SubCategory.find({ isActive: true }).lean(),
+            ChildCategory.find({ isActive: true }).lean()
+        ]);
+        res.render('user/home', { categories, subcategories, childcategories });
+    } catch (err) {
+        console.error("Error loading categories for home page:", err);
+        res.render('user/home', { categories: [], subcategories: [], childcategories: [], error: "Could not load categories" });
+    }
 });
 
 // About page
