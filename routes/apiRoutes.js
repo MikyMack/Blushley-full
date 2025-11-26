@@ -8,6 +8,7 @@ const productCtrl = require('../controllers/productCtrl');
 const beautyTipCtrl = require('../controllers/beautyTipController');
 const ChildCategory = require("../models/ChildCategory");
 const SubCategory = require("../models/SubCategory");
+const blogCtrl = require("../controllers/blogController");
 
 
 router.post("/category/create", upload.single("image"), categoryCtrl.createCategory);
@@ -130,5 +131,32 @@ router.get('/api/childcategories', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch child categories' });
   }
 });
+
+// CREATE BLOG
+router.post(
+  "/blog/create",
+  upload.fields([
+    { name: "image", maxCount: 1 }
+  ]),
+  blogCtrl.createBlog
+);
+
+// UPDATE BLOG
+router.put(
+  "/blog/update/:id",
+  upload.fields([
+    { name: "image", maxCount: 1 }
+  ]),
+  blogCtrl.updateBlog
+);
+
+// LIST ALL BLOGS
+router.get("/blogs", blogCtrl.getAllBlogs);
+
+// GET SINGLE BLOG BY SLUG
+router.get("/blog/:slug", blogCtrl.getBlogBySlug);
+
+// DELETE BLOG
+router.delete("/blog/delete/:id", blogCtrl.deleteBlog);
 
 module.exports = router;

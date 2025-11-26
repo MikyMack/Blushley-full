@@ -24,8 +24,14 @@ router.get('/banner', (req, res) => {
     res.render('admin/admin_banner');
 });
 
-router.get('/blogs', (req, res) => {
-    res.render('admin/admin_blogs');
+router.get('/blogs', isAdmin, async (req, res) => {
+    try {
+        const categories = await Category.find({ status: { $ne: 'deleted' } }).lean();
+        res.render('admin/admin_blogs', { categories });
+    } catch (error) {
+        console.error('Error fetching categories for blogs:', error);
+        res.render('admin/admin_blogs', { categories: [], error: 'Failed to load categories' });
+    }
 });
 
 
