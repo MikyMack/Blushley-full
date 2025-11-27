@@ -78,140 +78,7 @@
 
     <div id="wrapper">
 
-        <% 
-            const shopMegaMenu = [
-                {
-                    title: "Skincare",
-                    subcategories: [
-                        {
-                            title: "Cleansers",
-                            children: [
-                                { label: "Face Wash", href: "/shop?category=face-wash" },
-                                { label: "Oil Cleansers", href: "/shop?category=oil-cleansers" },
-                                { label: "Micellar Water", href: "/shop?category=micellar" }
-                            ]
-                        },
-                        {
-                            title: "Cleansers",
-                            children: [
-                                { label: "Face Wash", href: "/shop?category=face-wash" },
-                                { label: "Oil Cleansers", href: "/shop?category=oil-cleansers" },
-                                { label: "Micellar Water", href: "/shop?category=micellar" }
-                            ]
-                        },
-                        {
-                            title: "Cleansers",
-                            children: [
-                                { label: "Face Wash", href: "/shop?category=face-wash" },
-                                { label: "Oil Cleansers", href: "/shop?category=oil-cleansers" },
-                                { label: "Micellar Water", href: "/shop?category=micellar" }
-                            ]
-                        },
-                        {
-                            title: "Cleansers",
-                            children: [
-                                { label: "Face Wash", href: "/shop?category=face-wash" },
-                                { label: "Oil Cleansers", href: "/shop?category=oil-cleansers" },
-                                { label: "Micellar Water", href: "/shop?category=micellar" }
-                            ]
-                        },  
-                        {
-                            title: "Treatments",
-                            children: [
-                                { label: "Serums", href: "/shop?category=serums" },
-                                { label: "Essences", href: "/shop?category=essences" },
-                                { label: "Ampoules", href: "/shop?category=ampoules" }
-                            ]
-                        },
-                        {
-                            title: "Moisturizers",
-                            children: [
-                                { label: "Day Cream", href: "/shop?category=day-cream" },
-                                { label: "Night Cream", href: "/shop?category=night-cream" },
-                                { label: "Gel Cream", href: "/shop?category=gel-cream" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: "Haircare",
-                    subcategories: [
-                        {
-                            title: "Cleanse",
-                            children: [
-                                { label: "Shampoo", href: "/shop?category=shampoo" },
-                                { label: "Co-wash", href: "/shop?category=co-wash" }
-                            ]
-                        },
-                        {
-                            title: "Condition",
-                            children: [
-                                { label: "Conditioner", href: "/shop?category=conditioner" },
-                                { label: "Hair Mask", href: "/shop?category=hair-mask" }
-                            ]
-                        },
-                        {
-                            title: "Style & Treat",
-                            children: [
-                                { label: "Serums & Oils", href: "/shop?category=hair-serum" },
-                                { label: "Heat Protectant", href: "/shop?category=heat-protectant" },
-                                { label: "Hair Spray", href: "/shop?category=hair-spray" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: "Makeup",
-                    subcategories: [
-                        {
-                            title: "Face",
-                            children: [
-                                { label: "Foundation", href: "/shop?category=foundation" },
-                                { label: "Concealer", href: "/shop?category=concealer" },
-                                { label: "Blush & Highlighter", href: "/shop?category=blush" }
-                            ]
-                        },
-                        {
-                            title: "Eyes",
-                            children: [
-                                { label: "Eyeshadow", href: "/shop?category=eyeshadow" },
-                                { label: "Eyeliner", href: "/shop?category=eyeliner" },
-                                { label: "Mascara", href: "/shop?category=mascara" }
-                            ]
-                        },
-                        {
-                            title: "Lips",
-                            children: [
-                                { label: "Lipstick", href: "/shop?category=lipstick" },
-                                { label: "Lip Gloss", href: "/shop?category=lip-gloss" },
-                                { label: "Lip Care", href: "/shop?category=lip-care" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: "Body & Fragrance",
-                    subcategories: [
-                        {
-                            title: "Body Care",
-                            children: [
-                                { label: "Body Wash", href: "/shop?category=body-wash" },
-                                { label: "Body Lotion", href: "/shop?category=body-lotion" },
-                                { label: "Exfoliators", href: "/shop?category=body-scrub" }
-                            ]
-                        },
-                        {
-                            title: "Fragrance",
-                            children: [
-                                { label: "Perfume", href: "/shop?category=perfume" },
-                                { label: "Body Mist", href: "/shop?category=body-mist" }
-                            ]
-                        }
-                    ]
-                }
-            ];
-        %>
-        <!-- Header -->
+   <!-- Header -->
         <header id="header" class="header-default">
             <div class="container">
                 <div class="row wrapper-header align-items-center">
@@ -237,21 +104,49 @@
                                     <a href="/shop" class="item-link">Shop</a>
                                     <div class="mega-menu-panel">
                                         <div class="mega-menu-inner">
-                                            <% shopMegaMenu.forEach(category => { %>
-                                                <div class="mega-category">
-                                                    <div class="mega-category-title"><%= category.title %></div>
-                                                    <% category.subcategories.forEach(sub => { %>
-                                                        <div class="mega-subcategory">
-                                                            <div class="mega-subcategory-title"><%= sub.title %></div>
-                                                            <ul class="mega-subcategory-list">
-                                                                <% sub.children.forEach(child => { %>
-                                                                    <li><a href="<%= child.href %>"><%= child.label %></a></li>
-                                                                <% }) %>
-                                                            </ul>
+                                            <% if (categories && categories.length > 0) { %>
+                                                <% categories.forEach(function(category) { %>
+                                                    <div class="mega-category">
+                                                        <div class="mega-category-title">
+                                                            <a href="/shop/<%= category.slug %>"><%= category.name %></a>
                                                         </div>
-                                                    <% }) %>
+                                                        <% 
+                                                            var subs = subcategories.filter(function(sub) { 
+                                                                return sub.categoryId && sub.categoryId.toString() === category._id.toString(); 
+                                                            }); 
+                                                        %>
+                                                        <% if (subs.length > 0) { %>
+                                                            <% subs.forEach(function(sub) { %>
+                                                                <div class="mega-subcategory">
+                                                                    <div class="mega-subcategory-title">
+                                                                        <a href="/shop/<%= category.slug %>/<%= sub.slug %>"><%= sub.name %></a>
+                                                                    </div>
+                                                                    <ul class="mega-subcategory-list">
+                                                                        <%
+                                                                            var childs = childcategories.filter(function(child) {
+                                                                                return child.subCategoryId && child.subCategoryId.toString() === sub._id.toString();
+                                                                            });
+                                                                        %>
+                                                                        <% if (childs.length > 0) { %>
+                                                                            <% childs.forEach(function(child) { %>
+                                                                                <li>
+                                                                                    <a href="/shop/<%= category.slug %>/<%= sub.slug %>/<%= child.slug %>">
+                                                                                        <%= child.name %>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <% }); %>
+                                                                        <% } %>
+                                                                    </ul>
+                                                                </div>
+                                                            <% }); %>
+                                                        <% } %>
+                                                    </div>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <div class="mega-category">
+                                                    <div class="mega-category-title">No categories found.</div>
                                                 </div>
-                                            <% }) %>
+                                            <% } %>
                                             <div class="mega-featured">
                                                 <h6>Exclusive Offers</h6>
                                                 <p>Limited edition kits & expert curated bundles for every routine.</p>
@@ -533,147 +428,41 @@
         <!-- Categories -->
         <section class="flat-spacing">
             <div class="container">
-
                 <div class="section-header" style="text-align: center; margin-bottom: 60px;">
-                    <h2 style="font-size: 42px; font-weight: 300; color: #333; margin-bottom: 15px;">Shop by Category
-                    </h2>
+                    <h2 style="font-size: 42px; font-weight: 300; color: #333; margin-bottom: 15px;">Shop by Category</h2>
                     <p style="font-size: 16px; color: #999;">Categories you might like</p>
                 </div>
                 <div dir="ltr" class="swiper tf-sw-categories" data-preview="6" data-tablet="4" data-mobile-sm="3"
                     data-mobile="2" data-space-lg="20" data-space-md="20" data-space="15" data-pagination="2"
                     data-pagination-md="2" data-pagination-lg="1">
-
                     <div class="swiper-wrapper">
-                        <!-- item 1 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Skincare</h6>
-                                    </a>
+                        <% if (categories && categories.length > 0) { %>
+                            <% categories.forEach(function(category) { %>
+                                <div class="swiper-slide">
+                                    <div class="collection-circle hover-img">
+                                        <a href="/shop/<%= category.slug %>" class="img-style">
+                                            <img class="lazyload"
+                                                data-src="<%= category.image ? category.image : '/images/collections/collection-circle/makeup-mockup.jpg' %>"
+                                                src="<%= category.image ? category.image : '/images/collections/collection-circle/makeup-mockup.jpg' %>"
+                                                alt="collection-img">
+                                        </a>
+                                        <div class="collection-content text-center">
+                                            <a href="/shop/<%= category.slug %>" class="cls-title">
+                                                <h6 class="text"><%= category.name %></h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="swiper-slide">
+                                <div class="collection-circle hover-img">
+                                    <div class="collection-content text-center">
+                                        <h6 class="text">No categories found.</h6>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- item 2 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Makeup</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 3 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Hair Care</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 4 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Fragrance</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 5 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Body Care</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 6 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Nail Care</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- item 7 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Personal Hygiene</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- item 8 -->
-                        <div class="swiper-slide">
-                            <div class="collection-circle hover-img">
-                                <a href="#" class="img-style">
-                                    <img class="lazyload"
-                                        data-src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        src="/images/collections/collection-circle/makeup-mockup.jpg"
-                                        alt="collection-img">
-                                </a>
-                                <div class="collection-content text-center">
-                                    <a href="/shop" class="cls-title">
-                                        <h6 class="text">Mens Grooming</h6>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        <% } %>
                     </div>
                     <div class="sw-pagination-categories sw-dots type-circle justify-content-center"></div>
                 </div>
@@ -762,151 +551,68 @@
                     <h3 class="heading">Trendy Collection</h3>
                     <p class="subheading text-secondary">Fresh styles just in! Elevate your look.</p>
                 </div>
-                <div dir="ltr" class="swiper tf-sw-recent" data-preview="4" data-tablet="3" data-mobile="2"
-                    data-space-lg="30" data-space-md="30" data-space="15" data-pagination="1" data-pagination-md="1"
-                    data-pagination-lg="1">
+                <% if (Array.isArray(products) && products.length) { %>
+                <div dir="ltr" class="swiper tf-sw-recent"
+                    data-preview="4" data-tablet="3" data-mobile="2"
+                    data-space-lg="30" data-space-md="30" data-space="15"
+                    data-pagination="1" data-pagination-md="1" data-pagination-lg="1">
                     <div class="swiper-wrapper">
-                        <!-- 1 -->
+                        <% products.forEach(function(product, index){ 
+                            let base = typeof product.adminBasePrice === 'number' && product.adminBasePrice > 0
+                                ? product.adminBasePrice
+                                : product.basePrice;
+                            let sale = typeof product.adminSalePrice === 'number' && product.adminSalePrice > 0
+                                ? product.adminSalePrice
+                                : (typeof product.salePrice === 'number' && product.salePrice > 0
+                                    ? product.salePrice
+                                    : null);
+
+                            let discount = null;
+                            if (base && sale && sale < base) {
+                              discount = Math.round(((base - sale) / base) * 100);
+                            }
+                            let img1 = (product.images && product.images[0]) ? product.images[0] : '/images/no-image.png';
+                            let img2 = (product.images && product.images[1]) ? product.images[1] : img1;
+                        %>
                         <div class="swiper-slide">
-                            <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0s">
+                            <div class="card-product card-product-size wow fadeInUp" data-wow-delay="<%= (index * 0.1).toFixed(1) %>s">
                                 <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/product1.jpg"
-                                            src="/images/products/product1.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/product1.jpg"
-                                            src="/images/products/product1.jpg" alt="image-product">
+                                    <a href="/productDetails/<%= product.slug %>" class="product-img">
+                                        <img class="lazyload img-product"
+                                            data-src="<%= img1 %>"
+                                            src="<%= img1 %>" alt="<%= product.title %>">
+                                        <img class="lazyload img-hover"
+                                            data-src="<%= img2 %>"
+                                            src="<%= img2 %>" alt="<%= product.title %>">
                                     </a>
-
-
+                                    <% if (discount) { %>
+                                    <div class="on-sale-wrap"><span class="on-sale-item">-<%= discount %>%</span></div>
+                                    <% } %>
                                     <div class="list-btn-main">
-                                        <a href="/shop" class="btn-main-product">Shop Now
-                                        </a>
+                                        <a href="/productDetails/<%= product.slug %>" class="btn-main-product">Shop Now</a>
                                     </div>
                                 </div>
                                 <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Face cream</a>
-                                    <span class="price">₹39.99</span>
+                                    <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.title %></a>
+                                    <span class="price">
+                                        <% if (sale && sale < base) { %>
+                                            <span class="old-price">₹<%= base.toFixed(2) %></span>₹<%= sale.toFixed(2) %>
+                                        <% } else { %>
+                                            ₹<%= base.toFixed(2) %>
+                                        <% } %>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <!-- 2 -->
-                        <div class="swiper-slide">
-                            <div class="card-product wow fadeInUp" data-wow-delay="0.1s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/product2.jpg"
-                                            src="/images/products/product2.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/product2.jpg"
-                                            src="/images/products/product2.jpg" alt="image-product">
-                                    </a>
-
-
-                                    <div class="list-btn-main">
-                                        <a href="/shop" class="btn-main-product">Shop Now
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Eyeshadow palette</a>
-                                    <span class="price">₹79.99</span>
-                                    <!--  <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active">
-                                            <span class="swatch-value bg-orange"></span>
-                                            <img class="lazyload" data-src="/images/products/product2.jpg"
-                                                src="/images/products/product2.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-dark-pink"></span>
-                                            <img class="lazyload" data-src="/images/products/product2.jpg"
-                                                src="/images/products/product2.jpg" alt="image-product">
-                                        </li>
-                                    </ul>-->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 3 -->
-                        <div class="swiper-slide">
-                            <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0.2s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/product3.jpg"
-                                            src="/images/products/product3.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/product3.jpg"
-                                            src="/images/products/product3.jpg" alt="image-product">
-                                    </a>
-                                    <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-
-                                    <div class="list-btn-main">
-                                        <a href="/shop" class="btn-main-product">Shop Now
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Mens cream</a>
-                                    <span class="price"><span class="old-price">₹98.00</span>₹129.99</span>
-                                    <!--  <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active">
-                                            <span class="swatch-value bg-light-green"></span>
-                                            <img class="lazyload" data-src="/images/products/product3.jpg"
-                                                src="/images/products/product3.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-grey"></span>
-                                            <img class="lazyload" data-src="/images/products/product3.jpg"
-                                                src="/images/products/product3.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch line">
-                                            <span class="swatch-value bg-white"></span>
-                                            <img class="lazyload" data-src="/images/products/product3.jpg"
-                                                src="/images/products/product3.jpg" alt="image-product">
-                                        </li>
-                                    </ul>-->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 4 -->
-                        <div class="swiper-slide">
-                            <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0.3s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/product4.jpg"
-                                            src="/images/products/product4.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/product4.jpg"
-                                            src="/images/products/product4.jpg" alt="image-product">
-                                    </a>
-                                    <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-
-                                    <div class="list-btn-main">
-                                        <a href="/shop" class="btn-main-product">Shop Now
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Mens Watch</a>
-                                    <span class="price"><span class="old-price">₹98.00</span>₹219.99</span>
-                                    <!-- <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active">
-                                            <span class="swatch-value bg-grey-2"></span>
-                                            <img class="lazyload" data-src="/images/products/product3.jpg"
-                                                src="/images/products/product3.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-light-orange"></span>
-                                            <img class="lazyload" data-src="/images/products/product3.jpg"
-                                                src="/images/products/product3.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch line">
-                                            <span class="swatch-value bg-white"></span>
-                                            <img class="lazyload" data-src="/images/products/product3.jpg"
-                                                src="/images/products/product3.jpg" alt="image-product">
-                                        </li>
-                                    </ul>-->
-                                </div>
-                            </div>
-                        </div>
+                        <% }); %>
                     </div>
                     <div class="sw-pagination-recent sw-dots type-circle justify-content-center"></div>
                 </div>
+                <% } else { %>
+                    <div class="text-center py-5">
+                        <p class="text-secondary mb-0">No products found!</p>
+                    </div>
+                <% } %>
             </div>
         </section>
 
