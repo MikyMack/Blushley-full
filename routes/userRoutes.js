@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-// Home page
 const Category = require('../models/Category');
 const SubCategory = require('../models/SubCategory');
 const ChildCategory = require('../models/ChildCategory');
+const Product = require('../models/Product');
 
 router.get('/', async (req, res) => {
     try {
@@ -13,10 +13,16 @@ router.get('/', async (req, res) => {
             SubCategory.find({ isActive: true }).lean(),
             ChildCategory.find({ isActive: true }).lean()
         ]);
-        res.render('user/home', { categories, subcategories, childcategories });
+        let products = [];
+        products = await Product.aggregate([
+            { $match: { status: "approved" } },
+            { $sample: { size: 4 } }
+        ]);
+
+        res.render('user/home', { categories, subcategories, childcategories, products });
     } catch (err) {
-        console.error("Error loading categories for home page:", err);
-        res.render('user/home', { categories: [], subcategories: [], childcategories: [], error: "Could not load categories" });
+        console.error("Error loading categories or products for home page:", err);
+        res.render('user/home', { categories: [], subcategories: [], childcategories: [], products: [], error: "Could not load categories or products" });
     }
 });
 

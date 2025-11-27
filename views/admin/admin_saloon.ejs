@@ -1560,9 +1560,23 @@
                                             // Services
                                             let servicesHtml = "No services";
                                             if (Array.isArray(salon.services) && salon.services.length > 0) {
-                                                servicesHtml = salon.services.map(s =>
-                                                    `<span class="svc-name-info"><b>${s.serviceName}</b> <span class="svc-price">₹${s.price}</span> (${s.durationMinutes}min)</span>`
-                                                ).join('<span class="svc-divider">|</span> ');
+                                                servicesHtml = salon.services.map(s => {
+                                                    let priceHtml = "";
+                                                    if (
+                                                        typeof s.adminPrice === "number" && 
+                                                        !isNaN(s.adminPrice) && 
+                                                        typeof s.price === "number" && 
+                                                        !isNaN(s.price) &&
+                                                        s.price !== s.adminPrice
+                                                    ) {
+                                                        priceHtml = `<span class="svc-price user-price">₹${s.price}</span> <span class="svc-price admin-price">(Admin: ₹${s.adminPrice})</span>`;
+                                                    } else if (typeof s.price === "number" && !isNaN(s.price)) {
+                                                        priceHtml = `<span class="svc-price">₹${s.price}</span>`;
+                                                    } else {
+                                                        priceHtml = `<span class="svc-price">N/A</span>`;
+                                                    }
+                                                    return `<span class="svc-name-info"><b>${s.serviceName}</b> ${priceHtml} (${s.durationMinutes}min)</span>`;
+                                                }).join('<span class="svc-divider">|</span> ');
                                             }
                                             // Staff
                                             let staffHtml = "No staff";

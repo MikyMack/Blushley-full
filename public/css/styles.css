@@ -8641,11 +8641,17 @@ input.style-line-bottom::placeholder {
 }
 
 .collection-circle .img-style {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
   width: 100%;
-  height: 100%;
+  max-width: 240px;
+  height: auto;
   border-radius: 50%;
   overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
 }
 .collection-circle .img-style.radius-48 {
   border-radius: 48px;
