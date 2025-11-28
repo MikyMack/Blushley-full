@@ -609,10 +609,17 @@
                             async function loadTestimonials() {
                                 try {
                                     const response = await fetch('/testimonials');
+                                    
+                                    if (!response.ok) {
+                                        const errorData = await response.json().catch(() => ({ message: 'Failed to load testimonials' }));
+                                        showToast(errorData.message || 'Error loading testimonials', 'error');
+                                        return;
+                                    }
+
                                     const result = await response.json();
 
-                                    // Handle both { success, testimonials } and direct array responses
-                                    const testimonials = result.success ? result.testimonials : (Array.isArray(result) ? result : []);
+                                    // Controller returns array directly, not wrapped in { success, testimonials }
+                                    const testimonials = Array.isArray(result) ? result : [];
                                     
                                     // Store testimonials globally for edit functionality
                                     allTestimonials = testimonials;
@@ -682,11 +689,11 @@
 
                                     const result = await response.json();
 
-                                    if (result.success || response.ok) {
+                                    if (response.ok && result.message) {
                                         closeModal('addTestimonialModal');
                                         this.reset();
                                         loadTestimonials();
-                                        showToast('Testimonial added successfully!');
+                                        showToast(result.message || 'Testimonial added successfully!');
                                     } else {
                                         showToast(result.message || 'Error adding testimonial', 'error');
                                     }
@@ -745,10 +752,10 @@
 
                                     const result = await response.json();
 
-                                    if (result.success || response.ok) {
+                                    if (response.ok && result.message) {
                                         closeModal('editTestimonialModal');
                                         loadTestimonials();
-                                        showToast('Testimonial updated successfully!');
+                                        showToast(result.message || 'Testimonial updated successfully!');
                                     } else {
                                         showToast(result.message || 'Error updating testimonial', 'error');
                                     }
@@ -768,9 +775,9 @@
 
                                         const result = await response.json();
 
-                                        if (result.success || response.ok) {
+                                        if (response.ok && result.message) {
                                             loadTestimonials();
-                                            showToast('Testimonial deleted successfully!');
+                                            showToast(result.message || 'Testimonial deleted successfully!');
                                         } else {
                                             showToast(result.message || 'Error deleting testimonial', 'error');
                                         }
