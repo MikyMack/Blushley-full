@@ -9,6 +9,9 @@ const beautyTipCtrl = require('../controllers/beautyTipController');
 const ChildCategory = require("../models/ChildCategory");
 const SubCategory = require("../models/SubCategory");
 const blogCtrl = require("../controllers/blogController");
+const testimonialsCtrl = require('../controllers/testimonials');
+
+
 
 
 router.post("/category/create", upload.single("image"), categoryCtrl.createCategory);
@@ -158,5 +161,19 @@ router.get("/blog/:slug", blogCtrl.getBlogBySlug);
 
 // DELETE BLOG
 router.delete("/blog/delete/:id", blogCtrl.deleteBlog);
+
+// Create a testimonial
+router.post('/testimonials', testimonialsCtrl.createTestimonial);
+
+// Edit a testimonial
+router.put('/testimonials/:id', testimonialsCtrl.editTestimonial);
+
+// List all testimonials
+router.get('/testimonials', testimonialsCtrl.listTestimonials);
+
+// Delete a testimonial
+router.delete('/testimonials/:id', testimonialsCtrl.deleteTestimonial);
+
+
 
 module.exports = router;
