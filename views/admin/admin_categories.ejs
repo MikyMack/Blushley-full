@@ -528,6 +528,10 @@
     );
 
     let categories = JSON.parse(JSON.stringify(initialCategories));
+    
+    // Track original subcategory and child category IDs when editing
+    let originalSubIds = [];
+    let originalChildIds = [];
 
     // ---------- Utilities ----------
     const apiCall = async (url, opts = {}) => {
@@ -796,6 +800,9 @@
       form.reset();
       document.getElementById('sub-list').innerHTML = '';
       document.getElementById('child-list').innerHTML = '';
+      // Reset original IDs for create mode
+      originalSubIds = [];
+      originalChildIds = [];
       // add one default sub and child row
       document.getElementById('sub-list').appendChild(makeSubInput({}));
       document.getElementById('child-list').appendChild(makeChildInput({ name:'', parentKey:'' }));
@@ -850,11 +857,50 @@
         if (!categoryId) throw new Error('Unable to resolve category id');
 
         const createdSubMap = {};
+        const currentSubIds = [];
         subItems.forEach(item => {
           if (item.dataset.key && item.dataset.id) {
             createdSubMap[item.dataset.key] = item.dataset.id;
+            currentSubIds.push(item.dataset.id);
           }
         });
+
+        // Delete removed subcategories (only when editing)
+        // First, delete child categories that belong to removed subcategories
+        if (editId && originalSubIds.length > 0) {
+          const removedSubIds = originalSubIds.filter(id => !currentSubIds.includes(id));
+          
+          // Find and delete child categories that belong to removed subcategories
+          if (removedSubIds.length > 0) {
+            const category = categories.find(c => c._id === editId);
+            if (category) {
+              for (const sub of category.subcategories || []) {
+                if (removedSubIds.includes(sub._id)) {
+                  // Delete all child categories of this removed subcategory
+                  for (const child of sub.childcategories || []) {
+                    if (child._id) {
+                      try {
+                        await apiCall(`/childcategory/delete/${child._id}`, { method: 'DELETE' });
+                      } catch (err) {
+                        console.error('Failed to delete child category:', child._id, err);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          
+          // Now delete the removed subcategories
+          for (const subId of removedSubIds) {
+            try {
+              await apiCall(`/subcategory/delete/${subId}`, { method: 'DELETE' });
+            } catch (err) {
+              console.error('Failed to delete subcategory:', subId, err);
+              // Continue with other operations even if one deletion fails
+            }
+          }
+        }
 
         for (const item of subItems) {
           const subName = item.querySelector('.sub-name')?.value.trim();
@@ -881,6 +927,7 @@
           }
         }
 
+        const currentChildIds = [];
         for (const item of childItems) {
           const childName = item.querySelector('.child-name')?.value.trim();
           const parentKey = item.querySelector('.child-parent')?.value;
@@ -895,6 +942,7 @@
           if (childImageFile) childFd.append('image', childImageFile);
 
           if (item.dataset.id) {
+            currentChildIds.push(item.dataset.id);
             const childUpdate = await apiCall(`/childcategory/update/${item.dataset.id}`, { method: 'PUT', body: childFd });
             if (childUpdate.success === false) throw new Error(childUpdate.error || 'Child category update failed');
           } else {
@@ -902,7 +950,43 @@
             if (childCreate.success === false) throw new Error(childCreate.error || 'Child category create failed');
             const child = childCreate.childCategory || childCreate.data || childCreate;
             const childId = child?._id || child?.id || child?.childCategory?._id;
-            if (childId) item.dataset.id = childId;
+            if (childId) {
+              item.dataset.id = childId;
+              currentChildIds.push(childId);
+            }
+          }
+        }
+
+        // Delete removed child categories (only when editing)
+        // Exclude child categories that belong to removed subcategories (already deleted above)
+        if (editId && originalChildIds.length > 0) {
+          const removedSubIds = originalSubIds.filter(id => !currentSubIds.includes(id));
+          const category = categories.find(c => c._id === editId);
+          const childIdsBelongingToRemovedSubs = new Set();
+          
+          // Collect child category IDs that belong to removed subcategories
+          if (category && removedSubIds.length > 0) {
+            for (const sub of category.subcategories || []) {
+              if (removedSubIds.includes(sub._id)) {
+                for (const child of sub.childcategories || []) {
+                  if (child._id) childIdsBelongingToRemovedSubs.add(child._id);
+                }
+              }
+            }
+          }
+          
+          // Only delete child categories that were explicitly removed (not ones belonging to removed subcategories)
+          const removedChildIds = originalChildIds.filter(id => 
+            !currentChildIds.includes(id) && !childIdsBelongingToRemovedSubs.has(id)
+          );
+          
+          for (const childId of removedChildIds) {
+            try {
+              await apiCall(`/childcategory/delete/${childId}`, { method: 'DELETE' });
+            } catch (err) {
+              console.error('Failed to delete child category:', childId, err);
+              // Continue with other operations even if one deletion fails
+            }
           }
         }
 
@@ -1032,6 +1116,16 @@
         document.getElementById('edit-category-id').value = category._id;
         document.getElementById('category-name').value = category.name || '';
         document.getElementById('category-image').value = '';
+
+        // Store original IDs for deletion tracking
+        originalSubIds = [];
+        originalChildIds = [];
+        (category.subcategories || []).forEach(s => {
+          if (s._id) originalSubIds.push(s._id);
+          (s.childcategories || []).forEach(ch => {
+            if (ch._id) originalChildIds.push(ch._id);
+          });
+        });
 
         // populate subs and children
         const subList = document.getElementById('sub-list');
