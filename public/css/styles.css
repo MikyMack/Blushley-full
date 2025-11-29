@@ -8294,6 +8294,7 @@ input.style-line-bottom::placeholder {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
+  height: 250px;
 }
 .collection-position-2 .img-style {
   display: block;
