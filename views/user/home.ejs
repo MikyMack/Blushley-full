@@ -734,13 +734,11 @@
                 </div>
 
                 <!-- Expanded Form (Hidden by default) -->
-                <div id="formContainer">
+                <div id="formContainer" style="display:none;">
                     <div class="form-wrapper">
                         <div class="form-wrapper-inner">
                             <h3 class="form-title">Share Your Experience</h3>
-
                             <form class="review-form" id="reviewForm">
-
                                 <!-- Name Field -->
                                 <div class="form-group">
                                     <input type="text" id="name" name="name" class="form-input" placeholder="Your Name"
@@ -753,25 +751,20 @@
                                         placeholder="Email Address" required />
                                 </div>
 
-
-                                <!-- Rating -->
+                                <!-- Rating (REWORKED: highest number as leftmost radio) -->
                                 <div class="form-group full-width">
                                     <label class="rating-label">Rating</label>
                                     <div class="rating-stars home-rating-stars">
-                                        <input type="radio" id="star5" name="rating" value="5" required>
-                                        <label for="star5">★</label>
-
-                                        <input type="radio" id="star4" name="rating" value="4">
-                                        <label for="star4">★</label>
-
-                                        <input type="radio" id="star3" name="rating" value="3">
-                                        <label for="star3">★</label>
-
+                                        <input type="radio" id="star1" name="rating" value="1" required>
+                                        <label for="star1">★</label>
                                         <input type="radio" id="star2" name="rating" value="2">
                                         <label for="star2">★</label>
-
-                                        <input type="radio" id="star1" name="rating" value="1">
-                                        <label for="star1">★</label>
+                                        <input type="radio" id="star3" name="rating" value="3">
+                                        <label for="star3">★</label>
+                                        <input type="radio" id="star4" name="rating" value="4">
+                                        <label for="star4">★</label>
+                                        <input type="radio" id="star5" name="rating" value="5">
+                                        <label for="star5">★</label>
                                     </div>
                                 </div>
 
@@ -801,8 +794,11 @@
                                 </div>
 
                                 <!-- Success Message -->
-                                <div id="successMessage" class="success-message full-width">
+                                <div id="successMessage" class="success-message full-width" style="display:none;">
                                     ✓ Thank you! Your review has been submitted.
+                                </div>
+                                <!-- Error Message -->
+                                <div id="errorMessage" class="error-message full-width" style="display:none;color:red;">
                                 </div>
                             </form>
                         </div>
@@ -813,187 +809,60 @@
                     data-tablet="2" data-mobile="1" data-space-lg="30" data-space-md="30" data-space="15"
                     data-pagination="1" data-pagination-md="1" data-pagination-lg="1">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="testimonial-item style-2">
-                                <div class="content-top">
-                                    <div class="list-star-default">
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                    </div>
-                                    <p class="text-secondary">"My skin has completely transformed after using your
-                                        skincare line and getting monthly facials. The beautician really understands my
-                                        skin type. My complexion is clearer and more radiant than ever!"</p>
-                                    <div class="box-author">
-                                        <div class="text-title author">Sarah Mitchell</div>
-                                        <svg class="icon" width="20" height="21" viewBox="0 0 20 21" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clip0_15758_14563)">
-                                                <path d="M6.875 11.6255L8.75 13.5005L13.125 9.12549" stroke="#3DAB25"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                <path
-                                                    d="M10 18.5005C14.1421 18.5005 17.5 15.1426 17.5 11.0005C17.5 6.85835 14.1421 3.50049 10 3.50049C5.85786 3.50049 2.5 6.85835 2.5 11.0005C2.5 15.1426 5.85786 18.5005 10 18.5005Z"
-                                                    stroke="#3DAB25" stroke-width="1.5" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_15758_14563">
-                                                    <rect width="20" height="20" fill="white"
-                                                        transform="translate(0 0.684082)" />
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="box-avt">
-                                    <div class="avatar avt-60 round">
-                                        <img src="/images/avatar/user-4.jpg" alt="avt">
-                                    </div>
-                                    <div class="box-price">
-                                        <p class="text-title text-line-clamp-1">Luminous Hydrating Facial</p>
-                                        <div class="text-button price">₹120.00</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="testimonial-item style-2">
-                                <div class="content-top">
-                                    <div class="list-star-default">
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                    </div>
-                                    <p class="text-secondary">"Best bridal makeup experience ever! The makeup artist was
-                                        incredibly talented and patient. My makeup looked absolutely stunning and lasted
-                                        through the entire day. Highly recommended!"</p>
-                                    <div class="box-author">
-                                        <div class="text-title author">Jessica Chen</div>
-                                        <svg class="icon" width="20" height="21" viewBox="0 0 20 21" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clip0_15758_14)">
-                                                <path d="M6.875 11.6255L8.75 13.5005L13.125 9.12549" stroke="#3DAB25"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                <path
-                                                    d="M10 18.5005C14.1421 18.5005 17.5 15.1426 17.5 11.0005C17.5 6.85835 14.1421 3.50049 10 3.50049C5.85786 3.50049 2.5 6.85835 2.5 11.0005C2.5 15.1426 5.85786 18.5005 10 18.5005Z"
-                                                    stroke="#3DAB25" stroke-width="1.5" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_15758_14">
-                                                    <rect width="20" height="20" fill="white"
-                                                        transform="translate(0 0.684082)" />
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="box-avt">
-                                    <div class="avatar avt-60 round">
-                                        <img src="/images/avatar/user-5.jpg" alt="avt">
-                                    </div>
-                                    <div class="box-price">
-                                        <p class="text-title text-line-clamp-1">Bridal Makeup Package</p>
-                                        <div class="text-button price">₹250.00</div>
+                        <% if (testimonials && testimonials.length > 0) { %>
+                          <% testimonials.forEach(function(t) { %>
+                            <div class="swiper-slide">
+                                <div class="testimonial-item style-2">
+                                    <div class="content-top">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="list-star-default" style="display: flex; gap: 2px; align-items: center;">
+                                                <% 
+                                                    var stars = typeof t.stars === 'number' ? t.stars : (typeof t.rating === 'number' ? t.rating : 0);
+                                                    for (var i = 1; i <= 5; i++) { 
+                                                        if (i <= stars) { 
+                                                %>
+                                                    <i class="icon icon-star" style="color: #FFD700; font-size: 20px;"></i>
+                                                <% 
+                                                        } else { 
+                                                %>
+                                                    <i class="icon icon-star" style="color: #FFD700; opacity: 0.25; font-size: 20px;"></i>
+                                                <% 
+                                                        } 
+                                                    } 
+                                                %>
+                                            </div>
+                                            <div class="avatar avt-60 round">
+                                                <img src="/images/google.png" alt="avt" style="width: 38px; height: 38px; object-fit: contain;">
+                                            </div>
+                                        </div>
+                                        <p class="text-secondary"><%= t.review || t.content %></p>
+                                        <div class="box-author">
+                                            <div class="text-title author"><%= t.name %></div>
+                                            <svg class="icon" width="20" height="21" viewBox="0 0 20 21" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <g>
+                                                    <path d="M6.875 11.6255L8.75 13.5005L13.125 9.12549" stroke="#3DAB25"
+                                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path
+                                                        d="M10 18.5005C14.1421 18.5005 17.5 15.1426 17.5 11.0005C17.5 6.85835 14.1421 3.50049 10 3.50049C5.85786 3.50049 2.5 6.85835 2.5 11.0005C2.5 15.1426 5.85786 18.5005 10 18.5005Z"
+                                                        stroke="#3DAB25" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </g>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="testimonial-item style-2">
-                                <div class="content-top">
-                                    <div class="list-star-default">
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                    </div>
-                                    <p class="text-secondary">"The hydrating serum is a game-changer for my sensitive
-                                        skin! Combined with regular beauty treatments, my skin barrier has never been
-                                        stronger. No more irritation, just healthy glowing skin!"</p>
-                                    <div class="box-author">
-                                        <div class="text-title author">Amanda Rodriguez</div>
-                                        <svg class="icon" width="20" height="21" viewBox="0 0 20 21" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clip0_15758_145)">
-                                                <path d="M6.875 11.6255L8.75 13.5005L13.125 9.12549" stroke="#3DAB25"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                <path
-                                                    d="M10 18.5005C14.1421 18.5005 17.5 15.1426 17.5 11.0005C17.5 6.85835 14.1421 3.50049 10 3.50049C5.85786 3.50049 2.5 6.85835 2.5 11.0005C2.5 15.1426 5.85786 18.5005 10 18.5005Z"
-                                                    stroke="#3DAB25" stroke-width="1.5" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_15758_145">
-                                                    <rect width="20" height="20" fill="white"
-                                                        transform="translate(0 0.684082)" />
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="box-avt">
-                                    <div class="avatar avt-60 round">
-                                        <img src="/images/avatar/user-6.jpg" alt="avt">
-                                    </div>
-                                    <div class="box-price">
-                                        <p class="text-title text-line-clamp-1">Premium Hydrating Serum</p>
-                                        <div class="text-button price">₹65.00</div>
+                          <% }); %>
+                        <% } else { %>
+                            <div class="swiper-slide">
+                                <div class="testimonial-item style-2">
+                                   <div class="content-top">
+                                        <p class="text-secondary">No testimonials found. Be the first to write a review!</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="testimonial-item style-2">
-                                <div class="content-top">
-                                    <div class="list-star-default">
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                        <i class="icon icon-star"></i>
-                                    </div>
-                                    <p class="text-secondary">"I've tried many beauty salons, but this one is
-                                        exceptional. The staff is friendly, professional, and genuinely cares about
-                                        their clients. The quality of services is outstanding and results speak for
-                                        themselves!"</p>
-                                    <div class="box-author">
-                                        <div class="text-title author">Emma Thompson</div>
-                                        <svg class="icon" width="20" height="21" viewBox="0 0 20 21" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clip0_15758_1456)">
-                                                <path d="M6.875 11.6255L8.75 13.5005L13.125 9.12549" stroke="#3DAB25"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                                <path
-                                                    d="M10 18.5005C14.1421 18.5005 17.5 15.1426 17.5 11.0005C17.5 6.85835 14.1421 3.50049 10 3.50049C5.85786 3.50049 2.5 6.85835 2.5 11.0005C2.5 15.1426 5.85786 18.5005 10 18.5005Z"
-                                                    stroke="#3DAB25" stroke-width="1.5" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_15758_1456">
-                                                    <rect width="20" height="20" fill="white"
-                                                        transform="translate(0 0.684082)" />
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="box-avt">
-                                    <div class="avatar avt-60 round">
-                                        <img src="/images/avatar/user-4.jpg" alt="avt">
-                                    </div>
-                                    <div class="box-price">
-                                        <p class="text-title text-line-clamp-1">Professional Skincare Consultation</p>
-                                        <div class="text-button price">₹50.00</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <% } %>
                     </div>
                     <div class="sw-pagination-testimonial sw-dots type-circle d-flex justify-content-center"></div>
                 </div>
@@ -1005,35 +874,36 @@
             function openForm() {
                 document.getElementById('formContainer').style.display = 'block';
             }
-        
+
             function closeForm() {
                 document.getElementById('formContainer').style.display = 'none';
                 document.getElementById('reviewForm').reset();
                 document.querySelectorAll('.rating-stars label').forEach(l => l.style.color = '#ddd');
                 document.getElementById('successMessage').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'none';
             }
-        
+
             // Star rating interactive functionality
             document.addEventListener('DOMContentLoaded', function () {
                 const stars = document.querySelectorAll('.rating-stars input[type="radio"]');
                 const starLabels = document.querySelectorAll('.rating-stars label');
-        
-                starLabels.forEach((label, index) => {
-                    // Click event
-                    label.addEventListener('click', function () {
-                        starLabels.forEach((l, i) => {
-                            l.style.color = (i <= index) ? '#FFB800' : '#ddd';
-                        });
+
+                function updateStarColors(selectedIndex) {
+                    starLabels.forEach((l, i) => {
+                        l.style.color = (i <= selectedIndex) ? '#FFB800' : '#ddd';
                     });
-        
-                    // Hover event
+                }
+
+                starLabels.forEach((label, index) => {
+                    label.addEventListener('click', function () {
+                        updateStarColors(index);
+                    });
+
                     label.addEventListener('mouseover', function () {
-                        starLabels.forEach((l, i) => {
-                            l.style.color = (i <= index) ? '#FFB800' : '#ddd';
-                        });
+                        updateStarColors(index);
                     });
                 });
-        
+
                 // Reset stars on mouse leave
                 const ratingContainer = document.querySelector('.rating-stars');
                 if (ratingContainer) {
@@ -1041,28 +911,85 @@
                         const checkedStar = document.querySelector('.rating-stars input[type="radio"]:checked');
                         if (checkedStar) {
                             const checkedIndex = Array.from(stars).indexOf(checkedStar);
-                            starLabels.forEach((l, i) => {
-                                l.style.color = (i <= checkedIndex) ? '#FFB800' : '#ddd';
-                            });
+                            updateStarColors(checkedIndex);
                         } else {
                             starLabels.forEach(l => l.style.color = '#ddd');
                         }
                     });
                 }
-        
-                // Form submission
+
+                // Enhanced Form Submission Error Handling
                 const reviewForm = document.getElementById('reviewForm');
                 if (reviewForm) {
                     reviewForm.addEventListener('submit', function (e) {
                         e.preventDefault();
-        
-                        // Show success message
-                        document.getElementById('successMessage').style.display = 'block';
-        
-                        // Close form after 2 seconds
-                        setTimeout(() => {
-                            closeForm();
-                        }, 2000);
+
+                        let ratingValue = 0;
+                        const checkedRating = reviewForm.querySelector('input[name="rating"]:checked');
+                        if (checkedRating) {
+                            ratingValue = parseInt(checkedRating.value, 10);
+                        }
+
+                        const formData = {
+                            name: reviewForm.name.value,
+                            email: reviewForm.email.value,
+                            // Important: send as "stars" and "content" to match backend model requirement
+                            stars: ratingValue,
+                            content: reviewForm.review.value,
+                            consentToShare: reviewForm.consent.checked
+                        };
+
+                        document.getElementById('successMessage').style.display = 'none';
+                        const errorDiv = document.getElementById('errorMessage');
+                        errorDiv.style.display = 'none';
+                        errorDiv.innerText = '';
+
+                        fetch('/testimonials', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                        })
+                            .then(async res => {
+                                if(res.ok) {
+                                    document.getElementById('successMessage').style.display = 'block';
+                                    setTimeout(() => { closeForm(); window.location.reload(); }, 1500);
+                                } else {
+                                    // Enhanced: show validation errors for "stars" or "content", if present
+                                    let d;
+                                    try {
+                                        d = await res.json();
+                                    } catch (e) {
+                                        d = { message: 'Submission failed. Please check your input.' };
+                                    }
+
+                                    let errorMsg = '';
+                                    if (d && d.error && d.error.errors) {
+                                        const errs = d.error.errors;
+                                        if (errs.stars && errs.content) {
+                                            errorMsg = 'Please provide a star rating and your review (both are required).';
+                                        } else if (errs.stars) {
+                                            errorMsg = 'Please provide a star rating.';
+                                        } else if (errs.content) {
+                                            errorMsg = 'Please write a review.';
+                                        }
+                                    }
+                                    if (!errorMsg && d && d.message) {
+                                        errorMsg = d.message;
+                                    }
+                                    if (!errorMsg) {
+                                        errorMsg = 'Submission failed. Please check your input.';
+                                    }
+
+                                    errorDiv.innerText = errorMsg;
+                                    errorDiv.style.display = 'block';
+                                }
+                            })
+                            .catch(() => {
+                                errorDiv.innerText = "Something went wrong. Please try again.";
+                                errorDiv.style.display = 'block';
+                            });
                     });
                 }
             });

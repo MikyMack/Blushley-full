@@ -5,13 +5,18 @@ const Category = require('../models/Category');
 const SubCategory = require('../models/SubCategory');
 const ChildCategory = require('../models/ChildCategory');
 const Product = require('../models/Product');
+const Testimonial = require('../models/Testimonials');
 
 router.get('/', async (req, res) => {
     try {
-        const [categories, subcategories, childcategories] = await Promise.all([
+        const [categories, subcategories, childcategories, testimonials] = await Promise.all([
             Category.find({ isActive: true }).lean(),
             SubCategory.find({ isActive: true }).lean(),
-            ChildCategory.find({ isActive: true }).lean()
+            ChildCategory.find({ isActive: true }).lean(),
+            Testimonial.find({})
+                .sort({ createdAt: -1 })
+                .limit(12)
+                .lean()
         ]);
         let products = [];
         products = await Product.aggregate([
@@ -19,10 +24,10 @@ router.get('/', async (req, res) => {
             { $sample: { size: 4 } }
         ]);
 
-        res.render('user/home', { categories, subcategories, childcategories, products });
+        res.render('user/home', { categories, subcategories, childcategories, products, testimonials });
     } catch (err) {
-        console.error("Error loading categories or products for home page:", err);
-        res.render('user/home', { categories: [], subcategories: [], childcategories: [], products: [], error: "Could not load categories or products" });
+        console.error("Error loading categories, products, or testimonials for home page:", err);
+        res.render('user/home', { categories: [], subcategories: [], childcategories: [], products: [], testimonials: [], error: "Could not load categories, products, or testimonials" });
     }
 });
 

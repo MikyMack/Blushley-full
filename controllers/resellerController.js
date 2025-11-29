@@ -513,9 +513,6 @@ exports.registerPage = (req, res) => {
 exports.createProduct = async (req, res) => {
   try {
     const resellerId = req.session.user._id;
-
-    console.log("🔥 FILES RECEIVED:", req.files?.map(f => f.fieldname));
-
     let {
       title,
       description,
