@@ -187,4 +187,7 @@ router.post("/poster/:id/update", upload.single("image"), bannerCtrl.posterUpdat
 router.post("/poster/:id/toggle", bannerCtrl.posterToggleActive);
 router.delete("/posterdelete/:id", bannerCtrl.posterDelete);
 
+router.get('/api/search/init', productCtrl.searchInit);
+router.get('/api/search/live', productCtrl.searchLive);
+
 module.exports = router;

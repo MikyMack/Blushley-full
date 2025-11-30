@@ -1,6 +1,9 @@
 const Product = require("../models/Product");
 const { uploadBuffer } = require("../config/s3");
 const slugify = require("slugify");
+const Category = require("../models/Category");
+const SubCategory = require("../models/SubCategory");
+const ChildCategory = require("../models/ChildCategory");
 
 function safeParse(value, fallback = null) {
   try {
@@ -380,5 +383,128 @@ exports.deleteProduct = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+
+exports.searchInit = async (req, res) => {
+  try {
+ 
+    const [categories, subcategories, childcategories] = await Promise.all([
+      Category.find({ isActive: true }).select('name slug').limit(100).lean(),
+      SubCategory.find({ isActive: true }).select('name slug').limit(200).lean(),
+      ChildCategory.find({ isActive: true }).select('name slug').limit(200).lean()
+    ]);
+
+
+    const brands = await Product.distinct('brand', { brand: { $exists: true, $ne: '' } });
+
+
+    let recentlyViewed = [];
+    try {
+      const raw = req.cookies && req.cookies.recentlyViewedV1;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) {
+
+          const ids = parsed.filter(p => p && p._id).map(p => p._id);
+          if (ids.length) {
+            const prods = await Product.find({ _id: { $in: ids } })
+              .select('title slug images')
+              .lean();
+     
+            recentlyViewed = ids.map(id => prods.find(p => p._id.toString() === id.toString())).filter(Boolean);
+          } else {
+       
+            recentlyViewed = parsed.slice(0,12).map(p => ({
+              _id: p._id,
+              slug: p.slug,
+              title: p.title,
+              images: p.images || []
+            }));
+          }
+        }
+      }
+    } catch (e) {
+      recentlyViewed = [];
+    }
+
+    return res.json({ success: true, categories, subcategories, childcategories, brands, recentlyViewed });
+  } catch (err) {
+    console.error('SEARCH INIT ERROR:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+
+exports.searchLive = async (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+    const catParam = (req.query.category || "").trim();
+    const brandParam = (req.query.brand || "").trim();
+
+    if (!q || q.length < 3) {
+      return res.json({
+        success: true,
+        products: [],
+        categories: [],
+        subcategories: [],
+        childcategories: [],
+      });
+    }
+
+    const regex = new RegExp(
+      q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "i"
+    );
+
+  
+    const productQuery = {
+      status: "approved",
+      $or: [
+        { title: { $regex: regex } },
+        { description: { $regex: regex } },
+        { tags: { $regex: regex } },
+        { brand: { $regex: regex } },
+      ],
+    };
+
+    if (catParam) {
+      const cats = catParam.split(",").map((s) => s.trim()).filter(Boolean);
+      if (cats.length) {
+        productQuery.category = { $in: cats };
+      }
+    }
+
+    if (brandParam) {
+      const brands = brandParam.split(",").map((b) => b.trim()).filter(Boolean);
+      if (brands.length) {
+        productQuery.brand = { $in: brands.map((b) => new RegExp("^" + b + "$", "i")) };
+      }
+    }
+
+    const products = await Product.find(productQuery)
+      .select("title slug images salePrice basePrice brand")
+      .limit(30)
+      .lean();
+
+
+    const [categories, subcategories, childcategories] = await Promise.all([
+      Category.find({ name: { $regex: regex }, isActive: true }).limit(10).select("name slug").lean(),
+      SubCategory.find({ name: { $regex: regex }, isActive: true }).limit(10).select("name slug").lean(),
+      ChildCategory.find({ name: { $regex: regex }, isActive: true }).limit(10).select("name slug").lean(),
+    ]);
+
+    return res.json({
+      success: true,
+      products,
+      categories,
+      subcategories,
+      childcategories,
+    });
+
+  } catch (err) {
+    console.error("SEARCH LIVE ERROR:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 };
