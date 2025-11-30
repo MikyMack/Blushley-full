@@ -99,16 +99,7 @@
                             <ul class="box-nav-ul d-flex align-items-center justify-content-center">
                                 <li class="menu-item active">
                                     <a href="/" class="item-link">Home</a>
-                                    <!--  <div class="sub-menu mega-menu">
-                                     <div class="container">
-                                            <div class="row-demo">                                              
-                                                
-                                                <div class="text-center view-all-demo">
-                                                    <a href="#modalDemo" data-bs-toggle="modal" class="tf-btn"><span
-                                                            class="text">View All Demos</span></a>
-                                                </div>
-                                            </div>
-                                        </div>-->
+                             
                                 </li>
 
                                 <li class="menu-item"><a href="/about" class="item-link">About</a></li>
@@ -224,7 +215,33 @@
             <div class="container-full">
                 <div class="row">
                     <div class="col-12">
-                        <h3 class="heading text-center d-flex align-items-center justify-content-center">Shop now</h3>
+                        <h3 class="heading text-center d-flex align-items-center justify-content-center">
+                            <% if (slugs && (slugs.cat || slugs.sub || slugs.child)) { %>
+                                <% 
+                                    let foundCat, foundSub, foundChild;
+                                    if (slugs.cat && categories && categories.length) {
+                                        foundCat = categories.find(c => c.slug === slugs.cat);
+                                    }
+                                    if (slugs.sub && subCategories && subCategories.length) {
+                                        foundSub = subCategories.find(s => s.slug === slugs.sub);
+                                    }
+                                    if (slugs.child && childCategories && childCategories.length) {
+                                        foundChild = childCategories.find(c => c.slug === slugs.child);
+                                    }
+                                %>
+                                <% if (foundChild) { %>
+                                    <%= foundChild.name %>
+                                <% } else if (foundSub) { %>
+                                    <%= foundSub.name %>
+                                <% } else if (foundCat) { %>
+                                    <%= foundCat.name %>
+                                <% } else { %>
+                                    Shop now
+                                <% } %>
+                            <% } else { %>
+                                Shop now
+                            <% } %>
+                        </h3>
                         <ul class="breadcrumbs d-flex align-items-center justify-content-center">
                             <li>
                                 <a class="link" href="/">Home</a>
@@ -232,9 +249,49 @@
                             <li>
                                 <i class="icon-arrRight"></i>
                             </li>
-                            <li>
-                                shop
-                            </li>
+                            <% if (slugs && (slugs.cat || slugs.sub || slugs.child)) { %>
+                                <% if (slugs.cat && categories && categories.length) { %>
+                                    <li>
+                                        <% const foundCat = categories.find(c => c.slug === slugs.cat); %>
+                                        <% if (foundCat) { %>
+                                            <a href="/shop/<%= foundCat.slug %>"><%= foundCat.name %></a>
+                                        <% } else { %>
+                                            <span>Category</span>
+                                        <% } %>
+                                    </li>
+                                    <% if (slugs.sub && subCategories && subCategories.length) { %>
+                                        <li>
+                                            <i class="icon-arrRight"></i>
+                                        </li>
+                                        <li>
+                                            <% const foundSub = subCategories.find(sc => sc.slug === slugs.sub); %>
+                                            <% if (foundSub) { %>
+                                                <a href="/shop/<%= foundCat ? foundCat.slug : slugs.cat %>/<%= foundSub.slug %>"><%= foundSub.name %></a>
+                                            <% } else { %>
+                                                <span>Subcategory</span>
+                                            <% } %>
+                                        </li>
+                                    <% } %>
+                                    <% if (slugs.child && childCategories && childCategories.length) { %>
+                                        <li>
+                                            <i class="icon-arrRight"></i>
+                                        </li>
+                                        <li>
+                                            <% const foundSub = subCategories.find(sc => sc.slug === slugs.sub); %>
+                                            <% const foundChild = childCategories.find(cc => cc.slug === slugs.child); %>
+                                            <% if (foundChild) { %>
+                                                <span><%= foundChild.name %></span>
+                                            <% } else { %>
+                                                <span>Child Category</span>
+                                            <% } %>
+                                        </li>
+                                    <% } %>
+                                <% } else { %>
+                                    <li>Shop</li>
+                                <% } %>
+                            <% } else { %>
+                                <li>shop</li>
+                            <% } %>
                         </ul>
                     </div>
                 </div>
@@ -245,86 +302,40 @@
         <!-- Categories -->
         <section class="flat-spacing categories-shop style-2">
             <div class="container product-section">
+                <!-- Dynamic Categories Swiper -->
                 <div dir="ltr" class="swiper tf-sw-categories" data-preview="5" data-tablet="4" data-mobile-sm="3"
                     data-mobile="2" data-space-lg="20" data-space-md="20" data-space="15" data-pagination="2"
                     data-pagination-md="2" data-pagination-lg="1">
                     <div class="swiper-wrapper">
-                        <!-- item 1 -->
-                        <div class="swiper-slide">
-                            <div class="collection-position-2 hover-img">
-                                <a class="img-style">
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/cate-4.png"
-                                        src="/images/products/beauty-cosmetic/cate-4.png" alt="banner-cls">
-                                </a>
-                                <div class="content">
-                                    <a href="#" class="cls-btn">
-                                        <h6 class="text">New in</h6><i class="icon icon-arrowUpRight"></i>
-                                    </a>
+                        <% if (categories && categories.length) { %>
+                            <% categories.forEach(function(cat) { %>
+                                <div class="swiper-slide">
+                                    <div class="collection-position-2 hover-img">
+                                        <a class="img-style" href="/shop/<%= cat.slug %>">
+                                            <img class="lazyload" data-src="<%= cat.image || '/images/products/beauty-cosmetic/cate-1.png' %>"
+                                                src="<%= cat.image || '/images/products/beauty-cosmetic/cate-1.png' %>" alt="<%= cat.name %>">
+                                        </a>
+                                        <div class="content">
+                                            <a href="/shop/<%= cat.slug %>" class="cls-btn">
+                                                <h6 class="text"><%= cat.name %></h6>
+                                                <i class="icon icon-arrowUpRight"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="swiper-slide">
+                                <span>No categories found</span>
                             </div>
-                        </div>
-                        <!-- item 2 -->
-                        <div class="swiper-slide">
-                            <div class="collection-position-2 hover-img">
-                                <a class="img-style">
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/cate-1.png"
-                                        src="/images/products/beauty-cosmetic/cate-1.png" alt="banner-cls">
-                                </a>
-                                <div class="content">
-                                    <a href="#" class="cls-btn">
-                                        <h6 class="text">Skincare</h6><i class="icon icon-arrowUpRight"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 3 -->
-                        <div class="swiper-slide">
-                            <div class="collection-position-2 hover-img">
-                                <a class="img-style">
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/cate-2.png"
-                                        src="/images/products/beauty-cosmetic/cate-2.png" alt="banner-cls">
-                                </a>
-                                <div class="content">
-                                    <a href="#" class="cls-btn">
-                                        <h6 class="text">Makeup</h6><i class="icon icon-arrowUpRight"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 4 -->
-                        <div class="swiper-slide">
-                            <div class="collection-position-2 hover-img">
-                                <a class="img-style">
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/cate-3.png"
-                                        src="/images/products/beauty-cosmetic/cate-3.png" alt="banner-cls">
-                                </a>
-                                <div class="content">
-                                    <a href="#" class="cls-btn">
-                                        <h6 class="text">Fragrance</h6><i class="icon icon-arrowUpRight"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- item 5 -->
-                        <div class="swiper-slide">
-                            <div class="collection-position-2 hover-img">
-                                <a class="img-style">
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/cate-4.png"
-                                        src="/images/products/beauty-cosmetic/cate-4.png" alt="banner-cls">
-                                </a>
-                                <div class="content">
-                                    <a href="#" class="cls-btn">
-                                        <h6 class="text">Body Care</h6><i class="icon icon-arrowUpRight"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
+                        <% } %>
                     </div>
                 </div>
             </div>
+
             <div class="container product-section">
                 <div class="tf-shop-control">
+                    <!-- Filters -->
                     <div class="tf-control-filter">
                         <a href="#filterShop" data-bs-toggle="offcanvas" aria-controls="filterShop"
                             class="tf-btn-filter"><span class="icon icon-filter"></span><span
@@ -334,957 +345,240 @@
                             <p class="text-caption-1">Shop sale items only</p>
                         </div>
                     </div>
-                    <ul class="tf-control-layout">
 
-
-
-                    </ul>
+                    <!-- Sorting -->
                     <div class="tf-control-sorting">
                         <p class="d-none d-lg-block text-caption-1">Sort by:</p>
+                    
                         <div class="tf-dropdown-sort" data-bs-toggle="dropdown">
                             <div class="btn-select">
-                                <span class="text-sort-value">Best selling</span>
+                                <span class="text-sort-value"><%= sortName || 'Best selling' %></span>
                                 <span class="icon icon-arrow-down"></span>
                             </div>
                             <div class="dropdown-menu">
-                                <div class="select-item" data-sort-value="best-selling">
+                                <div class="select-item" data-sort-value="best_selling">
                                     <span class="text-value-item">Best selling</span>
                                 </div>
-                                <div class="select-item" data-sort-value="a-z">
+                                <div class="select-item" data-sort-value="alpha_asc">
                                     <span class="text-value-item">Alphabetically, A-Z</span>
                                 </div>
-                                <div class="select-item" data-sort-value="z-a">
+                                <div class="select-item" data-sort-value="alpha_desc">
                                     <span class="text-value-item">Alphabetically, Z-A</span>
                                 </div>
-                                <div class="select-item" data-sort-value="price-low-high">
+                                <div class="select-item" data-sort-value="price_asc">
                                     <span class="text-value-item">Price, low to high</span>
                                 </div>
-                                <div class="select-item" data-sort-value="price-high-low">
+                                <div class="select-item" data-sort-value="price_desc">
                                     <span class="text-value-item">Price, high to low</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
+                <script>
+                    document.querySelectorAll(".select-item").forEach(item => {
+                        item.addEventListener("click", function () {
+                            const selectedSort = this.getAttribute("data-sort-value");
+                    
+                            const url = new URL(window.location.href);
+                            url.searchParams.set("sort", selectedSort);
+                            url.searchParams.set("page", 1); 
+                    
+                            window.location.href = url.toString();
+                        });
+                    });
+                    </script>
+                    
+                <!-- Applied filters, remove all button, etc -->
                 <div class="wrapper-control-shop">
                     <div class="meta-filter-shop">
-                        <div id="product-count-grid" class="count-text"></div>
-                        <div id="product-count-list" class="count-text"></div>
-                        <div id="applied-filters"></div>
-                        <button id="remove-all" class="remove-all-filters text-btn-uppercase"
-                            style="display: none;">REMOVE ALL <i class="icon icon-close"></i></button>
+                        <% if (totalProducts) { %>
+                            <div class="count-text">
+                                <%= totalProducts %> item<%= totalProducts > 1 ? 's' : '' %> found
+                            </div>
+                        <% } %>
+                        <div id="applied-filters">
+                            <% if (appliedFilters && appliedFilters.length) { %>
+                                <% appliedFilters.forEach(function(filter) { %>
+                                    <span class="badge bg-secondary">
+                                        <%= filter.label %>: <%= filter.value %>
+                                        <a href="<%= filter.removeUrl %>"><i class="icon icon-close"></i></a>
+                                    </span>
+                                <% }) %>
+                            <% } %>
+                        </div>
+                        <% if (appliedFilters && appliedFilters.length) { %>
+                        <form method="get">
+                            <button id="remove-all" class="remove-all-filters text-btn-uppercase" type="submit" name="clear" value="1">
+                                REMOVE ALL <i class="icon icon-close"></i>
+                            </button>
+                        </form>
+                        <% } %>
                     </div>
+
+                    <!-- Product List Layout -->
                     <div class="tf-list-layout wrapper-shop" id="listLayout">
-                        <!-- card product list 1 -->
-                        <div class="card-product style-list" data-availability="Out of stock" data-brand="adidas">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty10.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty10.jpg" alt="image-product">
-                                </a>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Double-button trench coat</a>
-                                <div class="price"><span class="old-price">₹98.00</span> <span
-                                        class="current-price">₹219.99</span></div>
-                                <p class="description text-secondary text-line-clamp-2">The garments labelled as
-                                    Committed are products that have been produced using sustainable fibres or
-                                    processes, reducing their environmental impact.</p>
-                                <div class="variant-wrap-list">
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active line">
-                                            <span class="d-none text-capitalize color-filter">Green</span>
-                                            <span class="swatch-value bg-light-green"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Grey</span>
-                                            <span class="swatch-value bg-grey-2"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch line">
-                                            <span class="d-none text-capitalize color-filter">White</span>
-                                            <span class="swatch-value bg-white"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                    </ul>
-                                    <div class="size-box list-product-btn">
-                                        <span class="size-item box-icon">S</span>
-                                        <span class="size-item box-icon">M</span>
-                                        <span class="size-item box-icon active">L</span>
-                                        <span class="size-item box-icon">XL</span>
-                                        <span class="size-item box-icon disable">XXL</span>
+                        <% if (products && products.length) { %>
+                            <% products.forEach(function(product) { %>
+                                <div class="card-product style-list" data-availability="<%= product.availability %>" data-brand="<%= product.brand && product.brand.slug %>">
+                                    <div class="card-product-wrapper">
+                                        <a href="/productDetails/<%= product.slug %>" class="product-img">
+                                            <img class="lazyload img-product" data-src="<%= product.images && product.images[0] %>" src="<%= product.images && product.images[0] %>" alt="<%= product.name %>">
+                                            <% if (product.images && product.images[1]) { %>
+                                                <img class="lazyload img-hover" data-src="<%= product.images[1] %>" src="<%= product.images[1] %>" alt="<%= product.name %>">
+                                            <% } %>
+                                        </a>
                                     </div>
-                                    <div class="list-product-btn">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To
-                                            cart</a>
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                            class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal"
-                                            class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
+                                    <div class="card-product-info">
+                                        <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.name %></a>
+                                        <div class="price">
+                                            <% if (product.oldPrice > product.price) { %>
+                                                <span class="old-price">₹<%= product.oldPrice.toFixed(2) %></span>
+                                            <% } %>
+                                            <span class="current-price">₹<%= product.price.toFixed(2) %></span>
+                                        </div>
+                                        <% if (product.shortDescription) { %>
+                                            <p class="description text-secondary text-line-clamp-2"><%= product.shortDescription %></p>
+                                        <% } %>
+                                        <!-- Variants: colors, sizes -->
+                                        <% if (product.colors && product.colors.length) { %>
+                                            <ul class="list-color-product">
+                                                <% product.colors.forEach(function(color, idx) { %>
+                                                    <li class="list-color-item color-swatch <%= idx === 0 ? 'active' : '' %>">
+                                                        <span class="d-none text-capitalize color-filter"><%= color.name %></span>
+                                                        <% if (color.swatchClass) { %>
+                                                            <span class="swatch-value <%= color.swatchClass %>"></span>
+                                                        <% } %>
+                                                        <% if (color.image) { %>
+                                                            <img class="lazyload" data-src="<%= color.image %>" src="<%= color.image %>" alt="<%= color.name %>">
+                                                        <% } %>
+                                                    </li>
+                                                <% }) %>
+                                            </ul>
+                                        <% } %>
+                                        <% if (product.sizes && product.sizes.length) { %>
+                                            <div class="size-box list-product-btn">
+                                                <% product.sizes.forEach(function(size) { %>
+                                                    <span class="size-item box-icon"><%= size %></span>
+                                                <% }) %>
+                                            </div>
+                                        <% } %>
+                                        <div class="list-product-btn">
+                                            <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
+                                            <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
+                                                <span class="icon icon-heart"></span>
+                                                <span class="tooltip">Wishlist</span>
+                                            </a>
+                                            <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
+                                                class="box-icon compare btn-icon-action">
+                                                <span class="icon icon-gitDiff"></span>
+                                                <span class="tooltip">Compare</span>
+                                            </a>
+                                            <a href="#quickView" data-bs-toggle="modal"
+                                                class="box-icon quickview tf-btn-loading">
+                                                <span class="icon icon-eye"></span>
+                                                <span class="tooltip">Quick View</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-
-
-                            </div>
-                        </div>
-                        <!-- card product list 2 -->
-                        <div class="card-product style-list" data-availability="Out of stock" data-brand="LV">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    <img class="lazyload img-hover" data-src="/images/products/womens/women-31.jpg"
-                                        src="/images/products/womens/women-31.jpg" alt="image-product">
-                                </a>
-                                <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Polarized sunglasses</a>
-                                <span class="price current-price">₹59.99</span>
-                                <p class="description text-secondary text-line-clamp-2">The garments labelled as
-                                    Committed are products that have been produced using sustainable fibres or
-                                    processes, reducing their environmental impact.</p>
-                                <div class="variant-wrap-list">
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active">
-                                            <span class="d-none text-capitalize color-filter">Orange</span>
-                                            <span class="swatch-value bg-light-orange"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Orange</span>
-                                            <span class="swatch-value bg-orange"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-43.jpg"
-                                                src="/images/products/womens/women-43.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Pink</span>
-                                            <span class="swatch-value bg-dark-pink"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-47.jpg"
-                                                src="/images/products/womens/women-47.jpg" alt="image-product">
-                                        </li>
-                                    </ul>
-                                    <div class="size-box list-product-btn">
-                                        <span class="size-item box-icon">S</span>
-                                        <span class="size-item box-icon">M</span>
-                                        <span class="size-item box-icon">L</span>
-                                        <span class="size-item box-icon">XL</span>
-                                        <span class="size-item box-icon disable">XXL</span>
-                                    </div>
-                                    <div class="list-product-btn">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To
-                                            cart</a>
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                            class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal"
-                                            class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                        <!-- card product list 3 -->
-                        <div class="card-product style-list" data-availability="In stock" data-brand="nike">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product" data-src="/images/products/womens/women-63.jpg"
-                                        src="/images/products/womens/women-63.jpg" alt="image-product">
-                                    <img class="lazyload img-hover" data-src="/images/products/womens/women-64.jpg"
-                                        src="/images/products/womens/women-64.jpg" alt="image-product">
-                                </a>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Ribbed cotton-blend top</a>
-                                <div class="price"><span class="old-price">₹98.00</span><span
-                                        class="current-price">₹219.95</span></div>
-                                <p class="description text-secondary text-line-clamp-2">The garments labelled as
-                                    Committed are products that have been produced using sustainable fibres or
-                                    processes, reducing their environmental impact.</p>
-                                <div class="variant-wrap-list">
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active line">
-                                            <span class="d-none text-capitalize color-filter">White</span>
-                                            <span class="swatch-value bg-white"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-63.jpg"
-                                                src="/images/products/womens/women-63.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Grey</span>
-                                            <span class="swatch-value bg-grey-2"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-69.jpg"
-                                                src="/images/products/womens/women-69.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Black</span>
-                                            <span class="swatch-value bg-main"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-70.jpg"
-                                                src="/images/products/womens/women-70.jpg" alt="image-product">
-                                        </li>
-                                    </ul>
-                                    <div class="size-box list-product-btn">
-                                        <span class="size-item box-icon">S</span>
-                                        <span class="size-item box-icon">M</span>
-                                        <span class="size-item box-icon">L</span>
-                                        <span class="size-item box-icon">XL</span>
-                                        <span class="size-item box-icon disable">XXL</span>
-                                    </div>
-                                    <div class="list-product-btn">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To
-                                            cart</a>
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                            class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal"
-                                            class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                        <!-- card product list 4 -->
-                        <div class="card-product style-list" data-availability="In stock" data-brand="gucci">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product" data-src="/images/products/womens/women-37.jpg"
-                                        src="/images/products/womens/women-37.jpg" alt="image-product">
-                                    <img class="lazyload img-hover" data-src="/images/products/womens/women-38.jpg"
-                                        src="/images/products/womens/women-38.jpg" alt="image-product">
-                                </a>
-                                <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">V-neck cotton T-shirt</a>
-                                <span class="price current-price">₹59.99</span>
-                                <p class="description text-secondary text-line-clamp-2">The garments labelled as
-                                    Committed are products that have been produced using sustainable fibres or
-                                    processes, reducing their environmental impact.</p>
-                                <div class="variant-wrap-list">
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active">
-                                            <span class="d-none text-capitalize color-filter">Light Blue</span>
-                                            <span class="swatch-value bg-light-blue"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-37.jpg"
-                                                src="/images/products/womens/women-37.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch line">
-                                            <span class="d-none text-capitalize color-filter">White</span>
-                                            <span class="swatch-value bg-white"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-41.jpg"
-                                                src="/images/products/womens/women-41.jpg" alt="image-product">
-                                        </li>
-
-                                    </ul>
-                                    <div class="size-box list-product-btn">
-                                        <span class="size-item box-icon">S</span>
-                                        <span class="size-item box-icon">M</span>
-                                        <span class="size-item box-icon">L</span>
-                                        <span class="size-item box-icon">XL</span>
-                                        <span class="size-item box-icon disable">XXL</span>
-                                    </div>
-                                    <div class="list-product-btn">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To
-                                            cart</a>
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                            class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal"
-                                            class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                        <!-- card product list 5 -->
-                        <div class="card-product style-list" data-availability="In stock" data-brand="hermes">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product" data-src="/images/products/womens/women-133.jpg"
-                                        src="/images/products/womens/women-133.jpg" alt="image-product">
-                                    <img class="lazyload img-hover" data-src="/images/products/womens/women-131.jpg"
-                                        src="/images/products/womens/women-131.jpg" alt="image-product">
-                                </a>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">V-neck cotton T-shirt</a>
-                                <span class="price current-price">₹59.99</span>
-                                <p class="description text-secondary text-line-clamp-2">The garments labelled as
-                                    Committed are products that have been produced using sustainable fibres or
-                                    processes, reducing their environmental impact.</p>
-                                <div class="variant-wrap-list">
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active">
-                                            <span class="d-none text-capitalize color-filter">Green</span>
-                                            <span class="swatch-value bg-light-green"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-133.jpg"
-                                                src="/images/products/womens/women-133.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Black</span>
-                                            <span class="swatch-value bg-main"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-124.jpg"
-                                                src="/images/products/womens/women-124.jpg" alt="image-product">
-                                        </li>
-
-                                    </ul>
-                                    <div class="size-box list-product-btn">
-                                        <span class="size-item box-icon">S</span>
-                                        <span class="size-item box-icon">M</span>
-                                        <span class="size-item box-icon">L</span>
-                                        <span class="size-item box-icon">XL</span>
-                                        <span class="size-item box-icon disable">XXL</span>
-                                    </div>
-                                    <div class="list-product-btn">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To
-                                            cart</a>
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                            class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal"
-                                            class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- card product list 6 -->
-                        <div class="card-product style-list" data-availability="In stock" data-brand="nike">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product" data-src="/images/products/womens/women-167.jpg"
-                                        src="/images/products/womens/women-167.jpg" alt="image-product">
-                                    <img class="lazyload img-hover" data-src="/images/products/womens/women-168.jpg"
-                                        src="/images/products/womens/women-168.jpg" alt="image-product">
-                                </a>
-                                <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Cotton shopper bag</a>
-                                <span class="price current-price">₹199.25</span>
-                                <p class="description text-secondary text-line-clamp-2">The garments labelled as
-                                    Committed are products that have been produced using sustainable fibres or
-                                    processes, reducing their environmental impact.</p>
-                                <div class="variant-wrap-list">
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active line">
-                                            <span class="d-none text-capitalize color-filter">White</span>
-                                            <span class="swatch-value bg-white"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-167.jpg"
-                                                src="/images/products/womens/women-167.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="d-none text-capitalize color-filter">Beige</span>
-                                            <span class="swatch-value bg-beige"></span>
-                                            <img class="lazyload" data-src="/images/products/womens/women-162.jpg"
-                                                src="/images/products/womens/women-162.jpg" alt="image-product">
-                                        </li>
-
-                                    </ul>
-
-                                    <div class="list-product-btn">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To
-                                            cart</a>
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                            class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal"
-                                            class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- pagination -->
-                        <ul class="wg-pagination">
-                            <li><a href="#" class="pagination-item text-button">1</a></li>
-                            <li class="active">
-                                <div class="pagination-item text-button">2</div>
-                            </li>
-                            <li><a href="#" class="pagination-item text-button">3</a></li>
-                            <li><a href="#" class="pagination-item text-button"><i class="icon-arrRight"></i></a></li>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="alert alert-info mt-3">No products found.</div>
+                        <% } %>
+                        <!-- Pagination for List Layout -->
+                        <% if (pagination && pagination.totalPages > 1) { %>
+                        <ul class="wg-pagination mt-4">
+                            <% if (pagination.prevPage) { %>
+                                <li>
+                                    <a href="?page=<%= pagination.prevPage %>" class="pagination-item text-button"><i class="icon-arrLeft"></i></a>
+                                </li>
+                            <% } %>
+                            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                                <li class="<%= pagination.currentPage === i ? 'active' : '' %>">
+                                    <% if (pagination.currentPage === i) { %>
+                                        <div class="pagination-item text-button"><%= i %></div>
+                                    <% } else { %>
+                                        <a href="?page=<%= i %>" class="pagination-item text-button"><%= i %></a>
+                                    <% } %>
+                                </li>
+                            <% } %>
+                            <% if (pagination.nextPage) { %>
+                                <li>
+                                    <a href="?page=<%= pagination.nextPage %>" class="pagination-item text-button"><i class="icon-arrRight"></i></a>
+                                </li>
+                            <% } %>
                         </ul>
+                        <% } %>
                     </div>
+
+                    <!-- Product Grid Layout -->
                     <div class="tf-grid-layout wrapper-shop tf-col-4" id="gridLayout">
-
-                        <!-- card product 1 -->
-                        <div class="card-product grid" data-availability="Out of stock" data-brand="adidas">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty10.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty10.jpg" alt="image-product">
-                                </a>
-                                <!--  <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                       <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">V-neck cotton T-shirt</a>
-                                <span class="price current-price">₹59.99</span>
-                            </div>
-                        </div>
-                        <!-- card product 2 -->
-                        <div class="card-product grid" data-availability="In stock" data-brand="nike">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty25.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty25.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty27.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty27.jpg" alt="image-product">
-                                </a>
-                                <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                                <div class="marquee-product bg-main">
-                                    <div class="marquee-wrapper">
-                                        <div class="initial-child-container">
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                        </div>
+                        <% if (products && products.length) { %>
+                            <% products.forEach(function(product) { %>
+                                <div class="card-product grid" data-availability="<%= product.availability %>" data-brand="<%= product.brand && product.brand.slug %>">
+                                    <div class="card-product-wrapper">
+                                        <a href="/productDetails/<%= product.slug %>" class="product-img">
+                                            <img class="lazyload img-product" data-src="<%= product.images && product.images[0] %>" src="<%= product.images && product.images[0] %>" alt="<%= product.name %>">
+                                            <% if (product.images && product.images[1]) { %>
+                                                <img class="lazyload img-hover" data-src="<%= product.images[1] %>" src="<%= product.images[1] %>" alt="<%= product.name %>">
+                                            <% } %>
+                                        </a>
                                     </div>
-                                    <div class="marquee-wrapper">
-                                        <div class="initial-child-container">
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF
-                                                </p>
-                                            </div>
-                                            <div class="marquee-child-item">
-                                                <span class="icon icon-lightning text-critical"></span>
-                                            </div>
+                                    <div class="card-product-info">
+                                        <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.name %></a>
+                                        <div class="price">
+                                            <% if (product.oldPrice > product.price) { %>
+                                                <span class="old-price">₹<%= product.oldPrice.toFixed(2) %></span>
+                                            <% } %>
+                                            <span class="current-price">₹<%= product.price.toFixed(2) %></span>
                                         </div>
+                                        <% if (product.colors && product.colors.length) { %>
+                                            <ul class="list-color-product">
+                                                <% product.colors.forEach(function(color, idx) { %>
+                                                    <li class="list-color-item color-swatch <%= idx === 0 ? 'active' : '' %>">
+                                                        <span class="d-none text-capitalize color-filter"><%= color.name %></span>
+                                                        <% if (color.swatchClass) { %>
+                                                            <span class="swatch-value <%= color.swatchClass %>"></span>
+                                                        <% } %>
+                                                        <% if (color.image) { %>
+                                                            <img class="lazyload" data-src="<%= color.image %>" src="<%= color.image %>" alt="<%= color.name %>">
+                                                        <% } %>
+                                                    </li>
+                                                <% }) %>
+                                            </ul>
+                                        <% } %>
                                     </div>
                                 </div>
-                                <!--  <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Polarized sunglasses</a>
-                                <div class="price"><span class="old-price">₹98.00</span> <span
-                                        class="current-price">₹79.99</span></div>
-                                <ul class="list-color-product">
-                                    <li class="list-color-item color-swatch active line">
-                                        <span class="d-none text-capitalize color-filter">Light Blue</span>
-                                        <span class="swatch-value bg-light-blue"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty25.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty25.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Light Blue</span>
-                                        <span class="swatch-value bg-light-blue-2"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty27.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty27.jpg" alt="image-product">
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- card product 3 -->
-                        <div class="card-product grid card-product-size" data-availability="In stock" data-brand="LV">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty38.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty38.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty39.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty39.jpg" alt="image-product">
-                                </a>
-                                <div class="variant-wrap size-list">
-                                    <ul class="variant-box">
-                                        <li class="size-item">S</li>
-                                        <li class="size-item">M</li>
-                                        <li class="size-item">L</li>
-                                        <li class="size-item">XL</li>
-                                    </ul>
-                                </div>
-                                <div class="variant-wrap countdown-wrap">
-                                    <div class="variant-box">
-                                        <div class="js-countdown" data-timer="1007500" data-labels="D :,H :,M :,S">
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Ramie shirt with pockets </a>
-                                <div class="price"><span class="old-price">₹98.00</span> <span
-                                        class="current-price">₹89.99</span></div>
-                                <ul class="list-color-product">
-                                    <li class="list-color-item color-swatch active line">
-                                        <span class="d-none text-capitalize color-filter">Orange</span>
-                                        <span class="swatch-value bg-light-orange"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Grey</span>
-                                        <span class="swatch-value bg-light-grey"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- card product 4 -->
-                        <div class="card-product grid" data-availability="Out of stock" data-brand="gucci">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty40.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty40.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty28.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty28.jpg" alt="image-product">
-                                </a>
-                                <!--  <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Ribbed cotton-blend top</a>
-                                <span class="price current-price">₹69.99</span>
-                                <ul class="list-color-product">
-                                    <li class="list-color-item color-swatch active line">
-                                        <span class="d-none text-capitalize color-filter">Grey</span>
-                                        <span class="swatch-value bg-dark-grey"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty40.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty40.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Pink</span>
-                                        <span class="swatch-value bg-light-pink"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty11.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty11.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Grey</span>
-                                        <span class="swatch-value bg-dark-grey-2"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty13.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty13.jpg" alt="image-product">
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- card product 5 -->
-                        <div class="card-product grid card-product-size" data-availability="Out of stock"
-                            data-brand="hermes">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty42.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty42.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty41.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty41.jpg" alt="image-product">
-                                </a>
-                                <div class="variant-wrap size-list">
-                                    <ul class="variant-box">
-                                        <li class="size-item">S</li>
-                                        <li class="size-item">M</li>
-                                        <li class="size-item">L</li>
-                                        <li class="size-item">XL</li>
-                                    </ul>
-                                </div>
-                                <!-- <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Ribbed cotton-blend top</a>
-                                <span class="price current-price">₹39.99</span>
-                            </div>
-                        </div>
-                        <!-- card product 6 -->
-                        <div class="card-product grid" data-availability="In stock" data-brand="zalando">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty35.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty35.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty36.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty36.jpg" alt="image-product">
-                                </a>
-
-                                <!--  <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Faux-leather trousers</a>
-                                <span class="price current-price">₹79.99</span>
-                                <ul class="list-color-product">
-                                    <li class="list-color-item color-swatch active">
-                                        <span class="d-none text-capitalize color-filter">Orange</span>
-                                        <span class="swatch-value bg-orange"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty36.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty36.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Pink</span>
-                                        <span class="swatch-value bg-dark-pink"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty37.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty37.jpg" alt="image-product">
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- card product 7 -->
-                        <div class="card-product grid card-product-size" data-availability="In stock" data-brand="nike">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty45.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty45.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty44.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty44.jpg" alt="image-product">
-                                </a>
-                                <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                                <div class="variant-wrap size-list">
-                                    <ul class="variant-box">
-                                        <li class="size-item">S</li>
-                                        <li class="size-item">M</li>
-                                        <li class="size-item">L</li>
-                                        <li class="size-item">XL</li>
-                                    </ul>
-                                </div>
-                                <!-- <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                                </div> -->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">mock product</a>
-                                <div class="price"><span class="old-price">₹98.00</span><span
-                                        class="current-price">₹129.99</span></div>
-                                <ul class="list-color-product">
-                                    <li class="list-color-item color-swatch active">
-                                        <span class="d-none text-capitalize color-filter">Green</span>
-                                        <span class="swatch-value bg-light-green"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty45.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty45.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Grey</span>
-                                        <span class="swatch-value bg-grey"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty44.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty44.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch line">
-                                        <span class="d-none text-capitalize color-filter">White</span>
-                                        <span class="swatch-value bg-white"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty43.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty43.jpg" alt="image-product">
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- card product 8 -->
-                        <div class="card-product grid card-product-size" data-availability="In stock" data-brand="LV">
-                            <div class="card-product-wrapper">
-                                <a href="product-detail.html" class="product-img">
-                                    <img class="lazyload img-product"
-                                        data-src="/images/products/beauty-cosmetic/beauty14.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty14.jpg" alt="image-product">
-                                    <img class="lazyload img-hover"
-                                        data-src="/images/products/beauty-cosmetic/beauty13.jpg"
-                                        src="/images/products/beauty-cosmetic/beauty13.jpg" alt="image-product">
-                                </a>
-                                <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                                <div class="variant-wrap size-list">
-                                    <ul class="variant-box">
-                                        <li class="size-item">S</li>
-                                        <li class="size-item">M</li>
-                                        <li class="size-item">L</li>
-                                        <li class="size-item">XL</li>
-                                    </ul>
-                                </div>
-                                <!--   <div class="list-product-btn">
-                                    <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip">Wishlist</span>
-                                    </a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip">Compare</span>
-                                    </a>
-                                    <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                        <span class="icon icon-eye"></span>
-                                        <span class="tooltip">Quick View</span>
-                                    </a>
-                                </div>
-                                <div class="list-btn-main">
-                                    <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                                </div>-->
-                            </div>
-                            <div class="card-product-info">
-                                <a href="product-detail.html" class="title link">Double-button trench coat</a>
-                                <div class="price"><span class="old-price">₹98.00</span><span
-                                        class="current-price">₹219.99</span></div>
-                                <ul class="list-color-product">
-                                    <li class="list-color-item color-swatch active">
-                                        <span class="d-none text-capitalize color-filter">Grey</span>
-                                        <span class="swatch-value bg-grey-2"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty14.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty14.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch">
-                                        <span class="d-none text-capitalize color-filter">Orange</span>
-                                        <span class="swatch-value bg-light-orange"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty13.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty13.jpg" alt="image-product">
-                                    </li>
-                                    <li class="list-color-item color-swatch line">
-                                        <span class="d-none text-capitalize color-filter">White</span>
-                                        <span class="swatch-value bg-white"></span>
-                                        <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty11.jpg"
-                                            src="/images/products/beauty-cosmetic/beauty11.jpg" alt="image-product">
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- pagination -->
-                        <ul class="wg-pagination justify-content-center">
-                            <li><a href="#" class="pagination-item text-button">1</a></li>
-                            <li class="active">
-                                <div class="pagination-item text-button">2</div>
-                            </li>
-                            <li><a href="#" class="pagination-item text-button">3</a></li>
-                            <li><a href="#" class="pagination-item text-button"><i class="icon-arrRight"></i></a></li>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="alert alert-info mt-3">No products to show.</div>
+                        <% } %>
+                        <!-- Pagination for Grid Layout -->
+                        <% if (pagination && pagination.totalPages > 1) { %>
+                        <ul class="wg-pagination justify-content-center mt-4">
+                            <% if (pagination.prevPage) { %>
+                                <li>
+                                    <a href="?page=<%= pagination.prevPage %>" class="pagination-item text-button"><i class="icon-arrLeft"></i></a>
+                                </li>
+                            <% } %>
+                            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                                <li class="<%= pagination.currentPage === i ? 'active' : '' %>">
+                                    <% if (pagination.currentPage === i) { %>
+                                        <div class="pagination-item text-button"><%= i %></div>
+                                    <% } else { %>
+                                        <a href="?page=<%= i %>" class="pagination-item text-button"><%= i %></a>
+                                    <% } %>
+                                </li>
+                            <% } %>
+                            <% if (pagination.nextPage) { %>
+                                <li>
+                                    <a href="?page=<%= pagination.nextPage %>" class="pagination-item text-button"><i class="icon-arrRight"></i></a>
+                                </li>
+                            <% } %>
                         </ul>
+                        <% } %>
                     </div>
                 </div>
             </div>

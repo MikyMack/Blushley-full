@@ -1043,15 +1043,26 @@
                                                         <h4><i class="icon-info"></i> Banner Information</h4>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="add-banner-name">Banner Name*</label>
-                                                        <input type="text" id="add-banner-name" name="name" 
-                                                               placeholder="Enter banner name" required>
+                                                        <label for="add-banner-title">Title</label>
+                                                        <input type="text" id="add-banner-title" name="title" 
+                                                               placeholder="Enter banner title">
                                                     </div>
                                                     
                                                     <div class="form-group">
-                                                        <label for="add-banner-link">Banner Link*</label>
-                                                        <input type="url" id="add-banner-link" name="link" 
-                                                               placeholder="https://example.com/page" required>
+                                                        <label for="add-banner-subtitle">Subtitle</label>
+                                                        <input type="text" id="add-banner-subtitle" name="subtitle" 
+                                                               placeholder="Enter banner subtitle">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="add-banner-description">Description</label>
+                                                        <textarea id="add-banner-description" name="description" 
+                                                            placeholder="Enter banner description"></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="add-banner-link">Link</label>
+                                                        <input type="text" id="add-banner-link" name="link" placeholder="e.g. /contact">
                                                     </div>
                                                 </div>
 
@@ -1127,15 +1138,27 @@
                                                         <h4><i class="icon-info"></i> Poster Information</h4>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="add-poster-name">Poster Name*</label>
-                                                        <input type="text" id="add-poster-name" name="name" 
-                                                               placeholder="Enter poster name" required>
+                                                        <label for="add-poster-title">Title</label>
+                                                        <input type="text" id="add-poster-title" name="title" 
+                                                               placeholder="Enter poster title">
                                                     </div>
                                                     
                                                     <div class="form-group">
-                                                        <label for="add-poster-link">Poster Link*</label>
-                                                        <input type="url" id="add-poster-link" name="link" 
-                                                               placeholder="https://example.com/page" required>
+                                                        <label for="add-poster-subtitle">Subtitle</label>
+                                                        <input type="text" id="add-poster-subtitle" name="subtitle" 
+                                                               placeholder="Enter poster subtitle">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="add-poster-description">Description</label>
+                                                        <textarea id="add-poster-description" name="description" 
+                                                            placeholder="Enter poster description"></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="add-poster-link">Poster Link</label>
+                                                        <input type="text" id="add-poster-link" name="link" 
+                                                               placeholder="/ or https://example.com/page">
                                                     </div>
                                                 </div>
 
@@ -1213,13 +1236,23 @@
                                                         <h4><i class="icon-info"></i> Banner Information</h4>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="edit-banner-name">Banner Name*</label>
-                                                        <input type="text" id="edit-banner-name" name="name" required>
+                                                        <label for="edit-banner-title">Title</label>
+                                                        <input type="text" id="edit-banner-title" name="title">
                                                     </div>
                                                     
                                                     <div class="form-group">
-                                                        <label for="edit-banner-link">Banner Link*</label>
-                                                        <input type="url" id="edit-banner-link" name="link" required>
+                                                        <label for="edit-banner-subtitle">Subtitle</label>
+                                                        <input type="text" id="edit-banner-subtitle" name="subtitle">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="edit-banner-description">Description</label>
+                                                        <textarea id="edit-banner-description" name="description"></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="edit-banner-link">Banner Link</label>
+                                                        <input id="edit-banner-link" name="link">
                                                     </div>
                                                 </div>
 
@@ -1302,13 +1335,23 @@
                                                         <h4><i class="icon-info"></i> Poster Information</h4>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="edit-poster-name">Poster Name*</label>
-                                                        <input type="text" id="edit-poster-name" name="name" required>
+                                                        <label for="edit-poster-title">Title</label>
+                                                        <input type="text" id="edit-poster-title" name="title">
                                                     </div>
                                                     
                                                     <div class="form-group">
-                                                        <label for="edit-poster-link">Poster Link*</label>
-                                                        <input type="url" id="edit-poster-link" name="link" required>
+                                                        <label for="edit-poster-subtitle">Subtitle</label>
+                                                        <input type="text" id="edit-poster-subtitle" name="subtitle">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="edit-poster-description">Description</label>
+                                                        <textarea id="edit-poster-description" name="description"></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="edit-poster-link">Poster Link</label>
+                                                        <input id="edit-poster-link" name="link">
                                                     </div>
                                                 </div>
 
@@ -1391,717 +1434,1005 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <script>
-                                    // Global variables
-                                    let currentContentType = 'banners';
-                                    let bannerCurrentPage = 1;
-                                    let posterCurrentPage = 1;
-                                    let bannerLimit = 10;
-                                    let posterLimit = 10;
-                                    let bannerSearchQuery = '';
-                                    let posterSearchQuery = '';
-                                    let banners = [];
-                                    let posters = [];
-                                    let itemToDelete = null;
-                                    let deleteType = '';
-
-                                    // DOM Content Loaded
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Initialize
-                                        fetchBanners();
-                                        fetchPosters();
-
-                                        // Content type toggle
-                                        document.querySelectorAll('.content-type-btn').forEach(btn => {
-                                            btn.addEventListener('click', function() {
-                                                const type = this.getAttribute('data-type');
-                                                switchContentType(type);
-                                            });
-                                        });
-
-                                        // Banner event listeners
-                                        document.getElementById('banner-limit-select').addEventListener('change', function () {
-                                            bannerLimit = parseInt(this.value);
-                                            bannerCurrentPage = 1;
-                                            fetchBanners();
-                                        });
-
-                                        document.getElementById('banner-search-btn').addEventListener('click', function () {
-                                            bannerSearchQuery = document.getElementById('banner-search-input').value;
-                                            bannerCurrentPage = 1;
-                                            fetchBanners();
-                                        });
-
-                                        // Poster event listeners
-                                        document.getElementById('poster-limit-select').addEventListener('change', function () {
-                                            posterLimit = parseInt(this.value);
-                                            posterCurrentPage = 1;
-                                            fetchPosters();
-                                        });
-
-                                        document.getElementById('poster-search-btn').addEventListener('click', function () {
-                                            posterSearchQuery = document.getElementById('poster-search-input').value;
-                                            posterCurrentPage = 1;
-                                            fetchPosters();
-                                        });
-
-                                        // Form submissions
-                                        document.getElementById('add-banner-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            addBanner();
-                                        });
-
-                                        document.getElementById('add-poster-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            addPoster();
-                                        });
-
-                                        document.getElementById('edit-banner-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            updateBanner();
-                                        });
-
-                                        document.getElementById('edit-poster-form').addEventListener('submit', function (e) {
-                                            e.preventDefault();
-                                            updatePoster();
-                                        });
-
-                                        document.getElementById('confirm-delete-btn').addEventListener('click', function () {
-                                            if (itemToDelete && deleteType) {
-                                                if (deleteType === 'banner') {
-                                                    deleteBanner(itemToDelete);
-                                                } else {
-                                                    deletePoster(itemToDelete);
-                                                }
-                                                itemToDelete = null;
-                                                deleteType = '';
-                                            }
-                                        });
-
-                                        // Image preview functionality
-                                        setupImagePreview('add-banner-image', 'add-banner-image-preview-grid');
-                                        setupImagePreview('add-poster-image', 'add-poster-image-preview-grid');
-                                        setupImagePreview('edit-banner-image', 'edit-banner-image-preview-grid');
-                                        setupImagePreview('edit-poster-image', 'edit-poster-image-preview-grid');
-                                    });
-
-                                    // Switch between banners and posters
-                                    function switchContentType(type) {
-                                        currentContentType = type;
-                                        
-                                        // Update toggle buttons
-                                        document.querySelectorAll('.content-type-btn').forEach(btn => {
-                                            btn.classList.remove('active');
-                                        });
-                                        document.querySelector(`[data-type="${type}"]`).classList.add('active');
-                                        
-                                        // Show/hide sections
-                                        if (type === 'banners') {
-                                            document.getElementById('banners-section').style.display = 'block';
-                                            document.getElementById('posters-section').style.display = 'none';
-                                        } else {
-                                            document.getElementById('banners-section').style.display = 'none';
-                                            document.getElementById('posters-section').style.display = 'block';
-                                        }
-                                    }
-
-                                    // Setup image preview
-                                    function setupImagePreview(inputId, previewGridId) {
-                                        document.getElementById(inputId).addEventListener('change', function(e) {
-                                            const file = e.target.files[0];
-                                            const previewGrid = document.getElementById(previewGridId);
-                                            previewGrid.innerHTML = '';
-
-                                            if (file && file.type.startsWith('image/')) {
-                                                const reader = new FileReader();
-                                                reader.onload = function(e) {
-                                                    const img = document.createElement('img');
-                                                    img.src = e.target.result;
-                                                    img.alt = 'Preview';
-                                                    previewGrid.appendChild(img);
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        });
-                                    }
-
-                                    // Fetch banners from API
-                                    async function fetchBanners() {
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            banners = getMockBanners();
-                                            
-                                            // Filter by search query if provided
-                                            if (bannerSearchQuery) {
-                                                banners = banners.filter(banner => 
-                                                    banner.name.toLowerCase().includes(bannerSearchQuery.toLowerCase())
-                                                );
-                                            }
-                                            
-                                            renderBanners(banners);
-                                            renderPagination('banner', Math.ceil(banners.length / bannerLimit), bannerCurrentPage);
-                                            document.getElementById('banner-showing-entries').textContent = `Showing ${Math.min(banners.length, bannerLimit)} of ${banners.length} entries`;
-                                        } catch (error) {
-                                            console.error('Error fetching banners:', error);
-                                            alert('Failed to load banners. Please try again later.');
-                                            document.getElementById('banners-list').innerHTML = '<tr><td colspan="6" class="text-center">Failed to load banners</td></tr>';
-                                        }
-                                    }
-
-                                    // Fetch posters from API
-                                    async function fetchPosters() {
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            posters = getMockPosters();
-                                            
-                                            // Filter by search query if provided
-                                            if (posterSearchQuery) {
-                                                posters = posters.filter(poster => 
-                                                    poster.name.toLowerCase().includes(posterSearchQuery.toLowerCase())
-                                                );
-                                            }
-                                            
-                                            renderPosters(posters);
-                                            renderPagination('poster', Math.ceil(posters.length / posterLimit), posterCurrentPage);
-                                            document.getElementById('poster-showing-entries').textContent = `Showing ${Math.min(posters.length, posterLimit)} of ${posters.length} entries`;
-                                        } catch (error) {
-                                            console.error('Error fetching posters:', error);
-                                            alert('Failed to load posters. Please try again later.');
-                                            document.getElementById('posters-list').innerHTML = '<tr><td colspan="6" class="text-center">Failed to load posters</td></tr>';
-                                        }
-                                    }
-
-                                    // Render banner list
-                                    function renderBanners(banners) {
-                                        const bannersList = document.getElementById('banners-list');
-                                        bannersList.innerHTML = '';
-
-                                        // Calculate pagination
-                                        const startIndex = (bannerCurrentPage - 1) * bannerLimit;
-                                        const endIndex = startIndex + bannerLimit;
-                                        const paginatedBanners = banners.slice(startIndex, endIndex);
-
-                                        if (paginatedBanners.length === 0) {
-                                            bannersList.innerHTML = '<tr><td colspan="6" class="text-center">No banners found matching your criteria.</td></tr>';
-                                            return;
-                                        }
-
-                                        paginatedBanners.forEach(banner => {
-                                            const bannerRow = document.createElement('tr');
-                                            bannerRow.id = `banner-${banner.id}`;
-
-                                            const bannerImage = banner.image || 'https://via.placeholder.com/120x60?text=No+Image';
-
-                                            bannerRow.innerHTML = `
-                                                <td>
-                                                    <img src="${bannerImage}" alt="${banner.name}" class="banner-image" onerror="this.src='https://via.placeholder.com/120x60?text=No+Image'">
-                                                </td>
-                                                <td>
-                                                    <div class="banner-name">${banner.name}</div>
-                                                </td>
-                                                <td>
-                                                    <a href="${banner.link}" target="_blank" class="banner-link">${banner.link}</a>
-                                                </td>
-                                                <td>
-                                                    <span class="status-badge ${banner.isActive ? 'active' : 'inactive'}">
-                                                        ${banner.isActive ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div class="text-tiny">${banner.createdAt}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="banner-actions">
-                                                        <button class="item edit" onclick="showEditBannerModal('${banner.id}')">
-                                                            <i class="icon-edit-3"></i>
-                                                        </button>
-                                                        <button class="item toggle" onclick="toggleBanner('${banner.id}')">
-                                                            <i class="fa fa-toggle-${banner.isActive ? 'on' : 'off'}"></i>
-                                                        </button>
-                                                        <button class="item trash" onclick="confirmDeleteItem('${banner.id}', 'banner')">
-                                                            <i class="icon-trash-2"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            `;
-
-                                            bannersList.appendChild(bannerRow);
-                                        });
-                                    }
-
-                                    // Render poster list
-                                    function renderPosters(posters) {
-                                        const postersList = document.getElementById('posters-list');
-                                        postersList.innerHTML = '';
-
-                                        // Calculate pagination
-                                        const startIndex = (posterCurrentPage - 1) * posterLimit;
-                                        const endIndex = startIndex + posterLimit;
-                                        const paginatedPosters = posters.slice(startIndex, endIndex);
-
-                                        if (paginatedPosters.length === 0) {
-                                            postersList.innerHTML = '<tr><td colspan="6" class="text-center">No posters found matching your criteria.</td></tr>';
-                                            return;
-                                        }
-
-                                        paginatedPosters.forEach(poster => {
-                                            const posterRow = document.createElement('tr');
-                                            posterRow.id = `poster-${poster.id}`;
-
-                                            const posterImage = poster.image || 'https://via.placeholder.com/80x120?text=No+Image';
-
-                                            posterRow.innerHTML = `
-                                                <td>
-                                                    <img src="${posterImage}" alt="${poster.name}" class="poster-image" onerror="this.src='https://via.placeholder.com/80x120?text=No+Image'">
-                                                </td>
-                                                <td>
-                                                    <div class="banner-name">${poster.name}</div>
-                                                </td>
-                                                <td>
-                                                    <a href="${poster.link}" target="_blank" class="banner-link">${poster.link}</a>
-                                                </td>
-                                                <td>
-                                                    <span class="status-badge ${poster.isActive ? 'active' : 'inactive'}">
-                                                        ${poster.isActive ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div class="text-tiny">${poster.createdAt}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="banner-actions">
-                                                        <button class="item edit" onclick="showEditPosterModal('${poster.id}')">
-                                                            <i class="icon-edit-3"></i>
-                                                        </button>
-                                                        <button class="item toggle" onclick="togglePoster('${poster.id}')">
-                                                            <i class="fa fa-toggle-${poster.isActive ? 'on' : 'off'}"></i>
-                                                        </button>
-                                                        <button class="item trash" onclick="confirmDeleteItem('${poster.id}', 'poster')">
-                                                            <i class="icon-trash-2"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            `;
-
-                                            postersList.appendChild(posterRow);
-                                        });
-                                    }
-
-                                    // Show add banner modal
-                                    function showAddBannerModal() {
-                                        document.getElementById('add-banner-form').reset();
-                                        document.getElementById('add-banner-image-preview-grid').innerHTML = '';
-                                        document.getElementById('add-banner-modal').style.display = 'block';
-                                    }
-
-                                    // Show add poster modal
-                                    function showAddPosterModal() {
-                                        document.getElementById('add-poster-form').reset();
-                                        document.getElementById('add-poster-image-preview-grid').innerHTML = '';
-                                        document.getElementById('add-poster-modal').style.display = 'block';
-                                    }
-
-                                    // Show edit banner modal
-                                    function showEditBannerModal(bannerId) {
-                                        const banner = banners.find(b => b.id === bannerId);
-                                        if (!banner) {
-                                            alert('Banner not found');
-                                            return;
-                                        }
-
-                                        // Populate form fields
-                                        document.getElementById('edit-banner-id').value = banner.id;
-                                        document.getElementById('edit-banner-name').value = banner.name;
-                                        document.getElementById('edit-banner-link').value = banner.link;
-                                        document.getElementById('edit-banner-status').checked = banner.isActive;
-
-                                        // Load current image
-                                        const imageContainer = document.getElementById('edit-banner-current-image');
-                                        imageContainer.innerHTML = '';
-                                        if (banner.image) {
-                                            const imgDiv = document.createElement('div');
-                                            imgDiv.className = 'current-image';
-                                            imgDiv.innerHTML = `
-                                                <img src="${banner.image}" alt="Banner Image" style="max-width: 100%; border-radius: 8px;">
-                                            `;
-                                            imageContainer.appendChild(imgDiv);
-                                        }
-
-                                        // Clear image preview
-                                        document.getElementById('edit-banner-image-preview-grid').innerHTML = '';
-
-                                        // Show modal
-                                        document.getElementById('edit-banner-modal').style.display = 'block';
-                                    }
-
-                                    // Show edit poster modal
-                                    function showEditPosterModal(posterId) {
-                                        const poster = posters.find(p => p.id === posterId);
-                                        if (!poster) {
-                                            alert('Poster not found');
-                                            return;
-                                        }
-
-                                        // Populate form fields
-                                        document.getElementById('edit-poster-id').value = poster.id;
-                                        document.getElementById('edit-poster-name').value = poster.name;
-                                        document.getElementById('edit-poster-link').value = poster.link;
-                                        document.getElementById('edit-poster-status').checked = poster.isActive;
-
-                                        // Load current image
-                                        const imageContainer = document.getElementById('edit-poster-current-image');
-                                        imageContainer.innerHTML = '';
-                                        if (poster.image) {
-                                            const imgDiv = document.createElement('div');
-                                            imgDiv.className = 'current-image';
-                                            imgDiv.innerHTML = `
-                                                <img src="${poster.image}" alt="Poster Image" style="max-width: 100%; border-radius: 8px;">
-                                            `;
-                                            imageContainer.appendChild(imgDiv);
-                                        }
-
-                                        // Clear image preview
-                                        document.getElementById('edit-poster-image-preview-grid').innerHTML = '';
-
-                                        // Show modal
-                                        document.getElementById('edit-poster-modal').style.display = 'block';
-                                    }
-
-                                    // Add banner
-                                    async function addBanner() {
-                                        const form = document.getElementById('add-banner-form');
-                                        const formData = new FormData(form);
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            const newBanner = {
-                                                id: 'BNR' + Date.now(),
-                                                name: formData.get('name'),
-                                                link: formData.get('link'),
-                                                image: 'https://via.placeholder.com/1200x400?text=New+Banner',
-                                                isActive: formData.get('isActive') === 'on',
-                                                createdAt: new Date().toLocaleDateString('en-US', { 
-                                                    year: 'numeric', 
-                                                    month: 'short', 
-                                                    day: 'numeric' 
-                                                })
-                                            };
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Add the banner to our mock data
-                                            banners.unshift(newBanner);
-
-                                            alert('Banner added successfully!');
-                                            closeModal('add-banner-modal');
-                                            fetchBanners();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error adding banner');
-                                        }
-                                    }
-
-                                    // Add poster
-                                    async function addPoster() {
-                                        const form = document.getElementById('add-poster-form');
-                                        const formData = new FormData(form);
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            const newPoster = {
-                                                id: 'PST' + Date.now(),
-                                                name: formData.get('name'),
-                                                link: formData.get('link'),
-                                                image: 'https://via.placeholder.com/600x800?text=New+Poster',
-                                                isActive: formData.get('isActive') === 'on',
-                                                createdAt: new Date().toLocaleDateString('en-US', { 
-                                                    year: 'numeric', 
-                                                    month: 'short', 
-                                                    day: 'numeric' 
-                                                })
-                                            };
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Add the poster to our mock data
-                                            posters.unshift(newPoster);
-
-                                            alert('Poster added successfully!');
-                                            closeModal('add-poster-modal');
-                                            fetchPosters();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error adding poster');
-                                        }
-                                    }
-
-                                    // Update banner
-                                    async function updateBanner() {
-                                        const form = document.getElementById('edit-banner-form');
-                                        const formData = new FormData(form);
-                                        const bannerId = document.getElementById('edit-banner-id').value;
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            const updatedBanner = {
-                                                id: bannerId,
-                                                name: formData.get('name'),
-                                                link: formData.get('link'),
-                                                isActive: formData.get('isActive') === 'on'
-                                            };
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Update the banner in our mock data
-                                            const bannerIndex = banners.findIndex(b => b.id === bannerId);
-                                            if (bannerIndex !== -1) {
-                                                banners[bannerIndex] = {
-                                                    ...banners[bannerIndex],
-                                                    ...updatedBanner
-                                                };
-                                            }
-
-                                            alert('Banner updated successfully!');
-                                            closeModal('edit-banner-modal');
-                                            fetchBanners();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error updating banner');
-                                        }
-                                    }
-
-                                    // Update poster
-                                    async function updatePoster() {
-                                        const form = document.getElementById('edit-poster-form');
-                                        const formData = new FormData(form);
-                                        const posterId = document.getElementById('edit-poster-id').value;
-
-                                        try {
-                                            // In a real implementation, this would be an API call
-                                            const updatedPoster = {
-                                                id: posterId,
-                                                name: formData.get('name'),
-                                                link: formData.get('link'),
-                                                isActive: formData.get('isActive') === 'on'
-                                            };
-
-                                            // Simulate API call delay
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                            // Update the poster in our mock data
-                                            const posterIndex = posters.findIndex(p => p.id === posterId);
-                                            if (posterIndex !== -1) {
-                                                posters[posterIndex] = {
-                                                    ...posters[posterIndex],
-                                                    ...updatedPoster
-                                                };
-                                            }
-
-                                            alert('Poster updated successfully!');
-                                            closeModal('edit-poster-modal');
-                                            fetchPosters();
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error updating poster');
-                                        }
-                                    }
-
-                                    // Toggle banner status
-                                    function toggleBanner(bannerId) {
-                                        // In a real implementation, this would be an API call
-                                        const bannerIndex = banners.findIndex(b => b.id === bannerId);
-                                        if (bannerIndex !== -1) {
-                                            banners[bannerIndex].isActive = !banners[bannerIndex].isActive;
-                                        }
-
-                                        alert(`Banner ${banners[bannerIndex].isActive ? 'activated' : 'deactivated'} successfully!`);
-                                        fetchBanners();
-                                    }
-
-                                    // Toggle poster status
-                                    function togglePoster(posterId) {
-                                        // In a real implementation, this would be an API call
-                                        const posterIndex = posters.findIndex(p => p.id === posterId);
-                                        if (posterIndex !== -1) {
-                                            posters[posterIndex].isActive = !posters[posterIndex].isActive;
-                                        }
-
-                                        alert(`Poster ${posters[posterIndex].isActive ? 'activated' : 'deactivated'} successfully!`);
-                                        fetchPosters();
-                                    }
-
-                                    // Confirm delete item
-                                    function confirmDeleteItem(itemId, type) {
-                                        itemToDelete = itemId;
-                                        deleteType = type;
-                                        
-                                        const message = type === 'banner' 
-                                            ? 'Are you sure you want to delete this banner? This action cannot be undone.'
-                                            : 'Are you sure you want to delete this poster? This action cannot be undone.';
-                                        
-                                        document.getElementById('delete-confirm-message').textContent = message;
-                                        document.getElementById('delete-confirm-modal').style.display = 'block';
-                                    }
-
-                                    // Delete banner
-                                    function deleteBanner(bannerId) {
-                                        // In a real implementation, this would be an API call
-                                        const bannerIndex = banners.findIndex(b => b.id === bannerId);
-                                        if (bannerIndex !== -1) {
-                                            banners.splice(bannerIndex, 1);
-                                        }
-
-                                        alert('Banner deleted successfully!');
-                                        closeModal('delete-confirm-modal');
-                                        fetchBanners();
-                                    }
-
-                                    // Delete poster
-                                    function deletePoster(posterId) {
-                                        // In a real implementation, this would be an API call
-                                        const posterIndex = posters.findIndex(p => p.id === posterId);
-                                        if (posterIndex !== -1) {
-                                            posters.splice(posterIndex, 1);
-                                        }
-
-                                        alert('Poster deleted successfully!');
-                                        closeModal('delete-confirm-modal');
-                                        fetchPosters();
-                                    }
-
-                                    // Close modal
-                                    function closeModal(modalId) {
-                                        document.getElementById(modalId).style.display = 'none';
-                                    }
-
-                                    // Pagination functions
-                                    function renderPagination(type, totalPages, currentPage) {
-                                        const paginationContainer = document.getElementById(`${type}-pagination`);
-                                        paginationContainer.innerHTML = '';
-
-                                        // Always show first page button
-                                        addPageButton(paginationContainer, type, 1, currentPage);
-
-                                        // Show previous ellipsis if needed
-                                        if (currentPage > 3) {
-                                            const ellipsis = document.createElement('li');
-                                            ellipsis.innerHTML = '<span>...</span>';
-                                            paginationContainer.appendChild(ellipsis);
-                                        }
-
-                                        // Show pages around current page
-                                        const startPage = Math.max(2, currentPage - 1);
-                                        const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-                                        for (let i = startPage; i <= endPage; i++) {
-                                            addPageButton(paginationContainer, type, i, currentPage);
-                                        }
-
-                                        // Show next ellipsis if needed
-                                        if (currentPage < totalPages - 2) {
-                                            const ellipsis = document.createElement('li');
-                                            ellipsis.innerHTML = '<span>...</span>';
-                                            paginationContainer.appendChild(ellipsis);
-                                        }
-
-                                        // Always show last page button if there are multiple pages
-                                        if (totalPages > 1) {
-                                            addPageButton(paginationContainer, type, totalPages, currentPage);
-                                        }
-                                    }
-
-                                    function addPageButton(container, type, pageNumber, currentPage) {
-                                        const pageItem = document.createElement('li');
-                                        if (pageNumber === currentPage) {
-                                            pageItem.className = 'active';
-                                        }
-
-                                        const pageLink = document.createElement('a');
-                                        pageLink.href = '#';
-                                        pageLink.textContent = pageNumber;
-                                        pageLink.onclick = (e) => {
-                                            e.preventDefault();
-                                            if (type === 'banner') {
-                                                bannerCurrentPage = pageNumber;
-                                                fetchBanners();
-                                            } else {
-                                                posterCurrentPage = pageNumber;
-                                                fetchPosters();
-                                            }
-                                        };
-
-                                        pageItem.appendChild(pageLink);
-                                        container.appendChild(pageItem);
-                                    }
-
-                                    // Mock data for demonstration
-                                    function getMockBanners() {
-                                        return [
-                                            {
-                                                id: 'BNR001',
-                                                name: 'Summer Collection',
-                                                link: 'https://blushelys.com/summer-collection',
-                                                image: '/images/beautician/beautician6.png',
-                                                isActive: true,
-                                                createdAt: 'Mar 15, 2024'
-                                            },
-                                            {
-                                                id: 'BNR002',
-                                                name: 'New Arrivals',
-                                                link: 'https://blushelys.com/new-arrivals',
-                                                image: '/images/beautician/beautician6.png',
-                                                isActive: true,
-                                                createdAt: 'Mar 10, 2024'
-                                            },
-                                            {
-                                                id: 'BNR003',
-                                                name: 'Special Offer',
-                                                link: 'https://blushelys.com/special-offer',
-                                                image: '/images/beautician/beautician6.png',
-                                                isActive: false,
-                                                createdAt: 'Mar 5, 2024'
-                                            }
-                                        ];
-                                    }
-
-                                    function getMockPosters() {
-                                        return [
-                                            {
-                                                id: 'PST001',
-                                                name: 'Beauty Workshop',
-                                                link: 'https://blushelys.com/workshop',
-                                                image: '/images/beautician/beautician6.png',
-                                                isActive: true,
-                                                createdAt: 'Mar 12, 2024'
-                                            },
-                                            {
-                                                id: 'PST002',
-                                                name: 'Hair Care Tips',
-                                                link: 'https://blushelys.com/hair-care',
-                                                image: '/images/beautician/beautician6.png',
-                                                isActive: true,
-                                                createdAt: 'Mar 8, 2024'
-                                            },
-                                            {
-                                                id: 'PST003',
-                                                name: 'Skin Care Guide',
-                                                link: 'https://blushelys.com/skin-care',
-                                                image: '/images/beautician/beautician6.png',
-                                                isActive: false,
-                                                createdAt: 'Mar 3, 2024'
-                                            }
-                                        ];
-                                    }
-                                </script>
+    // Global variables
+    let currentContentType = 'banners';
+    let bannerCurrentPage = 1;
+    let posterCurrentPage = 1;
+    let bannerLimit = 10;
+    let posterLimit = 10;
+    let bannerSearchQuery = '';
+    let posterSearchQuery = '';
+    let banners = [];
+    let posters = [];
+    let itemToDelete = null;
+    let deleteType = '';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchBanners();
+        fetchPosters();
+
+        // Defensive: check element exists before adding listeners
+        const assignListener = (selector, event, fn) => {
+            const el = document.getElementById(selector);
+            if(el) el.addEventListener(event, fn);
+        };
+
+        document.querySelectorAll('.content-type-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const type = this.getAttribute('data-type');
+                switchContentType(type);
+            });
+        });
+
+        assignListener('banner-limit-select', 'change', function () {
+            bannerLimit = parseInt(this.value);
+            bannerCurrentPage = 1;
+            fetchBanners();
+        });
+
+        assignListener('banner-search-input', 'keypress', function (e) {
+            if (e.key === 'Enter') {
+                bannerSearchQuery = this.value;
+                bannerCurrentPage = 1;
+                fetchBanners();
+            }
+        });
+
+        assignListener('banner-search-btn', 'click', function () {
+            const input = document.getElementById('banner-search-input');
+            bannerSearchQuery = input ? input.value : '';
+            bannerCurrentPage = 1;
+            fetchBanners();
+        });
+
+        assignListener('poster-limit-select', 'change', function () {
+            posterLimit = parseInt(this.value);
+            posterCurrentPage = 1;
+            fetchPosters();
+        });
+
+        assignListener('poster-search-input', 'keypress', function (e) {
+            if (e.key === 'Enter') {
+                posterSearchQuery = this.value;
+                posterCurrentPage = 1;
+                fetchPosters();
+            }
+        });
+
+        assignListener('poster-search-btn', 'click', function () {
+            const input = document.getElementById('poster-search-input');
+            posterSearchQuery = input ? input.value : '';
+            posterCurrentPage = 1;
+            fetchPosters();
+        });
+
+        assignListener('add-banner-form', 'submit', function (e) {
+            e.preventDefault();
+            addBanner();
+        });
+
+        assignListener('add-poster-form', 'submit', function (e) {
+            e.preventDefault();
+            addPoster();
+        });
+
+        assignListener('edit-banner-form', 'submit', function (e) {
+            e.preventDefault();
+            updateBanner();
+        });
+
+        assignListener('edit-poster-form', 'submit', function (e) {
+            e.preventDefault();
+            updatePoster();
+        });
+
+        assignListener('confirm-delete-btn', 'click', function () {
+            if (itemToDelete && deleteType) {
+                if (deleteType === 'banner') {
+                    deleteBanner(itemToDelete);
+                } else {
+                    deletePoster(itemToDelete);
+                }
+                itemToDelete = null;
+                deleteType = '';
+            }
+        });
+
+        // Image preview setup - no schema-dependent code
+        setupImagePreview('add-banner-image', 'add-banner-image-preview-grid');
+        setupImagePreview('add-poster-image', 'add-poster-image-preview-grid');
+        setupImagePreview('edit-banner-image', 'edit-banner-image-preview-grid');
+        setupImagePreview('edit-poster-image', 'edit-poster-image-preview-grid');
+
+        setupFileUploadArea('add-banner-file-upload-area', 'add-banner-image');
+        setupFileUploadArea('add-poster-file-upload-area', 'add-poster-image');
+        setupFileUploadArea('edit-banner-file-upload-area', 'edit-banner-image');
+        setupFileUploadArea('edit-poster-file-upload-area', 'edit-poster-image');
+    });
+
+    function switchContentType(type) {
+        currentContentType = type;
+        document.querySelectorAll('.content-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const typeBtn = document.querySelector(`[data-type="${type}"]`);
+        if (typeBtn) typeBtn.classList.add('active');
+        const bannersSection = document.getElementById('banners-section');
+        const postersSection = document.getElementById('posters-section');
+        if (type === 'banners') {
+            if (bannersSection) bannersSection.style.display = 'block';
+            if (postersSection) postersSection.style.display = 'none';
+        } else {
+            if (bannersSection) bannersSection.style.display = 'none';
+            if (postersSection) postersSection.style.display = 'block';
+        }
+    }
+
+    function setupImagePreview(inputId, previewGridId) {
+        const input = document.getElementById(inputId);
+        const previewGrid = document.getElementById(previewGridId);
+        if (!input || !previewGrid) return;
+        input.addEventListener('change', function (e) {
+            const files = e.target.files;
+            previewGrid.innerHTML = '';
+            for (let file of files) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'image-preview-item';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'Preview';
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'remove-preview';
+                        removeBtn.innerHTML = '<i class="icon-x"></i>';
+                        removeBtn.onclick = function () {
+                            previewItem.remove();
+                            input.value = '';
+                        };
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(removeBtn);
+                        previewGrid.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    }
+
+    function setupFileUploadArea(uploadAreaId, inputId) {
+        const uploadArea = document.getElementById(uploadAreaId);
+        const fileInput = document.getElementById(inputId);
+        if (!uploadArea || !fileInput) return;
+
+        uploadArea.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function () {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function (e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+
+    async function apiCall(url, options = {}) {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
+        }
+    }
+
+    // ----------------- BANNER/POSTER FETCH: Field Names Mapped --------------------
+    async function fetchBanners() {
+        try {
+            showLoader('banners-list');
+            const params = new URLSearchParams({
+                page: bannerCurrentPage,
+                limit: bannerLimit,
+                ...(bannerSearchQuery && { search: bannerSearchQuery })
+            });
+            const data = await apiCall(`/bannerlist?${params}`);
+            // Banner schema: { _id, title, subtitle, description, link, image, isActive, timestamps }
+            banners = Array.isArray(data.banners) ? data.banners : (data.data || data);
+            const totalCount = data.totalCount || data.total || banners.length;
+            renderBanners(banners);
+            renderPagination('banner', Math.ceil(totalCount / bannerLimit), bannerCurrentPage);
+            const showingCount = Math.min(banners.length, bannerLimit);
+            const bannerShowing = document.getElementById('banner-showing-entries');
+            if (bannerShowing) {
+                bannerShowing.textContent = `Showing ${showingCount} of ${totalCount} entries`;
+            }
+        } catch (error) {
+            console.error('Error fetching banners:', error);
+            showError('banners-list', 'Failed to load banners. Please try again later.');
+        }
+    }
+
+    async function fetchPosters() {
+        try {
+            showLoader('posters-list');
+            const params = new URLSearchParams({
+                page: posterCurrentPage,
+                limit: posterLimit,
+                ...(posterSearchQuery && { search: posterSearchQuery })
+            });
+            const data = await apiCall(`/posterList?${params}`);
+            // Poster schema: { _id, title, subtitle, description, link, image, isActive, timestamps }
+            posters = Array.isArray(data.posters) ? data.posters : (data.data || data);
+            const totalCount = data.totalCount || data.total || posters.length;
+            renderPosters(posters);
+            renderPagination('poster', Math.ceil(totalCount / posterLimit), posterCurrentPage);
+            const showingCount = Math.min(posters.length, posterLimit);
+            const posterShowing = document.getElementById('poster-showing-entries');
+            if (posterShowing) {
+                posterShowing.textContent = `Showing ${showingCount} of ${totalCount} entries`;
+            }
+        } catch (error) {
+            console.error('Error fetching posters:', error);
+            showError('posters-list', 'Failed to load posters. Please try again later.');
+        }
+    }
+
+    function showLoader(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center">
+                    <div class="loading-spinner">
+                        <i class="icon-loader"></i>
+                        <div>Loading...</div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    function showError(containerId, message) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center error-message">
+                    <i class="icon-alert-circle"></i>
+                    <div>${message}</div>
+                </td>
+            </tr>
+        `;
+    }
+
+    // Renders the banner list using correct schema field names
+    function renderBanners(banners) {
+        const bannersList = document.getElementById('banners-list');
+        if (!bannersList) return;
+        bannersList.innerHTML = '';
+        if (!banners.length) {
+            bannersList.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center">
+                        <div class="empty-state">
+                            <i class="icon-image"></i>
+                            <div>No banners found</div>
+                            <small>${bannerSearchQuery ? 'Try adjusting your search criteria' : 'Get started by adding your first banner'}</small>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        banners.forEach(banner => {
+            const bannerRow = document.createElement('tr');
+            bannerRow.id = `banner-${banner._id || banner.id}`;
+            const bannerImage = banner.image || '/images/placeholder-banner.jpg';
+            const createdAt = new Date(banner.createdAt || banner.created_date).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+            bannerRow.innerHTML = `
+                <td>
+                    <img src="${bannerImage}" alt="${banner.title || ''}" 
+                         class="banner-image" 
+                         onerror="this.src='/images/placeholder-banner.jpg'">
+                </td>
+                <td>
+                    <div class="banner-name">${banner.title || ''}</div>
+                    ${banner.subtitle ? `<div class="banner-subtitle">${banner.subtitle}</div>` : ''}
+                </td>
+                <td>
+                    ${banner.link ? `
+                        <a href="${banner.link}" target="_blank" class="banner-link" title="${banner.link}">
+                            <i class="icon-external-link"></i>
+                            View Link
+                        </a>
+                    ` : '<span class="text-muted">No link</span>'}
+                </td>
+                <td>
+                    <span class="status-badge ${banner.isActive ? 'active' : 'inactive'}">
+                        <i class="icon-${banner.isActive ? 'check' : 'x'}"></i>
+                        ${banner.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div class="text-tiny">${createdAt}</div>
+                </td>
+                <td>
+                    <div class="banner-actions">
+                        <button class="item edit" onclick="showEditBannerModal('${banner._id || banner.id}')" title="Edit Banner">
+                            <i class="icon-edit-3"></i>
+                        </button>
+                        <button class="item toggle ${banner.isActive ? 'active' : 'inactive'}" 
+                                onclick="toggleBanner('${banner._id || banner.id}')"
+                                title="${banner.isActive ? 'Deactivate' : 'Activate'}">
+                            <i class="icon-toggle-${banner.isActive ? 'right' : 'left'}"></i>
+                        </button>
+                        <button class="item trash" onclick="confirmDeleteItem('${banner._id || banner.id}', 'banner')"
+                                title="Delete Banner">
+                            <i class="icon-trash-2"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            bannersList.appendChild(bannerRow);
+        });
+    }
+
+    // Renders the posters list using correct schema field names
+    function renderPosters(posters) {
+        const postersList = document.getElementById('posters-list');
+        if (!postersList) return;
+        postersList.innerHTML = '';
+        if (!posters.length) {
+            postersList.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center">
+                        <div class="empty-state">
+                            <i class="icon-layers"></i>
+                            <div>No posters found</div>
+                            <small>${posterSearchQuery ? 'Try adjusting your search criteria' : 'Get started by adding your first poster'}</small>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        posters.forEach(poster => {
+            const posterRow = document.createElement('tr');
+            posterRow.id = `poster-${poster._id || poster.id}`;
+            const posterImage = poster.image || '/images/placeholder-poster.jpg';
+            const createdAt = new Date(poster.createdAt || poster.created_date).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+            posterRow.innerHTML = `
+                <td>
+                    <img src="${posterImage}" alt="${poster.title || ''}"
+                        class="poster-image"
+                        onerror="this.src='/images/placeholder-poster.jpg'">
+                </td>
+                <td>
+                    <div class="banner-name">${poster.title || ''}</div>
+                    ${poster.subtitle ? `<div class="banner-subtitle">${poster.subtitle}</div>` : ''}
+                </td>
+                <td>
+                    ${poster.link ? `
+                        <a href="${poster.link}" target="_blank" class="banner-link" title="${poster.link}">
+                            <i class="icon-external-link"></i>
+                            View Link
+                        </a>
+                    ` : '<span class="text-muted">No link</span>'}
+                </td>
+                <td>
+                    <span class="status-badge ${poster.isActive ? 'active' : 'inactive'}">
+                        <i class="icon-${poster.isActive ? 'check' : 'x'}"></i>
+                        ${poster.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div class="text-tiny">${createdAt}</div>
+                </td>
+                <td>
+                    <div class="banner-actions">
+                        <button class="item edit" onclick="showEditPosterModal('${poster._id || poster.id}')" title="Edit Poster">
+                            <i class="icon-edit-3"></i>
+                        </button>
+                        <button class="item toggle ${poster.isActive ? 'active' : 'inactive'}" 
+                                onclick="togglePoster('${poster._id || poster.id}')"
+                                title="${poster.isActive ? 'Deactivate' : 'Activate'}">
+                            <i class="icon-toggle-${poster.isActive ? 'right' : 'left'}"></i>
+                        </button>
+                        <button class="item trash" onclick="confirmDeleteItem('${poster._id || poster.id}', 'poster')"
+                                title="Delete Poster">
+                            <i class="icon-trash-2"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            postersList.appendChild(posterRow);
+        });
+    }
+
+    // Modal functions (use correct schema field names)
+    function showAddBannerModal() {
+        const form = document.getElementById('add-banner-form');
+        const previewGrid = document.getElementById('add-banner-image-preview-grid');
+        const statusCheck = document.getElementById('add-banner-status');
+        if (form) form.reset();
+        if (previewGrid) previewGrid.innerHTML = '';
+        if (statusCheck) statusCheck.checked = true;
+        showModal('add-banner-modal');
+    }
+
+    function showAddPosterModal() {
+        const form = document.getElementById('add-poster-form');
+        const previewGrid = document.getElementById('add-poster-image-preview-grid');
+        const statusCheck = document.getElementById('add-poster-status');
+        if (form) form.reset();
+        if (previewGrid) previewGrid.innerHTML = '';
+        if (statusCheck) statusCheck.checked = true;
+        showModal('add-poster-modal');
+    }
+
+    // FIX: Defensive access for all elements, and don't set .value if element is null
+    function showEditBannerModal(bannerId) {
+        const banner = banners.find(b => (b._id || b.id) === bannerId);
+        if (!banner) return alert('Banner not found');
+        const idField = document.getElementById('edit-banner-id');
+        const nameField = document.getElementById('edit-banner-name');
+        const linkField = document.getElementById('edit-banner-link');
+        const statusCheck = document.getElementById('edit-banner-status');
+        const imageContainer = document.getElementById('edit-banner-current-image');
+        const previewGrid = document.getElementById('edit-banner-image-preview-grid');
+
+        if (idField)        idField.value = banner._id || banner.id || '';
+        if (nameField)      nameField.value = banner.title || '';
+        if (linkField)      linkField.value = banner.link || '';
+        if (statusCheck)    statusCheck.checked = !!banner.isActive;
+        if (imageContainer) {
+            imageContainer.innerHTML = '';
+            if (banner.image) {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'current-image';
+                imgDiv.innerHTML = `
+                    <img src="${banner.image}" alt="Current Banner" onerror="this.src='/images/placeholder-banner.jpg'">
+                    <div class="image-overlay">Current Image</div>
+                `;
+                imageContainer.appendChild(imgDiv);
+            }
+        }
+        if (previewGrid) previewGrid.innerHTML = '';
+        showModal('edit-banner-modal');
+    }
+
+    function showEditPosterModal(posterId) {
+        const poster = posters.find(p => (p._id || p.id) === posterId);
+        if (!poster) return alert('Poster not found');
+        const idField = document.getElementById('edit-poster-id');
+        const nameField = document.getElementById('edit-poster-name');
+        const linkField = document.getElementById('edit-poster-link');
+        const statusCheck = document.getElementById('edit-poster-status');
+        const imageContainer = document.getElementById('edit-poster-current-image');
+        const previewGrid = document.getElementById('edit-poster-image-preview-grid');
+
+        if (idField)        idField.value = poster._id || poster.id || '';
+        if (nameField)      nameField.value = poster.title || '';
+        if (linkField)      linkField.value = poster.link || '';
+        if (statusCheck)    statusCheck.checked = !!poster.isActive;
+        if (imageContainer) {
+            imageContainer.innerHTML = '';
+            if (poster.image) {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'current-image';
+                imgDiv.innerHTML = `
+                    <img src="${poster.image}" alt="Current Poster" onerror="this.src='/images/placeholder-poster.jpg'">
+                    <div class="image-overlay">Current Image</div>
+                `;
+                imageContainer.appendChild(imgDiv);
+            }
+        }
+        if (previewGrid) previewGrid.innerHTML = '';
+        showModal('edit-poster-modal');
+    }
+
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target.id);
+        }
+    });
+
+    async function addBanner() {
+        const form = document.getElementById('add-banner-form');
+        if (!form) return;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        try {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="icon-loader"></i> Adding...';
+            }
+      
+            formData.set('title', formData.get('name') || formData.get('title'));
+            if (form.elements.subtitle) formData.set('subtitle', form.elements.subtitle.value);
+            if (form.elements.description) formData.set('description', form.elements.description.value);
+            if (form.elements.link) formData.set('link', form.elements.link.value);
+            if (form.elements.isActive) formData.set('isActive', form.elements.isActive.checked ? "true" : "false");
+            await apiCall('/bannercreate', { method: 'POST', body: formData });
+            showNotification('Banner added successfully!', 'success');
+            closeModal('add-banner-modal');
+            fetchBanners();
+        } catch (error) {
+            console.error('Error adding banner:', error);
+            showNotification('Failed to add banner. Please try again.', 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="icon-save"></i> Add Banner';
+            }
+        }
+    }
+
+    async function addPoster() {
+        const form = document.getElementById('add-poster-form');
+        if (!form) return;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        try {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="icon-loader"></i> Adding...';
+            }
+            formData.set('title', formData.get('name') || formData.get('title'));
+            if (form.elements.subtitle) formData.set('subtitle', form.elements.subtitle.value);
+            if (form.elements.description) formData.set('description', form.elements.description.value);
+            if (form.elements.link) formData.set('link', form.elements.link.value);
+            if (form.elements.isActive) formData.set('isActive', form.elements.isActive.checked ? "true" : "false");
+            await apiCall('/postercreate', { method: 'POST', body: formData });
+            showNotification('Poster added successfully!', 'success');
+            closeModal('add-poster-modal');
+            fetchPosters();
+        } catch (error) {
+            console.error('Error adding poster:', error);
+            showNotification('Failed to add poster. Please try again.', 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="icon-save"></i> Add Poster';
+            }
+        }
+    }
+
+    function showEditBannerModal(bannerId) {
+        const banner = banners.find(b => (b._id || b.id) == bannerId);
+        if (!banner) {
+            showNotification('Banner not found!', 'error');
+            return;
+        }
+
+        document.getElementById('edit-banner-id').value = banner._id || banner.id || '';
+        document.getElementById('edit-banner-title').value = banner.title || '';
+        if (document.getElementById('edit-banner-subtitle')) {
+            document.getElementById('edit-banner-subtitle').value = banner.subtitle || '';
+        }
+        if (document.getElementById('edit-banner-description')) {
+            document.getElementById('edit-banner-description').value = banner.description || '';
+        }
+        if (document.getElementById('edit-banner-link')) {
+            document.getElementById('edit-banner-link').value = banner.link || '';
+        }
+        if (document.getElementById('edit-banner-isActive')) {
+            document.getElementById('edit-banner-isActive').checked = !!banner.isActive;
+        }
+
+        if (document.getElementById('edit-banner-image-preview') && banner.image) {
+            document.getElementById('edit-banner-image-preview').src = banner.image;
+        }
+        showModal('edit-banner-modal');
+    }
+
+    async function updateBanner() {
+        const form = document.getElementById('edit-banner-form');
+        if (!form) return;
+        const formData = new FormData(form);
+        const idField = document.getElementById('edit-banner-id');
+        const bannerId = idField ? idField.value : '';
+        const submitBtn = form.querySelector('button[type="submit"]');
+        try {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="icon-loader"></i> Updating...';
+            }
+
+            const titleInput = document.getElementById('edit-banner-title');
+            const subtitleInput = document.getElementById('edit-banner-subtitle');
+            const descInput = document.getElementById('edit-banner-description');
+            const linkInput = document.getElementById('edit-banner-link');
+            const activeInput = document.getElementById('edit-banner-isActive');
+
+            if (titleInput) formData.set('title', titleInput.value);
+            if (subtitleInput) formData.set('subtitle', subtitleInput.value);
+            if (descInput) formData.set('description', descInput.value);
+            if (linkInput) formData.set('link', linkInput.value);
+            if (activeInput) formData.set('isActive', activeInput.checked ? "true" : "false");
+
+            await apiCall(`/banner/${bannerId}/update`, { method: 'POST', body: formData });
+            showNotification('Banner updated successfully!', 'success');
+            closeModal('edit-banner-modal');
+            fetchBanners();
+        } catch (error) {
+            console.error('Error updating banner:', error);
+            showNotification('Failed to update banner. Please try again.', 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="icon-save"></i> Update Banner';
+            }
+        }
+    }
+
+    // Patch: Ensure poster values are shown in the edit modal before update
+    function showEditPosterModal(posterId) {
+        const poster = posters.find(p => (p._id || p.id) == posterId);
+        if (!poster) {
+            showNotification('Poster not found!', 'error');
+            return;
+        }
+        document.getElementById('edit-poster-id').value = poster._id || poster.id || '';
+        document.getElementById('edit-poster-title').value = poster.title || '';
+        if (document.getElementById('edit-poster-subtitle')) {
+            document.getElementById('edit-poster-subtitle').value = poster.subtitle || '';
+        }
+        if (document.getElementById('edit-poster-description')) {
+            document.getElementById('edit-poster-description').value = poster.description || '';
+        }
+        if (document.getElementById('edit-poster-link')) {
+            document.getElementById('edit-poster-link').value = poster.link || '';
+        }
+        if (document.getElementById('edit-poster-isActive')) {
+            document.getElementById('edit-poster-isActive').checked = !!poster.isActive;
+        }
+        if (document.getElementById('edit-poster-image-preview') && poster.image) {
+            document.getElementById('edit-poster-image-preview').src = poster.image;
+        }
+        showModal('edit-poster-modal');
+    }
+
+    async function updatePoster() {
+        const form = document.getElementById('edit-poster-form');
+        if (!form) return;
+        const formData = new FormData(form);
+        const idField = document.getElementById('edit-poster-id');
+        const posterId = idField ? idField.value : '';
+        const submitBtn = form.querySelector('button[type="submit"]');
+        try {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="icon-loader"></i> Updating...';
+            }
+            const titleInput = document.getElementById('edit-poster-title');
+            const subtitleInput = document.getElementById('edit-poster-subtitle');
+            const descInput = document.getElementById('edit-poster-description');
+            const linkInput = document.getElementById('edit-poster-link');
+            const activeInput = document.getElementById('edit-poster-isActive');
+
+            if (titleInput) formData.set('title', titleInput.value);
+            if (subtitleInput) formData.set('subtitle', subtitleInput.value);
+            if (descInput) formData.set('description', descInput.value);
+            if (linkInput) formData.set('link', linkInput.value);
+            if (activeInput) formData.set('isActive', activeInput.checked ? "true" : "false");
+
+            await apiCall(`/poster/${posterId}/update`, { method: 'POST', body: formData });
+            showNotification('Poster updated successfully!', 'success');
+            closeModal('edit-poster-modal');
+            fetchPosters();
+        } catch (error) {
+            console.error('Error updating poster:', error);
+            showNotification('Failed to update poster. Please try again.', 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="icon-save"></i> Update Poster';
+            }
+        }
+    }
+
+    async function toggleBanner(bannerId) {
+        try {
+            await apiCall(`/banner/${bannerId}/toggle`, { method: 'POST' });
+            const banner = banners.find(b => (b._id || b.id) === bannerId);
+            const newStatus = banner ? !banner.isActive : false;
+            showNotification(`Banner ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+            fetchBanners();
+        } catch (error) {
+            console.error('Error toggling banner:', error);
+            showNotification('Failed to update banner status. Please try again.', 'error');
+        }
+    }
+
+    async function togglePoster(posterId) {
+        try {
+            await apiCall(`/poster/${posterId}/toggle`, { method: 'POST' });
+            const poster = posters.find(p => (p._id || p.id) === posterId);
+            const newStatus = poster ? !poster.isActive : false;
+            showNotification(`Poster ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+            fetchPosters();
+        } catch (error) {
+            console.error('Error toggling poster:', error);
+            showNotification('Failed to update poster status. Please try again.', 'error');
+        }
+    }
+
+    function confirmDeleteItem(itemId, type) {
+        itemToDelete = itemId;
+        deleteType = type;
+        const message = type === 'banner'
+            ? 'Are you sure you want to delete this banner? This action cannot be undone.'
+            : 'Are you sure you want to delete this poster? This action cannot be undone.';
+        const messageEl = document.getElementById('delete-confirm-message');
+        if (messageEl) messageEl.textContent = message;
+        showModal('delete-confirm-modal');
+    }
+
+    async function deleteBanner(bannerId) {
+        try {
+            await apiCall(`/bannerdelete/${bannerId}`, { method: 'DELETE' });
+            showNotification('Banner deleted successfully!', 'success');
+            closeModal('delete-confirm-modal');
+            fetchBanners();
+        } catch (error) {
+            console.error('Error deleting banner:', error);
+            showNotification('Failed to delete banner. Please try again.', 'error');
+        }
+    }
+
+    async function deletePoster(posterId) {
+        try {
+            await apiCall(`/posterdelete/${posterId}`, { method: 'DELETE' });
+            showNotification('Poster deleted successfully!', 'success');
+            closeModal('delete-confirm-modal');
+            fetchPosters();
+        } catch (error) {
+            console.error('Error deleting poster:', error);
+            showNotification('Failed to delete poster. Please try again.', 'error');
+        }
+    }
+
+    // Pagination functions (schema independent)
+    function renderPagination(type, totalPages, currentPage) {
+        const paginationContainer = document.getElementById(`${type}-pagination`);
+        if (!paginationContainer) return;
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+        paginationContainer.innerHTML = '';
+        if (currentPage > 1) {
+            addPaginationButton(paginationContainer, type, 'prev', 'Previous', currentPage - 1);
+        }
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+        for (let i = startPage; i <= endPage; i++) {
+            addPaginationButton(paginationContainer, type, i.toString(), i.toString(), i, i === currentPage);
+        }
+        if (currentPage < totalPages) {
+            addPaginationButton(paginationContainer, type, 'next', 'Next', currentPage + 1);
+        }
+    }
+
+    function addPaginationButton(container, type, key, text, pageNumber, isActive = false) {
+        if (!container) return;
+        const li = document.createElement('li');
+        if (isActive) li.className = 'active';
+        const a = document.createElement('a');
+        a.href = '#';
+        a.innerHTML = text;
+        a.onclick = (e) => {
+            e.preventDefault();
+            if (type === 'banner') {
+                bannerCurrentPage = pageNumber;
+                fetchBanners();
+            } else {
+                posterCurrentPage = pageNumber;
+                fetchPosters();
+            }
+        };
+        li.appendChild(a);
+        container.appendChild(li);
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(n => n.remove());
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="icon-${getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close" onclick="this.parentElement.remove()">
+                <i class="icon-x"></i>
+            </button>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            if (notification.parentElement) notification.remove();
+        }, 5000);
+    }
+
+    function getNotificationIcon(type) {
+        const icons = {
+            success: 'check-circle',
+            error: 'alert-circle',
+            warning: 'alert-triangle',
+            info: 'info'
+        };
+        return icons[type] || 'info';
+    }
+
+    // Add some basic CSS for notifications
+    const notificationStyles = `
+        <style>
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                border-radius: 8px;
+                padding: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                border-left: 4px solid #007bff;
+                z-index: 10000;
+                max-width: 400px;
+                animation: slideIn 0.3s ease;
+            }
+            .notification.success { border-left-color: #28a745; }
+            .notification.error { border-left-color: #dc3545; }
+            .notification.warning { border-left-color: #ffc107; }
+            .notification-content {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .notification-close {
+                background: none;
+                border: none;
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                cursor: pointer;
+                opacity: 0.7;
+            }
+            .notification-close:hover { opacity: 1; }
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            .loading-spinner {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                padding: 20px;
+            }
+            .loading-spinner .icon-loader { animation: spin 1s linear infinite; }
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            .empty-state {
+                text-align: center;
+                padding: 40px 20px;
+                color: #6c757d;
+            }
+            .empty-state i {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+            .error-message {
+                color: #dc3545;
+                padding: 20px;
+            }
+            .current-image {
+                position: relative;
+                max-width: 200px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .image-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.7);
+                color: white;
+                padding: 4px;
+                text-align: center;
+                font-size: 12px;
+            }
+            .image-preview-grid {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+            .image-preview-item {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                border-radius: 8px;
+                overflow: hidden;
+                border: 2px solid #e9ecef;
+            }
+            .image-preview-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .remove-preview {
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                background: rgba(220, 53, 69, 0.9);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 12px;
+            }
+            .file-upload-area.dragover {
+                border-color: #007bff;
+                background-color: #f8f9fa;
+            }
+        </style>
+    `;
+    document.head.insertAdjacentHTML('beforeend', notificationStyles);
+</script>
 
                                 <!-- /main-content-wrap -->
                             </div>
                             <!-- /main-content-wrap -->
                         </div>
+                       
                         <!-- /main-content-wrap -->
                         
                         <!-- bottom-page -->

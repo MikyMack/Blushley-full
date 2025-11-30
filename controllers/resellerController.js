@@ -6,6 +6,8 @@ const Otp = require('../models/Otp');
 const { genOtp,verifyOtpHash } = require("../services/otpService");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
+const Product = require("../models/Product");
+const slugify = require("slugify");
 const OTP_TTL_MINUTES = 5;
 const ADMIN_EMAIL = process.env.SMTP_USER;
 const ADMIN_PASSWORD = process.env.SMTP_PASS;
@@ -485,3 +487,444 @@ exports.registerPage = (req, res) => {
       // Never fail the main request if email fails
     }
   }
+
+
+  exports.listProducts = async (req, res) => {
+    try {
+      const resellerId = req.session.user._id;
+
+      const products = await Product.find({
+        productType: "reseller",
+        ownerRef: resellerId
+      })
+        .populate("category subCategory childCategory")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      return res.json({ success: true, products });
+    } catch (err) {
+      console.error("LIST PRODUCTS ERROR:", err);
+      return res.status(500).json({ success: false, error: "Failed to load products" });
+    }
+  };
+  
+
+  /* ------------------------- CREATE PRODUCT (FULLY FIXED) ------------------------- */
+exports.createProduct = async (req, res) => {
+  try {
+    const resellerId = req.session.user._id;
+    let {
+      title,
+      description,
+      shortDescription,
+      category,
+      subCategory,
+      childCategory,
+      brand,
+      basePrice,
+      salePrice,
+      tags,
+      ingredients,
+      benefits,
+      howToUse,
+      weight,
+      dimensions,
+      beautyTips,
+      variants,
+      seo
+    } = req.body;
+
+    if (!title || !basePrice) {
+      return res.status(400).json({ error: "Title and base price are required" });
+    }
+
+    const slug = slugify(title, { lower: true });
+
+    /* ------------------------------- MAIN IMAGES -------------------------------- */
+    const mainImages = req.files.filter(f => f.fieldname === "images");
+    let images = [];
+
+    for (const img of mainImages) {
+      const uploaded = await uploadBuffer(img.buffer, {
+        KeyPrefix: "products/",
+        contentType: img.mimetype
+      });
+      images.push(uploaded.location);
+    }
+
+    /* ----------------------------- PARSE JSON FIELDS ----------------------------- */
+    const parse = (v, fallback) => {
+      if (!v) return fallback;
+      if (typeof v === "string") {
+        try { return JSON.parse(v); }
+        catch { return fallback; }
+      }
+      return v;
+    };
+
+    variants = parse(variants, []);
+    tags = parse(tags, []);
+    ingredients = parse(ingredients, []);
+    benefits = parse(benefits, []);
+    beautyTips = parse(beautyTips, []);
+    seo = parse(seo, {});
+    dimensions = parse(dimensions, []);
+    
+    let dimensionsDoc;
+    if (Array.isArray(dimensions) && dimensions.length === 3) {
+      dimensionsDoc = {
+        length: Number(dimensions[0]) || 0,
+        width: Number(dimensions[1]) || 0,
+        height: Number(dimensions[2]) || 0
+      };
+    }
+
+    /* -------------------------- GROUP VARIANT FILES -------------------------- */
+    const variantFiles = req.files.filter(f => f.fieldname.startsWith("variantFile__"));
+
+    const variantFileMap = {};
+
+    variantFiles.forEach(f => {
+      const parts = f.fieldname.split("__");  
+      // variantFile__<variantId>__<optionId>
+      const variantId = parts[1];
+      const optionId = parts[2];
+
+      if (!variantFileMap[variantId]) variantFileMap[variantId] = {};
+      if (!variantFileMap[variantId][optionId]) variantFileMap[variantId][optionId] = [];
+
+      variantFileMap[variantId][optionId].push(f);
+    });
+
+    /* -------------------------- UPLOAD VARIANT IMAGES -------------------------- */
+    if (Array.isArray(variants)) {
+      for (let v of variants) {
+        for (let opt of v.options) {
+          let uploadedArr = [];
+
+          const filesForThisOption =
+            variantFileMap[v.id]?.[opt.id] || [];
+
+          for (const file of filesForThisOption) {
+            const uploaded = await uploadBuffer(file.buffer, {
+              KeyPrefix: "products/variants/",
+              contentType: file.mimetype
+            });
+            uploadedArr.push(uploaded.location);
+          }
+
+          opt.images = uploadedArr;  // Final img array
+        }
+      }
+    }
+
+    /* ------------------------------ SAVE PRODUCT ------------------------------ */
+    const productDoc = {
+      title,
+      slug,
+      description,
+      shortDescription,
+      category,
+      subCategory,
+      childCategory,
+      brand,
+      beautyTips,
+      basePrice: Number(basePrice),
+      salePrice: salePrice ? Number(salePrice) : null,
+      productType: "reseller",
+      ownerRef: resellerId,
+      variants,
+      images,
+      tags,
+      ingredients,
+      benefits,
+      howToUse,
+      weight: weight ? Number(weight) : null,
+      status: "pending"
+    };
+
+    if (dimensionsDoc) productDoc.dimensions = dimensionsDoc;
+
+    if (seo && typeof seo === "object") {
+      productDoc.seo = {
+        title: seo.title || "",
+        description: seo.description || "",
+        keywords: seo.keywords || []
+      };
+    }
+
+    const product = await Product.create(productDoc);
+
+    return res.json({ success: true, message: "Product submitted", product });
+
+  } catch (err) {
+    console.error("CREATE PRODUCT ERROR:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+
+/* ------------------------- UPDATE PRODUCT (FULLY FIXED) ------------------------- */
+exports.updateProduct = async (req, res) => {
+  try {
+    const resellerId = req.session.user._id;
+    const productId = req.params.id;
+
+    let product = await Product.findOne({
+      _id: productId,
+      ownerRef: resellerId,
+      productType: "reseller"
+    });
+
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    // --------------------------- MAIN IMAGES UPLOAD ---------------------------
+    const mainImages = req.files.filter(f => f.fieldname === "images");
+
+    for (const file of mainImages) {
+      const uploaded = await uploadBuffer(file.buffer, {
+        KeyPrefix: "products/",
+        contentType: file.mimetype
+      });
+      product.images.push(uploaded.location);
+    }
+
+    // --------------------------- PARSE BODY FIELDS ----------------------------
+    const parse = (v, fallback) => {
+      if (!v) return fallback;
+      if (typeof v === "string") {
+        try { return JSON.parse(v); }
+        catch { return fallback; }
+      }
+      return v;
+    };
+
+    let updates = req.body;
+
+    updates.variants = parse(updates.variants, []);
+    updates.tags = parse(updates.tags, []);
+    updates.ingredients = parse(updates.ingredients, []);
+    updates.benefits = parse(updates.benefits, []);
+    updates.beautyTips = parse(updates.beautyTips, []);
+    updates.seo = parse(updates.seo, {});
+    updates.dimensions = parse(updates.dimensions, null);
+
+    // --------------------------- DIMENSIONS FIX ---------------------------
+    let dimensionsDoc;
+    if (Array.isArray(updates.dimensions) && updates.dimensions.length === 3) {
+      dimensionsDoc = {
+        length: Number(updates.dimensions[0]) || 0,
+        width: Number(updates.dimensions[1]) || 0,
+        height: Number(updates.dimensions[2]) || 0
+      };
+    }
+
+    if (dimensionsDoc) {
+      updates.dimensions = dimensionsDoc;
+    } else {
+      delete updates.dimensions;
+    }
+
+    // --------------------- PROCESS VARIANT IMAGE FILES ---------------------
+    const variantFiles = req.files.filter(f =>
+      f.fieldname.startsWith("variantFile__")
+    );
+
+    const variantFileMap = {};
+
+    variantFiles.forEach(f => {
+      const parts = f.fieldname.split("__");
+      // variantFile__<variantId>__<optionId>
+      const variantId = parts[1];
+      const optionId = parts[2];
+
+      if (!variantFileMap[variantId]) variantFileMap[variantId] = {};
+      if (!variantFileMap[variantId][optionId]) variantFileMap[variantId][optionId] = [];
+
+      variantFileMap[variantId][optionId].push(f);
+    });
+
+    // ---------------------- ENSURE NO VARIANTS DUPLICATION ----------------------
+
+    let newVariants = [];
+    if (Array.isArray(updates.variants)) {
+      for (let newVar of updates.variants) {
+        // Try to find existing variant in product
+        let existingVariant = product.variants.find(v =>
+          v.id === newVar.id || v._id?.toString() === newVar.id
+        );
+        if (!existingVariant) {
+          // This is a new variant. Prepare its options.
+          for (let opt of newVar.options) {
+            const filesForThisOption =
+              variantFileMap[newVar.id]?.[opt.id] || [];
+
+            let uploadedArr = [];
+
+            for (const file of filesForThisOption) {
+              const uploaded = await uploadBuffer(file.buffer, {
+                KeyPrefix: "products/variants/",
+                contentType: file.mimetype
+              });
+              uploadedArr.push(uploaded.location);
+            }
+
+            // If opt.images is already present (user may re-edit), include those, else assign uploadedArr
+            if (Array.isArray(opt.images) && opt.images.length > 0) {
+              opt.images = [...opt.images, ...uploadedArr];
+            } else {
+              opt.images = uploadedArr;
+            }
+          }
+          // Add new variant to newVariants array
+          newVariants.push(newVar);
+        } else {
+          // Update existing variant's fields & options
+          existingVariant.name = newVar.name;
+          let updatedOptions = [];
+          for (let opt of newVar.options) {
+            let existingOption = existingVariant.options.find(o =>
+              o.id === opt.id || o._id?.toString() === opt.id
+            );
+
+            const filesForThisOption =
+              variantFileMap[newVar.id]?.[opt.id] || [];
+
+            let uploadedArr = [];
+            for (const file of filesForThisOption) {
+              const uploaded = await uploadBuffer(file.buffer, {
+                KeyPrefix: "products/variants/",
+                contentType: file.mimetype
+              });
+              uploadedArr.push(uploaded.location);
+            }
+
+            if (!existingOption) {
+              opt.images = Array.isArray(opt.images) && opt.images.length > 0
+                ? [...opt.images, ...uploadedArr]
+                : uploadedArr;
+              updatedOptions.push(opt);
+            } else {
+              existingOption.value = opt.value;
+              existingOption.stock = opt.stock;
+              existingOption.price = opt.price;
+              existingOption.images = [
+                ...(opt.images || []),
+                ...uploadedArr
+              ];
+              updatedOptions.push(existingOption);
+            }
+          }
+          // Overwrite options array with updated options (removes extras if deleted on frontend)
+          existingVariant.options = updatedOptions;
+          // Place updated variant in newVariants array
+          newVariants.push(existingVariant);
+        }
+      }
+    }
+    // Replace product.variants with the new variants array to prevent duplication
+    product.variants = newVariants;
+
+    // ------------------------- UPDATE BASIC FIELDS -------------------------
+    const updatable = [
+      "title", "description", "shortDescription", "brand",
+      "category", "subCategory", "childCategory",
+      "basePrice", "salePrice", "howToUse", "weight",
+      "tags", "ingredients", "benefits",
+      "beautyTips"
+    ];
+
+    updatable.forEach(field => {
+      if (updates[field] !== undefined) product[field] = updates[field];
+    });
+
+    if (updates.seo) {
+      product.seo = {
+        title: updates.seo.title || "",
+        description: updates.seo.description || "",
+        keywords: updates.seo.keywords || []
+      };
+    }
+
+    if (updates.dimensions) {
+      product.dimensions = updates.dimensions;
+    }
+
+    await product.save();
+
+    res.json({ success: true, message: "Product updated", product });
+
+  } catch (err) {
+    console.error("UPDATE PRODUCT ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+  
+  /* ------------------------- TOGGLE STATUS ------------------------- */
+  exports.toggleProductStatus = async (req, res) => {
+    try {
+      const resellerId = req.session.user._id;
+      const productId = req.params.id;
+  
+      const product = await Product.findOne({
+        _id: productId,
+        ownerRef: resellerId
+      });
+  
+      if (!product) return res.status(404).json({ error: "Product not found" });
+  
+      product.status = product.status === "disabled" ? "pending" : "disabled";
+  
+      await product.save();
+  
+      return res.json({ success: true, status: product.status });
+  
+    } catch (err) {
+      console.error("TOGGLE PRODUCT STATUS ERROR:", err);
+      res.status(500).json({ error: err.message });
+    }
+  };
+  
+  
+  
+  /* ------------------------- DELETE PRODUCT ------------------------- */
+  exports.deleteProduct = async (req, res) => {
+    try {
+      const resellerId = req.session.user._id;
+      const productId = req.params.id;
+  
+      const result = await Product.findOneAndDelete({
+        _id: productId,
+        ownerRef: resellerId
+      });
+  
+      if (!result) return res.status(404).json({ error: "Product not found" });
+  
+      return res.json({ success: true, message: "Product deleted" });
+  
+    } catch (err) {
+      console.error("DELETE PRODUCT ERROR:", err);
+      res.status(500).json({ error: err.message });
+    }
+  };
+
+
+  // GET /reseller/products/:id/one
+  exports.getProductOne = async (req, res) => {
+    try {
+      const resellerId = req.session.user._id;
+      const productId = req.params.id;
+      const product = await Product.findOne({
+        _id: productId,
+        ownerRef: resellerId
+      });
+      if (!product) {
+        return res.status(404).json({ success: false, error: "Product not found" });
+      }
+      res.json({ success: true, product });
+    } catch (err) {
+      console.error("GET PRODUCT ONE ERROR:", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  };

@@ -2962,7 +2962,12 @@ function fillProductForm(product) {
     // Images
     if (product.images && product.images.length) {
         renderImagePreviewFromUrls(product.images);
-        imageFiles = [];
+
+imageFiles = product.images.map(url => ({
+    url,
+    isExisting: true   
+}));
+
     }
 
     // VARIANTS - Improved to handle _id and options with _id fields
@@ -3026,69 +3031,124 @@ function addVariantSectionWithPreset(variant, vIdx) {
 
 // Add Option with preset data if present
 function addVariantOptionWithPreset(variantId, optionData, oIdx) {
-    var optionsList = document.getElementById(`options-${variantId}`);
-    if(!optionsList) return;
-    var optionId = 'option-' + Date.now() + Math.floor(Math.random()*1000);
-    var v = optionData || {};
+    const optionsList = document.getElementById(`options-${variantId}`);
+    if (!optionsList) return;
 
-    var _value = v.value || '';
-    var _stock = typeof v.stock === "undefined" ? "" : v.stock;
-    var _sku = v.sku || '';
-    var _price = typeof v.price === "undefined" ? "" : v.price;
-    var _adminBasePrice = typeof v.adminBasePrice === "undefined" ? "" : v.adminBasePrice;
-    var _adminSalePrice = typeof v.adminSalePrice === "undefined" ? "" : v.adminSalePrice;
+    const optionId = 'option-' + Date.now() + Math.floor(Math.random() * 1000);
+    const v = optionData || {};
 
-    var option = document.createElement('div');
+    const option = document.createElement('div');
     option.className = 'variant-option';
+
     option.innerHTML = `
         <div class="option-header">
             <h6>Variant Option</h6>
-            <button type="button" class="btn btn-sm btn-text" onclick="removeVariantOption(this)"><i class="icon-x"></i></button>
+            <button type="button" class="btn btn-sm btn-text" onclick="removeVariantOption(this)">
+                <i class="icon-x"></i>
+            </button>
         </div>
+
         <div class="form-grid">
             <div class="form-group">
                 <label>Option Value *</label>
-                <input type="text" name="variants[${variantId}][options][${optionId}][value]" placeholder="e.g., Red, Large, 100ml" value="${_value}" required>
+                <input type="text" 
+                       name="variants[${variantId}][options][${optionId}][value]" 
+                       value="${v.value || ''}"
+                       required>
             </div>
+
             <div class="form-group">
                 <label>Stock</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][stock]" min="0" value="${_stock}">
+                <input type="number" min="0"
+                       name="variants[${variantId}][options][${optionId}][stock]" 
+                       value="${v.stock ?? ''}">
             </div>
+
             <div class="form-group">
                 <label>SKU</label>
-                <input type="text" name="variants[${variantId}][options][${optionId}][sku]" placeholder="Unique SKU" value="${_sku}">
+                <input type="text" 
+                       name="variants[${variantId}][options][${optionId}][sku]" 
+                       value="${v.sku || ''}">
             </div>
+
             <div class="form-group">
                 <label>Price (₹)</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][price]" min="0" step="0.01" placeholder="0.00" value="${_price}">
+                <input type="number" step="0.01"
+                       name="variants[${variantId}][options][${optionId}][price]"
+                       value="${v.price ?? ''}">
             </div>
+
             <div class="form-group">
                 <label>Admin Base Price (₹)</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][adminBasePrice]" min="0" step="0.01" placeholder="0.00" value="${_adminBasePrice}">
+                <input type="number" step="0.01"
+                       name="variants[${variantId}][options][${optionId}][adminBasePrice]"
+                       value="${v.adminBasePrice ?? ''}">
             </div>
+
             <div class="form-group">
                 <label>Admin Sale Price (₹)</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][adminSalePrice]" min="0" step="0.01" placeholder="0.00" value="${_adminSalePrice}">
+                <input type="number" step="0.01"
+                       name="variants[${variantId}][options][${optionId}][adminSalePrice]"
+                       value="${v.adminSalePrice ?? ''}">
             </div>
         </div>
+
         <div class="form-group">
             <label>Option Images</label>
-            <input type="file" name="variants[${variantId}][options][${optionId}][images]" multiple accept="image/*">
+
+          <input type="file"
+       class="variant-image-input"
+       data-variant="${variantId}"
+       data-option="${optionId}"
+       multiple
+       accept="image/*">
+
+
+        <input type="hidden"
+       class="variant-image-count"
+       name="imageCount__${variantId}__${optionId}"
+       value="0">
+
+
             <div class="image-preview-grid option-images-preview" id="preview-${optionId}"></div>
         </div>
     `;
+
     optionsList.appendChild(option);
 
-    // No preview load for backend images; user uploads upon edit if desired.
-    var fileInput = option.querySelector('input[type="file"]');
-    if(fileInput) {
-        fileInput.addEventListener('change', function (e) {
-            var previewGrid = this.closest('.variant-option').querySelector('.option-images-preview');
-            if (previewGrid) {
-                previewImages(e, previewGrid);
-            }
+    // Load existing variant images (urls)
+    if (Array.isArray(v.images)) {
+        const previewGrid = option.querySelector(".option-images-preview");
+
+        v.images.forEach((imgUrl, index) => {
+            const img = document.createElement("div");
+            img.className = "preview-image";
+            img.innerHTML = `
+                <div class="image-wrapper">
+                    <img src="${imgUrl}">
+                    <div class="image-overlay"><span>${index + 1}</span></div>
+                </div>
+            `;
+            previewGrid.appendChild(img);
         });
+
+        const hiddenInput = document.createElement("input");
+hiddenInput.type = "hidden";
+hiddenInput.name = `existingImages__${variantId}__${optionId}`;
+hiddenInput.value = JSON.stringify(v.images);
+option.appendChild(hiddenInput);
+
     }
+
+    // File input handling
+    const fileInput = option.querySelector(".variant-image-input");
+    fileInput.addEventListener("change", function (e) {
+        const previewGrid = option.querySelector(".option-images-preview");
+        previewImages(e, previewGrid);
+
+        const countInput = option.querySelector(".variant-image-count");
+        countInput.value = e.target.files.length;
+    });
 }
 
 function addVariantSection() {
@@ -3125,59 +3185,91 @@ function addVariantSection() {
 }
 
 function addVariantOption(variantId) {
-    var optionsList = document.getElementById(`options-${variantId}`);
-    if(!optionsList) return;
-    var optionId = 'option-' + Date.now() + Math.floor(Math.random()*1000);
-    var option = document.createElement('div');
+    const optionsList = document.getElementById(`options-${variantId}`);
+    if (!optionsList) return;
+
+    const optionId = 'option-' + Date.now() + Math.floor(Math.random() * 1000);
+
+    const option = document.createElement('div');
     option.className = 'variant-option';
     option.innerHTML = `
         <div class="option-header">
             <h6>Variant Option</h6>
-            <button type="button" class="btn btn-sm btn-text" onclick="removeVariantOption(this)"><i class="icon-x"></i></button>
+            <button type="button" class="btn btn-sm btn-text" onclick="removeVariantOption(this)">
+                <i class="icon-x"></i>
+            </button>
         </div>
+
         <div class="form-grid">
             <div class="form-group">
                 <label>Option Value *</label>
-                <input type="text" name="variants[${variantId}][options][${optionId}][value]" placeholder="e.g., Red, Large, 100ml" required>
+                <input type="text" 
+                       name="variants[${variantId}][options][${optionId}][value]" 
+                       required>
             </div>
+
             <div class="form-group">
                 <label>Stock</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][stock]" min="0" value="0">
+                <input type="number" min="0" 
+                       name="variants[${variantId}][options][${optionId}][stock]">
             </div>
+
             <div class="form-group">
                 <label>SKU</label>
-                <input type="text" name="variants[${variantId}][options][${optionId}][sku]" placeholder="Unique SKU">
+                <input type="text" 
+                       name="variants[${variantId}][options][${optionId}][sku]">
             </div>
+
             <div class="form-group">
                 <label>Price (₹)</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][price]" min="0" step="0.01" placeholder="0.00">
+                <input type="number" step="0.01"
+                       name="variants[${variantId}][options][${optionId}][price]">
             </div>
+
             <div class="form-group">
                 <label>Admin Base Price (₹)</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][adminBasePrice]" min="0" step="0.01" placeholder="0.00">
+                <input type="number" step="0.01"
+                       name="variants[${variantId}][options][${optionId}][adminBasePrice]">
             </div>
+
             <div class="form-group">
                 <label>Admin Sale Price (₹)</label>
-                <input type="number" name="variants[${variantId}][options][${optionId}][adminSalePrice]" min="0" step="0.01" placeholder="0.00">
+                <input type="number" step="0.01"
+                       name="variants[${variantId}][options][${optionId}][adminSalePrice]">
             </div>
         </div>
+
         <div class="form-group">
             <label>Option Images</label>
-            <input type="file" name="variants[${variantId}][options][${optionId}][images]" multiple accept="image/*">
+
+            <!-- IMPORTANT: images[] FORMAT -->
+            <input type="file"
+                   name="variants[${variantId}][options][${optionId}][images][]" 
+                   multiple 
+                   accept="image/*"
+                   class="variant-image-input">
+
+            <!-- COUNT FIELD (backend reads this) -->
+            <input type="hidden"
+                   class="variant-image-count"
+                 name="imageCount__${variantId}__${optionId}"
+                   value="0">
+
             <div class="image-preview-grid option-images-preview" id="preview-${optionId}"></div>
         </div>
     `;
+
     optionsList.appendChild(option);
 
-    var fileInput = option.querySelector('input[type="file"]');
-    if(fileInput) {
-        fileInput.addEventListener('change', function (e) {
-            var previewGrid = this.closest('.variant-option').querySelector('.option-images-preview');
-            if (previewGrid) {
-                previewImages(e, previewGrid);
-            }
-        });
-    }
+    // Register file change handler
+    const fileInput = option.querySelector(".variant-image-input");
+    fileInput.addEventListener("change", function (e) {
+        const previewGrid = option.querySelector(".option-images-preview");
+        previewImages(e, previewGrid);
+
+        const countInput = option.querySelector(".variant-image-count");
+        countInput.value = e.target.files.length;
+    });
 }
 
 // Remainder (removeVariantSection etc) - same as previous
@@ -3361,7 +3453,6 @@ function removeImagePreview(idx) {
     });
 }
 
-// [snip unchanged setupFileUploadArea, submitProductForm, deleteProduct, toggleProductStatus, etc.]
 
 function generateSlug(text) {
     return (text||'')
@@ -3665,64 +3756,63 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ---- CREATE / EDIT / DELETE / TOGGLE STATUS ----
 async function submitProductForm(form, method, url) {
-    if (typeof Swal === "undefined") {
-        alert("Swal is not defined. Please check SweetAlert2 CDN.");
-        return;
-    }
-    if (imageFiles.length === 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Images Required',
-            text: 'Please upload at least one product image.'
-        });
-        return;
-    }
     const formData = new FormData(form);
-    // Attach images in the CORRECT ORDER (as shown in preview)
-    if (imageFiles.length) {
-        formData.delete('images');
-        imageFiles.forEach(file => {
-            formData.append('images', file);
-        });
+
+    // Allow hidden inputs
+    document.querySelectorAll(".variant-image-count").forEach(i => i.disabled = false);
+    document.querySelectorAll("input[name*='existingImages']").forEach(i => i.disabled = false);
+
+    // Replace MAIN images
+    formData.delete("images");
+    imageFiles.forEach(file => {
+        formData.append("images", file);
+    });
+
+    document.querySelectorAll(".variant-image-input").forEach(input => {
+    const variantId = input.dataset.variant;
+    const optionId = input.dataset.option;
+
+    if (!variantId || !optionId) {
+        console.error("❌ Variant or option missing!", input);
+        return;
     }
+
+    const fieldName = `variantFile__${variantId}__${optionId}`;
+
+    Array.from(input.files).forEach(file => {
+        formData.append(fieldName, file);
+    });
+});
+
+
     try {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.innerHTML = '<i class="icon-loader"></i> Saving...';
+        const submitBtn = form.querySelector("button[type='submit']");
         submitBtn.disabled = true;
-        const response = await fetch(url, { method, body: formData });
-        if (response.ok) {
-            Swal.fire({
-                icon: 'success',
-                title: method === 'POST' ? 'Product created!' : 'Product updated!',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => { 
-                closeModal('product-modal'); 
-                window.location.reload(); 
-            });
-        } else {
-            let error;
-            try {
-                error = await response.json();
-            } catch (e) {
-                error = {};
-            }
-            throw new Error((error && error.message) || 'Failed to save product');
-        }
-    } catch (error) {
-        Swal.fire({ 
-            icon: 'error', 
-            title: 'Error', 
-            text: (error && error.message) || 'Failed to save product' 
+        submitBtn.innerHTML = '<i class="icon-loader"></i> Saving...';
+
+        const response = await fetch(url, {
+            method,
+            body: formData
         });
-    } finally {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if(submitBtn) {
-            submitBtn.innerHTML = editingProductId ? 
-                '<i class="icon-edit"></i> Update Product' : 
-                '<i class="icon-plus"></i> Create Product';
-            submitBtn.disabled = false;
-        }
+
+        if (!response.ok) throw new Error("Failed to save product");
+
+        Swal.fire({
+            icon: "success",
+            title: method === "POST" ? "Product Created!" : "Product Updated!",
+            timer: 1500,
+            showConfirmButton: false
+        }).then(() => {
+            closeModal("product-modal");
+            window.location.reload();
+        });
+
+    } catch (err) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: err.message
+        });
     }
 }
 

@@ -10,6 +10,7 @@ const ChildCategory = require("../models/ChildCategory");
 const SubCategory = require("../models/SubCategory");
 const blogCtrl = require("../controllers/blogController");
 const testimonialsCtrl = require('../controllers/testimonials');
+const bannerCtrl = require('../controllers/bannerController');
 
 
 
@@ -174,6 +175,16 @@ router.get('/testimonials', testimonialsCtrl.listTestimonials);
 // Delete a testimonial
 router.delete('/testimonials/:id', testimonialsCtrl.deleteTestimonial);
 
+router.get("/bannerlist", bannerCtrl.bannerList);
+router.post("/bannercreate", upload.single("image"), bannerCtrl.bannerCreate);
+router.post("/banner/:id/update", upload.single("image"), bannerCtrl.bannerUpdate);
+router.post("/banner/:id/toggle", bannerCtrl.bannerToggleActive);
+router.delete("/bannerdelete/:id", bannerCtrl.bannerDelete);
 
+router.get("/posterList", bannerCtrl.posterList);
+router.post("/postercreate", upload.single("image"), bannerCtrl.posterCreate);
+router.post("/poster/:id/update", upload.single("image"), bannerCtrl.posterUpdate);
+router.post("/poster/:id/toggle", bannerCtrl.posterToggleActive);
+router.delete("/posterdelete/:id", bannerCtrl.posterDelete);
 
 module.exports = router;

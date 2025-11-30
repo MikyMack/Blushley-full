@@ -8294,6 +8294,7 @@ input.style-line-bottom::placeholder {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
+  height: 250px;
 }
 .collection-position-2 .img-style {
   display: block;
@@ -8642,10 +8643,13 @@ input.style-line-bottom::placeholder {
 
 .collection-circle .img-style {
   display: block;
+  aspect-ratio: 1 / 1;
   width: 100%;
-  height: 100%;
+  max-width: 100%;
+  height: auto;
   border-radius: 50%;
   overflow: hidden;
+  object-fit: cover;
 }
 .collection-circle .img-style.radius-48 {
   border-radius: 48px;
@@ -26914,3 +26918,129 @@ footer#footer {
             }
         }
 
+
+        .main-bnr .swiper-pagination.slideshow-pagination {
+          bottom: 16px !important;
+          left: 0;
+          right: 0;
+          width: 100% !important;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10;
+          position: absolute;
+          gap: 10px;
+          pointer-events: auto;
+        }
+        .main-bnr .swiper-pagination-bullet {
+          width: 16px;
+          height: 16px;
+          background: rgba(255,255,255,0.7);
+          border: 2px solid #fff;
+          opacity: 1;
+          border-radius: 50%;
+          transition: background 0.2s, border 0.2s;
+          margin: 0 4px !important;
+          box-shadow: 0 2px 6px 0 rgba(30,30,30,.11);
+          pointer-events: auto;
+          cursor: pointer;
+        }
+        .main-bnr .swiper-pagination-bullet-active {
+          background: #FF8C8C;
+          border-color: #FF8C8C;
+          box-shadow: 0 4px 12px 0 rgba(255,140,140,.22);
+        }
+        /* Responsive text overlay - CENTER content horizontally and vertically */
+        .banner-content-overlay {
+          position: absolute;
+          z-index: 3;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          padding: 2rem 1rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;   /* center vertically */
+          align-items: center;       /* center horizontally */
+          background: linear-gradient(90deg,rgba(0,0,0,0.32) 0%,rgba(0,0,0,0.08) 68%,rgba(0,0,0,0) 100%);
+          text-align: center;
+        }
+        @media (min-width: 576px) {
+          .banner-content-overlay { padding: 2.5rem 3rem; }
+        }
+        @media (min-width: 992px) {
+          .banner-content-overlay {
+            padding: 3rem 7vw;
+            justify-content: center;   /* maintain center vertically */
+            align-items: center;       /* maintain center horizontally */
+            text-align: center;
+          }
+        }
+        .banner-content-title {
+          color: #fff;
+          font-size: 2rem;
+          font-weight: 700;
+          line-height: 1.15;
+          margin-bottom: 12px;
+          text-shadow: 0 2px 16px rgba(0,0,0,0.17);
+          letter-spacing: -1px;
+          pointer-events: auto;
+          text-align: center;
+          width: 100%;
+        }
+        .banner-content-subtitle {
+          color: #FFD1E3;
+          font-size: 1.1rem;
+          font-weight: 400;
+          line-height: 1.5;
+          margin-bottom: 10px;
+          text-shadow: 0 1px 10px rgba(0,0,0,0.12);
+          pointer-events: auto;
+          text-align: center;
+          width: 100%;
+        }
+        .banner-content-desc {
+          color: #fff;
+          font-size: 1rem;
+          max-width: 520px;
+          margin-bottom: 18px;
+          pointer-events: auto;
+          opacity: 0.92;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: center;
+        }
+        .banner-content-btn {
+          display: inline-block;
+          background: #ff8c8c;
+          color: #fff !important;
+          border: none;
+          border-radius: 999px;
+          padding: 0.6em 2em;
+          font-size: 1rem;
+          font-weight: 700;
+          box-shadow: 0 3px 12px 0 rgba(255,140,140,.18);
+          margin-top: 6px;
+          transition: background 0.18s;
+          pointer-events: auto;
+          text-decoration: none;
+        }
+        .banner-content-btn:hover, .banner-content-btn:focus {
+          background: #e36666;
+          color: #fff;
+          text-decoration: none;
+        }
+        @media (max-width: 720px) {
+          .banner-content-title { font-size: 1.2rem; }
+          .banner-content-subtitle { font-size: 1rem; }
+          .banner-content-desc { font-size: 0.98rem; }
+          .banner-content-btn { font-size: 0.98rem; padding: 0.5em 1.2em; }
+          .main-bnr .swiper-pagination.slideshow-pagination { bottom: 5px !important; }
+        }
+        @media (min-width: 1500px) {
+          .banner-content-overlay { padding: 4rem 11vw; }
+          .banner-content-title { font-size: 2.7rem; }
+          .banner-content-subtitle { font-size: 1.17rem; }
+        }
