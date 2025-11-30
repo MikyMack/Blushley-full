@@ -259,180 +259,95 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="tf-grid-layout md-col-3">
-                            <div class="wg-blog style-1 hover-image">
-                                <div class="image">
-                                    <img class="lazyload" data-src="/images/blog/blog-beauty1.png" src="/images/blog/blog-beauty1.png" alt="">
-                                </div>
-                                <div class="content">
-                                    <div class="meta">
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-calendar"></i>
-                                            </div>
-                                            <p class="text-caption-1">February 28, 2024</p>
+                            <% if (blogs && blogs.length > 0) { %>
+                                <% blogs.forEach(function(blog) { %>
+                                    <div class="wg-blog style-1 hover-image">
+                                        <div class="image" style="height: 220px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                            <a href="/beauty-tips/<%= blog.slug %>">
+                                                <img 
+                                                    class="lazyload" 
+                                                    style="height: 100%; width: auto; max-width: 100%; object-fit: cover; display: block;"
+                                                    <% if (blog.image) { %>
+                                                        data-src="<%= blog.image %>" 
+                                                        src="<%= blog.image %>" 
+                                                    <% } else { %>
+                                                        data-src="/images/blog/default-blog.png"
+                                                        src="/images/blog/default-blog.png"
+                                                    <% } %>
+                                                    alt="<%= blog.title %>">
+                                            </a>
                                         </div>
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-user"></i>
+                                        <div class="content">
+                                            <div class="meta">
+                                                <div class="meta-item gap-8">
+                                                    <div class="icon">
+                                                        <i class="icon-calendar"></i>
+                                                    </div>
+                                                    <p class="text-caption-1">
+                                                        <%= blog.publishedAt ? blog.publishedAt.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : (blog.createdAt ? blog.createdAt.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : '') %>
+                                                    </p>
+                                                </div>
+                                                <div class="meta-item gap-8">
+                                                    <div class="icon">
+                                                        <i class="icon-user"></i>
+                                                    </div>
+                                                    <p class="text-caption-1">by <a class="link" href="#"><%= blog.author && blog.author.name ? blog.author.name : "Blushley" %></a></p>
+                                                </div>
                                             </div>
-                                            <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h6 class="title fw-5">
-                                            <a class="link" href="blog-detail.html">How Technology is Transforming the Industry</a>
-                                        </h6>
-                                        <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="wg-blog style-1 hover-image">
-                                <div class="image">
-                                    <img class="lazyload" data-src="/images/blog/blog-beauty2.png" src="/images/blog/blog-beauty2.png" alt="">
-                                </div>
-                                <div class="content">
-                                    <div class="meta">
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-calendar"></i>
+                                            <div>
+                                                <h6 class="title fw-5">
+                                                    <a class="link" href="/beauty-tips/<%= blog.slug %>"><%= blog.title %></a>
+                                                </h6>
+                                                <div class="body-text">
+                                                    <%= blog.shortDescription 
+                                                        ? blog.shortDescription.split('.').slice(0,1).join('.') + '.' 
+                                                        : (blog.fullDescription 
+                                                            ? blog.fullDescription.split('.').slice(0,1).join('.') + '.' 
+                                                            : "" ) %>
+                                                </div>
                                             </div>
-                                            <p class="text-caption-1">February 28, 2024</p>
-                                        </div>
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-user"></i>
-                                            </div>
-                                            <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h6 class="title fw-5">
-                                            <a class="link" href="blog-detail.html">The Future of Fashion How Technology Transforms the Industry</a>
-                                        </h6>
-                                        <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="wg-blog style-1 hover-image">
-                                <div class="image">
-                                    <img class="lazyload" data-src="/images/blog/blog-beauty3.png" src="/images/blog/blog-beauty3.png" alt="">
-                                </div>
-                                <div class="content">
-                                    <div class="meta">
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-calendar"></i>
-                                            </div>
-                                            <p class="text-caption-1">February 28, 2024</p>
-                                        </div>
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-user"></i>
-                                            </div>
-                                            <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h6 class="title fw-5">
-                                            <a class="link" href="blog-detail.html">From Concept to Closet The Journey of Sustainable Fashion</a>
-                                        </h6>
-                                        <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="text-center w-100 my-4">
+                                    <p>No blog posts found.</p>
                                 </div>
-                            </div>
-                            <div class="wg-blog style-1 hover-image">
-                                <div class="image">
-                                    <img class="lazyload" data-src="/images/blog/blog-beauty3.png" src="/images/blog/blog-beauty3.png" alt="">
-                                </div>
-                                <div class="content">
-                                    <div class="meta">
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-calendar"></i>
-                                            </div>
-                                            <p class="text-caption-1">February 28, 2024</p>
-                                        </div>
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-user"></i>
-                                            </div>
-                                            <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h6 class="title fw-5">
-                                            <a class="link" href="blog-detail.html">Unlocking Style Potential Personalization in Fashion Retail</a>
-                                        </h6>
-                                        <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="wg-blog style-1 hover-image">
-                                <div class="image">
-                                    <img class="lazyload" data-src="/images/blog/blog-beauty2.png" src="/images/blog/blog-beauty2.png" alt="">
-                                </div>
-                                <div class="content">
-                                    <div class="meta">
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-calendar"></i>
-                                            </div>
-                                            <p class="text-caption-1">February 28, 2024</p>
-                                        </div>
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-user"></i>
-                                            </div>
-                                            <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h6 class="title fw-5">
-                                            <a class="link" href="blog-detail.html">Fashion Forward Embracing Diversity and Inclusion in Design</a>
-                                        </h6>
-                                        <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="wg-blog style-1 hover-image">
-                                <div class="image">
-                                    <img class="lazyload" data-src="/images/blog/blog-beauty1.png" src="/images/blog/blog-beauty1.png" alt="">
-                                </div>
-                                <div class="content">
-                                    <div class="meta">
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-calendar"></i>
-                                            </div>
-                                            <p class="text-caption-1">February 28, 2024</p>
-                                        </div>
-                                        <div class="meta-item gap-8">
-                                            <div class="icon">
-                                                <i class="icon-user"></i>
-                                            </div>
-                                            <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h6 class="title fw-5">
-                                            <a class="link" href="blog-detail.html">The Ultimate Guide: Dressing Stylishly with Minimal Effort</a>
-                                        </h6>
-                                        <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                    </div>
-                                </div>
-                            </div>
-                           
-                            
-                            
-                            
-                            <ul class="wg-pagination justify-content-center">
-                                <li><a href="#" class="pagination-item text-button">1</a></li>
-                                <li class="active"><div class="pagination-item text-button">2</div></li>
-                                <li><a href="#" class="pagination-item text-button">3</a></li>
-                                <li><a href="#" class="pagination-item text-button"><i class="icon-arrRight"></i></a></li>
-                            </ul>
+                            <% } %>
+
+                            <!-- Pagination -->
+                            <% if (typeof totalPages !== "undefined" && totalPages > 1) { %>
+                                <ul class="wg-pagination justify-content-center">
+                                    <% 
+                                
+                                        const currPage = typeof page !== 'undefined' ? page : 1;
+                                    %>
+                                    <li>
+                                        <% if (currPage > 1) { %>
+                                            <a href="?page=<%= currPage - 1 %>&limit=<%= limit %>" class="pagination-item text-button"><i class="icon-arrLeft"></i></a>
+                                        <% } else { %>
+                                            <span class="pagination-item text-button disabled"><i class="icon-arrLeft"></i></span>
+                                        <% } %>
+                                    </li>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li>
+                                            <% if (i === currPage) { %>
+                                                <div class="pagination-item text-button active"><%= i %></div>
+                                            <% } else { %>
+                                                <a href="?page=<%= i %>&limit=<%= limit %>" class="pagination-item text-button"><%= i %></a>
+                                            <% } %>
+                                        </li>
+                                    <% } %>
+                                    <li>
+                                        <% if (currPage < totalPages) { %>
+                                            <a href="?page=<%= currPage + 1 %>&limit=<%= limit %>" class="pagination-item text-button"><i class="icon-arrRight"></i></a>
+                                        <% } else { %>
+                                            <span class="pagination-item text-button disabled"><i class="icon-arrRight"></i></span>
+                                        <% } %>
+                                    </li>
+                                </ul>
+                            <% } %>
                         </div>
-                        
                     </div>
                 </div>
             </div>

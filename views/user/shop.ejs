@@ -424,14 +424,14 @@
                                 <div class="card-product style-list" data-availability="<%= product.availability %>" data-brand="<%= product.brand && product.brand.slug %>">
                                     <div class="card-product-wrapper">
                                         <a href="/productDetails/<%= product.slug %>" class="product-img">
-                                            <img class="lazyload img-product" data-src="<%= product.images && product.images[0] %>" src="<%= product.images && product.images[0] %>" alt="<%= product.name %>">
+                                            <img class="lazyload img-product" data-src="<%= product.images && product.images[0] %>" src="<%= product.images && product.images[0] %>" alt="<%= product.title %>">
                                             <% if (product.images && product.images[1]) { %>
-                                                <img class="lazyload img-hover" data-src="<%= product.images[1] %>" src="<%= product.images[1] %>" alt="<%= product.name %>">
+                                                <img class="lazyload img-hover" data-src="<%= product.images[1] %>" src="<%= product.images[1] %>" alt="<%= product.title %>">
                                             <% } %>
                                         </a>
                                     </div>
                                     <div class="card-product-info">
-                                        <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.name %></a>
+                                        <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.title %></a>
                                         <div class="price">
                                             <% if (product.oldPrice > product.price) { %>
                                                 <span class="old-price">₹<%= product.oldPrice.toFixed(2) %></span>
@@ -520,14 +520,14 @@
                                 <div class="card-product grid" data-availability="<%= product.availability %>" data-brand="<%= product.brand && product.brand.slug %>">
                                     <div class="card-product-wrapper">
                                         <a href="/productDetails/<%= product.slug %>" class="product-img">
-                                            <img class="lazyload img-product" data-src="<%= product.images && product.images[0] %>" src="<%= product.images && product.images[0] %>" alt="<%= product.name %>">
+                                            <img class="lazyload img-product" data-src="<%= product.images && product.images[0] %>" src="<%= product.images && product.images[0] %>" alt="<%= product.title %>">
                                             <% if (product.images && product.images[1]) { %>
-                                                <img class="lazyload img-hover" data-src="<%= product.images[1] %>" src="<%= product.images[1] %>" alt="<%= product.name %>">
+                                                <img class="lazyload img-hover" data-src="<%= product.images[1] %>" src="<%= product.images[1] %>" alt="<%= product.title %>">
                                             <% } %>
                                         </a>
                                     </div>
                                     <div class="card-product-info">
-                                        <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.name %></a>
+                                        <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.title %></a>
                                         <div class="price">
                                             <% if (product.oldPrice > product.price) { %>
                                                 <span class="old-price">₹<%= product.oldPrice.toFixed(2) %></span>

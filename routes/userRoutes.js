@@ -8,6 +8,7 @@ const Product = require('../models/Product');
 const Testimonial = require('../models/Testimonials');
 const Banner = require('../models/Banner');
 const Poster = require('../models/Poster');
+const Blog = require('../models/Blog');
 
 router.get('/', async (req, res) => {
     try {
@@ -315,12 +316,97 @@ router.get('/contact', (req, res) => {
     res.render('user/contact');
 });
 // blogs 
-router.get('/blogs', (req, res) => {
-    res.render('user/beauty-tips');
+router.get('/userblogs', async (req, res) => {
+    try {
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 6;
+        if (limit > 24) limit = 24;
+
+        const filter = { status: "published" };
+
+        const totalBlogs = await Blog.countDocuments(filter);
+        const totalPages = Math.ceil(totalBlogs / limit);
+        const skip = (page - 1) * limit;
+
+        const blogs = await Blog.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        res.render('user/beauty-tips', {
+            blogs,
+            pagination: {
+                page,
+                totalPages,
+                totalBlogs,
+                limit
+            }
+        });
+    } catch (err) {
+        console.error("Error fetching blogs for /blogs page:", err);
+        res.render('user/beauty-tips', {
+            blogs: [],
+            pagination: {
+                page: 1,
+                totalPages: 1,
+                totalBlogs: 0,
+                limit: 6
+            },
+            error: 'Could not load blogs'
+        });
+    }
 });
 // blogs details 
-router.get('/beauty-tips/:title', (req, res) => {
-    res.render('user/beautyDetails');
+router.get('/beauty-tips/:slug', async (req, res) => {
+    try {
+        const slug = req.params.slug;
+        const blog = await Blog.findOne({ slug, status: 'published' }).lean();
+        if (!blog) {
+            return res.status(404).render('user/beautyDetails', { 
+                blog: null, 
+                relatedBlogs: [], 
+                error: 'Blog not found' 
+            });
+        }
+
+        let relatedblogs = [];
+        if (blog.category) {
+          relatedblogs = await Blog.find({ 
+                _id: { $ne: blog._id },
+                category: blog.category,
+                status: 'published'
+            })
+            .sort({ createdAt: -1 })
+            .limit(4)
+            .lean();
+        }
+
+        if (!relatedblogs || relatedblogs.length < 4) {
+            const excludeIds = [blog._id, ...(relatedblogs ? relatedblogs.map(b => b._id) : [])];
+            const moreBlogs = await Blog.find({
+                _id: { $nin: excludeIds },
+                status: 'published'
+            })
+            .sort({ createdAt: -1 })
+            .limit(4 - (relatedblogs ? relatedblogs.length : 0))
+            .lean();
+
+            relatedblogs = (relatedblogs || []).concat(moreBlogs);
+        }
+
+        res.render('user/beautyDetails', {
+            blog,
+            relatedblogs
+        });
+    } catch (err) {
+        console.error("Error loading blog details for slug:", req.params.slug, err);
+        res.status(500).render('user/beautyDetails', {
+            blog: null,
+            relatedBlogs: [],
+            error: 'Could not load blog details'
+        });
+    }
 });
 // account 
 router.get('/user-account', (req, res) => {

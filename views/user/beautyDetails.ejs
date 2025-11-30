@@ -2,11 +2,41 @@
 <html lang="en-US">
 <head>
     <meta charset="utf-8">
-    <title>Blushley</title>
+    <title>
+        <% if (blog && blog.seo && blog.seo.metaTitle) { %>
+            <%= blog.seo.metaTitle %>
+        <% } else if (blog && blog.title) { %>
+            <%= blog.title + ' | Blushley' %>
+        <% } else { %>
+            Blushley
+        <% } %>
+    </title>
 
+    <% if (blog) { %>
+        <% if (blog.seo && blog.seo.metaDescription) { %>
+            <meta name="description" content="<%= blog.seo.metaDescription %>">
+        <% } else if (blog.summary) { %>
+            <meta name="description" content="<%= blog.summary %>">
+        <% } %>
+
+        <% if (blog.seo && blog.seo.keywords && blog.seo.keywords.length) { %>
+            <meta name="keywords" content="<%= blog.seo.keywords.join(', ') %>">
+        <% } %>
+
+        <meta property="og:title" content="<%= (blog.seo && blog.seo.ogTitle) ? blog.seo.ogTitle : (blog.title || 'Blushley') %>">
+        <meta property="og:description" content="<%= (blog.seo && blog.seo.ogDescription) ? blog.seo.ogDescription : (blog.seo && blog.seo.metaDescription ? blog.seo.metaDescription : blog.summary || '') %>">
+        <% if (blog.seo && blog.seo.ogImage) { %>
+            <meta property="og:image" content="<%= blog.seo.ogImage %>">
+        <% } else if (blog.image) { %>
+            <meta property="og:image" content="<%= blog.image %>">
+        <% } %>
+
+        <% if (blog.seo && blog.seo.canonicalUrl) { %>
+            <link rel="canonical" href="<%= blog.seo.canonicalUrl %>">
+        <% } %>
+    <% } %>
     <meta name="author" content="trivlogic.com">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="Blushley - Beauty Marketplace & Beautician Booking Platform ">
 
     <!-- font -->
     <link rel="stylesheet" href="/fonts/fonts.css">
@@ -208,202 +238,206 @@
 
         <!-- /Header -->
 
-        <!-- tf-add-cart-success -->
-        <div class="tf-add-cart-success">
-            <div class="tf-add-cart-heading">
-                <h5>Shopping Cart</h5>
-                <i class="icon icon-close tf-add-cart-close"></i>
-            </div>
-            <div class="tf-add-cart-product">
-                <div class="image">
-                    <img class=" ls-is-cached lazyloaded" data-src="/images/products/beauty-cosmetic/beauty8.jpg" alt="" src="/images/products/beauty-cosmetic/beauty8.jpg">
-                </div>
-                <div class="content">
-                    <div class="text-title">
-                        <a class="link" href="product-detail.html">mock product</a>
-                    </div>
-                    <div class="text-caption-1 text-secondary-2">Green, XS, Cotton</div>
-                    <div class="text-title">₹68.00</div>
-                </div>
-            </div>
-            <a href="/cart" class="tf-btn w-100 btn-fill radius-4"><span class="text text-btn-uppercase">View cart</span></a>
-        </div>
-        <!-- /tf-add-cart-success -->
-     
         <!-- blog-detail -->
-        <div class="blog-detail-wrap">
-            <div class="image"></div>
-            <div class="inner">
-                <div class="heading">
-                    <ul class="list-tags has-bg justify-content-center">
-                        <li>
-                            <a href="#" class="link">Fashion Trends</a>
+        <div class="blog-detail-wrap py-4 px-2 px-sm-4 px-md-5">
+          <% if (blog) { %>
+            <div class="row gx-5 gy-3 align-items-start">
+              <!-- Blog Image / Gallery -->
+              <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                <div class="rounded shadow-sm mb-3 overflow-hidden">
+                  <% if (blog.image) { %>
+                    <img src="<%= blog.image %>" alt="<%= blog.title %>" class="img-fluid w-100 h-auto" />
+                  <% } else { %>
+                    <img src="/images/blog/blog-placeholder.jpg" alt="<%= blog.title %>" class="img-fluid w-100 h-auto" />
+                  <% } %>
+                </div>
+                <!-- Highlight Images if available -->
+                <% if (blog.highlights && blog.highlights.length) { %>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <% blog.highlights.forEach(function(hl, i){ %>
+                      <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold px-3 py-2 mb-2"><i class="icon-star me-1"></i><%= hl %></span>
+                    <% }); %>
+                  </div>
+                <% } %>
+                <!-- Gallery Images -->
+                <% if (blog.images && blog.images.length) { %>
+                  <div class="row g-2 mt-3">
+                    <% blog.images.forEach(function(img) { %>
+                      <div class="col-4 col-md-3">
+                        <img src="<%= img %>" class="img-fluid rounded shadow-sm" alt="Gallery" />
+                      </div>
+                    <% }); %>
+                  </div>
+                <% } %>
+              </div>
+
+              <!-- Blog Content and Meta -->
+              <div class="col-12 col-lg-6">
+                <div class="mb-2">
+                  <% if (blog.tags && blog.tags.length) { %>
+                    <ul class="list-inline mb-2 d-flex flex-wrap">
+                      <% blog.tags.forEach(function(tag) { %>
+                        <li class="list-inline-item me-2">
+                          <a href="#" class="badge bg-secondary text-uppercase fw-normal px-2 py-1 mb-1 text-decoration-none"><%= tag %></a>
                         </li>
+                      <% }); %>
                     </ul>
-                    <h3 class="fw-5">The Future of Fashion How Technology Transforms the Industry</h3>
-                    <div class="meta justify-content-center">
-                        <div class="meta-item gap-8">
-                            <div class="icon">
-                                <i class="icon-calendar"></i>
-                            </div>
-                            <p class="body-text-1">February 28, 2024</p>
-                        </div>
-                        <div class="meta-item gap-8">
-                            <div class="icon">
-                                <i class="icon-user"></i>
-                            </div>
-                            <p class="body-text-1">by <a class="link" href="#">blushley</a></p>
-                        </div>
-                    </div>
+                  <% } %>
                 </div>
-                <div class="content">
-                    <p class="body-text-1 mb_12">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi interdum sed mauris eu imperdiet. Donec congue orci nec mi luctus, ut faucibus mauris scelerisque. Donec orci lorem, volutpat a mauris nec, sodales imperdiet urna. Sed dictum enim libero. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas ligula libero, pharetra non dolor et, tempor bibendum magna. Mauris a efficitur nisi.</p>
-                    <p class="body-text-1">Praesent interdum lacus ac est viverra hendrerit. Aliquam dapibus, ante vitae mattis gravida, purus sapien interdum magna, convallis volutpat est turpis pulvinar dui. Aenean eu turpis est. In hac habitasse platea dictumst. Integer at lobortis metus. Proin molestie eget massa vel gravida. Suspendisse nec ante vel </p>
+                <h1 class="fw-bold display-6 mb-1 text-primary"><%= blog.title %></h1>
+                <% if (blog.shortDescription) { %>
+                  <p class="lead text-secondary"><%= blog.shortDescription %></p>
+                <% } %>
+
+                <!-- Meta Info -->
+                <div class="row mb-3 g-2 align-items-center">
+                  <div class="col-12 col-sm-auto">
+                    <span class="text-muted">
+                      <i class="icon-calendar me-1"></i>
+                      <%= blog.publishedAt 
+                            ? new Date(blog.publishedAt).toLocaleDateString('en-US', { year: "numeric", month: "long", day: "numeric" })
+                            : '' %>
+                    </span>
+                  </div>
+                  <div class="col-12 col-sm-auto">
+                    <span class="text-muted">
+                      <i class="icon-user me-1"></i>
+                      by <%= (blog.author && blog.author.name) ? blog.author.name : 'blushley' %>
+                    </span>
+                  </div>
+                  <% if (blog.category && blog.category.name) { %>
+                  <div class="col-12 col-sm-auto">
+                    <span class="text-muted">
+                      <i class="icon-folder me-1"></i>
+                      Category: <span class="fw-semibold"><%= blog.category.name %></span>
+                    </span>
+                  </div>
+                  <% } %>
+                  <div class="col-12 col-sm-auto">
+                    <span class="text-muted"><i class="icon-eye me-1"></i>Views: <%= blog.views || 0 %></span>
+                  </div>
+                  <div class="col-12 col-sm-auto">
+                    <span class="text-muted"><i class="icon-heart me-1"></i>Likes: <%= blog.likes || 0 %></span>
+                  </div>
+                  <div class="col-12 col-sm-auto">
+                    <span class="badge bg-warning text-dark small text-uppercase"><%= blog.status %></span>
+                  </div>
                 </div>
-                <div class="group-image d-flex gap-20">
-                    <div>
-                        <img src="/images/blog/blog-details-3.jpg" alt="">
-                    </div>
-                    <div>
-                        <img src="/images/blog/blog-details-4.jpg" alt="">
-                    </div>
+
+        
+
+                <!-- Full Description -->
+                <div class="mb-4">
+                  <% if (blog.fullDescription) { %>
+                    <div class="fs-6 text-body mb-2"><%= blog.fullDescription %></div>
+                  <% } %>
+                  <% if (blog.content && Array.isArray(blog.content)) { %>
+                    <% blog.content.forEach(function(paragraph){ %>
+                      <p class="mb-2"><%= paragraph %></p>
+                    <% }); %>
+                  <% } else if (blog.content) { %>
+                    <p class="mb-2"><%= blog.content %></p>
+                  <% } %>
                 </div>
-                <div class="content">
-                    <h3 class="fw-5 mb_16">How to deal with employee quitting</h3>
-                    <p class="body-text-1 mb_16">Donec eu dui condimentum, laoreet nulla vitae, venenatis ipsum. Donec luctus sem sit amet varius laoreet. Aliquam fermentum sit amet urna fringilla tincidunt. Vestibulum ullamcorper nec lacus ac molestie. Curabitur congue neque sed nisi auctor consequat. Pellentesque rhoncus tortor vitae ipsum sagittis tempor.</p>
-                    <p class="body-text-1 mb_16">Vestibulum et pharetra arcu. In porta lobortis turpis. Ut faucibus fermentum posuere. Suspendisse potenti. Mauris a metus sed est semper vestibulum. Mauris tortor sem, consectetur vehicula vulputate id, suscipit vel leo.</p>
-                    <ul class="list-text type-disc mb_16">
-                        <li class="body-text-1">
-                            15+ years of industry experience designing, building, and supporting large-scale distributed systems in production, with recent experience in building large scale cloud services.
-                        </li>
-                        <li class="body-text-1">
-                            Deep knowledge and experience with different security areas like identity and access management, cryptography, network security, etc.
-                        </li>
-                        <li class="body-text-1">
-                            Experience with database systems and database internals, such as query engines and optimizers are a big plus. 
-                        </li>
-                        <li class="body-text-1">
-                            Strong fundamentals in computer science skills.
-                        </li>
-                        <li class="body-text-1">
-                            Expert-level development skills in Java or C++.
-                        </li>
-                        <li class="body-text-1">
-                            Knowledge of industry standard security concepts and protocols like SAML, SCIM, OAuth, RBAC, cryptography is a plus.
-                        </li>
-                        <li class="body-text-1">
-                            Advanced degree in Computer Science or related degree.
-                        </li>
-                        <li class="body-text-1">
-                            Ph.D. in the related field is a plus
-                        </li>
+                <!-- Highlights as list if present -->
+                <% if (blog.highlights && blog.highlights.length) { %>
+                  <div class="mb-3">
+                    <h6 class="fw-semibold mb-2">Highlights:</h6>
+                    <ul class="ps-3">
+                      <% blog.highlights.forEach(function(item){ %>
+                        <li><%= item %></li>
+                      <% }); %>
                     </ul>
-                    <p class="body-text-1 mb_16">Curabitur aliquam ac arcu in mattis. Phasellus pulvinar erat at aliquam hendrerit. Nam ut velit dolor. Sed fermentum tempus odio, ac faucibus elit scelerisque consequat. Fusce ac malesuada elit. Nam at aliquam libero, quis lacinia erat. In hac habitasse platea dictumst. Suspendisse id dolor orci. Vivamus at aliquam tellus. Vestibulum a augue ac purus suscipit varius non eget lectus. Nam lobortis mauris luctus tristique feugiat. Nulla eleifend risus sit amet nisi feugiat, id eleifend sapien malesuada. Phasellus venenatis convallis mattis. Duis vel tempor eros. Mauris semper sollicitudin neque, imperdiet ultrices urna maximus id.
-                    </p>
+                  </div>
+                <% } %>
+                
+                <!-- Blog status, published at, likes, views -->
+                <div class="mb-4 d-flex flex-wrap gap-2 align-items-center">
+                  <span class="badge bg-info text-dark px-3"><i class="icon-clock me-1"></i>Published at: <%= blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString('en-US', { year: "numeric", month: "long", day: "numeric" }) : '—' %></span>
+                  <span class="badge bg-secondary text-white px-3"><i class="icon-like me-1"></i>Likes: <%= blog.likes %></span>
+                  <span class="badge bg-dark text-white px-3"><i class="icon-eye me-1"></i>Views: <%= blog.views %></span>
+                  <span class="badge bg-success text-white px-3 text-uppercase"><%= blog.status %></span>
                 </div>
-                <div class="bot d-flex justify-content-between gap-10 flex-wrap">
-                    <ul class="list-tags has-bg">
-                        <li>Tag:</li>
-                        <li>
-                            <a href="#" class="link">Fashion</a>
+
+                <!-- Subheading, Excerpt, (Optional) -->
+                <% if (blog.subheading) { %>
+                  <h3 class="fw-5 mb-2 text-secondary"><%= blog.subheading %></h3>
+                <% } %>
+                <% if (blog.excerpt) { %>
+                  <blockquote class="blockquote bg-light border-start border-4 border-primary ps-3 py-2 mb-3">
+                    <span class="fst-italic"><%= blog.excerpt %></span>
+                  </blockquote>
+                <% } %>
+                <!-- BulletPoints -->
+                <% if (blog.bulletPoints && blog.bulletPoints.length) { %>
+                  <ul class="mb-3 ps-3">
+                    <% blog.bulletPoints.forEach(function(point) { %>
+                      <li><%= point %></li>
+                    <% }) %>
+                  </ul>
+                <% } %>
+                <% if (blog.afterExcerpt) { %>
+                  <div class="mb-2"><%= blog.afterExcerpt %></div>
+                <% } %>
+
+                <!-- Tags, Share, and Category -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                  <% if (blog.tags && blog.tags.length) { %>
+                    <span class="fw-semibold me-2 text-secondary">Tags:</span>
+                    <ul class="list-inline mb-0">
+                      <% blog.tags.forEach(function(tag) { %>
+                        <li class="list-inline-item">
+                          <a href="/blogs/tag/<%= encodeURIComponent(tag) %>" class="badge bg-light text-primary border"><%= tag %></a>
                         </li>
-                        <li>
-                            <a href="#" class="link">Trending</a>
-                        </li>
+                      <% }); %>
                     </ul>
-                    <div class="d-flex align-items-center justify-content-between gap-16">
-                        <p>Share this post:</p>
-                        <ul class="tf-social-icon style-1">
-                            <li><a href="#" class="social-facebook"><i class="icon icon-fb"></i></a></li>
-                            <li><a href="#" class="social-twiter"><i class="icon icon-x"></i></a></li>
-                            <li><a href="#" class="social-pinterest"><i class="icon icon-pinterest"></i></a></li>
-                            <li><a href="#" class="social-instagram"><i class="icon icon-instagram"></i></a></li>
-                        </ul>
-                    </div>
+                  <% } %>
+                  <% if (blog.category && blog.category.name) { %>
+                    <span class="ms-2 fw-semibold text-danger small">| Category: <%= blog.category.name %></span>
+                  <% } %>
                 </div>
-                <div class="related-post">
-                    <div class="pre w-50">
-                        <div class="text-btn-uppercase">
-                            <a href="#">Previous</a>
-                        </div>
-                        <h6 class="fw-5">
-                            <a class="link" href="#">How to choose the right customer</a>
-                        </h6>
-                    </div>
-                    <div class="next w-50">
-                        <div class="text-btn-uppercase text-end">
-                            <a href="#">Next</a>
-                        </div>
-                        <h6 class="fw-5 text-end">
-                            <a class="link" href="#">Starting your traveling blog with Vasco</a>
-                        </h6>
-                    </div>
+
+                <!-- Share section -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                  <span class="fw-semibold me-2">Share this post:</span>
+                  <div>
+                    <%
+                      var shareUrl = typeof currentUrl === 'string' && currentUrl.length > 0 
+                        ? currentUrl 
+                        : (typeof blog !== 'undefined' && blog._id ? ('https://'+(typeof host!=='undefined'?host:'')+'/blog/'+blog._id) : ''); 
+                      var encodedShareUrl = encodeURIComponent(shareUrl); 
+                      var encodedTitle = encodeURIComponent(blog.title || '');
+                    %>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodedShareUrl %>" target="_blank" class="btn btn-sm btn-primary rounded-circle me-1"><i class="icon icon-fb"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url=<%= encodedShareUrl %>&text=<%= encodedTitle %>" target="_blank" class="btn btn-sm btn-dark rounded-circle me-1"><i class="icon icon-x"></i></a>
+                    <a href="https://pinterest.com/pin/create/button/?url=<%= encodedShareUrl %>&description=<%= encodedTitle %>" target="_blank" class="btn btn-sm btn-danger rounded-circle me-1"><i class="icon icon-pinterest"></i></a>
+                    <a href="https://instagram.com/" target="_blank" class="btn btn-sm btn-instagram rounded-circle"><i class="icon icon-instagram"></i></a>
+                  </div>
                 </div>
-                <div class="reply-comment">
-                    <h4 class="reply-comment-heading">03 Comments</h4>
-                    <div class="reply-comment-wrap">
-                        <div class="reply-comment-item">
-                            <div class="image">
-                                <img src="/images/avatar/user-1.jpg" alt="">
-                            </div>
-                            <div class="content">
-                                <div>
-                                    <h6>
-                                        <a href="#" class="link">Guy Hawkins</a>
-                                    </h6>
-                                    <div class="day text-caption-1">August 13, 2024</div>
-                                </div>
-                                <p>Lorem ipsum dolor sit amet consectetur. Cursus nunc pharetra arcu quam turpis risus amet turpis. Facilisis elementum tincidunt pellentesque sed rutrum enim.</p>
-                                <div>
-                                    <a class="text-button" href="#">Reply</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="reply-comment-item type-reply">
-                            <div class="image">
-                                <img src="/images/avatar/user-2.jpg" alt="">
-                            </div>
-                            <div class="content">
-                                <div>
-                                    <div class="d-flex gap-12 align-items-center">
-                                        <h6>
-                                            <a href="#" class="link">Eleanor Pena</a>
-                                        </h6>
-                                        <div class="box-check">
-                                            <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M3.39644 7.84288L0.146441 4.35628C-0.0488135 4.14681 -0.0488135 3.80718 0.146441 3.59769L0.853531 2.8391C1.04879 2.62961 1.36539 2.62961 1.56064 2.8391L3.75 5.18782L8.43936 0.157101C8.63461 -0.0523671 8.95121 -0.0523671 9.14647 0.157101L9.85356 0.915689C10.0488 1.12516 10.0488 1.46479 9.85356 1.67428L4.10355 7.8429C3.90828 8.05237 3.5917 8.05237 3.39644 7.84288Z" fill="white"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="day text-caption-1">August 13, 2024</div>
-                                </div>
-                                <p>Great choice of Acronym AF1’s</p>
-                            </div>
-                        </div>
+
+                <!-- Prev/Next Blog Navigation -->
+                <% if (blog.prevPost || blog.nextPost) { %>
+                  <div class="row my-4 border-top pt-3">
+                    <% if (blog.prevPost) { %>
+                    <div class="col-6 text-start">
+                      <div class="fw-bold small mb-1 text-muted">Previous</div>
+                      <a class="h6 link-primary fw-bold text-decoration-none d-inline-block" href="/blog/<%= blog.prevPost.slug || blog.prevPost._id %>"><%= blog.prevPost.title %></a>
                     </div>
-                </div>  
-                <div class="leave-comment">
-                    <h4 class="leave-comment-heading">Leave A Comment</h4>
-                    <form  class="form-leave-comment">
-                        <div class="wrap">
-                            <div class="cols">
-                                <fieldset class="">
-                                    <input class="" type="text" placeholder="Your Name*" name="text" tabindex="2" value="" aria-required="true" required="">
-                                </fieldset>
-                                <fieldset class="">
-                                    <input class="" type="email" placeholder="Your Email*" name="email" tabindex="2" value="" aria-required="true" required="">
-                                </fieldset>
-                            </div>
-                            <fieldset class="">
-                                <textarea class="" rows="4" placeholder="Your Message*" tabindex="2" aria-required="true" required=""></textarea>
-                            </fieldset>
-                        </div>
-                        <div class="button-submit">
-                            <button class="" type="submit">Submit Review</button>
-                        </div>
-                    </form>
-                </div>
+                    <% } %>
+                    <% if (blog.nextPost) { %>
+                    <div class="col-6 text-end">
+                      <div class="fw-bold small mb-1 text-muted">Next</div>
+                      <a class="h6 link-primary fw-bold text-decoration-none d-inline-block" href="/blog/<%= blog.nextPost.slug || blog.nextPost._id %>"><%= blog.nextPost.title %></a>
+                    </div>
+                    <% } %>
+                  </div>
+                <% } %>
+
+              </div>
             </div>
+          <% } else { %>
+            <div class="alert alert-warning text-center mt-5 mb-5">Blog not found.</div>
+          <% } %>
         </div>
         <!-- /blog-detail -->
 
@@ -418,151 +452,61 @@
                         </div>
                         <div dir="ltr" class="swiper tf-sw-recent" data-preview="3" data-tablet="2" data-mobile="1" data-space-lg="30" data-space-md="30" data-space="15" data-pagination="1" data-pagination-md="1" data-pagination-lg="1">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <div class="wg-blog style-1 hover-image">
-                                        <div class="image">
-                                            <img class="lazyload" data-src="/images/blog/blog-grid-1.jpg" src="/images/blog/blog-grid-1.jpg" alt="">
+                                <% if (relatedblogs && relatedblogs.length) { %>
+                                    <% relatedblogs.forEach(function(rblog) { %>
+                                        <div class="swiper-slide">
+                                            <div class="wg-blog style-1 hover-image">
+                                                <div class="image" style="height:260px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                                                    <img 
+                                                        class="lazyload"
+                                                        data-src="<%= rblog.image || '/images/blog/blog-placeholder.jpg' %>" 
+                                                        src="<%= rblog.image || '/images/blog/blog-placeholder.jpg' %>" 
+                                                        alt="<%= rblog.title %>" 
+                                                        style="height:100%; width:auto; max-width:100%; object-fit:cover; display:block;"
+                                                    >
+                                                </div>
+                                                <div class="content">
+                                                    <div class="meta">
+                                                        <div class="meta-item gap-8">
+                                                            <div class="icon">
+                                                                <i class="icon-calendar"></i>
+                                                            </div>
+                                                            <p class="text-caption-1">
+                                                                <%= rblog.publishedAt 
+                                                                    ? new Date(rblog.publishedAt).toLocaleDateString('en-US', { year: "numeric", month: "long", day: "numeric" })
+                                                                    : '' %>
+                                                            </p>
+                                                        </div>
+                                                        <div class="meta-item gap-8">
+                                                            <div class="icon">
+                                                                <i class="icon-user"></i>
+                                                            </div>
+                                                            <p class="text-caption-1">
+                                                                by <a class="link" href="#"><%= rblog.author || 'blushley' %></a>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="title fw-5">
+                                                            <a class="link" href="/beauty-tips/<%= rblog.slug %>"><%= rblog.title %></a>
+                                                        </h6>
+                                                        <div class="body-text">
+                                                            <%= rblog.excerpt 
+                                                                ? rblog.excerpt
+                                                                : ((rblog.content && Array.isArray(rblog.content)) ? rblog.content[0] : (rblog.content || '')) %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="content">
-                                            <div class="meta">
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-calendar"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">February 28, 2024</p>
-                                                </div>
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-user"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h6 class="title fw-5">
-                                                    <a class="link" href="blog-detail.html">How Technology is Transforming the Industry</a>
-                                                </h6>
-                                                <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="wg-blog style-1 hover-image">
-                                        <div class="image">
-                                            <img class="lazyload" data-src="/images/blog/blog-grid-2.jpg" src="/images/blog/blog-grid-2.jpg" alt="">
-                                        </div>
-                                        <div class="content">
-                                            <div class="meta">
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-calendar"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">February 28, 2024</p>
-                                                </div>
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-user"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h6 class="title fw-5">
-                                                    <a class="link" href="blog-detail.html">The Future of Fashion How Technology Transforms the Industry</a>
-                                                </h6>
-                                                <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                            </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="swiper-slide">
+                                        <div class="wg-blog style-1 hover-image text-center p-5">
+                                            <p>No related articles found.</p>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="wg-blog style-1 hover-image">
-                                        <div class="image">
-                                            <img class="lazyload" data-src="/images/blog/blog-grid-3.jpg" src="/images/blog/blog-grid-3.jpg" alt="">
-                                        </div>
-                                        <div class="content">
-                                            <div class="meta">
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-calendar"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">February 28, 2024</p>
-                                                </div>
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-user"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h6 class="title fw-5">
-                                                    <a class="link" href="blog-detail.html">From Concept to Closet The Journey of Sustainable Fashion</a>
-                                                </h6>
-                                                <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="wg-blog style-1 hover-image">
-                                        <div class="image">
-                                            <img class="lazyload" data-src="/images/blog/blog-grid-2.jpg" src="/images/blog/blog-grid-2.jpg" alt="">
-                                        </div>
-                                        <div class="content">
-                                            <div class="meta">
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-calendar"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">February 28, 2024</p>
-                                                </div>
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-user"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h6 class="title fw-5">
-                                                    <a class="link" href="blog-detail.html">The Future of Fashion How Technology Transforms the Industry</a>
-                                                </h6>
-                                                <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="wg-blog style-1 hover-image">
-                                        <div class="image">
-                                            <img class="lazyload" data-src="/images/blog/blog-grid-3.jpg" src="/images/blog/blog-grid-3.jpg" alt="">
-                                        </div>
-                                        <div class="content">
-                                            <div class="meta">
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-calendar"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">February 28, 2024</p>
-                                                </div>
-                                                <div class="meta-item gap-8">
-                                                    <div class="icon">
-                                                        <i class="icon-user"></i>
-                                                    </div>
-                                                    <p class="text-caption-1">by <a class="link" href="#">blushley</a></p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h6 class="title fw-5">
-                                                    <a class="link" href="blog-detail.html">From Concept to Closet The Journey of Sustainable Fashion</a>
-                                                </h6>
-                                                <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed vulputate massa.</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <% } %>
                             </div>
                             <div class="sw-pagination-recent sw-dots type-circle d-flex justify-content-center"></div>
                         </div>
