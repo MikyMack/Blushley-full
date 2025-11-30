@@ -167,7 +167,7 @@
                                         class="item-link">Book a Salon</a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="/beauty-tips" class="item-link">Beauty Tips</a>
+                                    <a href="/blogs" class="item-link">Blogs</a>
 
                                 </li>
 
@@ -686,30 +686,10 @@
             </div>
         </section>
 
-        <!-- Beautician CTA Banner - Place this above footer -->
-        <!--  <section class="beautician-banner">
-            <div class="container">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h3 class="banner-title">
-                            <span class="banner-icon">✨</span>Are You a <span class="text-gold">Beauty
-                                Professional?</span>
-                        </h3>
-                        <p class="banner-subtitle">
-                            Join our exclusive network and grow your beauty business. Connect with premium clients
-                            today.
-                        </p>
-                    </div>
-                    <div class="banner-cta">
-                        <a href="/beautician-register.html" class="btn-beautician">Learn more →</a>
-                    </div>
-                </div>
-            </div>
-        </section>-->
-
+       
 
         <!-- Testimonial -->
-        <section class="flat-spacing">
+        <section class="flat-spacing-2">
             <div class="container">
                 <div class="heading-section text-center wow fadeInUp">
                     <h3 class="heading">Glow Stories from Our Clients</h3>
@@ -832,7 +812,7 @@
                                                 %>
                                             </div>
                                             <div class="avatar avt-60 round">
-                                                <img src="/images/google.png" alt="avt" style="width: 38px; height: 38px; object-fit: contain;">
+                                                <img src="/images/logo/logoggg.png" alt="avt" style="width: 48px; height: 38px; object-fit: contain;">
                                             </div>
                                         </div>
                                         <p class="text-secondary"><%= t.review || t.content %></p>
@@ -996,61 +976,74 @@
         </script>
 
 
-
-   <section class="premium-ecommerce-slider-section">
-        <div class="slider-viewport-container-main" id="sliderViewport">
-            <div class="slider-track-wrapper-element" id="sliderTrack">
-                <!-- Slide 1 -->
-                <div class="individual-slide-item-wrapper">
-                    <img src="/images/banners/home-banner10.png" 
-                         alt="Fashion Store" 
-                         class="slide-background-image-element">
-                    <div class="slide-overlay-gradient-layer"></div>
+<section style="height: fit-content;"
+  class="main-bnr slideshow type2 full-width"
+>
+  <div class="swiper js-banner-swiper">
+    <div class="swiper-wrapper">
+      <% if (Array.isArray(banners) && banners.length) { %>
+        <% banners.forEach(function(banner) { %>
+          <div class="swiper-slide main-banner" style="width:100%;">
+            <div class="overflow-hidden position-relative w-100 h-100" style="width:100%;height:100%;">
+              <a href="<%= banner.link || '#' %>" class="d-block w-100 h-100"
+                style="width:100%;height:100%;display:block;">
+                <div class="slideshow-bg w-100 h-100" style="width:100%;height:100%;">
+                  <img loading="lazy" src="<%= banner.image %>" alt="Banner"
+                      class="slideshow-bg__img w-100 h-100 main-banner-img"
+                      style="width:100%;height:100%;object-position:center;object-fit:cover;max-height:600px;">
+                  <% if (banner.title) { %>
+                    <!-- Banner content overlay -->
+                    <div class="banner-content-overlay">
+                      <div class="banner-content-title"><%= banner.title %></div>
+                      <% if (banner.subtitle) { %>
+                        <div class="banner-content-subtitle"><%= banner.subtitle %></div>
+                      <% } %>
+                      <% if (banner.description) { %>
+                        <div class="banner-content-desc"><%= banner.description %></div>
+                      <% } %>
+                      <% if (banner.link) { %>
+                        <a class="banner-content-btn" href="<%= banner.link %>">
+                          Learn More
+                        </a>
+                      <% } %>
+                    </div>
+                  <% } %>
                 </div>
-
-                <!-- Slide 2 -->
-                <div class="individual-slide-item-wrapper">
-                    <img src="/images/banners/home-banner9.png" 
-                         alt="Watch Collection" 
-                         class="slide-background-image-element">
-                    <div class="slide-overlay-gradient-layer"></div>
-                </div>
-
-                <!-- Slide 3 -->
-                <div class="individual-slide-item-wrapper">
-                    <img src="/images/banners/home-banner8.png" 
-                         alt="Smart Watch" 
-                         class="slide-background-image-element">
-                    <div class="slide-overlay-gradient-layer"></div>
-                </div>
-
-                <!-- Slide 4 -->
-                <div class="individual-slide-item-wrapper">
-                    <img src="/images/banners/home-banner7.png" 
-                         alt="Headphones" 
-                         class="slide-background-image-element">
-                    <div class="slide-overlay-gradient-layer"></div>
-                </div>
-
-                <!-- Slide 5 -->
-                <div class="individual-slide-item-wrapper">
-                    <img src="/images/banners/home-banner6.png" 
-                         alt="Sunglasses" 
-                         class="slide-background-image-element">
-                    <div class="slide-overlay-gradient-layer"></div>
-                </div>
+              </a>
             </div>
-
-            <!-- Pagination Dots -->
-            <div class="pagination-dots-container-bottom" id="paginationDots">
-                <div class="dot-indicator-item-element active-dot-state" data-slide="0"></div>
-                <div class="dot-indicator-item-element" data-slide="1"></div>
-                <div class="dot-indicator-item-element" data-slide="2"></div>
-                <div class="dot-indicator-item-element" data-slide="3"></div>
-                <div class="dot-indicator-item-element" data-slide="4"></div>
-            </div>
-        </div>
-    </section>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <!-- No banners available -->
+      <% } %>
+    </div>
+    <div class="swiper-pagination slideshow-pagination position-left-center type2"></div>
+    <a href="#section-grid-banner"
+      class="slideshow-scroll d-none d-xxl-block position-absolute end-0 bottom-3 text_dash text-uppercase fw-medium">Scroll</a>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.Swiper) {
+      new Swiper('.js-banner-swiper', {
+        autoplay: {
+          delay: 5200,
+          disableOnInteraction: false
+        },
+        slidesPerView: 1,
+        effect: 'fade',
+        loop: true,
+        pagination: {
+          el: '.slideshow-pagination',
+          clickable: true,
+        },
+        fadeEffect: {
+          crossFade: true
+        },
+      });
+    }
+  });
+</script>
 
 
 

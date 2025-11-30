@@ -6,28 +6,55 @@ const SubCategory = require('../models/SubCategory');
 const ChildCategory = require('../models/ChildCategory');
 const Product = require('../models/Product');
 const Testimonial = require('../models/Testimonials');
+const Banner = require('../models/Banner');
+const Poster = require('../models/Poster');
 
 router.get('/', async (req, res) => {
     try {
-        const [categories, subcategories, childcategories, testimonials] = await Promise.all([
+        const [
+            categories, 
+            subcategories, 
+            childcategories, 
+            testimonials, 
+            banners, 
+            posters
+        ] = await Promise.all([
             Category.find({ isActive: true }).lean(),
             SubCategory.find({ isActive: true }).lean(),
             ChildCategory.find({ isActive: true }).lean(),
             Testimonial.find({})
                 .sort({ createdAt: -1 })
                 .limit(12)
+                .lean(),
+            Banner.find({ isActive: true })
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .lean(),
+            Poster.find({ isActive: true })
+                .sort({ createdAt: -1 })
+                .limit(5)
                 .lean()
         ]);
+
         let products = [];
         products = await Product.aggregate([
             { $match: { status: "approved" } },
             { $sample: { size: 4 } }
         ]);
 
-        res.render('user/home', { categories, subcategories, childcategories, products, testimonials });
+        res.render('user/home', { categories, subcategories, childcategories, products, testimonials, banners, posters });
     } catch (err) {
-        console.error("Error loading categories, products, or testimonials for home page:", err);
-        res.render('user/home', { categories: [], subcategories: [], childcategories: [], products: [], testimonials: [], error: "Could not load categories, products, or testimonials" });
+        console.error("Error loading categories, products, banners, posters, or testimonials for home page:", err);
+        res.render('user/home', {
+            categories: [],
+            subcategories: [],
+            childcategories: [],
+            products: [],
+            testimonials: [],
+            banners: [],
+            posters: [],
+            error: "Could not load categories, products, banners, posters, or testimonials"
+        });
     }
 });
 
@@ -288,7 +315,7 @@ router.get('/contact', (req, res) => {
     res.render('user/contact');
 });
 // blogs 
-router.get('/beauty-tips', (req, res) => {
+router.get('/blogs', (req, res) => {
     res.render('user/beauty-tips');
 });
 // blogs details 
