@@ -358,7 +358,7 @@ router.get('/userblogs', async (req, res) => {
     }
 });
 // blogs details 
-router.get('/beauty-tips/:slug', async (req, res) => {
+router.get('/userblogs/:slug', async (req, res) => {
     try {
         const slug = req.params.slug;
         const blog = await Blog.findOne({ slug, status: 'published' }).lean();
