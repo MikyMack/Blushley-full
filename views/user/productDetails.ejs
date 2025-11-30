@@ -244,944 +244,407 @@ body.modal-open {
         </div>
         <!-- /breadcrumb -->
 
+        <!-- Product_Main -->
         <section class="flat-spacing">
             <div class="tf-main-product section-image-zoom">
                 <div class="container">
                     <div class="row">
-                        <!-- Enhanced Product Images Gallery -->
+                        <!-- Product Images -->
                         <div class="col-md-6">
                             <div class="tf-product-media-wrap sticky-top">
-                                <div class="product-gallery-container">
-                                    <!-- Main Image Slider -->
-                                    <div class="main-gallery-slider">
-                                        <div dir="ltr" class="swiper tf-product-media-main" id="main-gallery-swiper">
-                                            <div class="swiper-wrapper">
+                                <div class="thumbs-slider">
+                                    <div dir="ltr" class="swiper tf-product-media-thumbs other-image-zoom" data-direction="vertical">
+                                        <div class="swiper-wrapper stagger-wrap">
+                                            <% product.allImages.forEach(function(img, idx) { %>
+                                                <div class="swiper-slide stagger-item" data-color="<%= img.color || 'default' %>">
+                                                    <div class="item">
+                                                        <img class="lazyload" data-src="<%= img.src %>" src="<%= img.src %>" alt="">
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                    <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
+                                        <div class="swiper-wrapper">
+                                            <% product.allImages.forEach(function(img, idx) { %>
+                                                <div class="swiper-slide" data-color="<%= img.color || 'default' %>">
+                                                    <a href="<%= img.src %>" target="_blank" class="item" data-pswp-width="600px" data-pswp-height="800px">
+                                                        <img class="tf-image-zoom lazyload" data-zoom="<%= img.src %>" data-src="<%= img.src %>" src="<%= img.src %>" alt="">
+                                                    </a>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                        <!-- /Product Images -->
+                        <!-- tf-product-info-list -->
+                        <div class="col-md-6">
+                            <div class="tf-product-info-wrap position-relative">
+                                <div class="tf-zoom-main"></div>
+                                <div class="tf-product-info-list other-image-zoom">
+                                    <div class="tf-product-info-heading">
+                                        <div class="tf-product-info-name">
+                                            <% if (product.category) { %>
+                                                <div class="text text-btn-uppercase"><%= product.category.name %></div>
+                                            <% } %>
+                                            <h3 class="name"><%= product.title %></h3>
+                                            <div class="sub">
+                                                <div class="tf-product-info-rate">
+                                                    <div class="list-star">
+                                                        <% 
+                                                            const fullStars = Math.round((product.averageRating || 0) * 2) / 2;
+                                                            for (let i = 1; i <= 5; i++) { 
+                                                                if (i <= Math.floor(fullStars)) { %>
+                                                                    <i class="icon icon-star"></i>
+                                                                <% } else if (i - 0.5 === fullStars) { %>
+                                                                    <i class="icon icon-star-half"></i>
+                                                                <% } else { %>
+                                                                    <i class="icon icon-star-outline"></i>
+                                                                <% }
+                                                            } 
+                                                        %>
+                                                    </div>
+                                                    <div class="text text-caption-1">(<%= product.totalReviews || 0 %> reviews)</div>
+                                                </div>
+                                                <div class="tf-product-info-sold">
+                                                    <i class="icon icon-lightning"></i>
+                                                    <div class="text text-caption-1"><%= product.totalSold || 0 %> sold so far</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tf-product-info-desc">
+                                            <div class="tf-product-info-price">
+                                                <h5 class="price-on-sale font-2">
+                                                    ₹<%= Number(product.calculatedSalePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                </h5>
+                                                <% if (product.discountPercent > 0) { %>
+                                                    <div class="compare-at-price font-2">
+                                                        ₹<%= Number(product.calculatedBasePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                    </div>
+                                                    <div class="badges-on-sale text-btn-uppercase">
+                                                        -<%= product.discountPercent %>%
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                            <p>
+                                                <%= product.shortDescription || "" %>
+                                            </p>
+                                            <div class="tf-product-info-liveview">
+                                                <i class="icon icon-eye"></i>
+                                                <p class="text-caption-1">
+                                                    <span class="liveview-count"><%= Math.floor(Math.random() * 31) + 8 %></span> people are viewing this right now
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tf-product-info-choose-option">
+                                        <% if (product.hasVariants && Array.isArray(product.variants)) { %>
+                                            <% product.variants.forEach(function(variant) { %>
+                                                <div class="variant-picker-item mb_20">
+                                                    <div class="variant-picker-label mb_12">
+                                                        <%= variant.name %>: 
+                                                        <span class="text-title variant-picker-label-value value-currentColor"></span>
+                                                    </div>
+                                                    <div class="variant-picker-values gap12">
+                                                        <% variant.options.forEach(function(option, optIdx) { %>
+                                                            <% var optionId = `option-${variant.name}-${option.value}`.replace(/\s/g, '-').toLowerCase(); %>
+                                                            <input id="<%= optionId %>" type="radio" name="<%= variant.name %>" value="<%= option.value %>" <% if(option.isAvailable) { %> <% } else { %> disabled <% } %> <% if(optIdx === 0) { %>checked<% } %> >
+                                                            <label 
+                                                                class="<% if(variant.name.toLowerCase().includes('color')) { %>hover-tooltip tooltip-bot radius-60 color-btn<% } else { %>style-text size-btn<% } %> <% if(!option.isAvailable){ %> type-disable <% } %>"
+                                                                for="<%= optionId %>"
+                                                                data-value="<%= option.value %>"
+                                                                data-price="<%= option.calculatedSalePrice %>"
+                                                                data-color="<%= option.value.toLowerCase() %>"
+                                                            >
+                                                                <% if(variant.name.toLowerCase().includes('color')){ %>
+                                                                    <span class="btn-checkbox" style="background: <%= option.value.toLowerCase() %>"></span>
+                                                                    <span class="tooltip"><%= option.value %></span>
+                                                                <% } else { %>
+                                                                    <span class="text-title"><%= option.value %></span>
+                                                                <% } %>
+                                                            </label>
+                                                        <% }); %>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        <% } %>
+                                        <div class="tf-product-info-quantity">
+                                            <div class="title mb_12">Quantity:</div>
+                                            <div class="wg-quantity">
+                                                <span class="btn-quantity btn-decrease">-</span>
+                                                <input class="quantity-product" type="text" name="number" value="1">
+                                                <span class="btn-quantity btn-increase">+</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="tf-product-info-by-btn mb_10">
+                                                <a href="#shoppingCart" data-bs-toggle="modal" class="btn-style-2 flex-grow-1 text-btn-uppercase fw-6 btn-add-to-cart">
+                                                    <span>Add to cart -&nbsp;</span>
+                                                    <span class="tf-qty-price total-price">
+                                                        ₹<%= Number(product.calculatedSalePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <a href="#" class="btn-style-3 text-btn-uppercase">Buy it now</a>
+                                        </div>
+                                        <div class="tf-product-info-help">
+                                            <div class="tf-product-info-extra-link">
+                                                <a href="#delivery_return" data-bs-toggle="modal" class="tf-product-extra-icon">
+                                                    <div class="icon">
+                                                        <i class="icon-shipping"></i>
+                                                    </div>
+                                                    <p class="text-caption-1">Delivery & Return</p>
+                                                </a>
+                                                <a href="#ask_question" data-bs-toggle="modal" class="tf-product-extra-icon">
+                                                    <div class="icon">
+                                                        <i class="icon-question"></i>
+                                                    </div>
+                                                    <p class="text-caption-1">Ask A Question</p>
+                                                </a>
+                                                <a href="#share_social" data-bs-toggle="modal" class="tf-product-extra-icon">
+                                                    <div class="icon">
+                                                        <i class="icon-share"></i>
+                                                    </div>
+                                                    <p class="text-caption-1">Share</p>
+                                                </a>
+                                            </div>
+                                            <div class="tf-product-info-time">
+                                                <div class="icon">
+                                                    <i class="icon-timer"></i>
+                                                </div>
+                                                <p class="text-caption-1">Estimated Delivery:&nbsp;&nbsp;<span>12-26 days</span> </p>
+                                            </div>
+                                            <div class="tf-product-info-return">
+                                                <div class="icon">
+                                                    <i class="icon-arrowClockwise"></i>
+                                                </div>
+                                                <p class="text-caption-1">Return within <span>45 days</span> of purchase. Duties & taxes are non-refundable.</p>
+                                            </div>
+                                            <div class="dropdown dropdown-store-location">
+                                                <div class="dropdown-title dropdown-backdrop" data-bs-toggle="dropdown" aria-haspopup="true">
+                                                    <div class="tf-product-info-view link">
+                                                        <div class="icon">
+                                                            <i class="icon-map-pin"></i>
+                                                        </div>
+                                                        <span>View Store Information</span>
+                                                    </div>
+                                                </div>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <div class="dropdown-content">
+                                                        <div class="dropdown-content-heading">
+                                                            <h5>
+                                                                <% if (product.brand) { %>
+                                                                    <%= product.brand %>
+                                                                <% } else { %>
+                                                                    Store
+                                                                <% } %>
+                                                            </h5>
+                                                            <i class="icon icon-close"></i>
+                                                        </div>
+                                                        <div class="line-bt"></div>
+                                                        <div>
+                                                            <h6>
+                                                                <% if (product.vendor) { %>
+                                                                    <%= product.vendor %>
+                                                                <% } else { %>
+                                                                    Blushley fashion
+                                                                <% } %>
+                                                            </h6>
+                                                            <p>
+                                                                Pickup available. Usually ready in 24 hours
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ul class="tf-product-info-sku">
+                                            <li>
+                                                <p class="text-caption-1">SKU:</p>
+                                                <p class="text-caption-1 text-1"><%= product.sku || '—' %></p>
+                                            </li>
+                                            <li>
+                                                <p class="text-caption-1">Vendor:</p>
+                                                <p class="text-caption-1 text-1"><%= product.vendor || '—' %></p>
+                                            </li>
+                                            <li>
+                                                <p class="text-caption-1">Available:</p>
+                                                <p class="text-caption-1 text-1">
+                                                    <% if (product.totalStock > 0) { %>Instock<% } else { %>Out of stock<% } %>
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p class="text-caption-1">Categories:</p>
+                                                <p class="text-caption-1">
+                                                    <% if(product.category){ %>
+                                                        <a href="/store/<%= product.category.slug %>" class="text-1 link"><%= product.category.name %></a>
+                                                    <% } %>
+                                                    <% if(product.subCategory){ %>,
+                                                        <a href="/store/<%= product.subCategory.slug %>" class="text-1 link"><%= product.subCategory.name %></a>
+                                                    <% } %>
+                                                    <% if(product.childCategory){ %>,
+                                                        <a href="/store/<%= product.childCategory.slug %>" class="text-1 link"><%= product.childCategory.name %></a>
+                                                    <% } %>
+                                                </p>
+                                            </li>
+                                        </ul>
+                                        <form class="form-bundle-product">
+                                            <h5 class="mb_16">Frequently bought together</h5>
+                                            <% frequentlyBoughtTogether && frequentlyBoughtTogether.forEach(function(fbt, idx) { %>
+                                                <div class="tf-bundle-product-item">
+                                                    <input class="tf-check" type="checkbox" name="fbt" value="<%= fbt.slug %>" checked="checked">
+                                                    <div class="tf-product-bundle-image">
+                                                        <a href="/productDetails/<%= fbt.slug %>">
+                                                            <img src="<%= (fbt.images && fbt.images[0]) ? fbt.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="tf-product-bundle-infos">
+                                                        <div class="text-title"><%= fbt.title %></div>
+                                                        <div class="tf-product-bundle-variant tf-select">
+                                                            <% if (fbt.hasVariants && Array.isArray(fbt.variants) && fbt.variants.length) { %>
+                                                                <select>
+                                                                    <% fbt.variants[0].options.forEach(function(opt) { %>
+                                                                        <option><%= opt.value %></option>
+                                                                    <% }) %>
+                                                                </select>
+                                                            <% } %>
+                                                        </div>
+                                                        <div class="tf-product-info-price type-small">
+                                                            <h5 class="price-on-sale">
+                                                                ₹<%= Number(typeof fbt.calculatedSalePrice !== "undefined" ? fbt.calculatedSalePrice : (fbt.salePrice || fbt.basePrice)).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                            </h5>
+                                                            <% if ((fbt.discountPercent || 0) > 0) { %>
+                                                                <div class="compare-at-price">
+                                                                    ₹<%= Number(fbt.calculatedBasePrice || fbt.basePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                                </div>
+                                                                <div class="badges-on-sale">-<%= fbt.discountPercent %>%</div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                            <div class="tf-bundle-product-total-submit">
+                                                <h6>Total price:</h6>
                                                 <% 
-                                                    const allImages = [];
-                                                    // Add main product images
-                                                    if (product.images && product.images.length) {
-                                                        product.images.forEach(img => allImages.push({
-                                                            src: img,
-                                                            type: 'main'
-                                                        }));
-                                                    }
-                                                    // Add variant images
-                                                    if (product.variants && product.variants.length) {
-                                                        product.variants.forEach(variant => {
-                                                            variant.options.forEach(option => {
-                                                                if (option.images && option.images.length) {
-                                                                    option.images.forEach(img => allImages.push({
-                                                                        src: img,
-                                                                        type: 'variant',
-                                                                        variant: variant.name,
-                                                                        option: option.value
-                                                                    }));
-                                                                }
-                                                            });
+                                                    let totalBundlePrice = (product.calculatedSalePrice || 0);
+                                                    if(Array.isArray(frequentlyBoughtTogether)){
+                                                        frequentlyBoughtTogether.forEach(function(fbt){
+                                                            totalBundlePrice += (typeof fbt.calculatedSalePrice !== "undefined" ? Number(fbt.calculatedSalePrice) : Number(fbt.salePrice || fbt.basePrice) || 0);
                                                         });
                                                     }
-                                                    // Use all images or fallback
-                                                    const displayImages = allImages.length > 0 ? allImages : 
-                                                        [{ src: '/images/placeholder-product.jpg', type: 'placeholder' }];
                                                 %>
-                                                <% displayImages.forEach(function(imgObj, i) { %>
-                                                    <div class="swiper-slide" data-image-index="<%= i %>">
-                                                        <div class="gallery-image-container">
-                                                            <img class="tf-image-zoom lazyload main-product-image" 
-                                                                 data-zoom="<%= imgObj.src %>" 
-                                                                 data-src="<%= imgObj.src %>" 
-                                                                 src="<%= imgObj.src %>" 
-                                                                 alt="<%= product.title %> - Image <%= i+1 %>"
-                                                                 onerror="this.src='/images/placeholder-product.jpg'">
-                                                            <% if (imgObj.type === 'variant') { %>
-                                                                <div class="image-badge variant-badge">
-                                                                    <%= imgObj.variant %>: <%= imgObj.option %>
-                                                                </div>
-                                                            <% } %>
-                                                        </div>
-                                                    </div>
-                                                <% }); %>
+                                                <div class="tf-product-info-price type-1">
+                                                    <h4 class="price-on-sale">₹<%= Number(totalBundlePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></h4>
+                                                </div>
                                             </div>
-                                            <!-- Navigation Arrows -->
-                                            <div class="swiper-button-next"></div>
-                                            <div class="swiper-button-prev"></div>
-                                            
-                                            <!-- Zoom Indicator -->
-                                            <div class="zoom-indicator">
-                                                <i class="icon icon-zoom-in"></i>
-                                                <span>Click to zoom</span>
+                                            <a href="#shoppingCart" data-bs-toggle="modal" class="tf-bundle-product-btn btn-style-2 text-btn-uppercase">Add selected to cart</a>
+                                        </form>
+                                        <div class="tf-product-info-guranteed">
+                                            <div class="text-title">
+                                                Guranteed safe checkout:
                                             </div>
-                                        </div>
-                                    </div>
-        
-                                    <!-- Thumbnail Slider -->
-                                    <% if (displayImages.length > 1) { %>
-                                    <div class="thumbnail-slider-container">
-                                        <div dir="ltr" class="swiper tf-product-media-thumbs" id="thumbnail-swiper">
-                                            <div class="swiper-wrapper">
-                                                <% displayImages.forEach(function(imgObj, i) { %>
-                                                    <div class="swiper-slide">
-                                                        <div class="thumbnail-item <%= i === 0 ? 'active' : '' %>">
-                                                            <img src="<%= imgObj.src %>" 
-                                                                 alt="Thumbnail <%= i+1 %>"
-                                                                 onerror="this.src='/images/placeholder-thumb.jpg'">
-                                                            <% if (imgObj.type === 'variant') { %>
-                                                                <div class="thumbnail-badge"></div>
-                                                            <% } %>
-                                                        </div>
-                                                    </div>
-                                                <% }); %>
+                                            <div class="tf-payment">
+                                                <a href="#">
+                                                    <img src="/images/payment/img-1.png" alt="">
+                                                </a>
+                                                <a href="#">
+                                                    <img src="/images/payment/img-2.png" alt="">
+                                                </a>
+                                                <a href="#">
+                                                    <img src="/images/payment/img-3.png" alt="">
+                                                </a>
+                                                <a href="#">
+                                                    <img src="/images/payment/img-4.png" alt="">
+                                                </a>
+                                                <a href="#">
+                                                    <img src="/images/payment/img-5.png" alt="">
+                                                </a>
+                                                <a href="#">
+                                                    <img src="/images/payment/img-6.png" alt="">
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <% } %>
                                 </div>
                             </div>
                         </div>
-        
-                        <!-- Enhanced Product Info -->
-                        <div class="col-md-6">
-                            <div class="tf-product-info-wrap position-relative">
-                                <div class="tf-product-info-list">
-                                    <!-- Product Header -->
-                                    <div class="product-header mb-4">
-                                        <div class="category-badge">
-                                            <span class="badge bg-primary"><%= product.category && product.category.name %></span>
-                                            <% if (product.useAdminPrice) { %>
-                                                <span class="badge bg-success">Admin Price</span>
-                                            <% } %>
-                                        </div>
-                                        <h1 class="product-title"><%= product.title %></h1>
-                                        
-                                        <div class="product-meta d-flex align-items-center gap-4 flex-wrap">
-                                            <div class="rating-section d-flex align-items-center gap-2">
-                                                <div class="star-rating">
-                                                    <% for(var i = 1; i <= 5; i++) { %>
-                                                        <i class="icon icon-star <%= i <= Math.round(product.rating) ? 'filled' : '' %>"></i>
-                                                    <% } %>
-                                                </div>
-                                                <span class="rating-text">(<%= product.totalReviews %> reviews)</span>
-                                            </div>
-                                            
-                                            <% if(product.totalSold) { %>
-                                            <div class="sales-badge">
-                                                <i class="icon icon-bolt"></i>
-                                                <span><%= product.totalSold %> sold</span>
-                                            </div>
-                                            <% } %>
-                                            
-                                            <div class="view-counter">
-                                                <i class="icon icon-eye"></i>
-                                                <span><%= Math.floor(Math.random()*20)+8 %> viewing now</span>
-                                            </div>
-                                        </div>
+                        <!-- /tf-product-info-list -->
+                    </div>
+                </div>
+            </div>
+            <div class="tf-sticky-btn-atc">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <form class="form-sticky-atc">
+                                <div class="tf-sticky-atc-product">
+                                    <div class="image">
+                                        <img class="lazyload" data-src="<%= product.images && product.images.length ? product.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>" alt="" src="<%= product.images && product.images.length ? product.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>">
                                     </div>
-        
-                                    <!-- Price Section -->
-                                    <div class="price-section mb-4">
-                                        <div class="current-price">
-                                            <span class="price-amount">₹<%= product.calculatedSalePrice.toFixed(2) %></span>
-                                            <% if (product.discount > 0) { %>
-                                                <span class="original-price">₹<%= product.calculatedBasePrice.toFixed(2) %></span>
-                                                <span class="discount-badge">
-                                                    <%= product.discountPercent %>% OFF
-                                                </span>
-                                            <% } %>
+                                    <div class="content">
+                                        <div class="text-title">
+                                            <%= product.title %>
                                         </div>
-                                        <div class="price-savings">
-                                            <% if (product.discount > 0) { %>
-                                                <span class="savings-text">You save ₹<%= product.discount.toFixed(2) %></span>
-                                            <% } %>
+                                        <div class="text-caption-1 text-secondary-2">
+                                            <% 
+                                                if (product.hasVariants && Array.isArray(product.variants)) {
+                                                    let selectStr = [];
+                                                    product.variants.forEach(function(variant) {
+                                                        selectStr.push(variant.options[0] && variant.options[0].value);
+                                                    });
+                                                    %><%= selectStr.filter(Boolean).join(', ') %><%
+                                                } else if (product.attributes) {
+                                                    %><%= product.attributes.join(', ') %><%
+                                                }
+                                            %>
                                         </div>
-                                    </div>
-        
-                                    <!-- Product Description -->
-                                    <div class="product-description mb-4">
-                                        <p><%= product.shortDescription || product.description %></p>
-                                    </div>
-        
-                                    <!-- Variants Picker -->
-                                    <% if(product.hasVariants) { %>
-                                    <div class="variants-section mb-4">
-                                        <% product.variants.forEach(function(variant, vi) { %>
-                                            <div class="variant-group mb-3">
-                                                <label class="variant-label">
-                                                    <%= variant.name %>:
-                                                    <span class="selected-value" id="selected-<%= vi %>">
-                                                        <%= variant.options[0].value %>
-                                                    </span>
-                                                </label>
-                                                <div class="variant-options">
-                                                    <% variant.options.forEach(function(option, oi) { %>
-                                                        <div class="variant-option <%= oi === 0 ? 'active' : '' %>" 
-                                                             data-variant-index="<%= vi %>"
-                                                             data-option-index="<%= oi %>"
-                                                             data-base-price="<%= option.calculatedBasePrice %>"
-                                                             data-sale-price="<%= option.calculatedSalePrice %>"
-                                                             data-stock="<%= option.stock %>"
-                                                             data-sku="<%= option.sku %>"
-                                                             data-images='<%= JSON.stringify(option.images || []) %>'>
-                                                            <input type="radio" 
-                                                                   name="variant-<%= vi %>" 
-                                                                   value="<%= oi %>" 
-                                                                   id="variant-<%= vi %>-<%= oi %>"
-                                                                   <%= oi === 0 ? 'checked' : '' %>>
-                                                            <label for="variant-<%= vi %>-<%= oi %>">
-                                                                <span class="option-text"><%= option.value %></span>
-                                                                <% if (option.discount > 0) { %>
-                                                                    <span class="option-discount">
-                                                                        -<%= option.discountPercent %>%
-                                                                    </span>
-                                                                <% } %>
-                                                            </label>
-                                                        </div>
-                                                    <% }); %>
-                                                </div>
-                                            </div>
-                                        <% }); %>
-                                    </div>
-                                    <% } %>
-        
-                                    <!-- Quantity Selector -->
-                                    <div class="quantity-section mb-4">
-                                        <label class="quantity-label">Quantity:</label>
-                                        <div class="quantity-selector">
-                                            <button type="button" class="quantity-btn minus" onclick="updateQuantity(-1)">
-                                                <i class="icon icon-minus"></i>
-                                            </button>
-                                            <input type="number" 
-                                                   id="product-quantity" 
-                                                   name="quantity" 
-                                                   value="1" 
-                                                   min="1" 
-                                                   max="<%= product.hasVariants ? (product.variants[0].options[0].stock || 10) : (product.totalStock || 10) %>"
-                                                   class="quantity-input">
-                                            <button type="button" class="quantity-btn plus" onclick="updateQuantity(1)">
-                                                <i class="icon icon-plus"></i>
-                                            </button>
-                                        </div>
-                                        <div class="stock-info">
-                                            <span id="stock-display">
-                                                <%= product.hasVariants ? 
-                                                    (product.variants[0].options[0].stock || 0) : 
-                                                    (product.totalStock || 0) %> available
-                                            </span>
-                                        </div>
-                                    </div>
-        
-                                    <!-- Action Buttons -->
-                                    <div class="action-buttons mb-4">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-primary btn-add-to-cart" id="add-to-cart-btn">
-                                                <i class="icon icon-shopping-cart"></i>
-                                                Add to Cart
-                                                <span class="btn-price" id="btn-total-price">
-                                                    ₹<%= product.calculatedSalePrice.toFixed(2) %>
-                                                </span>
-                                            </button>
-                                            <button type="button" class="btn btn-secondary btn-buy-now" id="buy-now-btn">
-                                                <i class="icon icon-zap"></i>
-                                                Buy Now
-                                            </button>
-                                        </div>
-                                    </div>
-        
-                                    <!-- Product Details Accordion -->
-                                    <div class="product-details-accordion mb-4">
-                                        <div class="accordion" id="productAccordion">
-                                            <!-- Product Info -->
-                                            <div class="accordion-item">
-                                                <h3 class="accordion-header">
-                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#productInfo">
-                                                        <i class="icon icon-info"></i>
-                                                        Product Information
-                                                    </button>
-                                                </h3>
-                                                <div id="productInfo" class="accordion-collapse collapse show">
-                                                    <div class="accordion-body">
-                                                        <div class="info-grid">
-                                                            <div class="info-item">
-                                                                <span class="info-label">SKU:</span>
-                                                                <span class="info-value" id="detail-sku">
-                                                                    <%= product.hasVariants ? 
-                                                                        product.variants[0].options[0].sku : 
-                                                                        (product.sku || "—") %>
-                                                                </span>
-                                                            </div>
-                                                            <div class="info-item">
-                                                                <span class="info-label">Brand:</span>
-                                                                <span class="info-value"><%= product.brand || "—" %></span>
-                                                            </div>
-                                                          
-                                                            <div class="info-item">
-                                                                <span class="info-label">Weight:</span>
-                                                                <span class="info-value"><%= product.weight ? product.weight + "g" : "—" %></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-        
-                                            <!-- Shipping Info -->
-                                            <div class="accordion-item">
-                                                <h3 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#shippingInfo">
-                                                        <i class="icon icon-truck"></i>
-                                                        Shipping & Returns
-                                                    </button>
-                                                </h3>
-                                                <div id="shippingInfo" class="accordion-collapse collapse">
-                                                    <div class="accordion-body">
-                                                        <p>Free shipping on orders over ₹499. Delivery within 3-5 business days.</p>
-                                                        <p>30-day easy returns policy.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-        
-                                    <!-- Trust Badges -->
-                                    <div class="trust-badges">
-                                        <div class="badge-grid">
-                                            <div class="trust-badge">
-                                                <i class="icon icon-shield"></i>
-                                                <span>100% Authentic</span>
-                                            </div>
-                                            <div class="trust-badge">
-                                                <i class="icon icon-truck"></i>
-                                                <span>Free Shipping</span>
-                                            </div>
-                                            <div class="trust-badge">
-                                                <i class="icon icon-refresh"></i>
-                                                <span>Easy Returns</span>
-                                            </div>
-                                            <div class="trust-badge">
-                                                <i class="icon icon-phone"></i>
-                                                <span>24/7 Support</span>
-                                            </div>
+                                        <div class="text-title">
+                                            ₹<%= Number(product.calculatedSalePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="tf-sticky-atc-infos">
+                                    <% if (product.hasVariants && Array.isArray(product.variants)) { %>
+                                        <% product.variants.forEach(function(variant) { %>
+                                            <div class="tf-sticky-atc-size d-flex gap-12 align-items-center">
+                                                <div class="tf-sticky-atc-infos-title text-title"><%= variant.name %>:</div>
+                                                <div class="tf-dropdown-sort style-2" data-bs-toggle="dropdown">
+                                                    <div class="btn-select">
+                                                        <span class="text-sort-value font-2"><%= variant.options[0] && variant.options[0].value %></span>
+                                                        <span class="icon icon-arrow-down"></span>
+                                                    </div>
+                                                    <div class="dropdown-menu">
+                                                        <% variant.options.forEach(function(opt, optIdx) { %>
+                                                            <div class="select-item <%= optIdx === 0 ? 'active' : '' %>">
+                                                                <span class="text-value-item"><%= opt.value %></span>
+                                                            </div>
+                                                        <% }); %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } %>
+                                    <div class="tf-sticky-atc-quantity d-flex gap-12 align-items-center">
+                                        <div class="tf-sticky-atc-infos-title text-title">Quantity:</div>
+                                        <div class="wg-quantity style-1">
+                                            <span class="btn-quantity minus-btn">-</span>
+                                            <input type="text" name="number" value="1">
+                                            <span class="btn-quantity plus-btn">+</span>
+                                        </div>
+                                    </div>
+                                    <div class="tf-sticky-atc-btns">
+                                        <a href="#shoppingCart" data-bs-toggle="modal" class="tf-btn w-100 btn-reset radius-4 btn-add-to-cart"><span class="text text-btn-uppercase">Add To Cart</span></a>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        
-        <!-- Hidden Forms -->
-        <form id="add-to-cart-form" action="/cart/add" method="POST" style="display: none;">
-            <input type="hidden" name="productId" value="<%= product._id %>">
-            <input type="hidden" name="quantity" id="form-quantity" value="1">
-            <input type="hidden" name="variantSelections" id="form-variant-selections" value="<%= product.hasVariants ? JSON.stringify(product.variants.reduce((acc, v, i) => ({...acc, [v.name]: v.options[0].value}), {})) : '{}' %>">
-        </form>
-        
-        <form id="buy-now-form" action="/cart/buy-now" method="POST" style="display: none;">
-            <input type="hidden" name="productId" value="<%= product._id %>">
-            <input type="hidden" name="quantity" id="buy-now-quantity" value="1">
-            <input type="hidden" name="variantSelections" id="buy-now-variant-selections" value="<%= product.hasVariants ? JSON.stringify(product.variants.reduce((acc, v, i) => ({...acc, [v.name]: v.options[0].value}), {})) : '{}' %>">
-        </form>
-        
-        <style>
-        /* Enhanced CSS Styles */
-        .product-gallery-container {
-            position: relative;
-        }
-        
-        .main-gallery-slider {
-            margin-bottom: 15px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        
-        .gallery-image-container {
-            position: relative;
-            padding-top: 100%;
-            background: #f8f9fa;
-        }
-        
-        .gallery-image-container img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        .image-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(231, 27, 52, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .thumbnail-slider-container {
-            padding: 0 40px;
-        }
-        
-        .thumbnail-item {
-            border: 2px solid transparent;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-        
-        .thumbnail-item.active {
-            border-color: #e71b34;
-        }
-        
-        .thumbnail-item img {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-        }
-        
-        .swiper-button-next,
-        .swiper-button-prev {
-            color: #e71b34;
-            background: rgba(255,255,255,0.9);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .swiper-button-next:after,
-        .swiper-button-prev:after {
-            font-size: 18px;
-        }
-        
-        .zoom-indicator {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 10;
-        }
-        
-        /* Price Styles */
-        .price-section {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .current-price {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .price-amount {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #e71b34;
-        }
-        
-        .original-price {
-            font-size: 1.5rem;
-            text-decoration: line-through;
-            color: #6c757d;
-        }
-        
-        .discount-badge {
-            background: #28a745;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        
-        .price-savings .savings-text {
-            color: #28a745;
-            font-weight: 600;
-        }
-        
-        /* Variant Styles */
-        .variants-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-        }
-        
-        .variant-group {
-            margin-bottom: 20px;
-        }
-        
-        .variant-label {
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .selected-value {
-            color: #e71b34;
-            font-weight: 600;
-        }
-        
-        .variant-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .variant-option {
-            position: relative;
-        }
-        
-        .variant-option input[type="radio"] {
-            display: none;
-        }
-        
-        .variant-option label {
-            display: block;
-            padding: 10px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 25px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .variant-option.active label,
-        .variant-option input[type="radio"]:checked + label {
-            border-color: #e71b34;
-            background: #e71b34;
-            color: white;
-        }
-        
-        .option-discount {
-            background: #ffc107;
-            color: #212529;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            margin-left: 5px;
-            font-weight: 600;
-        }
-        
-        /* Quantity Selector */
-        .quantity-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .quantity-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin: 0;
-        }
-        
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-            border: 2px solid #dee2e6;
-            border-radius: 25px;
-            overflow: hidden;
-            background: white;
-        }
-        
-        .quantity-btn {
-            background: none;
-            border: none;
-            padding: 12px 16px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            color: #6c757d;
-        }
-        
-        .quantity-btn:hover {
-            background: #f8f9fa;
-            color: #e71b34;
-        }
-        
-        .quantity-input {
-            width: 60px;
-            border: none;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: 12px 0;
-        }
-        
-        .quantity-input:focus {
-            outline: none;
-        }
-        
-        .stock-info {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        /* Action Buttons */
-        .action-buttons .btn-group {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-        }
-        
-        .btn-add-to-cart,
-        .btn-buy-now {
-            flex: 1;
-            padding: 15px 25px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-add-to-cart {
-            background: linear-gradient(135deg, #e71b34, #c4162c);
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-add-to-cart:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(231, 27, 52, 0.3);
-        }
-        
-        .btn-price {
-            margin-left: auto;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-buy-now {
-            background: #2c3e50;
-            border: none;
-        }
-        
-        .btn-buy-now:hover {
-            background: #34495e;
-            transform: translateY(-2px);
-        }
-        
-        /* Trust Badges */
-        .trust-badges {
-            margin-top: 20px;
-        }
-        
-        .badge-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        
-        .trust-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .trust-badge i {
-            color: #e71b34;
-            font-size: 1.2rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .current-price {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .action-buttons .btn-group {
-                flex-direction: column;
-            }
-            
-            .badge-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .quantity-section {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-        </style>
-        
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const product = <%- JSON.stringify(product) %>;
-            let currentVariantSelections = {};
-            let currentQuantity = 1;
-            
-            // Initialize variant selections
-            if (product.hasVariants) {
-                product.variants.forEach((variant, index) => {
-                    currentVariantSelections[variant.name] = variant.options[0].value;
-                });
-            }
-        
-            // Initialize Swiper galleries
-            initImageGalleries();
-            
-            // Initialize variant handlers
-            initVariantHandlers();
-            
-            // Initialize quantity handlers
-            initQuantityHandlers();
-            
-            // Initialize button handlers
-            initButtonHandlers();
-        
-            function initImageGalleries() {
-                // Main gallery
-                const mainSwiper = new Swiper('#main-gallery-swiper', {
-                    spaceBetween: 10,
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    thumbs: {
-                        swiper: {
-                            el: '#thumbnail-swiper',
-                            slidesPerView: 4,
-                            spaceBetween: 10,
-                            direction: 'horizontal',
-                        }
-                    }
-                });
-        
-                // Thumbnail gallery
-                const thumbSwiper = new Swiper('#thumbnail-swiper', {
-                    spaceBetween: 10,
-                    slidesPerView: 4,
-                    freeMode: true,
-                    watchSlidesProgress: true,
-                });
-        
-                mainSwiper.controller.control = thumbSwiper;
-                thumbSwiper.controller.control = mainSwiper;
-            }
-        
-            function initVariantHandlers() {
-                if (!product.hasVariants) return;
-        
-                document.querySelectorAll('.variant-option input[type="radio"]').forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        const variantIndex = parseInt(this.closest('.variant-option').dataset.variantIndex);
-                        const optionIndex = parseInt(this.value);
-                        const variant = product.variants[variantIndex];
-                        const option = variant.options[optionIndex];
-        
-                        // Update UI
-                        updateVariantSelection(variantIndex, option.value);
-                        updatePriceDisplay(option);
-                        updateStockDisplay(option.stock);
-                        updateSKUDisplay(option.sku);
-                        updateImageGallery(option.images);
-                        updateQuantityMax(option.stock);
-                        
-                        // Update current selections
-                        currentVariantSelections[variant.name] = option.value;
-                        updateFormSelections();
-                    });
-                });
-            }
-        
-            function initQuantityHandlers() {
-                const quantityInput = document.getElementById('product-quantity');
-                
-                // Ensure quantity doesn't exceed max
-                quantityInput.addEventListener('change', function() {
-                    const max = parseInt(this.max);
-                    const value = parseInt(this.value);
-                    
-                    if (value > max) {
-                        this.value = max;
-                        currentQuantity = max;
-                    } else if (value < 1) {
-                        this.value = 1;
-                        currentQuantity = 1;
-                    } else {
-                        currentQuantity = value;
-                    }
-                    
-                    updateButtonPrices();
-                    updateFormQuantity();
-                });
-            }
-        
-            function initButtonHandlers() {
-                document.getElementById('add-to-cart-btn').addEventListener('click', function() {
-                    document.getElementById('form-quantity').value = currentQuantity;
-                    document.getElementById('add-to-cart-form').submit();
-                });
-        
-                document.getElementById('buy-now-btn').addEventListener('click', function() {
-                    document.getElementById('buy-now-quantity').value = currentQuantity;
-                    document.getElementById('buy-now-form').submit();
-                });
-            }
-        
-            function updateVariantSelection(variantIndex, value) {
-                const selectedValueElement = document.getElementById(`selected-${variantIndex}`);
-                if (selectedValueElement) {
-                    selectedValueElement.textContent = value;
-                }
-                
-                // Update active state
-                document.querySelectorAll(`[data-variant-index="${variantIndex}"]`).forEach(option => {
-                    option.classList.remove('active');
-                });
-                event.target.closest('.variant-option').classList.add('active');
-            }
-        
-            function updatePriceDisplay(option) {
-                const priceAmount = document.querySelector('.price-amount');
-                const originalPrice = document.querySelector('.original-price');
-                const discountBadge = document.querySelector('.discount-badge');
-                const savingsText = document.querySelector('.savings-text');
-                
-                if (option.discount > 0) {
-                    priceAmount.textContent = `₹${option.calculatedSalePrice.toFixed(2)}`;
-                    originalPrice.textContent = `₹${option.calculatedBasePrice.toFixed(2)}`;
-                    discountBadge.textContent = `${option.discountPercent}% OFF`;
-                    savingsText.textContent = `You save ₹${option.discount.toFixed(2)}`;
-                    
-                    originalPrice.style.display = 'inline';
-                    discountBadge.style.display = 'inline-block';
-                    savingsText.style.display = 'block';
-                } else {
-                    priceAmount.textContent = `₹${option.calculatedSalePrice.toFixed(2)}`;
-                    originalPrice.style.display = 'none';
-                    discountBadge.style.display = 'none';
-                    savingsText.style.display = 'none';
-                }
-                
-                updateButtonPrices();
-            }
-        
-            function updateStockDisplay(stock) {
-                const stockDisplay = document.getElementById('stock-display');
-                stockDisplay.textContent = `${stock} available`;
-                
-                // Update stock color based on quantity
-                if (stock === 0) {
-                    stockDisplay.style.color = '#e71b34';
-                    stockDisplay.innerHTML = '<i class="icon icon-alert-circle"></i> Out of Stock';
-                } else if (stock < 10) {
-                    stockDisplay.style.color = '#ffc107';
-                } else {
-                    stockDisplay.style.color = '#28a745';
-                }
-            }
-        
-            function updateSKUDisplay(sku) {
-                document.getElementById('detail-sku').textContent = sku || '—';
-            }
-        
-            function updateImageGallery(images) {
-                if (!images || images.length === 0) return;
-                
-                // In a real implementation, you would update the Swiper instance
-                // with the new variant images
-                console.log('Updating gallery with variant images:', images);
-                
-                // For now, we'll just show the first variant image
-                const mainSwiper = document.querySelector('#main-gallery-swiper').swiper;
-                if (mainSwiper && images[0]) {
-                    // This is a simplified implementation
-                    // In production, you'd want to properly update the Swiper slides
-                }
-            }
-        
-            function updateQuantityMax(stock) {
-                const quantityInput = document.getElementById('product-quantity');
-                quantityInput.max = stock;
-                
-                if (currentQuantity > stock) {
-                    quantityInput.value = stock;
-                    currentQuantity = stock;
-                    updateButtonPrices();
-                    updateFormQuantity();
-                }
-            }
-        
-            function updateButtonPrices() {
-                const currentOption = getCurrentSelectedOption();
-                const totalPrice = currentOption ? currentOption.calculatedSalePrice * currentQuantity : product.calculatedSalePrice * currentQuantity;
-                document.getElementById('btn-total-price').textContent = `₹${totalPrice.toFixed(2)}`;
-            }
-        
-            function updateFormQuantity() {
-                document.getElementById('form-quantity').value = currentQuantity;
-                document.getElementById('buy-now-quantity').value = currentQuantity;
-            }
-        
-            function updateFormSelections() {
-                const selectionsJSON = JSON.stringify(currentVariantSelections);
-                document.getElementById('form-variant-selections').value = selectionsJSON;
-                document.getElementById('buy-now-variant-selections').value = selectionsJSON;
-            }
-        
-            function getCurrentSelectedOption() {
-                if (!product.hasVariants) return null;
-                
-                // Find the currently selected option across all variants
-                // This is a simplified implementation - you might need to adjust based on your variant structure
-                for (let variant of product.variants) {
-                    const selectedValue = currentVariantSelections[variant.name];
-                    return variant.options.find(opt => opt.value === selectedValue);
-                }
-                return null;
-            }
-        
-            // Global quantity function
-            window.updateQuantity = function(change) {
-                const quantityInput = document.getElementById('product-quantity');
-                let newQuantity = parseInt(quantityInput.value) + change;
-                const maxQuantity = parseInt(quantityInput.max);
-                
-                if (newQuantity < 1) newQuantity = 1;
-                if (newQuantity > maxQuantity) newQuantity = maxQuantity;
-                
-                quantityInput.value = newQuantity;
-                currentQuantity = newQuantity;
-                
-                updateButtonPrices();
-                updateFormQuantity();
-                
-                // Trigger change event
-                quantityInput.dispatchEvent(new Event('change'));
-            };
-        });
-        </script>
+        <!-- /Product_Main -->
         <!-- /Product Main Content Section -->
 
         <section>

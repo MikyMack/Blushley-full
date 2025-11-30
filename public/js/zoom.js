@@ -2,115 +2,113 @@
 import PhotoSwipeLightbox from './photoswipe-lightbox.esm.min.js';
 import PhotoSwipe from './photoswipe.esm.min.js';
 
-if ($(".thumbs-slider").length > 0) {
-    var direction = $(".tf-product-media-thumbs").data("direction");
+
+function setupSwipers() {
+    let direction = $(".tf-product-media-thumbs").data("direction") || "vertical";
+
+    // INIT THUMBS SWIPER
     var thumbs = new Swiper(".tf-product-media-thumbs", {
-      spaceBetween: 10,
-      slidesPerView: "auto",
-      freeMode: true,
-      direction: "vertical",
-      watchSlidesProgress: true,
-      observer: true,
-      observeParents: true,
-      breakpoints: {
-        0: {
-          direction: "horizontal",
-        },
-        1200: {
-          direction: "vertical",
-          direction: direction,
-        },
-      },
-      450: {
-        direction: "vertical",
-      },
-    });
-    var main = new Swiper(".tf-product-media-main", {
-      spaceBetween: 0,
-      observer: true,
-      observeParents: true,
-      navigation: {
-        nextEl: ".thumbs-next",
-        prevEl: ".thumbs-prev",
-      },
-      thumbs: {
-        swiper: thumbs,
-      },
+        spaceBetween: 10,
+        slidesPerView: "auto",
+        freeMode: true,
+        direction: direction,
+        watchSlidesProgress: true,
+        observer: true,
+        observeParents: true,
+        breakpoints: {
+            0: { direction: "horizontal" },
+            450: { direction: "vertical" },
+            1200: { direction: direction }
+        }
     });
 
-    // color
+    // INIT MAIN SWIPER
+    var main = new Swiper(".tf-product-media-main", {
+        spaceBetween: 0,
+        observer: true,
+        observeParents: true,
+        navigation: {
+            nextEl: ".thumbs-next",
+            prevEl: ".thumbs-prev",
+        },
+        thumbs: { swiper: thumbs }
+    });
+
+    // Fix: update Swiper after init to ensure all dynamically rendered images/slides show
+    setTimeout(() => {
+        thumbs.update && thumbs.update();
+        main.update && main.update();
+    }, 100);
+
+    // --- Color Buttons ---
     function updateActiveColorButton(activeIndex) {
         $(".color-btn").removeClass("active");
-    
         var currentSlide = $(".tf-product-media-main .swiper-slide").eq(activeIndex);
         var currentColor = currentSlide.data("color");
         if (currentColor) {
-          $(".color-btn[data-color='" + currentColor + "']").addClass("active");
-          $('.value-currentColor').text(currentColor);
-          $(".select-currentColor").text(currentColor);
+            $(".color-btn[data-color='" + currentColor + "']").addClass("active");
+            $('.value-currentColor').text(currentColor);
+            $(".select-currentColor").text(currentColor);
         }
     }
     main.on('slideChange', function () {
         updateActiveColorButton(this.activeIndex);
     });
 
-    // Function scroll to the correct slide and thumb
     function scrollToColor(color) {
-    var matchingSlides = $(".tf-product-media-main .swiper-slide").filter(function() {
-        return $(this).data("color") === color;
-    });
-    if (matchingSlides.length > 0) {
-        var firstIndex = matchingSlides.first().index();
-        main.slideTo(firstIndex,1000,false);
-        thumbs.slideTo(firstIndex,1000,false);
+        var matchingSlides = $(".tf-product-media-main .swiper-slide").filter(function () {
+            return $(this).data("color") == color;
+        });
+        if (matchingSlides.length > 0) {
+            var firstIndex = matchingSlides.first().index();
+            main.slideTo(firstIndex, 1000, false);
+            thumbs.slideTo(firstIndex, 1000, false);
+        }
     }
-    }
-    $(".color-btn").on("click", function() {
-    var color = $(this).data("color");
-    
-    $(".color-btn").removeClass("active");
-    $(this).addClass("active");
-
-    scrollToColor(color);
+    $(".color-btn").on("click", function () {
+        var color = $(this).data("color");
+        $(".color-btn").removeClass("active");
+        $(this).addClass("active");
+        scrollToColor(color);
     });
+    // On ready, update initial
     updateActiveColorButton(main.activeIndex);
 
-    // material
+    // --- Other Variant Buttons ---
     function updateActiveOtherVariantBtn(activeIndex) {
         $(".other-variant-btn").removeClass("active");
-    
         var currentSlide = $(".tf-product-media-main .swiper-slide").eq(activeIndex);
         var currentOtherVariant = currentSlide.data("other-variant");
         if (currentOtherVariant) {
-          $(".other-variant-btn[data-other-variant='" + currentOtherVariant + "']").addClass("active");
-          $('.value-currentVariant').text(currentOtherVariant);
-          $(".select-currentVariant").text(currentOtherVariant);
+            $(".other-variant-btn[data-other-variant='" + currentOtherVariant + "']").addClass("active");
+            $('.value-currentVariant').text(currentOtherVariant);
+            $(".select-currentVariant").text(currentOtherVariant);
         }
     }
     main.on('slideChange', function () {
         updateActiveOtherVariantBtn(this.activeIndex);
     });
 
-    // Function scroll to the correct slide and thumb
-    function scrollToOtherVariant(otherVariant) {
-    var matchingSlides = $(".tf-product-media-main .swiper-slide").filter(function() {
-        return $(this).data("other-variant") === otherVariant;
-    });
-    if (matchingSlides.length > 0) {
-        var firstIndex = matchingSlides.first().index();
-        main.slideTo(firstIndex,1000,false);
-        thumbs.slideTo(firstIndex,1000,false);
+    function scrollToOtherVariant(variant) {
+        var matchingSlides = $(".tf-product-media-main .swiper-slide").filter(function () {
+            return $(this).data("other-variant") == variant;
+        });
+        if (matchingSlides.length > 0) {
+            var firstIndex = matchingSlides.first().index();
+            main.slideTo(firstIndex, 1000, false);
+            thumbs.slideTo(firstIndex, 1000, false);
         }
     }
-    $(".other-variant-btn").on("click", function() {
-    var otherVariant = $(this).data("other-variant");
-    
-    $(".other-variant-btn").removeClass("active");
-    $(this).addClass("active");
-    scrollToOtherVariant(otherVariant);
+    $(".other-variant-btn").on("click", function () {
+        var otherVariant = $(this).data("other-variant");
+        $(".other-variant-btn").removeClass("active");
+        $(this).addClass("active");
+        scrollToOtherVariant(otherVariant);
     });
     updateActiveOtherVariantBtn(main.activeIndex);
 
+    // Return Swiper instance for usage in PhotoSwipe's lightbox callbacks
+    return main;
 }
 
 (function ($) {
@@ -132,12 +130,12 @@ if ($(".thumbs-slider").length > 0) {
             $(driftAll).each(function(i, el) {
                 new Drift(
                     el, {
-                    zoomFactor: 2,
-                    paneContainer: pane,
-                    inlinePane: false,
-                    handleTouch: false,
-                    hoverBoundingBox: true,
-                    containInline: true,
+                        zoomFactor: 2,
+                        paneContainer: pane,
+                        inlinePane: false,
+                        handleTouch: false,
+                        hoverBoundingBox: true,
+                        containInline: true,
                     }
                 );
             });
@@ -149,9 +147,9 @@ if ($(".thumbs-slider").length > 0) {
         $(driftAll).each(function(i, el) {
             new Drift(
                 el, {
-                zoomFactor: 2,
-                inlinePane: true,
-                containInline: false,
+                    zoomFactor: 2,
+                    inlinePane: true,
+                    containInline: false,
                 }
             );
         });
@@ -163,17 +161,16 @@ if ($(".thumbs-slider").length > 0) {
         $(driftAll).each(function(i, el) {
             new Drift(
                 el, {
-                paneContainer: pane,
-                zoomFactor: 2,
-                inlinePane: false,
-                containInline: false,
+                    paneContainer: pane,
+                    zoomFactor: 2,
+                    inlinePane: false,
+                    containInline: false,
                 }
             );
         });
     }
 
-    var lightboxswiper = function () {
-
+    var lightboxswiper = function (main) {
         const lightbox = new PhotoSwipeLightbox({
             gallery: '#gallery-swiper-started',
             children: 'a',
@@ -190,7 +187,8 @@ if ($(".thumbs-slider").length > 0) {
         });
 
         lightbox.on('afterInit', () => {
-            if (main.params.autoplay.enabled) {
+            // Defensive: Only try to stop autoplay if supported
+            if (main.params.autoplay && main.params.autoplay.enabled && main.autoplay) {
                 main.autoplay.stop();
             };
         });
@@ -198,15 +196,13 @@ if ($(".thumbs-slider").length > 0) {
         lightbox.on('closingAnimationStart', () => {
             const { pswp } = lightbox;
             main.slideTo(pswp.currIndex, 0, false);
-            if (main.params.autoplay.enabled) {
+            if (main.params.autoplay && main.params.autoplay.enabled && main.autoplay) {
                 main.autoplay.start();
             }
         });
-
     }
-    
-    var lightbox = function () {
 
+    var lightbox = function () {
         const lightbox = new PhotoSwipeLightbox({
             gallery: '#gallery-started',
             children: 'a',
@@ -216,13 +212,10 @@ if ($(".thumbs-slider").length > 0) {
             maxZoomLevel: 3,
         });
         lightbox.init();
-
     }
 
     var model_viewer = function () {
-
         if ($(".tf-model-viewer").length) {
-   
             $(".tf-model-viewer-ui-button").on("click", function (e) {
                 $(this).closest(".tf-model-viewer").find("model-viewer").removeClass("disabled");
                 $(this).closest(".tf-model-viewer").toggleClass("active");
@@ -232,19 +225,25 @@ if ($(".thumbs-slider").length > 0) {
                 $(this).closest(".tf-model-viewer").toggleClass("active");
             });
         }
-
     }
 
-  // Dom Ready
-  $(function () {
-    section_zoom();
-    image_zoom();
-    image_zoom_magnifier();
-    image_zoom_inner();
-    lightboxswiper();
-    lightbox();
-    model_viewer();
-  });
+    // DOM READY: Swipers must be initialized after all slides are rendered
+    $(function () {
+        section_zoom();
+        image_zoom();
+        image_zoom_magnifier();
+        image_zoom_inner();
+        // --- Swiper initialization fix for dynamic slides ---
+        let mainSwiper = null;
+        if ($(".thumbs-slider").length > 0) {
+            mainSwiper = setupSwipers();
+        }
+        if (mainSwiper) {
+            lightboxswiper(mainSwiper);
+        } else {
+            lightbox();
+        }
+        model_viewer();
+    });
 })(jQuery);
-
 
