@@ -19113,12 +19113,12 @@ ul.list-text.type-number {
 /* Mobile fix for nav icons - prevent images from getting too small */
 @media (max-width: 480px) {
   .nav-icon-item img {
-    min-width: 24px !important;
-    min-height: 24px !important;
-    max-width: 24px !important;
-    max-height: 24px !important;
-    width: 24px !important;
-    height: 24px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
   }
   .logo-header img{
    width: 120px!important;
@@ -19126,18 +19126,18 @@ ul.list-text.type-number {
   
   .nav-search .nav-icon-item img,
   .nav-cart .nav-icon-item img {
-    min-width: 24px !important;
-    min-height: 24px !important;
-    max-width: 24px !important;
-    max-height: 24px !important;
-    width: 24px !important;
-    height: 24px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
   }
 }
 @media (max-width: 347px) {
   .logo-header img{
     width: 120px!important;
-    margin-left: -1rem!important;
+    margin-left: -2rem!important;
    }
 }
 /***********Gallery extra*****/
