@@ -117,7 +117,7 @@
                                 <li class="menu-item book-salon-link"><a href="/book-a-saloon" class="item-link">Book a Salon</a>
                                 </li>
                                 <li class="menu-item position-relative">
-                                    <a href="/beauty-tips" class="item-link">Blogs</a>
+                                    <a href="/userblogs" class="item-link">Blogs</a>
 
                                 </li>
 
@@ -263,7 +263,7 @@
                                 <% blogs.forEach(function(blog) { %>
                                     <div class="wg-blog style-1 hover-image">
                                         <div class="image" style="height: 220px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                            <a href="/beauty-tips/<%= blog.slug %>">
+                                            <a href="/userblogs/<%= blog.slug %>">
                                                 <img 
                                                     class="lazyload" 
                                                     style="height: 100%; width: auto; max-width: 100%; object-fit: cover; display: block;"
@@ -296,7 +296,7 @@
                                             </div>
                                             <div>
                                                 <h6 class="title fw-5">
-                                                    <a class="link" href="/beauty-tips/<%= blog.slug %>"><%= blog.title %></a>
+                                                    <a class="link" href="/userblogs/<%= blog.slug %>"><%= blog.title %></a>
                                                 </h6>
                                                 <div class="body-text">
                                                     <%= blog.shortDescription 
@@ -1015,7 +1015,7 @@
                         </li>
 
                         <li class="nav-mb-item active">
-                            <a href="/beauty-tips" class="mb-menu-link">
+                            <a href="/userblogs" class="mb-menu-link">
                                 <span>Blogs</span>
 
                             </a>
