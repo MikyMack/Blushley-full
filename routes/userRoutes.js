@@ -307,8 +307,7 @@ router.get('/productDetails/:slug', async (req, res) => {
 
       if (!product) return res.status(404).render("errors/404", { message: "Product Not Found" });
 
-      // Process product data for frontend
-      const processedProduct = processProductData(product);
+      // No processing of product data for frontend
 
       let relatedQuery = {};
       if (product.category) {
@@ -345,7 +344,7 @@ router.get('/productDetails/:slug', async (req, res) => {
       }
 
       return res.render('user/productDetails', {
-          product: processedProduct,
+          product,
           relatedProducts,
           frequentlyBoughtTogether
       });
@@ -354,89 +353,6 @@ router.get('/productDetails/:slug', async (req, res) => {
       return res.status(500).render('errors/500', { message: "Failed to load product details" });
   }
 });
-
-function processProductData(product) {
-  // Calculate main product prices
-  const useAdminPrice = typeof product.adminBasePrice === 'number';
-  const basePrice = useAdminPrice ? product.adminBasePrice : product.basePrice;
-  const salePrice = useAdminPrice ? (product.adminSalePrice || product.adminBasePrice) : (product.salePrice || product.basePrice);
-  const discount = basePrice > salePrice ? basePrice - salePrice : 0;
-  const discountPercent = discount > 0 ? Math.round((discount / basePrice) * 100) : 0;
-
-  // Process variants
-  let hasVariants = false;
-  let variantImages = [];
-  
-  if (product.variants && product.variants.length > 0) {
-      hasVariants = true;
-      product.variants = product.variants.map(variant => ({
-          ...variant,
-          options: variant.options.map(option => {
-              const useOptionAdminPrice = typeof option.adminBasePrice === 'number';
-              const optionBasePrice = useOptionAdminPrice ? option.adminBasePrice : (option.price || 0);
-              const optionSalePrice = useOptionAdminPrice ? 
-                  (option.adminSalePrice || option.adminBasePrice) : 
-                  (option.salePrice || option.price || 0);
-              const optionDiscount = optionBasePrice > optionSalePrice ? optionBasePrice - optionSalePrice : 0;
-              const optionDiscountPercent = optionDiscount > 0 ? Math.round((optionDiscount / optionBasePrice) * 100) : 0;
-
-              // Collect variant images
-              if (option.images && option.images.length > 0) {
-                  option.images.forEach(img => {
-                      variantImages.push({
-                          src: img,
-                          variantName: variant.name,
-                          optionValue: option.value,
-                          color: option.value.toLowerCase()
-                      });
-                  });
-              }
-
-              return {
-                  ...option,
-                  calculatedBasePrice: optionBasePrice,
-                  calculatedSalePrice: optionSalePrice,
-                  discount: optionDiscount,
-                  discountPercent: optionDiscountPercent,
-                  useAdminPrice: useOptionAdminPrice,
-                  isAvailable: (option.stock || 0) > 0
-              };
-          })
-      }));
-  }
-
-  // Combine main images with variant images
-  const allImages = [];
-  
-  // Add main product images first
-  if (product.images && product.images.length) {
-      product.images.forEach(img => {
-          allImages.push({
-              src: img,
-              type: 'main',
-              color: 'default'
-          });
-      });
-  }
-  
-  // Add variant images
-  allImages.push(...variantImages);
-
-  return {
-      ...product,
-      calculatedBasePrice: basePrice,
-      calculatedSalePrice: salePrice,
-      discount: discount,
-      discountPercent: discountPercent,
-      useAdminPrice: useAdminPrice,
-      hasVariants: hasVariants,
-      allImages: allImages.length > 0 ? allImages : [{ src: '/images/products/beauty-cosmetic/beauty8.jpg', type: 'default', color: 'default' }],
-      totalStock: hasVariants ? 
-          product.variants.reduce((sum, variant) => 
-              sum + variant.options.reduce((optSum, opt) => optSum + (opt.stock || 0), 0), 0) 
-          : (product.totalStock || 0)
-  };
-}
 // userlogin 
 router.get('/userLogin', (req, res) => {
     res.render('user/userLogin');

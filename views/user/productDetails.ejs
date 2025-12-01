@@ -235,7 +235,7 @@ body.modal-open {
                     <div class="tf-breadcrumb-list">
                         <a href="/" class="text text-caption-1">Homepage</a>
                         <i class="icon icon-arrRight"></i>
-                        <a href="/store/<%= product.category && product.category.slug %>" class="text text-caption-1"><%= product.category && product.category.name %></a>
+                        <a href="/shop/<%= product.category && product.category.slug %>" class="text text-caption-1"><%= product.category && product.category.name %></a>
                         <i class="icon icon-arrRight"></i>
                         <span class="text text-caption-1"><%= product.title %></span>
                     </div>
@@ -245,7 +245,7 @@ body.modal-open {
         <!-- /breadcrumb -->
 
         <!-- Product_Main -->
-        <section class="flat-spacing">
+        <section class="flat-spacing" id="product-main-section">
             <div class="tf-main-product section-image-zoom">
                 <div class="container">
                     <div class="row">
@@ -253,23 +253,41 @@ body.modal-open {
                         <div class="col-md-6">
                             <div class="tf-product-media-wrap sticky-top">
                                 <div class="thumbs-slider">
-                                    <div dir="ltr" class="swiper tf-product-media-thumbs other-image-zoom" data-direction="vertical">
+                                    <div dir="ltr" class="swiper tf-product-media-thumbs other-image-zoom" data-direction="vertical" id="product-thumbs-swiper">
                                         <div class="swiper-wrapper stagger-wrap">
-                                            <% product.allImages.forEach(function(img, idx) { %>
+                                            <% 
+                                                let thumbImages = (product.allImages && product.allImages.length) 
+                                                    ? product.allImages 
+                                                    : (product.images && product.images.length ? product.images.map(function(im) { return {src: im}; }) : []);
+                                            %>
+                                            <% thumbImages.forEach(function(img, idx) { %>
                                                 <div class="swiper-slide stagger-item" data-color="<%= img.color || 'default' %>">
                                                     <div class="item">
-                                                        <img class="lazyload" data-src="<%= img.src %>" src="<%= img.src %>" alt="">
+                                                        <img 
+                                                            class="lazyload product-thumb-img" 
+                                                            data-src="<%= img.src %>" 
+                                                            src="<%= img.src %>" 
+                                                            alt=""
+                                                            data-img-index="<%= idx %>"
+                                                        >
                                                     </div>
                                                 </div>
                                             <% }); %>
                                         </div>
                                     </div>
-                                    <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
+                                    <div dir="ltr" class="swiper tf-product-media-main" id="product-gallery-swiper">
                                         <div class="swiper-wrapper">
-                                            <% product.allImages.forEach(function(img, idx) { %>
+                                            <% thumbImages.forEach(function(img, idx) { %>
                                                 <div class="swiper-slide" data-color="<%= img.color || 'default' %>">
                                                     <a href="<%= img.src %>" target="_blank" class="item" data-pswp-width="600px" data-pswp-height="800px">
-                                                        <img class="tf-image-zoom lazyload" data-zoom="<%= img.src %>" data-src="<%= img.src %>" src="<%= img.src %>" alt="">
+                                                        <img 
+                                                            class="tf-image-zoom lazyload product-main-img" 
+                                                            data-zoom="<%= img.src %>" 
+                                                            data-src="<%= img.src %>" 
+                                                            src="<%= img.src %>" 
+                                                            alt=""
+                                                            data-img-index="<%= idx %>"
+                                                        >
                                                     </a>
                                                 </div>
                                             <% }); %>
@@ -279,6 +297,7 @@ body.modal-open {
                             </div>
                         </div>
                         <!-- /Product Images -->
+
                         <!-- tf-product-info-list -->
                         <div class="col-md-6">
                             <div class="tf-product-info-wrap position-relative">
@@ -315,16 +334,31 @@ body.modal-open {
                                             </div>
                                         </div>
                                         <div class="tf-product-info-desc">
-                                            <div class="tf-product-info-price">
-                                                <h5 class="price-on-sale font-2">
-                                                    ₹<%= Number(product.calculatedSalePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                            <% 
+                                                var basePrice = typeof product.adminBasePrice === 'number' && !isNaN(product.adminBasePrice) 
+                                                    ? product.adminBasePrice 
+                                                    : product.basePrice;
+                                                var salePrice = typeof product.adminSalePrice === 'number' && !isNaN(product.adminSalePrice) 
+                                                    ? product.adminSalePrice 
+                                                    : product.salePrice;
+                                                if(typeof salePrice !== "number" || isNaN(salePrice)) salePrice = basePrice;
+                                                basePrice = Number(basePrice) || 0;
+                                                salePrice = Number(salePrice) || 0;
+                                                var discountAmount = basePrice > salePrice ? (basePrice - salePrice) : 0;
+                                                var discountPercent = basePrice > 0 && basePrice > salePrice 
+                                                    ? Math.round(discountAmount / basePrice * 100) 
+                                                    : 0;
+                                            %>
+                                            <div class="tf-product-info-price" id="product-main-price-block">
+                                                <h5 class="price-on-sale font-2" id="main-product-sale-price">
+                                                    ₹<%= salePrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                                 </h5>
-                                                <% if (product.discountPercent > 0) { %>
-                                                    <div class="compare-at-price font-2">
-                                                        ₹<%= Number(product.calculatedBasePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                <% if (discountPercent > 0) { %>
+                                                    <div class="compare-at-price font-2" id="main-product-base-price">
+                                                        ₹<%= basePrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                                     </div>
-                                                    <div class="badges-on-sale text-btn-uppercase">
-                                                        -<%= product.discountPercent %>%
+                                                    <div class="badges-on-sale text-btn-uppercase" id="main-product-discount">
+                                                        -<%= discountPercent %>% (₹<%= discountAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 }) %> OFF)
                                                     </div>
                                                 <% } %>
                                             </div>
@@ -339,27 +373,147 @@ body.modal-open {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tf-product-info-choose-option">
+
+                                    <!-- Product Variants: Checkbox Display -->
+                                    <% if (product.variants && Array.isArray(product.variants) && product.variants.length) { %>
+                                        <div class="tf-product-variants mb_24">
+                                            <h5 class="mb_10">Select a Product Variant</h5>
+                                            <% 
+                                                // For tracking IDs
+                                                function getChkId(variant, opt) {
+                                                    return `chk-variant-${variant.name.replace(/\s/g,'-').toLowerCase()}-${opt.value.replace(/\s/g,'-').toLowerCase()}`;
+                                                }
+                                            %>
+                                            <% product.variants.forEach(function(variant, vIdx) { %>
+                                                <div class="mb_16">
+                                                    <div class="text-title" style="font-weight:500;"><%= variant.name %></div>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        <% variant.options.forEach(function(opt, optIdx) { 
+                                                            var vBase = typeof opt.adminBasePrice === 'number' && !isNaN(opt.adminBasePrice) 
+                                                                ? opt.adminBasePrice 
+                                                                : (typeof opt.price === 'number' ? opt.price : (typeof opt.basePrice === 'number' ? opt.basePrice : (typeof opt.price === 'string' ? Number(opt.price) : 0)));
+                                                            var vSale = typeof opt.adminSalePrice === 'number' && !isNaN(opt.adminSalePrice)
+                                                                ? opt.adminSalePrice
+                                                                : (typeof opt.price === 'number' ? opt.price : (typeof opt.salePrice === 'number' ? opt.salePrice : (typeof opt.price === 'string' ? Number(opt.price) : vBase)));
+                                                            if(typeof vSale !== 'number' || isNaN(vSale)) vSale = vBase;
+                                                            vBase = Number(vBase) || 0;
+                                                            vSale = Number(vSale) || 0;
+                                                            var vDiscountPercent = vBase > 0 && vBase > vSale ? Math.round((vBase - vSale) / vBase * 100) : 0;
+                                                            var chkId = getChkId(variant, opt);
+                                                            var optImg = opt.image || (opt.images && opt.images[0]) || null;
+                                                        %>
+                                                        <div class="card shadow-none border tf-variant-card" style="min-width:170px; max-width:240px; margin-bottom:8px; position:relative;">
+                                                            <div class="px-2 py-2 text-center">
+                                                                <input type="checkbox"
+                                                                    id="<%= chkId %>"
+                                                                    class="variant-select-checkbox"
+                                                                    name="variant-selection-<%= vIdx %>"
+                                                                    data-v-idx="<%= vIdx %>"
+                                                                    data-o-idx="<%= optIdx %>"
+                                                                    data-sale="<%= vSale %>"
+                                                                    data-base="<%= vBase %>"
+                                                                    data-discount="<%= vDiscountPercent %>"
+                                                                    data-img="<%= optImg %>"
+                                                                    value="<%= opt.value %>"
+                                                                    style="position:absolute;top:10px;left:10px;width:18px;height:18px;"
+                                                                    <% if(!opt.isAvailable){ %>disabled<% } %>
+                                                                    <% if(optIdx === 0 && vIdx === 0) { %>checked<% } %>
+                                                                >
+                                                                <label for="<%= chkId %>" style="margin-left:28px;cursor:pointer;">
+                                                                    <span class="fw-6"><%= opt.value %></span>
+                                                                    <% if(opt.images && opt.images.length) { %>
+                                                                        <div class="d-flex justify-content-center gap-1 mt-1 mb-1">
+                                                                            <% opt.images.slice(0,2).forEach(function(img) { %>
+                                                                                <img src="<%= img %>" alt="V" style="width:28px;height:28px;object-fit:cover;border-radius:3px;border:1px solid #eee;">
+                                                                            <% }); %>
+                                                                        </div>
+                                                                    <% } else if (optImg) { %>
+                                                                        <div class="d-flex justify-content-center mt-1 mb-1">
+                                                                            <img src="<%= optImg %>" alt="V" style="width:38px;height:38px;object-fit:cover;border-radius:3px;border:1px solid #eee;">
+                                                                        </div>
+                                                                    <% } %>
+                                                                    <div class="mb_4">
+                                                                        <span class="badge <%= opt.stock > 0 ? 'bg-success' : 'bg-secondary' %> text-light" style="font-size:12px;">
+                                                                            <%= (typeof opt.stock === 'number') ? (opt.stock > 0 ? (opt.stock+' in stock') : 'Out of stock') : '-' %>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="fw-5 mb_2 text-dark">
+                                                                        ₹<%= vSale.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                                        <% if(vBase > vSale){ %>
+                                                                            <span class="text-decoration-line-through text-secondary small" style="margin-left:4px;">
+                                                                                ₹<%= vBase.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                                            </span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                    <% if(vDiscountPercent > 0) { %>
+                                                                        <div class="badges-on-sale d-inline-block text-btn-uppercase" style="font-size:12px; color:#ff2540; background:#ffe8ed; border-radius:3px; padding:2px 5px; margin-bottom:4px;">-<%= vDiscountPercent %>%</div>
+                                                                    <% } %>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <% }); %>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    <% } %>
+                                    <!-- /Product Variants: Checkbox Display -->
+
+                                    <div class="tf-product-info-choose-option" id="variant-section">
                                         <% if (product.hasVariants && Array.isArray(product.variants)) { %>
-                                            <% product.variants.forEach(function(variant) { %>
+                                            <div class="mb_16">
+                                                <b>Select your variant below:</b>
+                                            </div>
+                                            <% product.variants.forEach(function(variant, vIdx) { %>
                                                 <div class="variant-picker-item mb_20">
                                                     <div class="variant-picker-label mb_12">
-                                                        <%= variant.name %>: 
+                                                        <%= variant.name %>:
                                                         <span class="text-title variant-picker-label-value value-currentColor"></span>
                                                     </div>
                                                     <div class="variant-picker-values gap12">
-                                                        <% variant.options.forEach(function(option, optIdx) { %>
-                                                            <% var optionId = `option-${variant.name}-${option.value}`.replace(/\s/g, '-').toLowerCase(); %>
-                                                            <input id="<%= optionId %>" type="radio" name="<%= variant.name %>" value="<%= option.value %>" <% if(option.isAvailable) { %> <% } else { %> disabled <% } %> <% if(optIdx === 0) { %>checked<% } %> >
+                                                        <% variant.options.forEach(function(option, optIdx) { 
+                                                            var oBase = typeof option.adminBasePrice === "number" && !isNaN(option.adminBasePrice)
+                                                                ? option.adminBasePrice 
+                                                                : (typeof option.basePrice === "number" ? option.basePrice : basePrice);
+                                                            var oSale = typeof option.adminSalePrice === "number" && !isNaN(option.adminSalePrice)
+                                                                ? option.adminSalePrice 
+                                                                : (typeof option.salePrice === "number" ? option.salePrice : salePrice);
+                                                            if(typeof oSale !== "number" || isNaN(oSale)) oSale = oBase;
+                                                            oBase = Number(oBase) || 0;
+                                                            oSale = Number(oSale) || 0;
+                                                            var oDiscountAmount = oBase > oSale ? oBase - oSale : 0;
+                                                            var oDiscountPercent = oBase > 0 && oBase > oSale ? Math.round(oDiscountAmount / oBase * 100) : 0;
+                                                            var oImg = option.image || (option.images && option.images[0]) || null;
+                                                            var optionId = `opt-radio-${variant.name}-${option.value}`.replace(/\s/g, '-').toLowerCase();
+                                                        %>
+                                                            <!-- Below radio kept for a11y and default fallback UX -->
+                                                            <input 
+                                                                id="<%= optionId %>" 
+                                                                type="radio" 
+                                                                name="variant-radio-<%= vIdx %>" 
+                                                                value="<%= option.value %>" 
+                                                                data-sale="<%= oSale %>"
+                                                                data-base="<%= oBase %>"
+                                                                data-discount="<%= oDiscountPercent %>"
+                                                                data-discount-amount="<%= oDiscountAmount %>"
+                                                                data-img="<%= oImg %>"
+                                                                <% if(option.isAvailable) { %> <% } else { %> disabled <% } %> <% if(optIdx === 0) { %>checked<% } %>
+                                                                style="display:none;"
+                                                            >
                                                             <label 
                                                                 class="<% if(variant.name.toLowerCase().includes('color')) { %>hover-tooltip tooltip-bot radius-60 color-btn<% } else { %>style-text size-btn<% } %> <% if(!option.isAvailable){ %> type-disable <% } %>"
                                                                 for="<%= optionId %>"
                                                                 data-value="<%= option.value %>"
-                                                                data-price="<%= option.calculatedSalePrice %>"
-                                                                data-color="<%= option.value.toLowerCase() %>"
+                                                                data-price="<%= oSale %>"
+                                                                data-base="<%= oBase %>"
+                                                                data-discount="<%= oDiscountPercent %>"
+                                                                data-discount-amount="<%= oDiscountAmount %>"
+                                                                data-img="<%= oImg %>"
+                                                                data-variant-index="<%= vIdx %>"
+                                                                data-option-index="<%= optIdx %>"
                                                             >
                                                                 <% if(variant.name.toLowerCase().includes('color')){ %>
-                                                                    <span class="btn-checkbox" style="background: <%= option.value.toLowerCase() %>"></span>
+                                                                    <span class="btn-checkbox" style="background-color: <%= option.value.toLowerCase() %> !important; border:1px solid #cdcdcd"></span>
                                                                     <span class="tooltip"><%= option.value %></span>
                                                                 <% } else { %>
                                                                     <span class="text-title"><%= option.value %></span>
@@ -382,8 +536,8 @@ body.modal-open {
                                             <div class="tf-product-info-by-btn mb_10">
                                                 <a href="#shoppingCart" data-bs-toggle="modal" class="btn-style-2 flex-grow-1 text-btn-uppercase fw-6 btn-add-to-cart">
                                                     <span>Add to cart -&nbsp;</span>
-                                                    <span class="tf-qty-price total-price">
-                                                        ₹<%= Number(product.calculatedSalePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                    <span class="tf-qty-price total-price" id="add-to-cart-total-price">
+                                                        ₹<%= salePrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                                     </span>
                                                 </a>
                                             </div>
@@ -444,35 +598,23 @@ body.modal-open {
                                                             <i class="icon icon-close"></i>
                                                         </div>
                                                         <div class="line-bt"></div>
-                                                        <div>
-                                                            <h6>
-                                                                <% if (product.vendor) { %>
-                                                                    <%= product.vendor %>
-                                                                <% } else { %>
-                                                                    Blushley fashion
-                                                                <% } %>
-                                                            </h6>
-                                                            <p>
-                                                                Pickup available. Usually ready in 24 hours
-                                                            </p>
-                                                        </div>
+                                                     
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <ul class="tf-product-info-sku">
-                                            <li>
-                                                <p class="text-caption-1">SKU:</p>
-                                                <p class="text-caption-1 text-1"><%= product.sku || '—' %></p>
-                                            </li>
-                                            <li>
-                                                <p class="text-caption-1">Vendor:</p>
-                                                <p class="text-caption-1 text-1"><%= product.vendor || '—' %></p>
-                                            </li>
+                                       
                                             <li>
                                                 <p class="text-caption-1">Available:</p>
                                                 <p class="text-caption-1 text-1">
-                                                    <% if (product.totalStock > 0) { %>Instock<% } else { %>Out of stock<% } %>
+                                                    <% 
+                                                      
+                                                        var displayStock = (Array.isArray(product.variants) && product.variants.length && typeof product.variantTotalStock === 'number')
+                                                            ? product.variantTotalStock
+                                                            : product.totalStock;
+                                                    %>
+                                                    <% if (displayStock > 0) { %>Instock<% } else { %>Out of stock<% } %>
                                                 </p>
                                             </li>
                                             <li>
@@ -492,7 +634,20 @@ body.modal-open {
                                         </ul>
                                         <form class="form-bundle-product">
                                             <h5 class="mb_16">Frequently bought together</h5>
-                                            <% frequentlyBoughtTogether && frequentlyBoughtTogether.forEach(function(fbt, idx) { %>
+                                            <% frequentlyBoughtTogether && frequentlyBoughtTogether.forEach(function(fbt, idx) { 
+                                                var fbtBase = typeof fbt.adminBasePrice === "number" && !isNaN(fbt.adminBasePrice) 
+                                                    ? fbt.adminBasePrice 
+                                                    : (typeof fbt.basePrice === "number" && !isNaN(fbt.basePrice) ? fbt.basePrice : 0);
+                                                var fbtSale = typeof fbt.adminSalePrice === "number" && !isNaN(fbt.adminSalePrice) 
+                                                    ? fbt.adminSalePrice 
+                                                    : (typeof fbt.salePrice === "number" && !isNaN(fbt.salePrice) ? fbt.salePrice : fbtBase);
+                                                if(typeof fbtSale !== "number" || isNaN(fbtSale)) fbtSale = fbtBase;
+                                                fbtBase = Number(fbtBase) || 0;
+                                                fbtSale = Number(fbtSale) || 0;
+                                                var fbtDiscountAmount = fbtBase > fbtSale ? (fbtBase - fbtSale) : 0;
+                                                var fbtDiscountPercent = fbtBase > 0 && fbtBase > fbtSale 
+                                                    ? Math.round(fbtDiscountAmount / fbtBase * 100) : 0;
+                                            %>
                                                 <div class="tf-bundle-product-item">
                                                     <input class="tf-check" type="checkbox" name="fbt" value="<%= fbt.slug %>" checked="checked">
                                                     <div class="tf-product-bundle-image">
@@ -513,13 +668,13 @@ body.modal-open {
                                                         </div>
                                                         <div class="tf-product-info-price type-small">
                                                             <h5 class="price-on-sale">
-                                                                ₹<%= Number(typeof fbt.calculatedSalePrice !== "undefined" ? fbt.calculatedSalePrice : (fbt.salePrice || fbt.basePrice)).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                                ₹<%= Number(fbtSale).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                                             </h5>
-                                                            <% if ((fbt.discountPercent || 0) > 0) { %>
+                                                            <% if (fbtDiscountPercent > 0) { %>
                                                                 <div class="compare-at-price">
-                                                                    ₹<%= Number(fbt.calculatedBasePrice || fbt.basePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                                    ₹<%= Number(fbtBase).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                                                 </div>
-                                                                <div class="badges-on-sale">-<%= fbt.discountPercent %>%</div>
+                                                                <div class="badges-on-sale">-<%= fbtDiscountPercent %>% (₹<%= fbtDiscountAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 }) %> OFF)</div>
                                                             <% } %>
                                                         </div>
                                                     </div>
@@ -528,10 +683,14 @@ body.modal-open {
                                             <div class="tf-bundle-product-total-submit">
                                                 <h6>Total price:</h6>
                                                 <% 
-                                                    let totalBundlePrice = (product.calculatedSalePrice || 0);
+                                                    let totalBundlePrice = salePrice;
                                                     if(Array.isArray(frequentlyBoughtTogether)){
                                                         frequentlyBoughtTogether.forEach(function(fbt){
-                                                            totalBundlePrice += (typeof fbt.calculatedSalePrice !== "undefined" ? Number(fbt.calculatedSalePrice) : Number(fbt.salePrice || fbt.basePrice) || 0);
+                                                            var fbtBundleSale = typeof fbt.adminSalePrice === "number" && !isNaN(fbt.adminSalePrice) 
+                                                                ? fbt.adminSalePrice 
+                                                                : (typeof fbt.salePrice === "number" && !isNaN(fbt.salePrice) ? fbt.salePrice : fbt.basePrice);
+                                                            if(typeof fbtBundleSale !== "number" || isNaN(fbtBundleSale)) fbtBundleSale = Number(fbt.basePrice) || 0;
+                                                            totalBundlePrice += Number(fbtBundleSale) || 0;
                                                         });
                                                     }
                                                 %>
@@ -581,13 +740,13 @@ body.modal-open {
                             <form class="form-sticky-atc">
                                 <div class="tf-sticky-atc-product">
                                     <div class="image">
-                                        <img class="lazyload" data-src="<%= product.images && product.images.length ? product.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>" alt="" src="<%= product.images && product.images.length ? product.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>">
+                                        <img class="lazyload" id="sticky-product-img" data-src="<%= product.images && product.images.length ? product.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>" alt="" src="<%= product.images && product.images.length ? product.images[0] : '/images/products/beauty-cosmetic/beauty8.jpg' %>">
                                     </div>
                                     <div class="content">
-                                        <div class="text-title">
+                                        <div class="text-title" id="sticky-product-title">
                                             <%= product.title %>
                                         </div>
-                                        <div class="text-caption-1 text-secondary-2">
+                                        <div class="text-caption-1 text-secondary-2" id="sticky-product-variants">
                                             <% 
                                                 if (product.hasVariants && Array.isArray(product.variants)) {
                                                     let selectStr = [];
@@ -600,8 +759,8 @@ body.modal-open {
                                                 }
                                             %>
                                         </div>
-                                        <div class="text-title">
-                                            ₹<%= Number(product.calculatedSalePrice).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                        <div class="text-title" id="sticky-product-price">
+                                            ₹<%= salePrice.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                                         </div>
                                     </div>
                                 </div>
@@ -610,18 +769,10 @@ body.modal-open {
                                         <% product.variants.forEach(function(variant) { %>
                                             <div class="tf-sticky-atc-size d-flex gap-12 align-items-center">
                                                 <div class="tf-sticky-atc-infos-title text-title"><%= variant.name %>:</div>
-                                                <div class="tf-dropdown-sort style-2" data-bs-toggle="dropdown">
-                                                    <div class="btn-select">
-                                                        <span class="text-sort-value font-2"><%= variant.options[0] && variant.options[0].value %></span>
-                                                        <span class="icon icon-arrow-down"></span>
-                                                    </div>
-                                                    <div class="dropdown-menu">
-                                                        <% variant.options.forEach(function(opt, optIdx) { %>
-                                                            <div class="select-item <%= optIdx === 0 ? 'active' : '' %>">
-                                                                <span class="text-value-item"><%= opt.value %></span>
-                                                            </div>
-                                                        <% }); %>
-                                                    </div>
+                                                <div>
+                                                    <% variant.options.forEach(function(opt) { %>
+                                                        <span class="badge bg-light text-dark mx-1"><%= opt.value %> <small>(Stock: <%= (typeof opt.stock === 'number') ? opt.stock : '-' %>)</small></span>
+                                                    <% }); %>
                                                 </div>
                                             </div>
                                         <% }); %>
@@ -645,8 +796,8 @@ body.modal-open {
             </div>
         </section>
         <!-- /Product_Main -->
-        <!-- /Product Main Content Section -->
 
+        <!-- Product tabbed info -->
         <section>
             <div class="container">
                 <div class="row">
@@ -667,7 +818,6 @@ body.modal-open {
                                             <p class="text-secondary"><%= product.description %></p>
                                             <ul class="mb_12">
                                                 <li><b>Brand:</b> <%= product.brand || "—" %></li>
-                                         
                                                 <li><b>Weight:</b> <%= product.weight ? product.weight + "g" : "—" %></li>
                                                 <li><b>Dimensions:</b> 
                                                     <% if(product.dimensions && (product.dimensions.length || product.dimensions.width || product.dimensions.height)){ %>
@@ -714,6 +864,23 @@ body.modal-open {
                                                         <li class="font-2"><%= tip.title || tip._id %></li>
                                                     <% }) %>
                                                 </ul>
+                                            <% } %>
+                                            <% if (product.variants && product.variants.length) { %>
+                                                <div class="letter-1 text-btn-uppercase mb_12">Product Variants</div>
+                                                <% product.variants.forEach(function(variant) { %>
+                                                    <div class="mb_10"><strong><%= variant.name %>:</strong>
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            <% variant.options.forEach(function(opt) { %>
+                                                                <span class="badge bg-light text-dark mx-1" style="padding:8px 12px;">
+                                                                    <%= opt.value %>
+                                                                    <% if(typeof opt.stock === "number") { %>
+                                                                        <small class="text-secondary" style="font-size:11px;">&nbsp;(<%= opt.stock %> in stock)</small>
+                                                                    <% } %>
+                                                                </span>
+                                                            <% }); %>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
                                             <% } %>
                                         </div>
                                     </div>
@@ -774,6 +941,124 @@ body.modal-open {
                 </div>
             </div>
         </section>
+
+        <script>
+        // Variant selection with checkbox and main image update
+        document.addEventListener('DOMContentLoaded', function() {
+            // Price and image blocks
+            let mainSalePrice = document.getElementById('main-product-sale-price');
+            let mainBasePrice = document.getElementById('main-product-base-price');
+            let mainDiscount = document.getElementById('main-product-discount');
+            let atcPrice = document.getElementById('add-to-cart-total-price');
+            let stickyImg = document.getElementById('sticky-product-img');
+            let stickyPrice = document.getElementById('sticky-product-price');
+            let productThumbs = document.querySelectorAll('.product-thumb-img');
+            let productMains = document.querySelectorAll('.product-main-img');
+
+            // Helper function for .toLocaleString fallback 
+            function toINR(val) {
+                try {
+                  return Number(val).toLocaleString("en-IN", {minimumFractionDigits:2, maximumFractionDigits:2});
+                } catch(e) { return val; }
+            }
+
+            // Only allow one checkbox per variant (mimic radio for each group)
+            document.querySelectorAll('.variant-select-checkbox').forEach(function(chkbox) {
+                chkbox.addEventListener('change', function(e) {
+                    let groupName = chkbox.getAttribute('name');
+                    if(chkbox.checked) {
+                        // Uncheck all others in same group
+                        document.querySelectorAll('.variant-select-checkbox[name="'+groupName+'"]').forEach(function(cb) {
+                            if(cb !== chkbox) cb.checked = false;
+                        });
+
+                        // Update prices and images
+                        let sale = chkbox.getAttribute('data-sale');
+                        let base = chkbox.getAttribute('data-base');
+                        let discount = chkbox.getAttribute('data-discount');
+                        let img = chkbox.getAttribute('data-img');
+
+                        // Update main price
+                        if(mainSalePrice) mainSalePrice.textContent = '₹' + toINR(sale);
+                        if(mainBasePrice) {
+                            if (Number(discount)>0) {
+                                mainBasePrice.style.display = '';
+                                mainBasePrice.textContent = '₹' + toINR(base);
+                            } else {
+                                mainBasePrice.style.display = 'none';
+                            }
+                        }
+                        if(mainDiscount){
+                            if (Number(discount)>0) {
+                                mainDiscount.style.display = '';
+                                mainDiscount.textContent = `-${discount}% (₹${toINR(Number(base)-Number(sale))} OFF)`;
+                            } else {
+                                mainDiscount.style.display = 'none';
+                            }
+                        }
+                        if(atcPrice) atcPrice.textContent = '₹' + toINR(sale);
+                        if(stickyPrice) stickyPrice.textContent = '₹' + toINR(sale);
+
+                        // Update main image and sticky img if option image present
+                        if(img && img.trim()){
+                            productMains.forEach(function(tag) { tag.src = img; tag.dataset.src = img; });
+                            productThumbs.forEach(function(tag){ tag.src = img; tag.dataset.src = img; });
+                            if(stickyImg) { stickyImg.src = img; stickyImg.dataset.src = img; }
+                        }
+                    }
+                });
+            });
+
+            // For fallback/integrated radio UX (keep original radio variant; hide visually)
+            document.querySelectorAll('.variant-picker-values input[type="radio"]').forEach(function(input) {
+                input.addEventListener('change', function(e) {
+                    let sale = e.target.getAttribute('data-sale');
+                    let base = e.target.getAttribute('data-base');
+                    let discount = e.target.getAttribute('data-discount');
+                    let discountAmount = e.target.getAttribute('data-discount-amount');
+                    let img = e.target.getAttribute('data-img');
+
+                    if(mainSalePrice) mainSalePrice.textContent = '₹' + toINR(sale);
+                    if(mainBasePrice) {
+                        if (Number(discount)>0) {
+                            mainBasePrice.style.display = '';
+                            mainBasePrice.textContent = '₹' + toINR(base);
+                        } else {
+                            mainBasePrice.style.display = 'none';
+                        }
+                    }
+                    if(mainDiscount){
+                        if (Number(discount)>0) {
+                            mainDiscount.style.display = '';
+                            mainDiscount.textContent = `-${discount}% (₹${toINR(discountAmount)} OFF)`;
+                        } else {
+                            mainDiscount.style.display = 'none';
+                        }
+                    }
+                    if(atcPrice) atcPrice.textContent = '₹' + toINR(sale);
+                    if(stickyPrice) stickyPrice.textContent = '₹' + toINR(sale);
+
+                    // Update main image and sticky img if option image present
+                    if(img && img.trim()){
+                        productMains.forEach(function(tag) { tag.src = img; tag.dataset.src = img; });
+                        productThumbs.forEach(function(tag){ tag.src = img; tag.dataset.src = img; });
+                        if(stickyImg) { stickyImg.src = img; stickyImg.dataset.src = img; }
+                    }
+                });
+            });
+
+            // When a thumb is clicked, main image should update (gallery simulation)
+            document.querySelectorAll('.product-thumb-img').forEach(function(th, idx){
+                th.addEventListener('click', function(e){
+                    productMains.forEach(function(main){
+                        main.src = th.src;
+                        main.dataset.src = th.dataset.src;
+                    });
+                    if(stickyImg) { stickyImg.src = th.src; stickyImg.dataset.src = th.dataset.src; }
+                });
+            });
+        });
+        </script>
 
         <!-- Related Products & Recently Viewed Tabs -->
         <section class="flat-spacing">

@@ -175,7 +175,6 @@ exports.createProduct = async (req, res) => {
 // ---------------- UPDATE PRODUCT (FULLY FIXED) ----------------
 
 exports.updateProduct = async (req, res) => {
-
   try {
     const productId = req.params.id;
 
@@ -203,6 +202,10 @@ exports.updateProduct = async (req, res) => {
       status
     } = req.body;
 
+    // Handle case where subCategory or childCategory is missing or empty string
+    // If empty string or undefined or null, we set them to undefined so they're not updated as invalid ObjectId
+    subCategory = (subCategory && typeof subCategory === "string" && subCategory.trim() !== "") ? subCategory : undefined;
+    childCategory = (childCategory && typeof childCategory === "string" && childCategory.trim() !== "") ? childCategory : undefined;
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -228,7 +231,6 @@ exports.updateProduct = async (req, res) => {
     const safeTags = safeParse(tags, []);
     const safeIngredients = safeParse(ingredients, []);
     const safeBenefits = safeParse(benefits, []);
-
 
     const variantFiles = req.files.filter(f =>
       f.fieldname.startsWith("variantFile__")
@@ -292,6 +294,7 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
+    // Only include non-empty category, subCategory, and childCategory in update
     const updateObj = {
       title: title || product.title,
       slug: title
@@ -300,9 +303,6 @@ exports.updateProduct = async (req, res) => {
 
       description,
       shortDescription,
-      category,
-      subCategory,
-      childCategory,
       brand,
 
       beautyTips: parsedBeautyTips,
@@ -331,6 +331,10 @@ exports.updateProduct = async (req, res) => {
       }
     };
 
+    // Only add to updateObj if present and non-falsy (non-empty string, non-null, not undefined)
+    if (category && typeof category === "string" && category.trim() !== "") updateObj.category = category;
+    if (subCategory !== undefined) updateObj.subCategory = subCategory;
+    if (childCategory !== undefined) updateObj.childCategory = childCategory;
     if (status) updateObj.status = status;
 
     const updatedProduct = await Product.findByIdAndUpdate(

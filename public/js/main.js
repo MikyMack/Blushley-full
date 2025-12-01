@@ -91,7 +91,48 @@
             $input.val(value);
         });
     };
+/* Product Gallery Swiper
+---------------------------------------------------------------------*/
+var productGallerySwiper = function () {
+    if ($('.tf-product-media-main').length && $('.tf-product-media-thumbs').length) {
+        console.log('Initializing product gallery swiper...');
+        
+        // Initialize thumbnail slider
+        var galleryThumbs = new Swiper('.tf-product-media-thumbs', {
+            direction: 'vertical',
+            spaceBetween: 10,
+            slidesPerView: 4,
+            freeMode: true,
+            watchSlidesProgress: true,
+            breakpoints: {
+                320: {
+                    direction: 'horizontal',
+                    slidesPerView: 4,
+                },
+                768: {
+                    direction: 'vertical',
+                    slidesPerView: 4,
+                }
+            }
+        });
 
+        // Initialize main slider
+        var galleryTop = new Swiper('.tf-product-media-main', {
+            spaceBetween: 10,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            thumbs: {
+                swiper: galleryThumbs
+            }
+        });
+
+        console.log('Product gallery swiper initialized successfully');
+        console.log('Main slides count:', galleryTop.slides.length);
+        console.log('Thumb slides count:', galleryThumbs.slides.length);
+    }
+};
     /* Delete File 
   -------------------------------------------------------------------------------------*/
     var deleteFile = function (e) {
@@ -1344,51 +1385,53 @@ var preloader = function () {
     }
 };
     // Dom Ready
-    $(function () {
-        selectImages();
-        btnQuantity();
-        deleteFile();
-        goTop();
-        variantPicker();
-        swatchColor();
-        changeValue();
-        rangeSize();
-        sidebarMobile();
-        tabs();
-        checkClick();
-        checkPaymentCard();
-        btnLoading();
-        loadItem();
-        staggerWrap();
-        clickModalSecond();
-        headerSticky();
-        autoPopup();
-        clickControl();
-        writeReview();
-        customInput();
-        chooseOption();
-        withDiscount();
-        totalPriceVariant();
-        scrollGridProduct();
-        scrollQuickView();
-        hoverVideo();
-        hoverPin();
-        togglePassword();
-        customDropdown();
-        loadMoreSearch();
-        hoverImgCursor();
-        hasPurchased();
-        handleProgress();
-        heightModalMenu();
-        handleFooter();
-        ajaxContactForm();
-        ajaxSubscribe.eventLoad();
-        efectparalax();
-        new WOW().init();
-        RTL();
-        scrollBottomSticky();
-        preloader();
-    });
+    // Dom Ready
+$(function () {
+    selectImages();
+    btnQuantity();
+    deleteFile();
+    goTop();
+    variantPicker();
+    swatchColor();
+    changeValue();
+    rangeSize();
+    sidebarMobile();
+    tabs();
+    checkClick();
+    checkPaymentCard();
+    btnLoading();
+    loadItem();
+    staggerWrap();
+    clickModalSecond();
+    headerSticky();
+    autoPopup();
+    clickControl();
+    writeReview();
+    customInput();
+    chooseOption();
+    withDiscount();
+    totalPriceVariant();
+    scrollGridProduct();
+    scrollQuickView();
+    hoverVideo();
+    hoverPin();
+    togglePassword();
+    customDropdown();
+    loadMoreSearch();
+    hoverImgCursor();
+    hasPurchased();
+    handleProgress();
+    heightModalMenu();
+    handleFooter();
+    ajaxContactForm();
+    ajaxSubscribe.eventLoad();
+    efectparalax();
+    new WOW().init();
+    RTL();
+    scrollBottomSticky();
+    productGallerySwiper(); // ADD THIS LINE
+    preloader();
+});
 })(jQuery);
 
 
@@ -1705,7 +1748,6 @@ $(document).ready(function() {
 
                 megaDropdown.addEventListener('mouseenter', show);
                 megaDropdown.addEventListener('mouseleave', hide);
-
                 megaDropdown.querySelectorAll('a').forEach(link => {
                     link.addEventListener('focus', show);
                     link.addEventListener('blur', hide);
