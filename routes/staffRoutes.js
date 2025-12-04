@@ -28,21 +28,21 @@ router.post("/staff/login/send-otp", staffCtrl.sendStaffLoginOtp);
 router.post("/staff/login/verify-otp", staffCtrl.verifyStaffLoginOtp);
 
 router.get('/staff/banner', (req, res) => {
-    res.render('admin/admin_banner');
+    res.render('staff/admin_banner');
 });
 
-router.get('/staff/blogs', isAdmin, async (req, res) => {
+router.get('/staff/blogs', isStaff, async (req, res) => {
     try {
         const categories = await Category.find({ status: { $ne: 'deleted' } }).lean();
-        res.render('admin/admin_blogs', { categories });
+        res.render('staff/admin_blogs', { categories });
     } catch (error) {
         console.error('Error fetching categories for blogs:', error);
-        res.render('admin/admin_blogs', { categories: [], error: 'Failed to load categories' });
+        res.render('staff/admin_blogs', { categories: [], error: 'Failed to load categories' });
     }
 });
 
 
-router.get('/staff/bookings', isAdmin, async (req, res) => {
+router.get('/staff/bookings', isStaff, async (req, res) => {
     try {
         const page = parseInt(req.query.page, 10) > 0 ? parseInt(req.query.page, 10) : 1;
         const limit = parseInt(req.query.limit, 10) > 0 ? parseInt(req.query.limit, 10) : 10;
@@ -109,7 +109,7 @@ router.get('/staff/bookings', isAdmin, async (req, res) => {
             totalPages = Math.ceil(total / limit);
         }
 
-        res.render('admin/admin_bookings', {
+        res.render('staff/admin_bookings', {
             bookings,
             page,
             totalPages,
@@ -137,20 +137,20 @@ router.get('/staff/bookings', isAdmin, async (req, res) => {
 });
 
 
-router.get('/staff/categories',isAdmin, async (req, res) => {
+router.get('/staff/categories',isStaff, async (req, res) => {
     try {
         const categories = await Category.find({}).lean();
         const subcategories = await SubCategory.find({}).lean();
         const childcategories = await ChildCategory.find({}).lean();
 
-        res.render('admin/admin_categories', {
+        res.render('staff/admin_categories', {
             categories,
             subcategories,
             childcategories
         });
     } catch (err) {
         console.error('Error loading categories:', err);
-        res.status(500).render('admin/admin_categories', {
+        res.status(500).render('staff/admin_categories', {
             categories: [],
             subcategories: [],
             childcategories: [],
@@ -160,7 +160,7 @@ router.get('/staff/categories',isAdmin, async (req, res) => {
 });
 
 
-router.get('/staff/freelance',isAdmin, async (req, res) => {
+router.get('/staff/freelance',isStaff, async (req, res) => {
     try {
         const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
         const limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
@@ -189,7 +189,7 @@ router.get('/staff/freelance',isAdmin, async (req, res) => {
 
         const totalPages = Math.ceil(total / limit);
 
-        res.render('admin/admin_freelancer', {
+        res.render('staff/admin_freelancer', {
             freelancers,
             page,
             totalPages,
@@ -198,21 +198,21 @@ router.get('/staff/freelance',isAdmin, async (req, res) => {
         });
     } catch (err) {
         console.error('Error fetching freelancers:', err);
-        res.status(500).render('admin/admin_freelancer', { freelancers: [], error: 'Failed to load freelancers' });
+        res.status(500).render('staff/admin_freelancer', { freelancers: [], error: 'Failed to load freelancers' });
     }
 });
 
 router.get('/staff/saloon', (req, res) => {
-    res.render('admin/admin_saloon');
+    res.render('staff/admin_saloon');
 });
 
 router.get('/staff/testimonials', (req, res) => {
-    res.render('admin/admin_testimonials');
+    res.render('staff/admin_testimonials');
 });
 
 
 
-router.get('/staff/users', isAdmin, async (req, res) => {
+router.get('/staff/users', isStaff, async (req, res) => {
     try {
         // Pagination
         let page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
@@ -254,23 +254,23 @@ router.get('/staff/users', isAdmin, async (req, res) => {
         });
     } catch (err) {
         console.error('Error fetching users:', err);
-        res.status(500).render('admin/admin_users', { users: [], error: 'Failed to load users' });
+        res.status(500).render('staff/admin_users', { users: [], error: 'Failed to load users' });
     }
 });
 
 
-router.get('/staff/beautyTips', isAdmin, async (req, res) => {
+router.get('/staff/beautyTips', isStaff, async (req, res) => {
     try {
         const categories = await Category.find({}).lean();
-        res.render('admin/admin_beautytips', { categories });
+        res.render('staff/admin_beautytips', { categories });
     } catch (err) {
         console.error("Error fetching categories for beautyTips:", err);
-        res.render('admin/admin_beautytips', { categories: [], error: 'Failed to load categories' });
+        res.render('staff/admin_beautytips', { categories: [], error: 'Failed to load categories' });
     }
 });
 
 
-router.get('/staff/products', isAdmin, async (req, res) => {
+router.get('/staff/products', isStaff, async (req, res) => {
     try {
         let { page = 1, search = "", status, category, subCategory, childCategory, brand, productType } = req.query;
         let limit = req.query.limit ? parseInt(req.query.limit) : 20;
@@ -329,7 +329,7 @@ router.get('/staff/products', isAdmin, async (req, res) => {
 
         const totalPages = Math.ceil(total / limit);
 
-        res.render('admin/admin_products', {
+        res.render('staff/admin_products', {
             products,
             page,
             totalPages,
@@ -342,12 +342,12 @@ router.get('/staff/products', isAdmin, async (req, res) => {
         });
     } catch (err) {
         console.error('Error fetching products:', err);
-        res.status(500).render('admin/admin_products', { products: [], error: 'Failed to load products', limit: 20, categories: [], subcategories: [], childcategories: [] });
+        res.status(500).render('staff/admin_products', { products: [], error: 'Failed to load products', limit: 20, categories: [], subcategories: [], childcategories: [] });
     }
 });
 
 router.get('/staff/orders', (req, res) => {
-    res.render('admin/admin_orders');
+    res.render('staff/admin_orders');
 });
 
 
@@ -384,7 +384,7 @@ router.get('/staff/reseller_products', async (req, res) => {
         ]);
         const totalPages = Math.ceil(total / limit);
 
-        res.render('admin/admin_reseller_product', {
+        res.render('staff/admin_reseller_product', {
             resellers,
             page,
             totalPages,
@@ -393,7 +393,7 @@ router.get('/staff/reseller_products', async (req, res) => {
         });
     } catch (err) {
         console.error('Error fetching resellers:', err);
-        res.status(500).render('admin/admin_reseller_product', {
+        res.status(500).render('staff/admin_reseller_product', {
             resellers: [],
             error: 'Failed to load resellers'
         });
