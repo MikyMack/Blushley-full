@@ -19,6 +19,7 @@ function safeParse(value, fallback = null) {
 
 
 exports.createProduct = async (req, res) => {
+
   try {
 
     let {
@@ -123,7 +124,10 @@ exports.createProduct = async (req, res) => {
         options: optionsArray
       });
     }
-
+    category = category?.trim() ? category : undefined;
+    subCategory = subCategory?.trim() ? subCategory : undefined;
+    childCategory = childCategory?.trim() ? childCategory : undefined;
+    
     const product = await Product.create({
       title,
       slug,
@@ -202,10 +206,19 @@ exports.updateProduct = async (req, res) => {
       status
     } = req.body;
 
-    // Handle case where subCategory or childCategory is missing or empty string
-    // If empty string or undefined or null, we set them to undefined so they're not updated as invalid ObjectId
-    subCategory = (subCategory && typeof subCategory === "string" && subCategory.trim() !== "") ? subCategory : undefined;
-    childCategory = (childCategory && typeof childCategory === "string" && childCategory.trim() !== "") ? childCategory : undefined;
+
+category = (category && typeof category === "string" && category.trim() !== "") 
+  ? category 
+  : undefined;
+
+subCategory = (subCategory && typeof subCategory === "string" && subCategory.trim() !== "") 
+  ? subCategory 
+  : undefined;
+
+childCategory = (childCategory && typeof childCategory === "string" && childCategory.trim() !== "") 
+  ? childCategory 
+  : undefined;
+
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -331,7 +344,7 @@ exports.updateProduct = async (req, res) => {
       }
     };
 
-    // Only add to updateObj if present and non-falsy (non-empty string, non-null, not undefined)
+    
     if (category && typeof category === "string" && category.trim() !== "") updateObj.category = category;
     if (subCategory !== undefined) updateObj.subCategory = subCategory;
     if (childCategory !== undefined) updateObj.childCategory = childCategory;
