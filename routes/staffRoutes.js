@@ -18,7 +18,7 @@ router.get('/staff/staffLogin', (req, res) => {
     res.render('staff/staff_login');
 });
 
-router.get('/staff/dashboard', isAdmin, (req, res) => {
+router.get('/staff/dashboard', isStaff, (req, res) => {
     res.render('staff/dashboard', { session: req.session });
 });
 

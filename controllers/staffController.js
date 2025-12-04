@@ -119,12 +119,12 @@ exports.verifyStaffLoginOtp = async (req, res) => {
     if (!staff || staff.role !== "staff")
       return res.status(403).json({ success: false, message: "Not authorized" });
 
-    // Create session
-    req.session.staff = {
+    req.session.user = {
       id: staff._id,
       email: staff.email,
       role: staff.role
-    };
+  };
+  
 
     // Remove OTP entry
     await Otp.deleteOne({ _id: otpEntry._id });

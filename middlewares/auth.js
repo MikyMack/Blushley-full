@@ -52,7 +52,7 @@ function isStaff(req, res, next) {
     return res.redirect('/staff/staffLogin');
   }
 
-  if (['staff'].includes(req.session.user.role)) {
+  if (['staff','admin'].includes(req.session.user.role)) {
     return next();
   }
 
