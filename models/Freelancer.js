@@ -25,6 +25,13 @@ const FreelancerServiceSchema = new mongoose.Schema({
 
   durationMinutes: Number,
 
+
+  forWhom: {
+    type: String,
+    enum: ['Women', 'Men', 'Unisex'],
+    default: 'Unisex'
+  },
+
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected', 'inactive'],

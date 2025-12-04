@@ -358,8 +358,110 @@ router.get('/userLogin', (req, res) => {
     res.render('user/userLogin');
 });
 // saloon at home 
-router.get('/saloon-at-home', (req, res) => {
-    res.render('user/saloonAtHome');
+const Freelancer = require('../models/Freelancer');
+
+// GET: Saloon at Home - Freelancer Listing with Pagination and Filters
+router.get('/saloon-at-home', async (req, res) => {
+    try {
+        let {
+            page = 1,
+            limit = 10,
+            service,  // serviceId or array
+            city,
+            state,
+            pincode,
+            availableDate,
+            minPrice,
+            maxPrice
+        } = req.query;
+
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+
+        const query = {};
+
+        // Filter by freelancer service(s)
+        if (service) {
+            // Can be string or array
+            if (Array.isArray(service)) {
+                query['freelancerServices.serviceId'] = { $in: service };
+            } else {
+                query['freelancerServices.serviceId'] = service;
+            }
+        }
+
+        // Filter by location
+        if (city) {
+            query['locations.city'] = city;
+        }
+        if (state) {
+            query['locations.state'] = state;
+        }
+        if (pincode) {
+            query['locations.pincode'] = pincode;
+        }
+
+        // Price Range Filter
+        if (minPrice || maxPrice) {
+            query['freelancerServices.finalPrice'] = {};
+            if (minPrice !== undefined && minPrice !== "") {
+                query['freelancerServices.finalPrice'].$gte = Number(minPrice);
+            }
+            if (maxPrice !== undefined && maxPrice !== "") {
+                query['freelancerServices.finalPrice'].$lte = Number(maxPrice);
+            }
+        }
+
+        // Optional: Only show approved and active freelancers
+        query.status = 'approved';
+
+        // Filter for available date (simplistic - checks if any day in 'availability' array matches given day)
+        if (availableDate) {
+            // availableDate expected as 'YYYY-MM-DD'
+            const dateObj = new Date(availableDate);
+            if (!isNaN(dateObj)) {
+                // Sunday = 0, ..., Saturday=6
+                const dayOfWeek = dateObj.getDay();
+                query['availability.dayOfWeek'] = dayOfWeek;
+            }
+        }
+
+        // Count total for pagination
+        const totalFreelancers = await Freelancer.countDocuments(query);
+
+        // Pagination
+        const freelancers = await Freelancer.find(query)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean();
+
+        // Helper: Expand the population with service pricing for ease of UI
+        // (Note: For each freelancer, only the matching services may be shown in frontend.)
+
+        res.render('user/saloonAtHome', {
+            freelancers,
+            pagination: {
+                page,
+                limit,
+                total: totalFreelancers,
+                totalPages: Math.ceil(totalFreelancers / limit)
+            },
+            filtersIn: { service, city, state, pincode, availableDate, minPrice, maxPrice }
+        });
+    } catch (err) {
+        console.error("Error loading freelancers for saloon-at-home:", err);
+        res.render('user/saloonAtHome', {
+            freelancers: [],
+            pagination: {
+                page: 1,
+                limit: 10,
+                total: 0,
+                totalPages: 1
+            },
+            filtersIn: req.query || {},
+            error: "Could not load freelancers"
+        });
+    }
 });
 
 // book a saloon 

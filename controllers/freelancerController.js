@@ -120,7 +120,8 @@ exports.register = async (req, res) => {
       availability,
       skillsArray,
       proofType,
-      proofNumber
+      proofNumber,
+      forWhom // NEW FIELD FROM Freelancer.js (29-33)
     } = req.body;
 
     const [existingUser, existingFreelancer] = await Promise.all([
@@ -207,6 +208,7 @@ exports.register = async (req, res) => {
       number: proofNumber
     };
 
+    // Add forWhom field to the create call!
     await Freelancer.create({
       userId: user._id,
       fullName,
@@ -219,6 +221,7 @@ exports.register = async (req, res) => {
       portfolioImages: portfolioUrls,
       locations: parsedLocations,
       availability: parsedAvailability,
+      forWhom: forWhom || "Unisex", // sensible default for new field
       status: "pending"
     });
 
@@ -280,6 +283,7 @@ exports.register = async (req, res) => {
         <p>Phone: ${phone}</p>
         <p>Skills: ${parsedSkills.join(", ")}</p>
         <p>Locations: ${parsedLocations.map(l => l.city).join(", ")}</p>
+        <p>For Whom: ${forWhom || "Unisex"}</p>
       `
     });
 
@@ -314,7 +318,8 @@ exports.updateFreelancer = async (req, res) => {
       availability,
       services,
       removedPortfolioImages,
-      status
+      status,
+      forWhom // ensure new field is available in update too
     } = req.body;
 
     // BASIC INFO
@@ -438,6 +443,11 @@ exports.updateFreelancer = async (req, res) => {
         documentUrls.push(uploaded.location);
       }
       freelancer.documents = documentUrls;
+    }
+
+    // UPDATE new "forWhom" field if present
+    if (typeof forWhom !== "undefined" && forWhom !== null && forWhom !== "") {
+      freelancer.forWhom = forWhom;
     }
 
     if (typeof status !== "undefined" && status !== null && status !== "") {
@@ -1024,19 +1034,23 @@ exports.updateProfile = async (req, res) => {
       bio,
       experience,
       email,
-      phone
+      phone,
+      forWhom 
     } = req.body;
 
     const freelancer = await Freelancer.findOne({ userId });
     if (!freelancer) return res.status(404).json({ message: "Profile not found" });
 
-    // Only update fields if they're provided
+
     if (fullName !== undefined) freelancer.fullName = fullName;
     if (bio !== undefined) freelancer.bio = bio;
     if (experience !== undefined) freelancer.experience = Number(experience);
     if (email !== undefined) freelancer.email = email;
     if (phone !== undefined) freelancer.phone = phone;
     if (professionalTitle !== undefined) freelancer.professionalTitle = professionalTitle;
+    if (typeof forWhom !== "undefined" && forWhom !== null && forWhom !== "") {
+      freelancer.forWhom = forWhom;
+    }
 
     await freelancer.save();
 

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>Blushely - Staff Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="/admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/styles.css">
+
+
+
+    <!-- Font -->
+    <link rel="stylesheet" href="/admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="/images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="/images/logo/blushley-png-without-shade.png">
+
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <div class="login-page">
+                <div class="left">
+                    <div class="login-box">
+                        <div>
+                            <h3>Login to Staff Dashboard</h3>
+                            <div class="body-text text-white" id="stage-desc">Enter your staff email to receive an OTP</div>
+                        </div>
+                        <!-- Email form for sending OTP -->
+                        <form id="staff-email-form" class="form-login flex flex-column gap22 w-full" action="/staff/login/send-otp" method="post" autocomplete="off">
+                            <fieldset class="email">
+                                <div class="body-title mb-10 text-white">Email address <span class="tf-color-1">*</span></div>
+                                <input class="flex-grow" type="email" name="email" id="staff-login-email" placeholder="Enter your staff email id" required>
+                            </fieldset>
+                            <button type="submit" class="tf-button w-full">Send OTP</button>
+                        </form>
+                        <!-- OTP verification form -->
+                        <form id="staff-otp-form" class="form-login flex flex-column gap22 w-full" action="/staff/login/verify-otp" method="post" style="display:none;" autocomplete="off">
+                            <input type="hidden" name="email" id="otp-email-hidden">
+                            <fieldset class="otp">
+                                <div class="body-title mb-10 text-white">OTP <span class="tf-color-1">*</span></div>
+                                <input class="flex-grow" type="text" name="otp" placeholder="Enter OTP sent to your email" maxlength="6" required>
+                            </fieldset>
+                            <button type="submit" class="tf-button w-full">Verify OTP</button>
+                        </form>
+                        <div id="staff-login-msg" style="margin-top:12px; color:#fff; min-height:20px;"></div>
+                    </div>
+
+                    <script>
+                        // Selectors
+                        const emailForm = document.getElementById('staff-email-form');
+                        const otpForm = document.getElementById('staff-otp-form');
+                        const msgBox = document.getElementById('staff-login-msg');
+                        const stageDesc = document.getElementById('stage-desc');
+                        const staffLoginEmail = document.getElementById('staff-login-email');
+                        const otpEmailHidden = document.getElementById('otp-email-hidden');
+
+                        emailForm.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            msgBox.textContent = '';
+                            const email = staffLoginEmail.value.trim();
+                            if (!email) {
+                                msgBox.textContent = "Please enter your email address.";
+                                return;
+                            }
+                            const formData = new URLSearchParams();
+                            formData.append('email', email);
+
+                            fetch('/staff/login/send-otp', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: formData.toString()
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // show OTP form and autofill hidden email
+                                    otpEmailHidden.value = email;
+                                    emailForm.style.display = 'none';
+                                    otpForm.style.display = '';
+                                    stageDesc.textContent = "Enter the OTP sent to your email";
+                                    msgBox.style.color = "#00ff80";
+                                    msgBox.textContent = "OTP sent to registered staff email.";
+                                } else {
+                                    msgBox.style.color = "#ffbaba";
+                                    msgBox.textContent = data.message || data.error || "Failed to send OTP. Try again.";
+                                }
+                            })
+                            .catch(() => {
+                                msgBox.style.color = "#ffbaba";
+                                msgBox.textContent = "Network error. Try again.";
+                            });
+                        });
+
+                        otpForm.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            msgBox.textContent = '';
+                            const email = otpEmailHidden.value;
+                            const otp = otpForm.elements['otp'].value.trim();
+                            if (!otp) {
+                                msgBox.textContent = "Please enter the OTP.";
+                                return;
+                            }
+                            const formData = new URLSearchParams();
+                            formData.append('email', email);
+                            formData.append('otp', otp);
+
+                            fetch('/staff/login/verify-otp', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: formData.toString()
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    msgBox.style.color = "#00ff80";
+                                    msgBox.textContent = "Login successful! Redirecting...";
+                                    setTimeout(() => window.location.href = data.redirect || "/staff/dashboard", 1100);
+                                } else {
+                                    msgBox.style.color = "#ffbaba";
+                                    msgBox.textContent = data.message || data.error || "Invalid or expired OTP.";
+                                }
+                            })
+                            .catch(() => {
+                                msgBox.style.color = "#ffbaba";
+                                msgBox.textContent = "Network error. Try again.";
+                            });
+                        });
+                    </script>
+                </div>
+           
+            </div>
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Javascript -->
+    <script src="/admin-js/jquery.min.js"></script>
+    <script src="/admin-js/bootstrap.min.js"></script>
+    <script src="/admin-js/bootstrap-select.min.js"></script>
+    <script defer src="/admin-js/main.js"></script>
+
+</body>
+
+</html>

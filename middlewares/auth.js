@@ -49,10 +49,10 @@ function isAdmin(req, res, next) {
 // Staff check
 function isStaff(req, res, next) {
   if (!req.session || !req.session.user) {
-    return res.redirect('/admin/adminLogin');
+    return res.redirect('/staff/staffLogin');
   }
 
-  if (['staff','admin','superadmin'].includes(req.session.user.role)) {
+  if (['staff'].includes(req.session.user.role)) {
     return next();
   }
 

@@ -262,22 +262,39 @@
                             </div>
                             <div class="canvas-body">
 
-                                <!-- Service Categories -->
+                                <!-- Service Categories (Dynamic) -->
                                 <div class="widget-facet facet-categories">
                                     <h6 class="facet-title">Services</h6>
                                     <ul class="facet-content">
-                                        <li><a href="#" class="categories-item">Haircut & Styling <span
-                                                    class="count-cate">(25)</span></a></li>
-                                        <li><a href="#" class="categories-item">Facials & Skincare <span
-                                                    class="count-cate">(18)</span></a></li>
-                                        <li><a href="#" class="categories-item">Bleaching & Cleanup <span
-                                                    class="count-cate">(10)</span></a></li>
-                                        <li><a href="#" class="categories-item">Bridal Makeup <span
-                                                    class="count-cate">(8)</span></a></li>
-                                        <li><a href="#" class="categories-item">Manicure & Pedicure <span
-                                                    class="count-cate">(12)</span></a></li>
-                                        <li><a href="#" class="categories-item">Hair Coloring <span
-                                                    class="count-cate">(15)</span></a></li>
+                                        <% 
+                                            let flatServices = [];
+                                            if (typeof freelancers !== 'undefined' && freelancers.length) {
+                                                freelancers.forEach(function(f) {
+                                                    if (Array.isArray(f.freelancerServices)) {
+                                                        f.freelancerServices.forEach(function(svc) {
+                                                     
+                                                            if (svc && svc.serviceId) {
+                                                                flatServices.push(svc.serviceId);
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                       
+                                            let uniqueServices = Array.from(new Set(flatServices));
+                                        %>
+                                        <% if (uniqueServices.length) { %>
+                                            <% uniqueServices.forEach(function(serviceId) { %>
+                                                <li>
+                                                    <a href="#" class="categories-item"
+                                                        data-service-id="<%= serviceId %>">
+                                                        <%= serviceId %>
+                                                    </a>
+                                                </li>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <li><em>No services found</em></li>
+                                        <% } %>
                                     </ul>
                                 </div>
 
@@ -288,35 +305,15 @@
                                     </div>
                                     <div class="box-price-product">
                                         <div class="box-price-item">
-                                            <span class="title-price">Min price</span>
-                                            <div class="price-val" id="price-min-value" data-currency="₹"></div>
+                                            <span class="title-price">Price</span>
+                                            <select id="price-select" name="price-select" class="form-select">
+                                                <% 
+                                                    for (let p = 100; p <= 20000; p += 100) { 
+                                                %>
+                                                    <option value="<%= p %>">₹<%= p %></option>
+                                                <% } %>
+                                            </select>
                                         </div>
-                                        <div class="box-price-item">
-                                            <span class="title-price">Max price</span>
-                                            <div class="price-val" id="price-max-value" data-currency="₹"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Availability -->
-                                <div class="widget-facet facet-fieldset">
-                                    <h6 class="facet-title">Availability</h6>
-                                    <div class="box-fieldset-item">
-                                        <fieldset class="fieldset-item">
-                                            <input type="radio" name="availability" class="tf-check"
-                                                id="availableToday">
-                                            <label for="availableToday">Available Today</label>
-                                        </fieldset>
-                                        <fieldset class="fieldset-item">
-                                            <input type="radio" name="availability" class="tf-check"
-                                                id="availableThisWeek">
-                                            <label for="availableThisWeek">Available This Week</label>
-                                        </fieldset>
-                                        <fieldset class="fieldset-item">
-                                            <input type="radio" name="availability" class="tf-check"
-                                                id="availableWeekend">
-                                            <label for="availableWeekend">Weekend Slots</label>
-                                        </fieldset>
                                     </div>
                                 </div>
 
@@ -325,36 +322,52 @@
                                     <h6 class="facet-title">For Whom</h6>
                                     <div class="box-fieldset-item">
                                         <fieldset class="fieldset-item">
-                                            <input type="checkbox" name="gender" class="tf-check" id="forWomen">
+                                            <input type="checkbox" name="gender" class="tf-check" id="forWomen" value="female">
                                             <label for="forWomen">Women</label>
                                         </fieldset>
                                         <fieldset class="fieldset-item">
-                                            <input type="checkbox" name="gender" class="tf-check" id="forMen">
+                                            <input type="checkbox" name="gender" class="tf-check" id="forMen" value="male">
                                             <label for="forMen">Men</label>
                                         </fieldset>
                                         <fieldset class="fieldset-item">
-                                            <input type="checkbox" name="gender" class="tf-check" id="forUnisex">
+                                            <input type="checkbox" name="gender" class="tf-check" id="forUnisex" value="unisex">
                                             <label for="forUnisex">Unisex</label>
                                         </fieldset>
                                     </div>
                                 </div>
 
-                                <!-- Location -->
+                                <!-- Location (Dynamic) -->
                                 <div class="widget-facet facet-location">
                                     <h6 class="facet-title">Location</h6>
+                                    <% 
+                                     
+                                        let locSet = new Set();
+                                        if (typeof freelancers !== 'undefined' && freelancers.length) {
+                                            freelancers.forEach(function(f) {
+                                                if (Array.isArray(f.locations)) {
+                                                    f.locations.forEach(function(loc) {
+                                       
+                                                        if (loc && loc.city) {
+                                                            locSet.add(loc.city);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                        let uniqueLocations = Array.from(locSet);
+                                    %>
                                     <div class="box-fieldset-item">
-                                        <fieldset class="fieldset-item">
-                                            <input type="checkbox" name="gender" class="tf-check" id="forWomen">
-                                            <label for="forWomen">HSR Layout</label>
-                                        </fieldset>
-                                        <fieldset class="fieldset-item">
-                                            <input type="checkbox" name="gender" class="tf-check" id="forMen">
-                                            <label for="forMen">Indiranagar</label>
-                                        </fieldset>
-                                        <fieldset class="fieldset-item">
-                                            <input type="checkbox" name="gender" class="tf-check" id="forUnisex">
-                                            <label for="forUnisex">Koramangala</label>
-                                        </fieldset>
+                                        <% if (uniqueLocations.length) { %>
+                                            <% uniqueLocations.forEach(function(city, idx) { %>
+                                                <fieldset class="fieldset-item">
+                                                    <input type="checkbox" name="location" class="tf-check" 
+                                                        id="location_<%= idx %>" value="<%= city %>">
+                                                    <label for="location_<%= idx %>"><%= city %></label>
+                                                </fieldset>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <fieldset class="fieldset-item"><em>No locations found</em></fieldset>
+                                        <% } %>
                                     </div>
                                 </div>
 
@@ -363,11 +376,11 @@
                                     <h6 class="facet-title">Ratings</h6>
                                     <div class="box-fieldset-item">
                                         <fieldset class="fieldset-item">
-                                            <input type="radio" name="rating" class="tf-check" id="rating4plus">
+                                            <input type="radio" name="rating" class="tf-check" id="rating4plus" value="4">
                                             <label for="rating4plus">4★ & above</label>
                                         </fieldset>
                                         <fieldset class="fieldset-item">
-                                            <input type="radio" name="rating" class="tf-check" id="rating3plus">
+                                            <input type="radio" name="rating" class="tf-check" id="rating3plus" value="3">
                                             <label for="rating3plus">3★ & above</label>
                                         </fieldset>
                                     </div>
@@ -390,236 +403,192 @@
                     <div class="container">
                         <!-- Grid Cards -->
                         <div class="row g-4">
-                            <!-- Card 1 -->
-                            <div class="col-sm-12 col-md-6 col-lg-6">
-                                <div class="card bs-beautician-card">
-                                    <div class="bs-card-img-wrapper">
-                                        <!-- <img src="/images/beautician/beautician1.png" alt="Beautician">-->
-                                        <span class="bs-availability-badge">Available Today</span>
-                                    </div>
-                                    <div class="card-body bs-card-body">
-                                        <div class="bs-beautician-id">ID no. :1</div>
-                                        <div class="bs-rating-section">
-                                            <div class="bs-stars">
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star half">★</span>
+                            <% if (freelancers && freelancers.length > 0) { %>
+                                <% freelancers.forEach(function(freelancer, idx) { 
+                                  
+                                    var idNo = freelancer._id ? freelancer._id.toString().slice(-6) : (idx+1);
+
+                                 
+                                    var displayRating = typeof freelancer.rating === "number" ? Math.round(freelancer.rating * 2) / 2 : 0;
+                                    var reviewCount = freelancer.totalReviews || 0;
+
+                                 
+                                    var locArr = Array.isArray(freelancer.locations) && freelancer.locations.length
+                                        ? freelancer.locations.map(function(loc) {
+                                            if (loc.city) return loc.city;
+                                            return null;
+                                        }).filter(Boolean)
+                                        : [];
+
+                                 
+                                    var visibleLocs = locArr.slice(0, 3).join(', ');
+                                    var locsExtraCount = Math.max(locArr.length - 3, 0);
+
+                                
+                                    var minServicePrice = null;
+                                    if (Array.isArray(freelancer.freelancerServices) && freelancer.freelancerServices.length) {
+                                        freelancer.freelancerServices.forEach(function(serv) {
+                                            if (typeof serv.finalPrice === 'number') {
+                                                if (minServicePrice === null || serv.finalPrice < minServicePrice)
+                                                    minServicePrice = serv.finalPrice;
+                                            }
+                                        });
+                                    }
+
+                            
+                                    var serviceTags = [];
+                                    if (Array.isArray(freelancer.freelancerServices)) {
+                                        freelancer.freelancerServices.forEach(function(serv) {
+                                            if (serv.serviceId && serviceTags.length < 3 && serviceTags.indexOf(serv.serviceId) === -1) {
+                                                serviceTags.push(serv.serviceId);
+                                            }
+                                        });
+                                    }
+
+                                    var today = new Date();
+                                    var todayDay = today.getDay();
+                                    var tomorrowDay = (todayDay + 1) % 7;
+                                    var availableToday = Array.isArray(freelancer.availability) ?
+                                        freelancer.availability.some(function(av) { return av.dayOfWeek === todayDay }) : false;
+                                    var availableTomorrow = !availableToday && Array.isArray(freelancer.availability) ?
+                                        freelancer.availability.some(function(av) { return av.dayOfWeek === tomorrowDay }) : false;
+
+                                    var desc = freelancer.bio ? freelancer.bio : (freelancer.professionalTitle || 'No details available');
+                                %>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="card bs-beautician-card">
+                                        <div class="card-body bs-card-body">
+                                            <div style="margin-bottom: 10px;">
+                                                <% if (availableToday) { %>
+                                                    <span class="bs-availability-badge">Available Today</span>
+                                                <% } else if (availableTomorrow) { %>
+                                                    <span class="bs-availability-badge bs-tomorrow">Available Tomorrow</span>
+                                                <% } %>
                                             </div>
-                                            <span class="bs-review-count">(248 reviews)</span>
-                                        </div>
-                                        <div class="bs-location-badge">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span>Indiranagar, Koramangala, Whitefield</span>
-                                            <span class="bs-more-locations" onclick="openLocationModal(1)">+5
-                                                more</span>
-                                        </div>
-                                        <p class="bs-description">
-                                            Professional Makeup Artist & Skincare Specialist with 8 years of experience.
-                                            Specializing in bridal makeup, party makeup, and facial treatments.
-                                        </p>
-                                        <div class="bs-service-tags">
-                                            <span class="bs-service-tag">Bridal Makeup</span>
-                                            <span class="bs-service-tag">Makeup</span>
-                                            <span class="bs-service-tag">Skincare</span>
-                                            <span class="bs-more-services">+5 more</span>
-                                        </div>
-
-                                        <div class="bs-price-section">
-                                            <div class="bs-price-info">
-                                                <span class="price-label">Starting from</span>
-                                                <span class="price-value">₹1,000</span>
+                                            <div class="bs-beautician-id">ID no. : <%= idNo %></div>
+                                            <div class="bs-rating-section">
+                                                <div class="bs-stars">
+                                                    <% 
+                                                        var fullStars = Math.floor(displayRating);
+                                                        var halfStar = (displayRating - fullStars) >= 0.5 ? 1 : 0;
+                                                        var emptyStars = 5 - fullStars - halfStar;
+                                                        for (var i=0; i<fullStars; i++) { %>
+                                                            <span class="star filled">★</span>
+                                                    <% } %>
+                                                    <% if (halfStar) { %>
+                                                        <span class="star half">★</span>
+                                                    <% } %>
+                                                    <% for (var i=0; i<emptyStars; i++) { %>
+                                                        <span class="star">★</span>
+                                                    <% } %>
+                                                </div>
+                                                <span class="bs-review-count">(<%= reviewCount %> reviews)</span>
                                             </div>
-                                            <button class="btn-view-services" onclick="openServicesModal(1)">
-                                                View All Services
-                                            </button>
-                                        </div>
-
-                                        <div class="bs-card-actions">
-                                            <a href="beautician-profile.html">
-                                                <button class="btn bs-btn-profile">View Profile</button>
-                                            </a>
-
-                                            <button class="btn bs-btn-icon bs-calendar" title="Book Now"
-                                                onclick="openBookingModal()">
-                                                <i class="icon-calendar"></i>
-                                            </button>
-                                            <a href="javascript:void(0);"></a>
-                                            <button class="btn bs-btn-icon bs-star" title="Reviews"
-                                                onclick="openReviewPopup()">
-                                                <i class="icon-star"></i>
-                                            </button>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Card 2 -->
-                            <div class="col-sm-12 col-md-6 col-lg-6">
-                                <div class="card bs-beautician-card">
-                                    <div class="bs-card-img-wrapper">
-                                        <!-- <img src="/images/beautician/beautician2.png" alt="Beautician">-->
-                                        <span class="bs-availability-badge bs-tomorrow">Available Tomorrow</span>
-                                    </div>
-                                    <div class="card-body bs-card-body">
-                                        <div class="bs-beautician-id">ID no. :2</div>
-                                        <div class="bs-rating-section">
-                                            <div class="bs-stars">
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star half">★</span>
+                                            <div class="bs-location-badge">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <% if (visibleLocs) { %>
+                                                    <span><%= visibleLocs %></span>
+                                                <% } %>
+                                                <% if (locsExtraCount > 0) { %>
+                                                    <span class="bs-more-locations" onclick="openLocationModal('<%= freelancer._id %>')">+<%= locsExtraCount %> more</span>
+                                                <% } %>
                                             </div>
-                                            <span class="bs-review-count">(156 reviews)</span>
-                                        </div>
-                                        <div class="bs-location-badge">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span>Jayanagar, Basavanagudi</span>
-                                        </div>
-                                        <p class="bs-description">
-                                            Hair Styling & Coloring Expert with 6 years of experience in trendy cuts,
-                                            color
-                                            treatments, and special occasion styling.
-                                        </p>
-                                        <div class="bs-service-tags">
-                                            <span class="bs-service-tag">Hair Styling</span>
-                                            <span class="bs-service-tag">Coloring</span>
-                                            <span class="bs-service-tag">Treatment</span>
-                                        </div>
-                                        <div class="bs-price-section">
-                                            <div class="bs-price-info">
-                                                <span class="price-label">Starting from</span>
-                                                <span class="price-value">₹800</span>
+                                            <p class="bs-description">
+                                                <%= desc %>
+                                            </p>
+                                            <div class="bs-service-tags">
+                                                <% serviceTags.forEach(function(tag) { %>
+                                                    <span class="bs-service-tag"><%= tag %></span>
+                                                <% }); %>
+                                                <% if (freelancer.freelancerServices && freelancer.freelancerServices.length > 3) { %>
+                                                    <span class="bs-more-services">+<%= freelancer.freelancerServices.length - 3 %> more</span>
+                                                <% } %>
                                             </div>
-                                            <button class="btn-view-services" onclick="openServicesModal(2)">
-                                                View All Services
-                                            </button>
-                                        </div>
-                                        <div class="bs-card-actions">
-                                            <a href="beautician-profile.html">
-                                                <button class="btn bs-btn-profile">View Profile</button>
-                                            </a>
-
-                                            <button class="btn bs-btn-icon bs-calendar" title="Book Now"
-                                                onclick="openBookingModal()">
-
-                                                <i class="icon-calendar"></i>
-
-                                            </button>
-
-                                            <button class="btn bs-btn-icon bs-star" title="Reviews">
-
-                                                <i class="icon-star"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Card 3 (Example) -->
-                            <div class="col-sm-12 col-md-6 col-lg-6">
-                                <div class="card bs-beautician-card">
-                                    <div class="bs-card-img-wrapper">
-                                        <!-- <img src="/images/beautician/beautician3.png" alt="Beautician">-->
-                                        <span class="bs-availability-badge">Available Today</span>
-                                    </div>
-                                    <div class="card-body bs-card-body">
-                                        <div class="bs-beautician-id">ID no. :3</div>
-                                        <div class="bs-rating-section">
-                                            <div class="bs-stars">
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star filled">★</span>
-                                                <span class="star half">★</span>
+                                            <div class="bs-price-section">
+                                                <div class="bs-price-info">
+                                                    <span class="price-label">Starting from</span>
+                                                    <span class="price-value">
+                                                        <%= minServicePrice !== null ? "₹" + minServicePrice.toLocaleString('en-IN') : "N/A" %>
+                                                    </span>
+                                                </div>
+                                                <button class="btn-view-services" onclick="openServicesModal('<%= freelancer._id %>')">
+                                                    View All Services
+                                                </button>
                                             </div>
-                                            <span class="bs-review-count">(192 reviews)</span>
-                                        </div>
-                                        <div class="bs-location-badge">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span>HSR Layout, BTM</span>
-                                        </div>
-                                        <p class="bs-description">
-                                            Nail Art Specialist and Spa Therapist with expertise in manicures,
-                                            pedicures,
-                                            and
-                                            relaxation treatments. 5 years experience.
-                                        </p>
-                                        <div class="bs-service-tags">
-                                            <span class="bs-service-tag">Nail Art</span>
-                                            <span class="bs-service-tag">Spa</span>
-                                            <span class="bs-service-tag">Manicure</span>
-                                        </div>
-                                        <div class="bs-price-section">
-                                            <div class="bs-price-info">
-                                                <span class="price-label">Starting from</span>
-                                                <span class="price-value">₹800</span>
+                                            <div class="bs-card-actions">
+                                                <a href="/beautician-profile/<%= freelancer._id %>">
+                                                    <button class="btn bs-btn-profile">View Profile</button>
+                                                </a>
+                                                <button class="btn bs-btn-icon bs-calendar" title="Book Now"
+                                                    onclick="openBookingModal('<%= freelancer._id %>')">
+                                                    <i class="icon-calendar"></i>
+                                                </button>
+                                                <button class="btn bs-btn-icon bs-star" title="Reviews"
+                                                    onclick="openReviewPopup('<%= freelancer._id %>')">
+                                                    <i class="icon-star"></i>
+                                                </button>
                                             </div>
-                                            <button class="btn-view-services" onclick="openServicesModal(2)">
-                                                View All Services
-                                            </button>
-                                        </div>
-                                        <div class="bs-card-actions">
-                                            <a href="beautician-profile.html">
-                                                <button class="btn bs-btn-profile">View Profile</button>
-                                            </a>
-
-                                            <button class="btn bs-btn-icon bs-calendar" title="Book Now"
-                                                onclick="openBookingModal()">
-
-                                                <i class="icon-calendar"></i>
-
-                                            </button>
-
-                                            <button class="btn bs-btn-icon bs-star" title="Reviews">
-
-                                                <i class="icon-star"></i>
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="col-12">
+                                    <div class="alert alert-warning text-center my-4">
+                                        No beauticians/freelancers found matching your criteria.
+                                    </div>
+                                </div>
+                            <% } %>
                         </div>
 
-                         <ul class="wg-pagination justify-content-center salon-pagination">
-                        <li>
-                            <a href="#" class="pagination-item text-button">1</a>
-                        </li>
-                        <li class="active">
-                            <div class="pagination-item text-button">2</div>
-                        </li>
-                        <li>
-                            <a href="#" class="pagination-item text-button">3</a>
-                        </li>
-                        <li>
-                            <a href="#" class="pagination-item text-button"><i class="icon-arrRight"></i></a>
-                        </li>
-                    </ul>
+                        <!-- Pagination -->
+                        <% if (pagination && pagination.totalPages > 1) { 
+                            var currentPage = pagination.page || 1;
+                            var totalPages = pagination.totalPages || 1;
+                            var baseUrl = "/saloon-at-home?";
+                            var filterParams = [];
+                            if (filtersIn) {
+                                Object.keys(filtersIn).forEach(function(k) {
+                                    if (filtersIn[k]) {
+                                        filterParams.push(encodeURIComponent(k) + "=" + encodeURIComponent(filtersIn[k]));
+                                    }
+                                });
+                            }
+                            // Note: Use baseUrl + filterParams + '&page='
+                        %>
+                        <ul class="wg-pagination justify-content-center salon-pagination">
+                            <% for (var i = 1; i <= totalPages; i++) { %>
+                                <% if (i === currentPage) { %>
+                                    <li class="active">
+                                        <div class="pagination-item text-button"><%= i %></div>
+                                    </li>
+                                <% } else { %>
+                                    <li>
+                                        <a href="<%= baseUrl + filterParams.join('&') + '&page=' + i %>" class="pagination-item text-button"><%= i %></a>
+                                    </li>
+                                <% } %>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li>
+                                    <a href="<%= baseUrl + filterParams.join('&') + '&page=' + (currentPage + 1) %>" class="pagination-item text-button">
+                                        <i class="icon-arrRight"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                        <% } %>
 
-
-
-                        <!-- Location Modal -->
-                        <div id="bsLocationModal" class="bs-location-modal">
+                        <!-- Location Modal: dynamically filled via JS -->
+                        <div id="bsLocationModal" class="bs-location-modal" style="display: none;">
                             <div class="bs-modal-content-custom">
-                                <h5 class="mb-3">Service Areas - ID no. <span id="bsModalBeauticianId">1</span></h5>
+                                <h5 class="mb-3">Service Areas - ID no. <span id="bsModalBeauticianId"></span></h5>
                                 <ul class="bs-location-list" id="bsLocationList">
-                                    <li>Indiranagar</li>
-                                    <li>Koramangala</li>
-                                    <li>Whitefield</li>
-                                    <li>HSR Layout</li>
-                                    <li>Marathahalli</li>
-                                    <li>BTM Layout</li>
-                                    <li>Electronic City</li>
-                                    <li>JP Nagar</li>
+                                    <!-- JS will populate this -->
                                 </ul>
                                 <button class="btn btn-secondary w-100" onclick="closeLocationModal()">Close</button>
                             </div>
                         </div>
                     </div>
-
                 </main>
 
 

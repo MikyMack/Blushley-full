@@ -198,3 +198,127 @@ exports.salonLogin = async (req, res) => {
 
   return res.redirect("/salon/dashboard");
 };
+
+
+exports.makeUserStaff = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Prevent changing roles of admin/superadmin
+    if (["admin", "superadmin"].includes(user.role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot change role of admin or superadmin"
+      });
+    }
+
+    // Update the role
+    user.role = "staff";
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: `User promoted to staff successfully`,
+      user
+    });
+
+  } catch (err) {
+    console.error("MAKE STAFF ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message
+    });
+  }
+};
+
+exports.removeStaffRole = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+
+    if (user.role !== "staff") {
+      return res.status(400).json({
+        success: false,
+        message: "User is not a staff member"
+      });
+    }
+
+    user.role = "user";
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Staff role removed successfully",
+      user
+    });
+
+  } catch (err) {
+    console.error("REMOVE STAFF ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.blockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+
+    // Prevent blocking superadmin or admin
+    if (["admin", "superadmin"].includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot block admin or superadmin"
+      });
+    }
+
+    user.isBlocked = true;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "User blocked successfully",
+      user
+    });
+
+  } catch (err) {
+    console.error("BLOCK USER ERROR:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.unblockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+
+    user.isBlocked = false;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "User unblocked successfully",
+      user
+    });
+
+  } catch (err) {
+    console.error("UNBLOCK USER ERROR:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+

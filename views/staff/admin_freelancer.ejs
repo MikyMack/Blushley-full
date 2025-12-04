@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Blushelys - Freelance Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="/admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="/admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="/images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="/images/logo/blushley-png-without-shade.png">
+    
+    <style>
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background-color: #e6f7ee;
+            color: #10b759;
+        }
+
+        .status-badge.inactive {
+            background-color: #ffebeb;
+            color: #ff4d4f;
+        }
+
+        .status-badge.pending {
+            background-color: #fff4e6;
+            color: #fa8c16;
+        }
+
+        .status-badge.verified {
+            background-color: #e6f7ff;
+            color: #5c4d3b;
+        }
+
+        /* Modern Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modern-modal {
+            border: none;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+            border-radius: 16px 16px 0 0;
+            color: white;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title i {
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .modal-title h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header i {
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5c4d3b;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: #5c4d3b;
+            background: #f1f5f9;
+        }
+
+        .file-upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-content i {
+            font-size: 48px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .upload-content p {
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .upload-content small {
+            color: #64748b;
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .image-preview-grid img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle-slider {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        input[type="checkbox"]:checked + .toggle-label .toggle-slider {
+            background: #10b981;
+        }
+
+        input[type="checkbox"]:checked + .toggle-label .toggle-slider::before {
+            transform: translateX(26px);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Freelancer Cards */
+        .freelancers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            /* padding: 20px; */
+        }
+
+        .freelancer-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .freelancer-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .freelancer-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #666;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .skill-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .card-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-actions .item {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .card-actions .item.edit {
+            background-color: #e3f2fd;
+            color: #5c4d3b;
+        }
+
+        .card-actions .item.edit:hover {
+            background-color: #bbdefb;
+        }
+
+        .card-actions .item.toggle {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .card-actions .item.toggle:hover {
+            background-color: #c8e6c9;
+        }
+
+        .card-actions .item.trash {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+
+        .card-actions .item.trash:hover {
+            background-color: #ffcdd2;
+        }
+
+        .badges-1{
+            display: flex;
+            gap: 10px;
+        }
+
+        .verified-badge {
+            background-color: #e8f5e9;
+            color: #388e3c;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Filter and Search */
+        .wg-filter {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-search {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .form-search input {
+            width: 100%;
+            padding: 10px 40px 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .form-search button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .show select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Pagination */
+        .wg-pagination {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .wg-pagination li {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+
+        .wg-pagination li.active {
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+        }
+
+        .wg-pagination li.active a {
+            color: white;
+        }
+
+        .wg-pagination li a {
+            text-decoration: none;
+            color: #333;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wg-pagination li:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+
+        /* Add Freelancer Button */
+        .add-freelancer-btn {
+            background: linear-gradient(135deg, #5c4d3b 0%, #5c4d3b 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-freelancer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Service Locations */
+        .service-locations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .location-tag {
+            background: #fff3e0;
+            color: #f57c00;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .freelancers-container {
+                grid-template-columns: 1fr;
+            }
+
+            .wg-filter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-search {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+
+            .modal-header {
+                border-radius: 0;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .card-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <!-- layout-wrap -->
+            <div class="layout-wrap loader-off">
+                <!-- preload -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
+                <!-- /preload -->
+                
+                <!-- section-menu-left -->
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/staff/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo" src="/images/logo/blushley-png-without-shade.png"
+                                data-light="/images/logo/blushley-png-without-shade.png" data-dark="/images/logo/blushley-png-without-shade.png">
+                        </a>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                                <ul>
+                                    <li class="menu-item">
+                                        <a href="/staff/dashboard">
+                                            <div class="icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Staff Dashboard</div>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="menu-item">
+                                        <a href="/staff/categories" class="menu-item-button">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Category Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/staff/products" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">Product Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="/staff/beautyTips" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                            <div class="text">beautyTip Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="/staff/reseller_products" class="menu-item-button">
+                                            <div class="icon"><i class="icon-heart"></i></div>
+                                            <div class="text">Sellers Management</div>
+                                        </a>
+                                    </li>
+<li class="menu-item">
+                                        <a href="/staff/orders" class="menu-item-button">
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Order Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="/staff/bookings" class="menu-item-button">
+                                            <div class="icon"><i class="icon-calendar"></i></div>
+                                            <div class="text">Booking Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="/staff/saloon" class="menu-item-button">
+                                            <div class="icon"><i class="icon-scissors"></i></div>
+                                            <div class="text">Salons Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item active">
+                                        <a href="/staff/freelance" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Freelance Management</div>
+                                        </a>
+                                    </li>
+    <li class="menu-item ">
+                                        <a href="/staff/users" class="menu-item-button">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">User Management</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="/staff/banner" class="menu-item-button">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/staff/testimonials" class="menu-item-button">
+                                            <div class="icon"><i class="fa fa-star-o"></i></div>
+                                            <div class="text">Testimonials Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item ">
+                                        <a href="/staff/blogs" class="menu-item-button">
+                                            <div class="icon"><i class="icon-book-open"></i></div>
+                                            <div class="text">Blogs Management</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a href="/logout">
+                                            <div class="icon">
+                                                <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                        fill="#111111" />
+                                                </svg>
+                                            </div>
+                                            <div class="text">Log out</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /section-menu-left -->
+                
+                <!-- section-content-right -->
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="/staff/dashboard">
+                                    <img style="width: 50px;" id="logo_header_mobile" alt="" src="/images/logo/blushley-png-without-shade.png"
+                                        data-light="/images/logo/blushley-png-without-shade.png" data-dark="/images/logo/blushley-png-without-shade.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="/images/logo/blushley-png-without-shade.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushelys</span>
+                                                    <span class="text-tiny">Staff</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/logout" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                                <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                                    <h3>Freelance Management</h3>
+                                    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                                        <li>
+                                            <a href="/staff/dashboard">
+                                                <div class="text-tiny">Dashboard</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="text-tiny">Freelance</div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <i class="icon-chevron-right"></i>
+                                        </li>
+                                        <li>
+                                            <div class="text-tiny">Freelance Management</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- freelancer-list -->
+                                <div class="wg-box">
+                                    <div class="title-box">
+                                        <i class="icon-users"></i>
+                                        <div class="body-text">
+                                            Tip: Manage freelance beauticians. You can verify freelancers, toggle their status, and edit their details.
+                                        </div>
+                                    </div>
+
+                                    <style>
+                                        @media (max-width: 768px) {
+                                            .responsive-row-controls {
+                                                flex-direction: column !important;
+                                                align-items: stretch !important;
+                                                gap: 12px !important;
+                                            }
+                                            .responsive-row-controls form {
+                                                flex-wrap: wrap !important;
+                                                gap: 10px !important;
+                                            }
+                                            .responsive-row-controls .form-search,
+                                            .responsive-row-controls .form-group {
+                                                min-width: 0 !important;
+                                                max-width: 100% !important;
+                                                width: 100% !important;
+                                                margin-left: 0 !important;
+                                            }
+                                            .responsive-row-controls .add-freelancer-btn {
+                                                min-width: 0 !important;
+                                                width: 100% !important;
+                                                margin-left: 0 !important;
+                                            }
+                                        }
+                                    </style>
+                                    <div class="flex items-center justify-between gap-4 flex-nowrap responsive-row-controls" style="margin-bottom: 10px;">
+                                        <form id="list-filters" class="flex items-center gap-3 flex-nowrap" method="get" action="" style="flex-grow:1; min-width:0;">
+                                            <div class="flex items-center gap-2" style="white-space: nowrap;">
+                                                <div class="text-tiny">Showing</div>
+                                                <div class="select" style="min-width:70px;">
+                                                    <select id="limit-select" name="limit" style="width:100px;">
+                                                        <option value="10" <%= (query && query.limit == 10) || (!query.limit) ? 'selected' : '' %>>10</option>
+                                                        <option value="20" <%= (query && query.limit == 20) ? 'selected' : '' %>>20</option>
+                                                        <option value="30" <%= (query && query.limit == 30) ? 'selected' : '' %>>30</option>
+                                                    </select>
+                                                </div>
+                                                <div class="text-tiny">entries</div>
+                                            </div>
+                                            <div class="form-search" style="min-width:200px; max-width:280px; margin-left: 14px;">
+                                                <input type="text" id="search-input" name="q"
+                                                    placeholder="Search by name, phone, or email..."
+                                                    value="<%= (query && query.q) ? query.q : '' %>"
+                                                    style="width:100%;">
+                                                <button id="search-btn" type="submit"><i class="icon-search"></i></button>
+                                            </div>
+                                            <div class="form-group ml-2" style="min-width:150px; margin-left: 14px;">
+                                                <select id="status-select" name="status" class="form-control" style="width:100%;" onchange="this.form.submit()">
+                                                    <option value="">All Statuses</option>
+                                                    <option value="pending" <%= query.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                                    <option value="approved" <%= query.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                                                    <option value="rejected" <%= query.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                                    <option value="inactive" <%= query.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                                                </select>
+                                            </div>
+                                            <input type="hidden" name="page" value="<%= page %>">
+                                        </form>
+                                        <!-- <button class="add-freelancer-btn" style="min-width:180px; margin-left:14px; white-space:nowrap;" onclick="showAddFreelancerModal()">
+                                            <i class="icon-plus"></i> Add Freelancer
+                                        </button> -->
+                                    </div>
+
+                                    <div class="freelancers-container" id="freelancers-list">
+                                        <% if (typeof error !== 'undefined' && error) { %>
+                                            <div class="error-message"><%= error %></div>
+                                        <% } else if (!freelancers || freelancers.length === 0) { %>
+                                            <div class="no-freelancers">No freelancers found matching your criteria.</div>
+                                        <% } else { %>
+                                            <% freelancers.forEach(function(freelancer) { %>
+                                                <div class="freelancer-card" id="freelancer-<%= freelancer._id %>">
+                                                    <div class="card-header">
+                                                        <h3><%= freelancer.fullName %></h3>
+                                                        <div class='badges-1'>
+                                                            <% if (freelancer.status === 'approved') { %>
+                                                                <span class="verified-badge">Verified</span>
+                                                            <% } else { %>
+                                                                <span class="status-badge <%= freelancer.status %>">
+                                                                    <%= freelancer.status.charAt(0).toUpperCase() + freelancer.status.slice(1) %>
+                                                                </span>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">ID:</span>
+                                                            <span class="detail-value"><%= freelancer._id %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">User ID:</span>
+                                                            <span class="detail-value"><%= freelancer.userId %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Full Name:</span>
+                                                            <span class="detail-value"><%= freelancer.fullName %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Email:</span>
+                                                            <span class="detail-value"><%= freelancer.email %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Phone:</span>
+                                                            <span class="detail-value"><%= freelancer.phone %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Profile Image:</span>
+                                                            <span class="detail-value">
+                                                                <% if (freelancer.profileImage) { %>
+                                                                    <img src="<%= freelancer.profileImage %>" alt="Profile" class="small-img" style="max-height:40px;">
+                                                                <% } else { %>
+                                                                    <span>-</span>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Portfolio Images:</span>
+                                                            <span class="detail-value">
+                                                                <% if (freelancer.portfolioImages && freelancer.portfolioImages.length) { %>
+                                                                    <% freelancer.portfolioImages.forEach(function(pic) { %>
+                                                                        <img src="<%= pic %>" alt="Portfolio" class="small-img" style="max-height:30px;">
+                                                                    <% }) %>
+                                                                <% } else { %>
+                                                                    <span>-</span>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Documents:</span>
+                                                            <span class="detail-value">
+                                                                <% if (freelancer.documents && freelancer.documents.length) { %>
+                                                                    <ul class="file-list tiny-list">
+                                                                        <% freelancer.documents.forEach(function(doc) { %>
+                                                                            <li><a href="<%= doc %>" target="_blank"><%= doc.split('/').pop() %></a></li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                <% } else { %>
+                                                                    <span>-</span>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                        <% if (freelancer.proof && (freelancer.proof.type || freelancer.proof.number)) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Proof:</span>
+                                                                <span class="detail-value">
+                                                                    Type: <%= freelancer.proof.type || '-' %><br>
+                                                                    Number: <%= freelancer.proof.number || '-' %>
+                                                                </span>
+                                                            </div>
+                                                        <% } %>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Bio:</span>
+                                                            <span class="detail-value"><%= freelancer.bio || '-' %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Skills:</span>
+                                                            <span class="detail-value">
+                                                                <div class="skills-container">
+                                                                    <% (freelancer.skills || []).forEach(function(skill) { %>
+                                                                        <span class="skill-tag"><%= skill %></span>
+                                                                    <% }) %>
+                                                                    <% if (!freelancer.skills || freelancer.skills.length === 0) { %>
+                                                                        <span>-</span>
+                                                                    <% } %>
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                        <% if (freelancer.locations && freelancer.locations.length > 0) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Locations:</span>
+                                                                <span class="detail-value">
+                                                                    <ul class="location-list tiny-list">
+                                                                        <% freelancer.locations.forEach(function(loc) { %>
+                                                                            <li>
+                                                                                <%= (loc.city || '') + (loc.state ? ', ' + loc.state : '') %>
+                                                                                <% if (loc.pincode) { %> | Pincode: <%= loc.pincode %><% } %>
+                                                                                <% if (typeof loc.radius !== 'undefined') { %> | Radius: <%= loc.radius %>km<% } %>
+                                                                            </li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Locations:</span>
+                                                                <span class="detail-value">-</span>
+                                                            </div>
+                                                        <% } %>
+                                                        <% if (typeof freelancer.experience !== 'undefined') { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Experience:</span>
+                                                                <span class="detail-value"><%= freelancer.experience %> years</span>
+                                                            </div>
+                                                        <% } %>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Status:</span>
+                                                            <span class="detail-value"><%= freelancer.status.charAt(0).toUpperCase() + freelancer.status.slice(1) %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Rating:</span>
+                                                            <span class="detail-value">
+                                                                <%= typeof freelancer.rating !== 'undefined' ? (freelancer.rating + ' / 5 (' + (freelancer.totalReviews || 0) + ' reviews)') : '-' %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Created At:</span>
+                                                            <span class="detail-value"><%= freelancer.createdAt ? freelancer.createdAt.toLocaleString() : '-' %></span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Updated At:</span>
+                                                            <span class="detail-value"><%= freelancer.updatedAt ? freelancer.updatedAt.toLocaleString() : '-' %></span>
+                                                        </div>
+                                                        <% if (freelancer.availability && freelancer.availability.length) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Availability:</span>
+                                                                <span class="detail-value">
+                                                                    <ul class="tiny-list">
+                                                                        <% const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; %>
+                                                                        <% freelancer.availability.forEach(function(a) { %>
+                                                                            <li>
+                                                                                <b><%= typeof a.dayOfWeek === "number" ? days[a.dayOfWeek] : '' %>:</b>
+                                                                                <% if (a.slots && a.slots.length) { %>
+                                                                                    <% a.slots.forEach(function(s,si) { %>
+                                                                                        <span>
+                                                                                            <%= s.start %> - <%= s.end %><%= (si < a.slots.length-1) ? ',' : '' %>
+                                                                                        </span>
+                                                                                    <% }) %>
+                                                                                <% } else { %>
+                                                                                    <span>No slots</span>
+                                                                                <% } %>
+                                                                            </li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+                                                        <% } %>
+                                                        <% if (freelancer.freelancerServices && freelancer.freelancerServices.length) { %>
+                                                            <div class="detail-row">
+                                                                <span class="detail-label">Services:</span>
+                                                                <span class="detail-value">
+                                                                    <div class="services-cards-list" style="display: flex; flex-wrap: wrap; gap: 16px;">
+                                                                        <% freelancer.freelancerServices.forEach(function(svc) { %>
+                                                                            <div class="service-card" style="background: #f6f4fb; border-radius: 10px; box-shadow: 0 1px 4px 0 rgba(93,35,128,.05); padding: 16px; min-width: 260px; flex: 1 1 260px; max-width: 320px;">
+                                                                                <div style="font-weight: bold; margin-bottom: 8px; font-size:1.06em">
+                                                                                    <i class="fa fa-briefcase" aria-hidden="true" style="opacity:.7;padding-right:5px"></i>
+                                                                                    <%= svc.serviceId %>
+                                                                                </div>
+                                                                                <ul style="font-size: .96em; margin: 0; padding: 0; list-style: none;">
+                                                                                    <li><b>Base Price:</b> <%= typeof svc.freelancerBasePrice !== "undefined" ? svc.freelancerBasePrice : '-' %></li>
+                                                                                    <li><b>Admin Price:</b> <%= typeof svc.adminPrice !== "undefined" ? svc.adminPrice : '-' %></li>
+                                                                                    <li><b>Commission %:</b> <%= typeof svc.adminCommissionPercent !== "undefined" ? svc.adminCommissionPercent : '-' %></li>
+                                                                                    <li><b>Final Price:</b> <%= typeof svc.finalPrice !== "undefined" ? svc.finalPrice : '-' %></li>
+                                                                                    <li><b>Duration:</b> <%= typeof svc.durationMinutes !== "undefined" ? svc.durationMinutes + ' min' : '-' %></li>
+                                                                                    <li><b>Status:</b> <span style="font-weight:500"><%= svc.status ? svc.status.charAt(0).toUpperCase() + svc.status.slice(1) : '-' %></span></li>
+                                                                                    <li><b>Approved By:</b> <%= svc.approvedBy || '-' %></li>
+                                                                                    <li><b>Approved At:</b> <%= svc.approvedAt ? svc.approvedAt.toLocaleString() : '-' %></li>
+                                                                              
+                                                                                </ul>
+                                                                            </div>
+                                                                        <% }) %>
+                                                                    </div>
+                                                                </span>
+                                                            </div>
+                                                        <% } %>
+                                                    </div>
+                                                    <div class="card-footer">
+                                                        <div class="card-actions">
+                                                            <button class="item edit" onclick="showEditFreelancerModal('<%= freelancer._id %>')">
+                                                                <i class="icon-edit-3"></i>
+                                                            </button>
+                                                            <button class="item toggle" onclick="toggleFreelancerStatus('<%= freelancer._id %>','<%= freelancer.status %>')">
+                                                                <i class="fa fa-toggle-<%= freelancer.status === 'approved' ? 'on' : 'off' %>"></i>
+                                                            </button>
+                                                            <button class="item trash" onclick="confirmDeleteFreelancer('<%= freelancer._id %>')">
+                                                                <i class="icon-trash-2"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }) %>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="divider"></div>
+                                    <div class="flex items-center justify-between flex-wrap gap10">
+                                        <div class="text-tiny" id="showing-entries">
+                                            <% if (total > 0) { %>
+                                                Showing <%= ((page-1)*((query && query.limit) ? parseInt(query.limit) : 10)+1) %> to <%= Math.min(page*((query && query.limit) ? parseInt(query.limit) : 10), total) %> of <%= total %> entries
+                                            <% } else { %>
+                                                Showing 0 entries
+                                            <% } %>
+                                        </div>
+                                        <ul class="wg-pagination" id="pagination">
+                                            <% 
+                                                function pageQueryString(p) {
+                                                    let params = [];
+                                                    if (query && query.q) params.push('q=' + encodeURIComponent(query.q));
+                                                    if (query && query.status) params.push('status=' + encodeURIComponent(query.status));
+                                                    if (query && query.limit) params.push('limit=' + encodeURIComponent(query.limit));
+                                                    params.push('page=' + p);
+                                                    return '?' + params.join('&');
+                                                }
+                                                if (typeof totalPages !== 'undefined' && totalPages > 1 && typeof page !== 'undefined') {
+                                                    let showLimit = 2; // pages to show either side
+                                                    let firstPage = 1;
+                                                    let lastPage = totalPages;
+                                                    let start = Math.max(page - showLimit, firstPage + 1);
+                                                    let end = Math.min(page + showLimit, lastPage - 1);
+
+                                                    // First page/back shortcut
+                                                    if (page > (firstPage)) {
+                                                        %>
+                                                        <li>
+                                                            <a href="<%= pageQueryString(page - 1) %>">&laquo;</a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                    // Always show the first page number
+                                                    %>
+                                                    <li class="<%= page === firstPage ? 'active' : '' %>">
+                                                        <a href="<%= pageQueryString(firstPage) %>"><%= firstPage %></a>
+                                                    </li>
+                                                    <%
+
+                                                    if (start > firstPage + 1) {
+                                                        %>
+                                                        <li><span>...</span></li>
+                                                        <%
+                                                    }
+
+                                                    for (let i = start; i <= end; i++) {
+                                                        if (i > firstPage && i < lastPage) {
+                                                            %>
+                                                            <li class="<%= page === i ? 'active' : '' %>">
+                                                                <a href="<%= pageQueryString(i) %>"><%= i %></a>
+                                                            </li>
+                                                            <%
+                                                        }
+                                                    }
+
+                                                    if (end < lastPage - 1) {
+                                                        %>
+                                                        <li><span>...</span></li>
+                                                        <%
+                                                    }
+
+                                                    // Always show the last page number
+                                                    if (lastPage !== firstPage) {
+                                                        %>
+                                                        <li class="<%= page === lastPage ? 'active' : '' %>">
+                                                            <a href="<%= pageQueryString(lastPage) %>"><%= lastPage %></a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                    // Next page/forward shortcut
+                                                    if (page < lastPage) {
+                                                        %>
+                                                        <li>
+                                                            <a href="<%= pageQueryString(page + 1) %>">&raquo;</a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                }
+                                            %>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- /freelancer-list -->
+
+                                <!-- Add Freelancer Modal -->
+                                <div id="add-freelancer-modal" class="modal" style="display:none">
+                                    <div class="modal-content modern-modal">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-user-plus"></i>
+                                                <h3>Add New Freelancer</h3>
+                                            </div>
+                                            <button class="close-btn" type="button" onclick="closeModal('add-freelancer-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <form id="add-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/createFreelancer">
+                                                <div class="form-section">
+                                                    <div class="section-header">
+                                                        <h4><i class="icon-user"></i> Personal Information</h4>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label for="add-freelancer-name">Full Name*</label>
+                                                            <input type="text" id="add-freelancer-name" name="fullName" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="add-freelancer-email">Email*</label>
+                                                            <input type="email" id="add-freelancer-email" name="email" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label for="add-freelancer-phone">Phone Number*</label>
+                                                            <input type="tel" id="add-freelancer-phone" name="phone" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="add-freelancer-location">Location*</label>
+                                                            <input type="text" id="add-freelancer-location" name="location" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="add-freelancer-bio">Bio/Description*</label>
+                                                        <textarea id="add-freelancer-bio" name="bio" rows="4" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-section">
+                                                    <div class="section-header">
+                                                        <h4><i class="icon-briefcase"></i> Professional Information</h4>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="add-freelancer-skills">Skills*</label>
+                                                        <input type="text" id="add-freelancer-skills" name="skills" 
+                                                            placeholder="Enter skills separated by commas (e.g., Makeup, Hair Styling, Nail Art)" required>
+                                                        <small class="text-tiny">Separate multiple skills with commas</small>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="add-freelancer-experience">Experience (Years)*</label>
+                                                        <input type="number" id="add-freelancer-experience" name="experience" 
+                                                            min="0" max="50" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="add-freelancer-service-locations">Service Locations*</label>
+                                                        <input type="text" id="add-freelancer-service-locations" name="serviceLocations" 
+                                                            placeholder="Enter service locations separated by commas" required>
+                                                        <small class="text-tiny">Separate multiple locations with commas</small>
+                                                    </div>
+                                                </div>
+                                                <div class="form-section">
+                                                    <div class="section-header">
+                                                        <h4><i class="icon-image"></i> Profile Image</h4>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="file-upload-area" id="add-file-upload-area">
+                                                            <div class="upload-content">
+                                                                <i class="icon-upload"></i>
+                                                                <p>Drag & drop profile image here or click to browse</p>
+                                                                <small>Recommended: Square image, at least 300x300 pixels</small>
+                                                            </div>
+                                                            <input type="file" id="add-freelancer-image" name="profileImage" 
+                                                                accept="image/*">
+                                                        </div>
+                                                        <div class="image-preview-grid" id="add-image-preview-grid"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-section">
+                                                    <div class="section-header">
+                                                        <h4><i class="icon-toggle-right"></i> Status</h4>
+                                                    </div>
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label for="add-freelancer-status">Status</label>
+                                                            <div class="status-toggle">
+                                                                <select id="add-freelancer-status" name="status" required>
+                                                                    <option value="pending">Pending</option>
+                                                                    <option value="approved">Approved</option>
+                                                                    <option value="rejected">Rejected</option>
+                                                                    <option value="inactive">Inactive</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-actions">
+                                                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-freelancer-modal')">
+                                                        <i class="icon-x"></i> Cancel
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="icon-save"></i> Add Freelancer
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Edit Freelancer Modal -->
+                                <div id="edit-freelancer-modal" class="modal" style="display:none">
+                                    <div class="modal-content modern-modal" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-edit-3"></i>
+                                                <h3>Edit Freelancer</h3>
+                                            </div>
+                                            <button class="close-btn" type="button" onclick="closeModal('edit-freelancer-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="edit-freelancer-form" enctype="multipart/form-data" method="POST" action="/freelance/edit">
+                                                <input type="hidden" id="edit-freelancer-id" name="id">
+                                                <div id="edit-freelancer-fields">
+                                                    <!-- Fields will be populated by JavaScript -->
+                                                </div>
+                                                <div class="form-actions">
+                                                    <button type="button" class="btn btn-secondary" onclick="closeModal('edit-freelancer-modal')">
+                                                        <i class="icon-x"></i> Cancel
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="icon-save"></i> Update Freelancer
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div id="delete-confirm-modal" class="modal" style="display:none">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <div class="modal-title">
+                                                <i class="icon-alert-triangle"></i>
+                                                <h3>Confirm Deletion</h3>
+                                            </div>
+                                            <button class="close-btn" type="button" onclick="closeModal('delete-confirm-modal')">
+                                                <i class="icon-x"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this freelancer? This action cannot be undone.</p>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-secondary"
+                                                    onclick="closeModal('delete-confirm-modal')">Cancel</button>
+                                                <form method="POST" id="delete-freelancer-form" action="/freelance/delete" style="display:inline">
+                                                    <input type="hidden" id="delete-freelancer-id" name="id">
+                                                    <button type="submit" class="btn btn-primary" id="confirm-delete-btn">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    // On filter change
+                                    document.getElementById('limit-select').addEventListener('change', function() {
+                                        document.getElementById('list-filters').submit();
+                                    });
+                                    document.getElementById('search-input').addEventListener('keydown', function(e) {
+                                        if (e.key === 'Enter') {
+                                            document.getElementById('list-filters').submit();
+                                        }
+                                    });
+                                    
+                                    function closeModal(modalId) {
+                                        document.getElementById(modalId).style.display = 'none';
+                                    }
+                                    
+                                    function showAddFreelancerModal() {
+                                        document.getElementById('add-freelancer-form').reset();
+                                        document.getElementById('add-freelancer-modal').style.display = 'block';
+                                    }
+                                    
+                                    // Create (POST) /freelance/add
+                                    document.getElementById('add-freelancer-form').onsubmit = function(e) {
+                                        e.preventDefault();
+                                        let form = this;
+                                        let data = new FormData(form);
+                                        fetch("/freelance/createFreelancer", { method: 'POST', body: data })
+                                            .then(res => res.json())
+                                            .then(resp => {
+                                                if (resp.success) {
+                                                    window.location.reload();
+                                                } else {
+                                                    alert(resp.error || "Failed to add freelancer.");
+                                                }
+                                            })
+                                            .catch(() => alert("Server error while adding freelancer."));
+                                    };
+
+                                    // Helper to clean out empty/unfocused required slot fields before submit
+                                    function cleanupUnavailableSlots(containerId = 'edit-availability-container') {
+                                        // Hide and remove required for all slots for days that are not enabled
+                                        const container = document.getElementById(containerId);
+                                        if (!container) return;
+                                        // For each day block
+                                        Array.from(container.querySelectorAll('.availability-day')).forEach(dayBlock => {
+                                            // Find "Available" select
+                                            const availableSelect = dayBlock.querySelector('select[name^="availability"][name$="[enabled]"]');
+                                            // Find slot container
+                                            const slotsContainer = dayBlock.querySelector('.slots-container');
+                                            // If not enabled, remove name, required and values of all time inputs
+                                            if (availableSelect && availableSelect.value === 'false') {
+                                                if (slotsContainer) {
+                                                    // All input fields in slots list
+                                                    const slotInputs = slotsContainer.querySelectorAll('input[type="time"]');
+                                                    slotInputs.forEach(inp => {
+                                                        inp.removeAttribute('required');
+                                                        inp.value = ''; // clear value just in case
+                                                   
+                                                    });
+                                                }
+                                            } else {
+                                                // Ensure required present for enabled slots
+                                                if (slotsContainer) {
+                                                    const slotInputs = slotsContainer.querySelectorAll('input[type="time"]');
+                                                    slotInputs.forEach(inp => {
+                                                        inp.setAttribute('required', 'required');
+                                                        // Optionally: inp.removeAttribute('disabled');
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+
+                                    // Enhanced Edit Modal Function matching your schema
+                                    function showEditFreelancerModal(freelancerId) {
+                                        fetch('/freelance/freelancer/' + freelancerId)
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                let f = data.freelancer || (data._id && data);
+                                                if (f && f._id) {
+                                                    let html = '';
+                                    
+                                                    // Personal Information Section - Matching your add modal structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-user"></i> Personal Information</h4>
+                                                        </div>
+                                                        <div class="form-grid">
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-name">Full Name*</label>
+                                                                <input type="text" id="edit-freelancer-name" name="fullName" value="${f.fullName || (f.userId && f.userId.name) || ''}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-email">Email*</label>
+                                                                <input type="email" id="edit-freelancer-email" name="email" value="${f.email || (f.userId && f.userId.email) || ''}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-grid">
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-phone">Phone Number*</label>
+                                                                <input type="tel" id="edit-freelancer-phone" name="phone" value="${f.phone || (f.userId && f.userId.phone) || ''}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="edit-freelancer-experience">Experience (Years)</label>
+                                                                <input type="number" id="edit-freelancer-experience" name="experience" min="0" max="50" value="${f.experience || 0}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="edit-freelancer-bio">Bio/Description</label>
+                                                            <textarea id="edit-freelancer-bio" name="bio" rows="4">${f.bio || ''}</textarea>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Profile Image Section - Matching your add modal structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-image"></i> Profile Image</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="file-upload-area" id="edit-file-upload-area">
+                                                                <div class="upload-content">
+                                                                    <i class="icon-upload"></i>
+                                                                    <p>Drag & drop profile image here or click to browse</p>
+                                                                    <small>Recommended: Square image, at least 300x300 pixels</small>
+                                                                </div>
+                                                                <input type="file" id="edit-freelancer-image" name="profileImage" accept="image/*">
+                                                            </div>
+                                                            ${f.profileImage ? `
+                                                                <div class="current-image-preview" style="margin-top: 15px;">
+                                                                    <p class="text-tiny">Current Profile Image:</p>
+                                                                    <img src="${f.profileImage}" alt="Current Profile" style="max-width: 100px; max-height: 100px; border-radius: 8px;">
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Portfolio Images Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-images"></i> Portfolio Images</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="file-upload-area">
+                                                                <div class="upload-content">
+                                                                    <i class="icon-upload"></i>
+                                                                    <p>Drag & drop portfolio images here or click to browse</p>
+                                                                    <small>You can select multiple images</small>
+                                                                </div>
+                                                                <input type="file" name="portfolioImages" accept="image/*" multiple>
+                                                            </div>
+                                                            ${f.portfolioImages && f.portfolioImages.length ? `
+                                                                <div class="current-images-preview" style="margin-top: 15px;">
+                                                                    <p class="text-tiny">Current Portfolio Images:</p>
+                                                                    <div class="image-preview-grid" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
+                                                                        ${f.portfolioImages.map(img => `
+                                                                            <div class="image-preview-item" style="position: relative;">
+                                                                                <img src="${img}" alt="Portfolio" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+                                                                                <button type="button" class="remove-image-btn" onclick="removePortfolioImage(this, '${img}')" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">×</button>
+                                                                            </div>
+                                                                        `).join('')}
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Skills Section - Enhanced with tag input
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-award"></i> Skills</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="edit-freelancer-skills">Skills*</label>
+                                                            <div class="tags-input-container">
+                                                                <input type="text" id="edit-freelancer-skills-input" class="tags-input" 
+                                                                    placeholder="Type a skill and press Enter or comma">
+                                                                <div class="tags-list" id="edit-skills-tags">
+                                                                    ${(f.skills || []).map(skill => `
+                                                                        <span class="tag">
+                                                                            ${skill}
+                                                                            <span class="tag-remove" onclick="removeTag(this)">×</span>
+                                                                            <input type="hidden" name="skills" value="${skill}">
+                                                                        </span>
+                                                                    `).join('')}
+                                                                </div>
+                                                            </div>
+                                                            <small class="text-tiny">Type skills and press Enter or comma to add</small>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Service Locations Section - Enhanced structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-map-pin"></i> Service Locations</h4>
+                                                        </div>
+                                                        <div id="edit-locations-container">
+                                                            ${(f.locations && f.locations.length ? f.locations.map((loc, index) => `
+                                                                <div class="location-item form-grid" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                                    <div class="form-group">
+                                                                        <label>City*</label>
+                                                                        <input type="text" name="locations[${index}][city]" value="${loc.city || ''}" required>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>State</label>
+                                                                        <input type="text" name="locations[${index}][state]" value="${loc.state || ''}">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Pincode</label>
+                                                                        <input type="text" name="locations[${index}][pincode]" value="${loc.pincode || ''}">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Service Radius (km)</label>
+                                                                        <input type="number" name="locations[${index}][radius]" value="${loc.radius || 5}" min="1" max="100">
+                                                                    </div>
+                                                                    ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeLocation(this)" style="align-self: end;">Remove</button>' : ''}
+                                                                </div>
+                                                            `).join('') : `
+                                                                <div class="location-item form-grid" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                                    <div class="form-group">
+                                                                        <label>City*</label>
+                                                                        <input type="text" name="locations[0][city]" required>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>State</label>
+                                                                        <input type="text" name="locations[0][state]">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Pincode</label>
+                                                                        <input type="text" name="locations[0][pincode]">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label>Service Radius (km)</label>
+                                                                        <input type="number" name="locations[0][radius]" value="5" min="1" max="100">
+                                                                    </div>
+                                                                </div>
+                                                            `)}
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-secondary" onclick="addLocation()" style="margin-top: 10px;">
+                                                            <i class="icon-plus"></i> Add Another Location
+                                                        </button>
+                                                    </div>`;
+                                    
+                                                    // Availability Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-clock"></i> Availability</h4>
+                                                        </div>
+                                                        <div id="edit-availability-container">
+                                                            ${generateAvailabilityFields(f.availability || [])}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Freelancer Services Section - Complete pricing structure
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-settings"></i> Services & Pricing</h4>
+                                                        </div>
+                                                        <div id="edit-services-container">
+                                                            ${generateServiceFields(f.freelancerServices || [])}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Documents Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-file-text"></i> Documents</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="file-upload-area">
+                                                                <div class="upload-content">
+                                                                    <i class="icon-upload"></i>
+                                                                    <p>Drag & drop documents here or click to browse</p>
+                                                                    <small>Supported formats: PDF, DOC, DOCX, JPG, PNG</small>
+                                                                </div>
+                                                                <input type="file" name="documents" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                            </div>
+                                                            ${f.documents && f.documents.length ? `
+                                                                <div class="current-documents" style="margin-top: 15px;">
+                                                                    <p class="text-tiny">Current Documents:</p>
+                                                                    <div class="documents-list">
+                                                                        ${f.documents.map(doc => `
+                                                                            <div class="document-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8f9fa; border-radius: 4px; margin: 5px 0;">
+                                                                                <a href="${doc}" target="_blank" style="flex: 1;">${doc.split('/').pop()}</a>
+                                                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeDocument(this, '${doc}')">Remove</button>
+                                                                            </div>
+                                                                        `).join('')}
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Proof Section
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-id"></i> Identity Proof</h4>
+                                                        </div>
+                                                        <div class="form-grid">
+                                                            <div class="form-group">
+                                                                <label>Proof Type</label>
+                                                                <select name="proofType">
+                                                                    <option value="">Select Proof Type</option>
+                                                                    <option value="aadhar" ${f.proof && f.proof.type === 'aadhar' ? 'selected' : ''}>Aadhar Card</option>
+                                                                    <option value="pan" ${f.proof && f.proof.type === 'pan' ? 'selected' : ''}>PAN Card</option>
+                                                                    <option value="driving" ${f.proof && f.proof.type === 'driving' ? 'selected' : ''}>Driving License</option>
+                                                                    <option value="voter" ${f.proof && f.proof.type === 'voter' ? 'selected' : ''}>Voter ID</option>
+                                                                    <option value="passport" ${f.proof && f.proof.type === 'passport' ? 'selected' : ''}>Passport</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Proof Number</label>
+                                                                <input type="text" name="proofNumber" value="${f.proof && f.proof.number ? f.proof.number : ''}">
+                                                            </div>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    // Status Section - Matching your add modal
+                                                    html += `
+                                                    <div class="form-section">
+                                                        <div class="section-header">
+                                                            <h4><i class="icon-toggle-right"></i> Status</h4>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="edit-freelancer-status">Status</label>
+                                                            <div class="status-toggle">
+                                                                <select id="edit-freelancer-status" name="status" required>
+                                                                    <option value="pending" ${f.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                                                    <option value="approved" ${f.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                                                    <option value="rejected" ${f.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                                                    <option value="inactive" ${f.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>`;
+                                    
+                                                    document.getElementById('edit-freelancer-fields').innerHTML = html;
+                                                    document.getElementById('edit-freelancer-id').value = f._id;
+                                                    
+                                                    // Initialize interactive components
+                                                    initializeEditTagInput();
+                                                    initializeFileUploadAreas();
+                                                    
+                                                    document.getElementById('edit-freelancer-modal').style.display = 'block';
+                                                } else {
+                                                    console.error("Edit fetch response:", data);
+                                                    alert((data && data.error) ? data.error : "Failed to load freelancer details.");
+                                                }
+                                            })
+                                            .catch((err) => {
+                                                alert("Server error loading freelancer details.");
+                                                console.error("Fetch freelancer error:", err);
+                                            });
+                                    }
+                                    
+                                    // Helper Functions for Enhanced Edit Modal
+                                    function generateAvailabilityFields(availability) {
+                                        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                        
+                                        // Ensure we have all 7 days
+                                        let fullAvailability = [];
+                                        for (let i = 0; i < 7; i++) {
+                                            const existingDay = availability.find(a => a.dayOfWeek === i);
+                                            fullAvailability.push(existingDay || { dayOfWeek: i, slots: [] });
+                                        }
+                                        
+                                        return fullAvailability.map((day, index) => `
+                                            <div class="availability-day" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Day</label>
+                                                        <select name="availability[${index}][dayOfWeek]" required>
+                                                            ${days.map((dayName, dayIndex) => `
+                                                                <option value="${dayIndex}" ${day.dayOfWeek === dayIndex ? 'selected' : ''}>${dayName}</option>
+                                                            `).join('')}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Available</label>
+                                                        <select name="availability[${index}][enabled]" onchange="toggleDaySlots(this, ${index})">
+                                                            <option value="true" ${day.slots && day.slots.length > 0 ? 'selected' : ''}>Yes</option>
+                                                            <option value="false" ${!day.slots || day.slots.length === 0 ? 'selected' : ''}>No</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div id="edit-slots-container-${index}" class="slots-container" style="${(!day.slots || day.slots.length === 0) ? 'display: none;' : ''}">
+                                                    <div class="slots-list" id="edit-slots-list-${index}">
+                                                        ${(day.slots && day.slots.length > 0 ? day.slots.map((slot, slotIndex) => `
+                                                            <div class="form-grid slot-item" style="margin-bottom: 10px;">
+                                                                <div class="form-group">
+                                                                    <label>Start Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][${slotIndex}][start]" value="${slot.start || ''}" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>End Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][${slotIndex}][end]" value="${slot.end || ''}" required>
+                                                                </div>
+                                                                <div class="form-group" style="align-self: end;">
+                                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeSlot(${index}, ${slotIndex})">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                        `).join('') : `
+                                                            <div class="form-grid slot-item" style="margin-bottom: 10px;">
+                                                                <div class="form-group">
+                                                                    <label>Start Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][0][start]">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>End Time</label>
+                                                                    <input type="time" name="availability[${index}][slots][0][end]">
+                                                                </div>
+                                                            </div>
+                                                        `)}
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-secondary" onclick="addSlot(${index})">
+                                                        <i class="icon-plus"></i> Add Time Slot
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        `).join('');
+                                    }
+                                    
+                                    function generateServiceFields(services) {
+                                        if (services.length === 0) {
+                                            return `
+                                                <div class="no-services" style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                                                    <p>No services added yet.</p>
+                                                    <button type="button" class="btn btn-sm btn-primary" onclick="addService()">
+                                                        <i class="icon-plus"></i> Add First Service
+                                                    </button>
+                                                </div>
+                                            `;
+                                        }
+                                    
+                                        return services.map((service, index) => `
+                                            <div class="service-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Service ID*</label>
+                                                        <input type="text" name="services[${index}][serviceId]" value="${service.serviceId || ''}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Status</label>
+                                                        <select name="services[${index}][status]">
+                                                            <option value="pending" ${service.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                                            <option value="approved" ${service.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                                            <option value="rejected" ${service.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                                            <option value="inactive" ${service.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Base Price (₹)*</label>
+                                                        <input type="number" name="services[${index}][freelancerBasePrice]" 
+                                                            value="${service.freelancerBasePrice || 0}" min="0" step="0.01" required
+                                                            onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Admin Price (₹)</label>
+                                                        <input type="number" name="services[${index}][adminPrice]" 
+                                                            value="${service.adminPrice || 0}" min="0" step="0.01"
+                                                            onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Commission (%)</label>
+                                                        <input type="number" name="services[${index}][adminCommissionPercent]" 
+                                                            value="${service.adminCommissionPercent || 0}" min="0" max="100" step="0.1"
+                                                            onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Final Price (₹)</label>
+                                                        <input type="number" name="services[${index}][finalPrice]" 
+                                                            value="${service.finalPrice || 0}" min="0" step="0.01" readonly 
+                                                            style="background-color: #f8f9fa; font-weight: bold;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Duration (minutes)</label>
+                                                        <input type="number" name="services[${index}][durationMinutes]" 
+                                                            value="${service.durationMinutes || 0}" min="0">
+                                                    </div>                                           
+                                                </div>
+                                                ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeService(this)">Remove Service</button>' : ''}
+                                            </div>
+                                        `).join('') + `
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="addService()">
+                                            <i class="icon-plus"></i> Add Another Service
+                                        </button>`;
+                                    }
+                                    
+                                    // Interactive Functions for Enhanced Edit Modal
+                                    function initializeEditTagInput() {
+                                        const skillsInput = document.getElementById('edit-freelancer-skills-input');
+                                        const skillsTags = document.getElementById('edit-skills-tags');
+                                        
+                                        skillsInput.addEventListener('keypress', function(e) {
+                                            if (e.key === 'Enter' || e.key === ',') {
+                                                e.preventDefault();
+                                                const skill = this.value.trim().replace(',', '');
+                                                if (skill && !Array.from(skillsTags.querySelectorAll('input[type="hidden"]')).some(input => input.value === skill)) {
+                                                    addSkillTag(skill, skillsTags);
+                                                    this.value = '';
+                                                }
+                                            }
+                                        });
+                                    }
+                                    
+                                    function addSkillTag(skill, container) {
+                                        const tag = document.createElement('span');
+                                        tag.className = 'tag';
+                                        tag.innerHTML = `
+                                            ${skill}
+                                            <span class="tag-remove" onclick="removeTag(this)">×</span>
+                                            <input type="hidden" name="skills" value="${skill}">
+                                        `;
+                                        container.appendChild(tag);
+                                    }
+                                    
+                                    function removeTag(element) {
+                                        element.parentElement.remove();
+                                    }
+                                    
+                                    function initializeFileUploadAreas() {
+                                        // Initialize file upload areas with drag & drop
+                                        const uploadAreas = document.querySelectorAll('.file-upload-area');
+                                        uploadAreas.forEach(area => {
+                                            const input = area.querySelector('input[type="file"]');
+                                            const content = area.querySelector('.upload-content');
+                                            
+                                            area.addEventListener('click', () => input.click());
+                                            
+                                            area.addEventListener('dragover', (e) => {
+                                                e.preventDefault();
+                                                area.style.backgroundColor = '#f0f0f0';
+                                            });
+                                            
+                                            area.addEventListener('dragleave', () => {
+                                                area.style.backgroundColor = '';
+                                            });
+                                            
+                                            area.addEventListener('drop', (e) => {
+                                                e.preventDefault();
+                                                area.style.backgroundColor = '';
+                                                input.files = e.dataTransfer.files;
+                                                // Trigger change event
+                                                input.dispatchEvent(new Event('change'));
+                                            });
+                                        });
+                                    }
+                                    
+                                    // Location Management
+                                    function addLocation() {
+                                        const container = document.getElementById('edit-locations-container');
+                                        const index = container.children.length;
+                                        
+                                        const locationHtml = `
+                                            <div class="location-item form-grid" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-group">
+                                                    <label>City*</label>
+                                                    <input type="text" name="locations[${index}][city]" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>State</label>
+                                                    <input type="text" name="locations[${index}][state]">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Pincode</label>
+                                                    <input type="text" name="locations[${index}][pincode]">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Service Radius (km)</label>
+                                                    <input type="number" name="locations[${index}][radius]" value="5" min="1" max="100">
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeLocation(this)" style="align-self: end;">Remove</button>
+                                            </div>
+                                        `;
+                                        
+                                        container.insertAdjacentHTML('beforeend', locationHtml);
+                                    }
+                                    
+                                    function removeLocation(button) {
+                                        button.closest('.location-item').remove();
+                                        // Reindex locations
+                                        const container = document.getElementById('edit-locations-container');
+                                        Array.from(container.children).forEach((child, index) => {
+                                            const inputs = child.querySelectorAll('input, select');
+                                            inputs.forEach(input => {
+                                                input.name = input.name.replace(/locations\[\d+\]/, `locations[${index}]`);
+                                            });
+                                        });
+                                    }
+                                    
+                                    // Availability Management
+                                    function toggleDaySlots(select, index) {
+                                        const slotsContainer = document.getElementById(`edit-slots-container-${index}`);
+                                        if (select.value === 'true') {
+                                            slotsContainer.style.display = 'block';
+                                        } else {
+                                            slotsContainer.style.display = 'none';
+                                        }
+                                    }
+                                    
+                                    function addSlot(dayIndex) {
+                                        const slotsList = document.getElementById(`edit-slots-list-${dayIndex}`);
+                                        const slotIndex = slotsList.children.length;
+                                        
+                                        const slotHtml = `
+                                            <div class="form-grid slot-item" style="margin-bottom: 10px;">
+                                                <div class="form-group">
+                                                    <label>Start Time</label>
+                                                    <input type="time" name="availability[${dayIndex}][slots][${slotIndex}][start]">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>End Time</label>
+                                                    <input type="time" name="availability[${dayIndex}][slots][${slotIndex}][end]">
+                                                </div>
+                                                <div class="form-group" style="align-self: end;">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeSlot(${dayIndex}, ${slotIndex})">Remove</button>
+                                                </div>
+                                            </div>
+                                        `;
+                                        
+                                        slotsList.insertAdjacentHTML('beforeend', slotHtml);
+                                    }
+                                    
+                                    function removeSlot(dayIndex, slotIndex) {
+                                        const slotsList = document.getElementById(`edit-slots-list-${dayIndex}`);
+                                        if (slotsList.children.length > 1) {
+                                            slotsList.children[slotIndex].remove();
+                                            // Reindex slots
+                                            Array.from(slotsList.children).forEach((child, index) => {
+                                                const inputs = child.querySelectorAll('input');
+                                                inputs.forEach(input => {
+                                                    input.name = input.name.replace(/slots\[\d+\]/, `slots[${index}]`);
+                                                });
+                                            });
+                                        }
+                                    }
+                                    
+                                    // Service Management
+                                    function addService() {
+                                        const container = document.getElementById('edit-services-container');
+                                        const index = container.querySelectorAll('.service-item').length;
+                                        
+                                        const serviceHtml = `
+                                            <div class="service-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Service ID*</label>
+                                                        <input type="text" name="services[${index}][serviceId]" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Status</label>
+                                                        <select name="services[${index}][status]">
+                                                            <option value="pending">Pending</option>
+                                                            <option value="approved">Approved</option>
+                                                            <option value="rejected">Rejected</option>
+                                                            <option value="inactive">Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Base Price (₹)*</label>
+                                                        <input type="number" name="services[${index}][freelancerBasePrice]" value="0" min="0" step="0.01" required onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Admin Price (₹)</label>
+                                                        <input type="number" name="services[${index}][adminPrice]" value="0" min="0" step="0.01" onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Commission (%)</label>
+                                                        <input type="number" name="services[${index}][adminCommissionPercent]" value="0" min="0" max="100" step="0.1" onchange="calculateFinalPrice(${index})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Final Price (₹)</label>
+                                                        <input type="number" name="services[${index}][finalPrice]" value="0" min="0" step="0.01" readonly style="background-color: #f8f9fa; font-weight: bold;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-grid">
+                                                    <div class="form-group">
+                                                        <label>Duration (minutes)</label>
+                                                        <input type="number" name="services[${index}][durationMinutes]" value="0" min="0">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Service Images</label>
+                                                        <input type="file" name="serviceImages_${index}" multiple accept="image/*">
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeService(this)">Remove Service</button>
+                                            </div>
+                                        `;
+                                        
+                                        if (container.querySelector('.no-services')) {
+                                            container.innerHTML = serviceHtml;
+                                        } else {
+                                            container.insertAdjacentHTML('beforeend', serviceHtml);
+                                        }
+                                        
+                                        // Add the "Add Another Service" button if not present
+                                        if (!container.querySelector('.btn-primary')) {
+                                            container.insertAdjacentHTML('beforeend', `
+                                                <button type="button" class="btn btn-sm btn-primary" onclick="addService()">
+                                                    <i class="icon-plus"></i> Add Another Service
+                                                </button>
+                                            `);
+                                        }
+                                    }
+                                    
+                                    function removeService(button) {
+                                        const container = document.getElementById('edit-services-container');
+                                        const serviceItems = container.querySelectorAll('.service-item');
+                                        
+                                        if (serviceItems.length > 1) {
+                                            button.closest('.service-item').remove();
+                                            
+                                            // Reindex services
+                                            Array.from(container.querySelectorAll('.service-item')).forEach((item, index) => {
+                                                const inputs = item.querySelectorAll('input, select');
+                                                inputs.forEach(input => {
+                                                    input.name = input.name.replace(/services\[\d+\]/, `services[${index}]`);
+                                                    if (input.name.includes('serviceImages_')) {
+                                                        input.name = `serviceImages_${index}`;
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    }
+                                    
+                                    // Price Calculation
+                                    function calculateFinalPrice(serviceIndex) {
+                                        const basePrice = parseFloat(document.querySelector(`input[name="services[${serviceIndex}][freelancerBasePrice]"]`).value) || 0;
+                                        const adminPrice = parseFloat(document.querySelector(`input[name="services[${serviceIndex}][adminPrice]"]`).value) || 0;
+                                        const commission = parseFloat(document.querySelector(`input[name="services[${serviceIndex}][adminCommissionPercent]"]`).value) || 0;
+                                        
+                                        let finalPrice = basePrice;
+                                        
+                                        // Use admin price if set, otherwise calculate from commission
+                                        if (adminPrice > 0) {
+                                            finalPrice = adminPrice;
+                                        } else if (commission > 0) {
+                                            finalPrice = basePrice + (basePrice * commission / 100);
+                                        }
+                                        
+                                        document.querySelector(`input[name="services[${serviceIndex}][finalPrice]"]`).value = finalPrice.toFixed(2);
+                                    }
+                                    
+                                    // File Management
+                                    function removePortfolioImage(button, imageUrl) {
+                                        // Add hidden input to mark image for deletion
+                                        const form = document.getElementById('edit-freelancer-form');
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = 'removedPortfolioImages';
+                                        input.value = imageUrl;
+                                        form.appendChild(input);
+                                        
+                                        button.closest('.image-preview-item').remove();
+                                    }
+                                    
+                                    function removeServiceImage(button, imageUrl, serviceIndex) {
+                                        // Add hidden input to mark service image for deletion
+                                        const form = document.getElementById('edit-freelancer-form');
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = `removedServiceImages[${serviceIndex}]`;
+                                        input.value = imageUrl;
+                                        form.appendChild(input);
+                                        
+                                        button.closest('.image-preview-item').remove();
+                                    }
+                                    
+                                    function removeDocument(button, docUrl) {
+                                        // Add hidden input to mark document for deletion
+                                        const form = document.getElementById('edit-freelancer-form');
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = 'removedDocuments';
+                                        input.value = docUrl;
+                                        form.appendChild(input);
+                                        
+                                        button.closest('.document-item').remove();
+                                    }
+                                    
+                                    // Edit (POST) /freelance/edit
+                                    document.getElementById('edit-freelancer-form').onsubmit = function(e) {
+                                        e.preventDefault();
+                                        // Clean up all unavailable slots (remove required, clear value)
+                                        cleanupUnavailableSlots('edit-availability-container');
+                                        let form = this;
+                                        let data = new FormData(form);
+                                        const freelancerId = document.getElementById('edit-freelancer-id').value;
+                                        fetch(`/freelance/updateFreelancer/${freelancerId}`, {
+                                            method: 'PUT',
+                                            body: data
+                                        })
+                                        .then(res => res.json())
+                                        .then(resp => {
+                                            if(resp.success) {
+                                                window.location.reload();
+                                            } else {
+                                                alert(resp.error || "Failed to update freelancer.");
+                                            }
+                                        })
+                                        .catch(() => alert("Server error while updating freelancer."));
+                                    };
+                                    
+                                    // Delete /freelance/delete
+                                    function confirmDeleteFreelancer(freelancerId) {
+                                        document.getElementById('delete-freelancer-id').value = freelancerId;
+                                        document.getElementById('delete-confirm-modal').style.display = 'block';
+                                    }
+                                    document.getElementById('delete-freelancer-form').onsubmit = function(e){
+                                        e.preventDefault();
+                                        const form = this;
+                                        const freelancerId = document.getElementById('delete-freelancer-id').value;
+                                        fetch(`/freelance/deleteFreelancer/${freelancerId}`, { 
+                                            method: 'DELETE'
+                                        })
+                                        .then(res => res.json())
+                                        .then(resp => {
+                                            if(resp.success){
+                                                window.location.reload();
+                                            } else {
+                                                alert(resp.error || "Failed to delete freelancer.");
+                                            }
+                                        })
+                                        .catch(() => alert("Server error while deleting freelancer."));
+                                    };
+                                    
+                                    // Update status /freelance/update-status
+                                    function toggleFreelancerStatus(freelancerId, currentStatus){
+                                        let newStatus = (currentStatus === 'approved') ? 'inactive' : 'approved';
+                                        if(!confirm("Are you sure you want to set status to "+newStatus+"?")) return;
+                                        fetch(`/freelance/${freelancerId}/status`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ status: newStatus })
+                                        })
+                                        .then(res => res.json())
+                                        .then(resp => {
+                                            if(resp.success){ window.location.reload();}
+                                            else{ alert(resp.error || "Failed to update status."); }
+                                        })
+                                        .catch(() => alert("Server error while updating status."));
+                                    }
+                                </script>
+
+                                <!-- /main-content-wrap -->
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="">Blushelys</a>.
+                                Design by Trivlogic Private Limited All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
+                    </div>
+                    <!-- /main-content -->
+                </div>
+                <!-- /section-content-right -->
+            </div>
+            <!-- /layout-wrap -->
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Javascript -->
+    <script src="/admin-js/jquery.min.js"></script>
+    <script src="/admin-js/bootstrap.min.js"></script>
+    <script src="/admin-js/bootstrap-select.min.js"></script>
+    <script src="/admin-js/zoom.js"></script>
+    <script src="/admin-js/switcher.js"></script>
+    <script defer src="/admin-js/theme-settings.js"></script>
+    <script defer src="/admin-js/main.js"></script>
+
+</body>
+
+</html>

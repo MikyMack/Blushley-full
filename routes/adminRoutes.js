@@ -10,7 +10,8 @@ const ChildCategory = require('../models/ChildCategory');
 const SalonBooking = require('../models/SalonBooking');
 const Product = require('../models/Product');
 const Reseller = require('../models/Reseller');
-
+const User = require('../models/User');
+const authcntl = require('../controllers/authController');
 
 router.get('/adminLogin', (req, res) => {
     res.render('admin/admin_login');
@@ -203,9 +204,55 @@ router.get('/testimonials', (req, res) => {
     res.render('admin/admin_testimonials');
 });
 
-router.get('/users', (req, res) => {
-    res.render('admin/admin_users');
+
+
+router.get('/users', isAdmin, async (req, res) => {
+    try {
+        // Pagination
+        let page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+        let limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 20;
+        const skip = (page - 1) * limit;
+
+        // Build query
+        const query = {};
+        // Search by role
+        if (req.query.role && req.query.role !== 'all') {
+            query.role = req.query.role;
+        }
+        // General search by phone, name, or email
+        if (req.query.q && req.query.q.trim()) {
+            const q = req.query.q.trim();
+            query.$or = [
+                { phone: { $regex: q, $options: 'i' } },
+                { name: { $regex: q, $options: 'i' } },
+                { email: { $regex: q, $options: 'i' } }
+            ];
+        }
+
+        const [users, total] = await Promise.all([
+            User.find(query)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            User.countDocuments(query)
+        ]);
+        const totalPages = Math.ceil(total / limit);
+
+        res.render('admin/admin_users', {
+            users,
+            page,
+            totalPages,
+            total,
+            query: req.query
+        });
+    } catch (err) {
+        console.error('Error fetching users:', err);
+        res.status(500).render('admin/admin_users', { users: [], error: 'Failed to load users' });
+    }
 });
+
+
 router.get('/beautyTips', isAdmin, async (req, res) => {
     try {
         const categories = await Category.find({}).lean();
@@ -347,6 +394,9 @@ router.get('/reseller_products', async (req, res) => {
     }
 });
 
+router.put("/make-staff/:userId", isAdmin, authcntl.makeUserStaff);
+router.put("/remove-staff/:userId", isAdmin, authcntl.removeStaffRole);
 
-
+router.put("/block-user/:userId", isAdmin, authcntl.blockUser);
+router.put("/unblock-user/:userId", isAdmin, authcntl.unblockUser);
 module.exports = router;

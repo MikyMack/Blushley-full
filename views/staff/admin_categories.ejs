@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Blushely - Category Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" type="text/css" href="/admin-css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/animation.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="/admin-css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="/admin-font/fonts.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/admin-icon/style.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="/images/logo/blushley-png-without-shade.png">
+    <link rel="apple-touch-icon-precomposed" href="/images/logo/blushley-png-without-shade.png">
+    
+  <style>
+    /* --- Compact attractive custom styles --- */
+    body { background: #f4f6f9; color: #2d3748; }
+    .card-ghost { background: linear-gradient(180deg,#fff 0%, #fbfbfb 100%); border-radius: 14px; box-shadow: 0 6px 22px rgba(13,38,63,0.08); }
+    .top-actions .btn { min-width: 140px; }
+    .category-thumb { width:64px;height:64px;border-radius:14px;overflow:hidden;background:#f1f5f9;display:flex;align-items:center;justify-content:center;border:1px solid #edf2f7;color:#94a3b8;font-size:20px }
+    .category-thumb.placeholder { border-style:dashed;background:#fff }
+    .category-thumb img { width:100%;height:100%;object-fit:cover }
+    .status-badge { padding: 6px 12px;border-radius:20px;font-size:13px;font-weight:600 }
+    .status-badge.active { background:#e7f9ee;color:#227a3d }
+    .status-badge.inactive { background:#fff0f1;color:#c53030 }
+    .badge-sub { background:#e6f0ff;color:#08306b;padding:6px 10px;border-radius:999px;margin:2px; display:inline-block; font-size:12px }
+    .sub-pill, .child-pill { display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:#f8fafc;margin-bottom:6px }
+    .pill-body { flex:1; min-width:0 }
+    .pill-actions { display:flex;align-items:center;gap:6px }
+    .thumb-sm { width:44px;height:44px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0 }
+    .thumb-sm img { width:100%;height:100%;object-fit:cover }
+    .thumb-empty { border-style:dashed;background:#fff }
+    .sub-item, .child-item { border:1px solid #e5e7eb;border-radius:12px;padding:12px }
+    .sub-item .form-control, .child-item .form-control, .child-item .form-select { background:#fff }
+    .small-icon-btn { width:36px;height:36px;border-radius:8px; display:inline-flex;align-items:center;justify-content:center;border:none }
+    .table-responsive { overflow:auto }
+    .modal-lg { max-width: 900px; }
+    .muted { color:#6b7280 }
+    .input-remove { cursor:pointer; border:none;background:transparent;color:#ef4444 }
+    
+    /* Grid card styles */
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+    .category-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
+    .category-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+    .category-card-header { padding: 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px; }
+    .category-card-body { padding: 20px; }
+    .category-card-footer { padding: 15px 20px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    .category-title { font-weight: 600; font-size: 18px; color: #1e293b; margin-bottom: 5px; }
+    .category-stats { display: flex; gap: 15px; margin-top: 15px; }
+    .stat-item { text-align: center; }
+    .stat-value { font-weight: 700; font-size: 18px; color: #1e293b; }
+    .stat-label { font-size: 12px; color: #64748b; }
+    .sub-list, .child-list { max-height: 200px; overflow-y: auto; margin-top: 10px; }
+    .sub-item-compact, .child-item-compact { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
+    .sub-item-compact:last-child, .child-item-compact:last-child { margin-bottom: 0; }
+    .sub-name, .child-name { font-weight: 500; font-size: 14px; color: #334155; }
+    .sub-status, .child-status { font-size: 12px; }
+    .card-actions { display: flex; gap: 8px; }
+    
+    /* Toggle button styles */
+    .toggle-btn-sm { width: 32px; height: 18px; background: #e2e8f0; border-radius: 12px; position: relative; cursor: pointer; transition: background 0.3s; border: none; }
+    .toggle-btn-sm.active { background: #16a34a; }
+    .toggle-btn-sm::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: transform 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-btn-sm.active::after { transform: translateX(14px); }
+    
+    /* notifications */
+    .notify { position: fixed; right: 20px; top: 20px; z-index:99999; padding:10px 16px; border-radius:8px; color:#fff; box-shadow:0 6px 20px rgba(0,0,0,0.12) }
+    .notify.success { background:#16a34a }
+    .notify.error { background:#ef4444 }
+    
+    @media (max-width: 700px) {
+      .category-thumb { width:50px;height:50px }
+      .thumb-sm { width:38px;height:38px }
+      .category-grid { grid-template-columns: 1fr; }
+      .category-card-header { padding: 15px; }
+      .category-card-body { padding: 15px; }
+      .category-card-footer { padding: 12px 15px; }
+    }
+  </style>
+</head>
+
+<body class="body">
+
+    <!-- #wrapper -->
+    <div id="wrapper">
+        <!-- #page -->
+        <div id="page" class="">
+            <!-- layout-wrap -->
+            <div class="layout-wrap loader-off">
+                <!-- preload -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
+                <!-- /preload -->
+                <!-- section-menu-left -->
+                <div class="section-menu-left">
+                    <div class="box-logo">
+                        <a href="/staff/dashboard" id="site-logo-inner">
+                            <img style="width:60px;" id="logo_header" alt="logo" src="/images/logo/blushley-png-without-shade.png"
+                                data-light="/images/logo/blushley-png-without-shade.png" data-dark="/images/logo/blushley-png-without-shade.png">
+                        </a>
+                        <div class="button-show-hide">
+                            <i class="icon-chevron-left"></i>
+                        </div>
+                    </div>
+                    <div class="section-menu-left-wrap">
+                        <div class="center">
+                            <div class="center-item">
+                              <ul>
+                                <li class="menu-item">
+                                    <a href="/staff/dashboard">
+                                        <div class="icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M12.2652 3.57566C12.1187 3.42921 11.8813 3.42921 11.7348 3.57566L5.25 10.0605V19.8748C5.25 20.0819 5.41789 20.2498 5.625 20.2498H9V16.1248C9 15.0893 9.83947 14.2498 10.875 14.2498H13.125C14.1605 14.2498 15 15.0893 15 16.1248V20.2498H18.375C18.5821 20.2498 18.75 20.0819 18.75 19.8748V10.0605L12.2652 3.57566ZM20.25 11.5605L21.2197 12.5302C21.5126 12.8231 21.9874 12.8231 22.2803 12.5302C22.5732 12.2373 22.5732 11.7624 22.2803 11.4695L13.3258 2.51499C12.5936 1.78276 11.4064 1.78276 10.6742 2.515L1.71967 11.4695C1.42678 11.7624 1.42678 12.2373 1.71967 12.5302C2.01256 12.8231 2.48744 12.8231 2.78033 12.5302L3.75 11.5605V19.8748C3.75 20.9104 4.58947 21.7498 5.625 21.7498H18.375C19.4105 21.7498 20.25 20.9104 20.25 19.8748V11.5605ZM13.5 20.2498H10.5V16.1248C10.5 15.9177 10.6679 15.7498 10.875 15.7498H13.125C13.3321 15.7498 13.5 15.9177 13.5 16.1248V20.2498Z"
+                                                    fill="#111111" />
+                                            </svg>
+                                        </div>
+                                        <div class="text">Staff Dashboard</div>
+                                    </a>
+                                </li>
+                                
+                                <li class="menu-item active">
+                                    <a href="/staff/categories" class="menu-item-button">
+                                        <div class="icon"><i class="icon-folder"></i></div>
+                                        <div class="text">Category Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item">
+                                    <a href="/staff/products" class="menu-item-button">
+                                        <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                        <div class="text">Product Management</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/staff/beautyTips" class="menu-item-button">
+                                        <div class="icon"><i class="icon-shopping-bag"></i></div>
+                                        <div class="text">beautyTip Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item ">
+                                    <a href="/staff/reseller_products" class="menu-item-button">
+                                        <div class="icon"><i class="icon-heart"></i></div>
+                                        <div class="text">Sellers Management</div>
+                                    </a>
+                                </li>
+<li class="menu-item">
+                                    <a href="/staff/orders" class="menu-item-button">
+                                        <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                        <div class="text">Order Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item ">
+                                    <a href="/staff/bookings" class="menu-item-button">
+                                        <div class="icon"><i class="icon-calendar"></i></div>
+                                        <div class="text">Booking Management</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/staff/saloon" class="menu-item-button">
+                                        <div class="icon"><i class="icon-scissors"></i></div>
+                                        <div class="text">Salons Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item">
+                                    <a href="/staff/freelance" class="menu-item-button">
+                                        <div class="icon"><i class="icon-users"></i></div>
+                                        <div class="text">Freelance Management</div>
+                                    </a>
+                                </li>
+<li class="menu-item ">
+                                    <a href="/staff/users" class="menu-item-button">
+                                        <div class="icon"><i class="icon-users"></i></div>
+                                        <div class="text">User Management</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/staff/banner" class="menu-item-button">
+                                        <div class="icon"><i class="icon-image"></i></div>
+                                        <div class="text">Banner Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item">
+                                    <a href="/staff/testimonials" class="menu-item-button">
+                                        <div class="icon"><i class="fa fa-star-o"></i></div>
+                                        <div class="text">Testimonials Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item ">
+                                    <a href="/staff/blogs" class="menu-item-button">
+                                        <div class="icon"><i class="icon-book-open"></i></div>
+                                        <div class="text">Blogs Management</div>
+                                    </a>
+                                </li>
+
+                                <li class="menu-item">
+                                    <a href="/logout">
+                                        <div class="icon">
+                                            <svg width="24" height="22" viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M8.125 18.6875C8.125 18.903 8.0394 19.1097 7.88702 19.262C7.73465 19.4144 7.52799 19.5 7.3125 19.5H1.625C1.19402 19.5 0.780698 19.3288 0.475951 19.024C0.171205 18.7193 0 18.306 0 17.875V1.625C0 1.19402 0.171205 0.780698 0.475951 0.475951C0.780698 0.171205 1.19402 0 1.625 0H7.3125C7.52799 0 7.73465 0.0856026 7.88702 0.237976C8.0394 0.390349 8.125 0.597012 8.125 0.8125C8.125 1.02799 8.0394 1.23465 7.88702 1.38702C7.73465 1.5394 7.52799 1.625 7.3125 1.625H1.625V17.875H7.3125C7.52799 17.875 7.73465 17.9606 7.88702 18.113C8.0394 18.2653 8.125 18.472 8.125 18.6875ZM19.2623 9.17516L15.1998 5.11266C15.0474 4.9602 14.8406 4.87455 14.625 4.87455C14.4094 4.87455 14.2026 4.9602 14.0502 5.11266C13.8977 5.26511 13.812 5.47189 13.812 5.6875C13.812 5.90311 13.8977 6.10989 14.0502 6.26234L16.7263 8.9375H7.3125C7.09701 8.9375 6.89035 9.0231 6.73798 9.17548C6.5856 9.32785 6.5 9.53451 6.5 9.75C6.5 9.96549 6.5856 10.1722 6.73798 10.3245C6.89035 10.4769 7.09701 10.5625 7.3125 10.5625H16.7263L14.0502 13.2377C13.8977 13.3901 13.812 13.5969 13.812 13.8125C13.812 14.0281 13.8977 14.2349 14.0502 14.3873C14.2026 14.5398 14.4094 14.6255 14.625 14.6255C14.8406 14.6255 15.0474 14.5398 15.1998 14.3873L19.2623 10.3248C19.3379 10.2494 19.3978 10.1598 19.4387 10.0611C19.4796 9.9625 19.5006 9.85678 19.5006 9.75C19.5006 9.64322 19.4796 9.5375 19.4387 9.43886C19.3978 9.34023 19.3379 9.25062 19.2623 9.17516Z"
+                                                    fill="#111111" />
+                                            </svg>
+                                        </div>
+                                        <div class="text">Log out</div>
+                                    </a>
+                                </li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /section-menu-left -->
+                <!-- section-content-right -->
+                <div class="section-content-right">
+                    <!-- header-dashboard -->
+                    <div class="header-dashboard">
+                        <div class="wrap">
+                            <div class="header-left">
+                                <a href="/staff/dashboard">
+                                    <img style="width: 50px;" id="logo_header_mobile" alt="" src="/images/logo/blushley-png-without-shade.png"
+                                        data-light="/images/logo/blushley-png-without-shade.png" data-dark="/images/logo/blushley-png-without-shade.png">
+                                </a>
+                                <div class="button-show-hide">
+                                    <i class="icon-chevron-left"></i>
+                                </div>
+
+                            </div>
+                            <div class="header-grid">
+                                <div class="header-item button-dark-light">
+                                    <i class="icon-moon"></i>
+                                </div>
+
+
+                                <div class="header-item button-zoom-maximize">
+                                    <div class="">
+                                        <i class="icon-maximize"></i>
+                                    </div>
+                                </div>
+                                <div class="popup-wrap user type-header">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="header-user wg-user">
+                                                <span class="image">
+                                                    <img src="/images/logo/blushley-png-without-shade.png" alt="">
+                                                </span>
+                                                <span class="flex flex-column">
+                                                    <span class="body-text text-main-dark">Blushelys</span>
+                                                    <span class="text-tiny">Staff</span>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end has-content"
+                                            aria-labelledby="dropdownMenuButton3">
+
+                                            <li>
+                                                <a href="#" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-headphones"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Support</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/logout" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-log-out"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Log out</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /header-dashboard -->
+                    <!-- main-content -->
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                               
+                                <!-- Category Management Content -->
+                                 <div class="container-fluid py-4">
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="mb-0">Category Management</h3>
+        <div class="muted small">Create, edit and manage categories, subcategories and child categories</div>
+      </div>
+      <div class="top-actions">
+        <button id="export-btn" class="btn btn-outline-secondary"><i class="fa fa-download me-2"></i>Export</button>
+        <button id="open-create-modal" class="btn btn-primary"><i class="fa fa-plus me-2"></i>Create Category</button>
+      </div>
+    </div>
+
+    <div class="card card-ghost p-3 mb-4">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="p-3 bg-white rounded-3">
+            <div class="text-muted small">Total Categories</div>
+            <div id="stat-total" class="h4 mb-0">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-3 bg-white rounded-3">
+            <div class="text-muted small">Active</div>
+            <div id="stat-active" class="h4 mb-0">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-3 bg-white rounded-3">
+            <div class="text-muted small">Inactive</div>
+            <div id="stat-inactive" class="h4 mb-0">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-3 bg-white rounded-3">
+            <div class="text-muted small">Total Subcategories</div>
+            <div id="stat-subcount" class="h4 mb-0">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-ghost p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="h5 mb-0">All Categories</div>
+        <div class="d-flex gap-2">
+          <input id="search-input" class="form-control form-control-sm" placeholder="Search categories..." style="min-width:220px">
+          <button id="search-btn" class="btn btn-sm btn-outline-secondary">Search</button>
+        </div>
+      </div>
+
+      <div id="categories-grid" class="category-grid">
+        <!-- category cards will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Create / Edit Modal (single modal used for both create & edit) -->
+  <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <form id="category-form" class="modal-content" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="category-modal-title">Create Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="edit-category-id" name="categoryId" value="">
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Category Name</label>
+              <input name="name" id="category-name" class="form-control" placeholder="e.g. Skincare" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Image (optional)</label>
+              <input type="file" name="image" id="category-image" accept="image/*" class="form-control">
+            </div>
+
+            <!-- Subcategories -->
+            <div class="col-12">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div><strong>Subcategories</strong> <small class="text-muted">Add multiple</small></div>
+                <button id="add-sub-btn" type="button" class="btn btn-sm btn-outline-primary"><i class="fa fa-plus"></i> Add</button>
+              </div>
+              <div id="sub-list" class="mb-2">
+                <!-- each sub item -->
+              </div>
+            </div>
+
+            <!-- Child categories -->
+            <div class="col-12">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div><strong>Child Categories</strong> <small class="text-muted">Attach to a subcategory</small></div>
+                <button id="add-child-btn" type="button" class="btn btn-sm btn-outline-primary"><i class="fa fa-plus"></i> Add</button>
+              </div>
+              <div id="child-list">
+                <!-- each child item -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="modal-cancel" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="modal-save" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Subcategory / Edit Childcategory inline small modal (re-use) -->
+  <div class="modal fade" id="miniEditModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <form id="mini-edit-form" class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="mini-title">Edit</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="mini-type" value="">
+          <input type="hidden" id="mini-id" value="">
+          <div id="mini-body"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification placeholder -->
+  <div id="notify-root"></div>
+                                <!-- /category-management -->
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        <!-- bottom-page -->
+                        <div class="bottom-page">
+                            <div class="body-text">Copyright © 2025 <a href="">Blushelys</a>.
+                                Design by Trivlogic Private Limited All rights reserved</div>
+                        </div>
+                        <!-- /bottom-page -->
+                    </div>
+                    <!-- /main-content -->
+                </div>
+                <!-- /section-content-right -->
+            </div>
+            <!-- /layout-wrap -->
+        </div>
+        <!-- /#page -->
+    </div>
+    <!-- /#wrapper -->
+
+
+  <script>
+    // --- Initialization data from server ---
+    const SERVER_CATEGORIES = <%- JSON.stringify(categories || []) %>;
+    const SERVER_SUBCATEGORIES = <%- JSON.stringify(subcategories || []) %>;
+    const SERVER_CHILD_CATEGORIES = <%- JSON.stringify(childcategories || []) %>;
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const toId = (value) => {
+      if (value === null || value === undefined) return '';
+      return String(value);
+    };
+
+    function buildNestedCategoryData(baseCategories = [], baseSubcategories = [], baseChildCategories = []) {
+      const childBySub = {};
+      baseChildCategories.forEach(child => {
+        const subId = toId(child.subCategoryId || child.subcategoryId);
+        if (!childBySub[subId]) childBySub[subId] = [];
+        childBySub[subId].push({ ...child });
+      });
+
+      const subsByCat = {};
+      baseSubcategories.forEach(sub => {
+        const subId = toId(sub._id || sub.id);
+        const catId = toId(sub.categoryId);
+        const copy = {
+          ...sub,
+          childcategories: (childBySub[subId] || []).map(ch => ({ ...ch }))
+        };
+        if (!subsByCat[catId]) subsByCat[catId] = [];
+        subsByCat[catId].push(copy);
+      });
+
+      return (baseCategories || []).map(cat => {
+        const catId = toId(cat._id || cat.id);
+        return {
+          ...cat,
+          subcategories: (subsByCat[catId] || []).map(sub => ({
+            ...sub,
+            childcategories: (sub.childcategories || []).map(ch => ({ ...ch }))
+          }))
+        };
+      });
+    }
+
+    // DOM refs
+    const categoriesGrid = document.getElementById('categories-grid');
+    const statTotal = document.getElementById('stat-total');
+    const statActive = document.getElementById('stat-active');
+    const statInactive = document.getElementById('stat-inactive');
+    const statSubcount = document.getElementById('stat-subcount');
+    const categoryModalEl = document.getElementById('categoryModal');
+    const categoryModal = new bootstrap.Modal(categoryModalEl, { backdrop: 'static' });
+    const miniModalEl = document.getElementById('miniEditModal');
+    const miniModal = new bootstrap.Modal(miniModalEl);
+    const form = document.getElementById('category-form');
+
+    const initialCategories = buildNestedCategoryData(
+      JSON.parse(JSON.stringify(SERVER_CATEGORIES || [])),
+      JSON.parse(JSON.stringify(SERVER_SUBCATEGORIES || [])),
+      JSON.parse(JSON.stringify(SERVER_CHILD_CATEGORIES || []))
+    );
+
+    let categories = JSON.parse(JSON.stringify(initialCategories));
+    
+    // Track original subcategory and child category IDs when editing
+    let originalSubIds = [];
+    let originalChildIds = [];
+
+    // ---------- Utilities ----------
+    const apiCall = async (url, opts = {}) => {
+      try {
+        const res = await fetch(url, opts);
+        const json = await res.json();
+        if (!res.ok && !json.success) throw new Error(json.error || json.message || 'API error');
+        return json;
+      } catch (err) {
+        console.error(url, err);
+        throw err;
+      }
+    };
+
+    const notify = (msg, type = 'success') => {
+      const n = document.createElement('div');
+      n.className = `notify ${type === 'error' ? 'error' : 'success'}`;
+      n.textContent = msg;
+      document.getElementById('notify-root').appendChild(n);
+      setTimeout(() => n.remove(), 3000);
+    };
+
+    const imagePlaceholderIcon = '<i class="fa fa-image"></i>';
+
+    function categoryImageHTML(src, alt = 'Category image') {
+      if (!src) {
+        return `<div class="category-thumb placeholder">${imagePlaceholderIcon}</div>`;
+      }
+      return `<div class="category-thumb"><img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"></div>`;
+    }
+
+    // ---------- Render grid ----------
+    function renderGrid() {
+      categoriesGrid.innerHTML = '';
+
+      let totalSubs = 0;
+      categories.forEach(cat => {
+        // count subcategories and childcategories for summary
+        if (Array.isArray(cat.subcategories)) totalSubs += cat.subcategories.length;
+
+        const subs = (cat.subcategories || []).map(s => ({
+          ...s,
+          _id: toId(s._id || s.id),
+          isActive: s.isActive !== false,
+          childcategories: (s.childcategories || []).map(ch => ({
+            ...ch,
+            _id: toId(ch._id || ch.id),
+            isActive: ch.isActive !== false,
+            subCategoryId: toId(ch.subCategoryId || ch.subcategoryId || s._id || s.id)
+          }))
+        }));
+
+        const subActiveCount = subs.filter(s => s.isActive).length;
+        const subInactiveCount = subs.length - subActiveCount;
+
+        const childrenArr = [];
+        subs.forEach(s => {
+          (s.childcategories || []).forEach(cch => childrenArr.push({
+            name: cch.name,
+            parent: s.name,
+            image: cch.image,
+            isActive: cch.isActive !== false,
+            _id: cch._id,
+            subCategoryId: s._id
+          }));
+        });
+
+        const childActiveCount = childrenArr.filter(ch => ch.isActive).length;
+        const childInactiveCount = childrenArr.length - childActiveCount;
+
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.dataset.id = cat._id;
+        
+        card.innerHTML = `
+          <div class="category-card-header">
+            ${categoryImageHTML(cat.image, cat.name)}
+            <div>
+              <div class="category-title">${escapeHtml(cat.name)}</div>
+              <span class="status-badge ${cat.isActive ? 'active' : 'inactive'}">${cat.isActive ? 'Active' : 'Inactive'}</span>
+            </div>
+          </div>
+          <div class="category-card-body">
+            <div class="category-stats">
+              <div class="stat-item">
+                <div class="stat-value">${subs.length}</div>
+                <div class="stat-label">Subcategories</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">${childrenArr.length}</div>
+                <div class="stat-label">Child Categories</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">${subActiveCount}/${subInactiveCount}</div>
+                <div class="stat-label">Sub Active/Inactive</div>
+              </div>
+            </div>
+            
+            <div class="mt-3">
+              <div class="fw-semibold mb-2">Subcategories</div>
+              <div class="sub-list">
+                ${subs.length ? subs.map(s => `
+                  <div class="sub-item-compact" data-sub-id="${escapeAttr(s._id)}">
+                    <div class="sub-name">${escapeHtml(s.name || 'Untitled subcategory')}</div>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="sub-status status-badge ${s.isActive ? 'active' : 'inactive'}">${s.isActive ? 'Active' : 'Inactive'}</span>
+                      <button class="toggle-btn-sm ${s.isActive ? 'active' : ''} sub-toggle" data-id="${escapeAttr(s._id)}" title="Toggle status"></button>
+                    </div>
+                  </div>
+                `).join('') : '<div class="text-muted small">No subcategories</div>'}
+              </div>
+            </div>
+            
+            <div class="mt-3">
+              <div class="fw-semibold mb-2">Child Categories</div>
+              <div class="child-list">
+                ${childrenArr.length ? childrenArr.slice(0, 5).map(ch => `
+                  <div class="child-item-compact" data-child-id="${escapeAttr(ch._id || '')}">
+                    <div class="child-name">${escapeHtml(ch.name || 'Untitled child')}</div>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="child-status status-badge ${ch.isActive ? 'active' : 'inactive'}">${ch.isActive ? 'Active' : 'Inactive'}</span>
+                      <button class="toggle-btn-sm ${ch.isActive ? 'active' : ''} child-toggle" data-id="${escapeAttr(ch._id || '')}" title="Toggle status"></button>
+                    </div>
+                  </div>
+                `).join('') : '<div class="text-muted small">No child categories</div>'}
+                ${childrenArr.length > 5 ? `<div class="text-muted small mt-2">+${childrenArr.length - 5} more</div>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="category-card-footer">
+            <div class="card-actions">
+              <button class="small-icon-btn btn-light edit-btn" data-id="${cat._id}" title="Edit"><i class="fa fa-edit"></i></button>
+              <button class="small-icon-btn btn-light toggle-btn" data-id="${cat._id}" title="Toggle"><i class="fa ${cat.isActive ? 'fa-toggle-on' : 'fa-toggle-off'}"></i></button>
+              <button class="small-icon-btn btn-danger delete-btn" data-id="${cat._id}" title="Delete"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+
+        categoriesGrid.appendChild(card);
+      });
+
+      // stats
+      statTotal.textContent = categories.length;
+      statActive.textContent = categories.filter(c => c.isActive).length;
+      statInactive.textContent = categories.filter(c => !c.isActive).length;
+      statSubcount.textContent = totalSubs;
+    }
+
+    // simple escape
+    function escapeHtml(s='') {
+      return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+    }
+
+    function escapeAttr(s='') {
+      return escapeHtml(s);
+    }
+
+    // ---------- Modal helpers: build sub & child inputs ----------
+    function makeSubInput(sub = {}) {
+      const key = sub._id || Math.random().toString(36).slice(2,9);
+      const div = document.createElement('div');
+      div.className = 'sub-item mb-3';
+      div.dataset.key = key;
+      if (sub._id) div.dataset.id = sub._id;
+      if (sub.image) div.dataset.image = sub.image;
+      div.innerHTML = `
+        <div class="d-flex flex-column flex-md-row gap-3 align-items-start">
+          <input name="subname" class="form-control form-control-sm sub-name" placeholder="Subcategory name" value="${escapeHtml(sub.name || '')}" >
+          <div class="d-flex gap-2 align-items-center">
+            <div class="thumb-sm preview-sub ${sub.image ? '' : 'thumb-empty'}">${imagePreviewMarkup(sub.image, sub.name || 'Sub image')}</div>
+            <input type="file" class="form-control form-control-sm sub-image" accept="image/*">
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-danger remove-sub"><i class="fa fa-times"></i></button>
+        </div>
+      `;
+      div.querySelector('.remove-sub').addEventListener('click', () => {
+        div.remove();
+        updateChildParentOptions();
+      });
+      div.querySelector('.sub-name').addEventListener('input', () => updateChildParentOptions());
+      bindImagePreview(div.querySelector('.sub-image'), div.querySelector('.preview-sub'));
+      return div;
+    }
+
+    function makeChildInput(child = { name: '', parentKey: '' }) {
+      const key = child._id || Math.random().toString(36).slice(2,9);
+      const div = document.createElement('div');
+      div.className = 'child-item mb-3';
+      div.dataset.key = key;
+      if (child._id) div.dataset.id = child._id;
+      if (child.image) div.dataset.image = child.image;
+      div.innerHTML = `
+        <div class="d-flex flex-column flex-lg-row gap-3 align-items-start">
+          <input name="childname" class="form-control form-control-sm child-name" placeholder="Child category name" value="${escapeHtml(child.name || '')}" >
+          <select name="childparent" class="form-select form-select-sm child-parent" data-pref="${escapeAttr(child.parentKey || '')}">
+            <option value="">Select parent subcategory</option>
+          </select>
+          <div class="d-flex gap-2 align-items-center">
+            <div class="thumb-sm preview-child ${child.image ? '' : 'thumb-empty'}">${imagePreviewMarkup(child.image, child.name || 'Child image')}</div>
+            <input type="file" class="form-control form-control-sm child-image" accept="image/*">
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-danger remove-child"><i class="fa fa-times"></i></button>
+        </div>
+      `;
+      div.querySelector('.remove-child').addEventListener('click', () => div.remove());
+      const parentSelect = div.querySelector('.child-parent');
+      parentSelect.addEventListener('change', () => { parentSelect.dataset.pref = parentSelect.value; });
+      bindImagePreview(div.querySelector('.child-image'), div.querySelector('.preview-child'));
+      return div;
+    }
+
+    function updateChildParentOptions() {
+      const subs = Array.from(document.querySelectorAll('#sub-list .sub-item')).map(item => ({
+        key: item.dataset.key,
+        name: item.querySelector('.sub-name')?.value.trim() || 'Unnamed subcategory'
+      })).filter(s => s.key);
+      const selects = document.querySelectorAll('#child-list .child-parent');
+      selects.forEach(select => {
+        const preferred = select.dataset.pref || select.value;
+        select.innerHTML = '<option value="">Select parent subcategory</option>';
+        subs.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.key;
+          opt.text = s.name;
+          select.appendChild(opt);
+        });
+        if (preferred && subs.find(s => s.key === preferred)) {
+          select.value = preferred;
+        } else {
+          select.value = '';
+        }
+        select.dataset.pref = select.value;
+      });
+    }
+
+    function imagePreviewMarkup(src, alt = 'Image preview') {
+      if (!src) return imagePlaceholderIcon;
+      return `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}">`;
+    }
+
+    function bindImagePreview(input, previewEl) {
+      if (!input || !previewEl) return;
+      input.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (previewEl.dataset.previewUrl) {
+          URL.revokeObjectURL(previewEl.dataset.previewUrl);
+          delete previewEl.dataset.previewUrl;
+        }
+        if (file) {
+          const url = URL.createObjectURL(file);
+          previewEl.dataset.previewUrl = url;
+          previewEl.innerHTML = `<img src="${url}" alt="preview">`;
+          previewEl.classList.remove('thumb-empty');
+        } else {
+          previewEl.innerHTML = imagePlaceholderIcon;
+          previewEl.classList.add('thumb-empty');
+        }
+      });
+    }
+
+    // ---------- Modal open / populate ----------
+    document.getElementById('open-create-modal').addEventListener('click', () => {
+      // reset form for create
+      document.getElementById('category-modal-title').textContent = 'Create Category';
+      document.getElementById('edit-category-id').value = '';
+      form.reset();
+      document.getElementById('sub-list').innerHTML = '';
+      document.getElementById('child-list').innerHTML = '';
+      // Reset original IDs for create mode
+      originalSubIds = [];
+      originalChildIds = [];
+      // add one default sub and child row
+      document.getElementById('sub-list').appendChild(makeSubInput({}));
+      document.getElementById('child-list').appendChild(makeChildInput({ name:'', parentKey:'' }));
+      updateChildParentOptions();
+      categoryModal.show();
+    });
+
+    // add sub
+    document.getElementById('add-sub-btn').addEventListener('click', () => {
+      document.getElementById('sub-list').appendChild(makeSubInput({}));
+      updateChildParentOptions();
+    });
+
+    // add child
+    document.getElementById('add-child-btn').addEventListener('click', () => {
+      const child = makeChildInput({ name:'', parentKey:'' });
+      document.getElementById('child-list').appendChild(child);
+      updateChildParentOptions();
+    });
+
+    // ---------- Form submit create/update ----------
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const editId = document.getElementById('edit-category-id').value;
+      const fd = new FormData();
+
+      const name = document.getElementById('category-name').value.trim();
+      const imgField = document.getElementById('category-image');
+
+      if (!name) { notify('Category name required', 'error'); return; }
+
+      fd.append('name', name);
+
+      if (imgField.files && imgField.files[0]) fd.append('image', imgField.files[0]);
+
+      const subItems = Array.from(document.querySelectorAll('#sub-list .sub-item'));
+      const childItems = Array.from(document.querySelectorAll('#child-list .child-item'));
+
+      try {
+        let categoryResp;
+        if (!editId) {
+          const createRes = await apiCall('/category/create', { method: 'POST', body: fd });
+          if (createRes.success === false) throw new Error(createRes.error || 'Create failed');
+          categoryResp = createRes.category || createRes.data || createRes;
+        } else {
+          const updateRes = await apiCall('/category/update/' + editId, { method: 'PUT', body: fd });
+          if (updateRes.success === false) throw new Error(updateRes.error || 'Update failed');
+          categoryResp = updateRes.category || updateRes.data || updateRes;
+        }
+
+        const categoryId = categoryResp._id || categoryResp.id || categoryResp.category?._id || editId || (categoryResp.data && categoryResp.data._id);
+        if (!categoryId) throw new Error('Unable to resolve category id');
+
+        const createdSubMap = {};
+        const currentSubIds = [];
+        subItems.forEach(item => {
+          if (item.dataset.key && item.dataset.id) {
+            createdSubMap[item.dataset.key] = item.dataset.id;
+            currentSubIds.push(item.dataset.id);
+          }
+        });
+
+        // Delete removed subcategories (only when editing)
+        // First, delete child categories that belong to removed subcategories
+        if (editId && originalSubIds.length > 0) {
+          const removedSubIds = originalSubIds.filter(id => !currentSubIds.includes(id));
+          
+          // Find and delete child categories that belong to removed subcategories
+          if (removedSubIds.length > 0) {
+            const category = categories.find(c => c._id === editId);
+            if (category) {
+              for (const sub of category.subcategories || []) {
+                if (removedSubIds.includes(sub._id)) {
+                  // Delete all child categories of this removed subcategory
+                  for (const child of sub.childcategories || []) {
+                    if (child._id) {
+                      try {
+                        await apiCall(`/childcategory/delete/${child._id}`, { method: 'DELETE' });
+                      } catch (err) {
+                        console.error('Failed to delete child category:', child._id, err);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          
+          // Now delete the removed subcategories
+          for (const subId of removedSubIds) {
+            try {
+              await apiCall(`/subcategory/delete/${subId}`, { method: 'DELETE' });
+            } catch (err) {
+              console.error('Failed to delete subcategory:', subId, err);
+              // Continue with other operations even if one deletion fails
+            }
+          }
+        }
+
+        for (const item of subItems) {
+          const subName = item.querySelector('.sub-name')?.value.trim();
+          if (!subName) continue;
+          const subFd = new FormData();
+          subFd.append('name', subName);
+          subFd.append('categoryId', categoryId);
+          const subImageFile = item.querySelector('.sub-image')?.files?.[0];
+          if (subImageFile) subFd.append('image', subImageFile);
+
+          if (item.dataset.id) {
+            const subUpdate = await apiCall(`/subcategory/update/${item.dataset.id}`, { method: 'PUT', body: subFd });
+            if (subUpdate.success === false) throw new Error(subUpdate.error || 'Subcategory update failed');
+            createdSubMap[item.dataset.key] = item.dataset.id;
+          } else {
+            const subCreate = await apiCall('/subcategory/create', { method: 'POST', body: subFd });
+            if (subCreate.success === false) throw new Error(subCreate.error || 'Subcategory create failed');
+            const sub = subCreate.subCategory || subCreate.data || subCreate;
+            const subId = sub?._id || sub?.id || sub?.subCategory?._id;
+            if (subId) {
+              item.dataset.id = subId;
+              createdSubMap[item.dataset.key] = subId;
+            }
+          }
+        }
+
+        const currentChildIds = [];
+        for (const item of childItems) {
+          const childName = item.querySelector('.child-name')?.value.trim();
+          const parentKey = item.querySelector('.child-parent')?.value;
+          if (!childName || !parentKey) continue;
+          const parentSubId = createdSubMap[parentKey];
+          if (!parentSubId) continue;
+          const childFd = new FormData();
+          childFd.append('name', childName);
+          childFd.append('categoryId', categoryId);
+          childFd.append('subCategoryId', parentSubId);
+          const childImageFile = item.querySelector('.child-image')?.files?.[0];
+          if (childImageFile) childFd.append('image', childImageFile);
+
+          if (item.dataset.id) {
+            currentChildIds.push(item.dataset.id);
+            const childUpdate = await apiCall(`/childcategory/update/${item.dataset.id}`, { method: 'PUT', body: childFd });
+            if (childUpdate.success === false) throw new Error(childUpdate.error || 'Child category update failed');
+          } else {
+            const childCreate = await apiCall('/childcategory/create', { method: 'POST', body: childFd });
+            if (childCreate.success === false) throw new Error(childCreate.error || 'Child category create failed');
+            const child = childCreate.childCategory || childCreate.data || childCreate;
+            const childId = child?._id || child?.id || child?.childCategory?._id;
+            if (childId) {
+              item.dataset.id = childId;
+              currentChildIds.push(childId);
+            }
+          }
+        }
+
+        // Delete removed child categories (only when editing)
+        // Exclude child categories that belong to removed subcategories (already deleted above)
+        if (editId && originalChildIds.length > 0) {
+          const removedSubIds = originalSubIds.filter(id => !currentSubIds.includes(id));
+          const category = categories.find(c => c._id === editId);
+          const childIdsBelongingToRemovedSubs = new Set();
+          
+          // Collect child category IDs that belong to removed subcategories
+          if (category && removedSubIds.length > 0) {
+            for (const sub of category.subcategories || []) {
+              if (removedSubIds.includes(sub._id)) {
+                for (const child of sub.childcategories || []) {
+                  if (child._id) childIdsBelongingToRemovedSubs.add(child._id);
+                }
+              }
+            }
+          }
+          
+          // Only delete child categories that were explicitly removed (not ones belonging to removed subcategories)
+          const removedChildIds = originalChildIds.filter(id => 
+            !currentChildIds.includes(id) && !childIdsBelongingToRemovedSubs.has(id)
+          );
+          
+          for (const childId of removedChildIds) {
+            try {
+              await apiCall(`/childcategory/delete/${childId}`, { method: 'DELETE' });
+            } catch (err) {
+              console.error('Failed to delete child category:', childId, err);
+              // Continue with other operations even if one deletion fails
+            }
+          }
+        }
+
+        notify(editId ? 'Category updated' : 'Category created');
+        setTimeout(() => location.reload(), 800);
+
+      } catch (err) {
+        console.error('save error', err);
+        notify(err.message || 'Save failed', 'error');
+      }
+    });
+
+    // ---------- Grid action delegation ----------
+    categoriesGrid.addEventListener('click', async (ev) => {
+      const btn = ev.target.closest('button');
+      if (!btn) return;
+
+      // Subcategory toggle
+      if (btn.classList.contains('sub-toggle')) {
+        const id = btn.dataset.id;
+        await toggleSubCategory(id);
+        return;
+      }
+
+      // Child category toggle
+      if (btn.classList.contains('child-toggle')) {
+        const id = btn.dataset.id;
+        await toggleChildCategory(id);
+        return;
+      }
+
+      if (btn.classList.contains('edit-btn')) {
+        const id = btn.dataset.id;
+        openEditModal(id);
+        return;
+      }
+
+      if (btn.classList.contains('toggle-btn')) {
+        const id = btn.dataset.id;
+        try {
+          const res = await apiCall('/category/toggle/' + id, { method: 'PATCH' });
+          if (res.success) {
+            const idx = categories.findIndex(c => c._id === id);
+            if (idx >= 0) categories[idx].isActive = res.isActive;
+            renderGrid();
+            notify('Category status updated');
+          }
+        } catch (err) {
+          notify('Category status update failed', 'error');
+        }
+        return;
+      }
+
+      if (btn.classList.contains('delete-btn')) {
+        const id = btn.dataset.id;
+        if (!confirm('Delete category and its children? This action cannot be undone.')) return;
+        try {
+          const res = await apiCall('/category/delete/' + id, { method: 'DELETE' });
+          if (res.success) {
+            categories = categories.filter(c => c._id !== id);
+            renderGrid();
+            notify('Category deleted');
+          }
+        } catch (err) {
+          notify('Delete failed', 'error');
+        }
+      }
+    });
+
+    // ---------- Toggle functions ----------
+    async function toggleSubCategory(id) {
+      try {
+        const res = await apiCall('/subcategory/toggle/' + id, { method: 'PATCH' });
+        if (res.success) {
+          // Update local data
+          categories.forEach(cat => {
+            (cat.subcategories || []).forEach(sub => {
+              if (toId(sub._id || sub.id) === id) {
+                sub.isActive = res.isActive;
+              }
+            });
+          });
+          renderGrid();
+          notify('Subcategory status updated');
+        }
+      } catch (err) {
+        notify('Unable to update subcategory status', 'error');
+      }
+    }
+
+    async function toggleChildCategory(id) {
+      try {
+        const res = await apiCall('/childcategory/toggle/' + id, { method: 'PATCH' });
+        if (res.success) {
+          // Update local data
+          categories.forEach(cat => {
+            (cat.subcategories || []).forEach(sub => {
+              (sub.childcategories || []).forEach(child => {
+                if (toId(child._id || child.id) === id) {
+                  child.isActive = res.isActive;
+                }
+              });
+            });
+          });
+          renderGrid();
+          notify('Child category status updated');
+        }
+      } catch (err) {
+        notify('Unable to update child category status', 'error');
+      }
+    }
+
+    // ---------- Edit flow ----------
+    async function openEditModal(catId) {
+      try {
+        const cat = categories.find(c => c._id === catId);
+        if (!cat) {
+          const res = await apiCall('/category/list');
+          categories = res.data || categories;
+        }
+
+        const category = categories.find(c => c._id === catId);
+        if (!category) { notify('Category data not found', 'error'); return; }
+
+        // populate modal
+        document.getElementById('category-modal-title').textContent = 'Edit Category';
+        document.getElementById('edit-category-id').value = category._id;
+        document.getElementById('category-name').value = category.name || '';
+        document.getElementById('category-image').value = '';
+
+        // Store original IDs for deletion tracking
+        originalSubIds = [];
+        originalChildIds = [];
+        (category.subcategories || []).forEach(s => {
+          if (s._id) originalSubIds.push(s._id);
+          (s.childcategories || []).forEach(ch => {
+            if (ch._id) originalChildIds.push(ch._id);
+          });
+        });
+
+        // populate subs and children
+        const subList = document.getElementById('sub-list');
+        const childList = document.getElementById('child-list');
+        subList.innerHTML = '';
+        childList.innerHTML = '';
+
+        const subKeyLookup = {};
+        (category.subcategories || []).forEach(s => {
+          const subEl = makeSubInput(s);
+          subList.appendChild(subEl);
+          if (s._id) subKeyLookup[s._id] = subEl.dataset.key;
+        });
+
+        (category.subcategories || []).forEach(s => {
+          (s.childcategories || []).forEach(ch => {
+            const chEl = makeChildInput({
+              ...ch,
+              parentKey: (s._id && subKeyLookup[s._id]) || ''
+            });
+            childList.appendChild(chEl);
+          });
+        });
+
+        // if none present, add one empty row for each list
+        if (!subList.children.length) subList.appendChild(makeSubInput({}));
+        if (!childList.children.length) childList.appendChild(makeChildInput({ name:'', parentKey:'' }));
+
+        updateChildParentOptions();
+        categoryModal.show();
+
+      } catch (err) {
+        console.error('open edit', err);
+        notify('Unable to open edit modal', 'error');
+      }
+    }
+
+    // ---------- Inline edit for sub & child (mini modal) ----------
+    document.getElementById('mini-edit-form').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const type = document.getElementById('mini-type').value; // sub / child
+      const id = document.getElementById('mini-id').value;
+      const inputs = document.getElementById('mini-body').querySelectorAll('input,select,textarea');
+      const formObj = {};
+      inputs.forEach(i => formObj[i.name] = i.value);
+
+      try {
+        if (type === 'sub') {
+          const fd = new FormData();
+          if (formObj.name) fd.append('name', formObj.name);
+          if (formObj.categoryId) fd.append('categoryId', formObj.categoryId);
+          const res = await apiCall('/subcategory/update/' + id, { method: 'PUT', body: fd });
+          if (res.success) notify('Subcategory updated');
+        } else if (type === 'child') {
+          const fd = new FormData();
+          if (formObj.name) fd.append('name', formObj.name);
+          if (formObj.categoryId) fd.append('categoryId', formObj.categoryId);
+          if (formObj.subCategoryId) fd.append('subCategoryId', formObj.subCategoryId);
+          const res = await apiCall('/childcategory/update/' + id, { method: 'PUT', body: fd });
+          if (res.success) notify('Child category updated');
+        }
+        miniModal.hide();
+        setTimeout(() => location.reload(), 700);
+      } catch (err) {
+        notify('Update failed', 'error');
+      }
+    });
+
+    // ---------- Search ----------
+    document.getElementById('search-btn').addEventListener('click', () => {
+      const term = document.getElementById('search-input').value.trim().toLowerCase();
+      if (!term) { renderGrid(); return; }
+      const filt = categories.filter(c => c.name.toLowerCase().includes(term));
+      const prev = categories;
+      categories = filt;
+      renderGrid();
+      categories = prev;
+    });
+
+    // ---------- Export (placeholder) ----------
+    document.getElementById('export-btn').addEventListener('click', () => {
+      notify('Export not implemented', 'error');
+    });
+
+    // ---------- initial render ----------
+    renderGrid();
+
+    });
+
+  </script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Javascript -->
+    <script src="/admin-js/jquery.min.js"></script>
+    <script src="/admin-js/bootstrap.min.js"></script>
+    <script src="/admin-js/bootstrap-select.min.js"></script>
+    <script src="/admin-js/zoom.js"></script>
+    <script src="/admin-js/switcher.js"></script>
+    <script defer src="/admin-js/theme-settings.js"></script>
+    <script defer src="/admin-js/main.js"></script>
+
+</body>
+
+</html>

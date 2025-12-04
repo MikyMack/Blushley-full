@@ -84,7 +84,7 @@ app.use((req, res, next) => {
 
 app.use('/', userRoutes);
 app.use('/', authRoutes);
-app.use('/staff', staffRoutes);
+app.use('/', staffRoutes);
 app.use('/admin', adminRoutes);
 app.use('/freelance', freelancerRoutes);
 app.use('/salon', salonRoutes);
