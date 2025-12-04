@@ -10,11 +10,17 @@ const VariantOptionSchema = new mongoose.Schema({
   images: [String]        
 }, { _id: true });
 
-
 const VariantSchema = new mongoose.Schema({
   name: { type: String, required: true }, 
   options: [VariantOptionSchema]
 }, { _id: true });
+
+const ProductReviewSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  name: { type: String },
+  rating: { type: Number, min: 1, max: 5 },
+  content: { type: String }
+}, { timestamps: true, _id: true });
 
 
 const ProductSchema = new mongoose.Schema({
@@ -29,7 +35,6 @@ const ProductSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
   childCategory: { type: mongoose.Schema.Types.ObjectId, ref: "ChildCategory" },
-
 
   beautyTips: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -81,9 +86,19 @@ const ProductSchema = new mongoose.Schema({
     height: Number
   },
 
+  // PRODUCT REVIEWS (all fields optional: name, rating, content)
+  reviews: [ProductReviewSchema], 
+
   // RATINGS
-  rating: { type: Number, default: 0 },
-  totalReviews: { type: Number, default: 0 },
+  // These fields are updated automatically based on the product's reviews
+  rating: { 
+    type: Number, 
+    default: 0 
+  },
+  totalReviews: { 
+    type: Number, 
+    default: 0 
+  },
 
   // STATUS
   status: {
@@ -102,5 +117,16 @@ const ProductSchema = new mongoose.Schema({
   totalSold: { type: Number, default: 0 },
 
 }, { timestamps: true });
+
+// Add a method to recalculate rating and totalReviews from reviews array
+ProductSchema.methods.recalculateRatings = function() {
+  if (!this.reviews || this.reviews.length === 0) {
+    this.rating = 0;
+    this.totalReviews = 0;
+  } else {
+    this.totalReviews = this.reviews.length;
+    this.rating = this.reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / this.totalReviews;
+  }
+};
 
 module.exports = mongoose.model("Product", ProductSchema);

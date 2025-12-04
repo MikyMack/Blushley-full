@@ -190,5 +190,7 @@ router.delete("/posterdelete/:id", bannerCtrl.posterDelete);
 router.get('/api/search/init', productCtrl.searchInit);
 router.get('/api/search/live', productCtrl.searchLive);
 
+router.post("/products/:id/review", productCtrl.addReview);
+router.delete("/products/:productId/review/:reviewId", productCtrl.deleteReview);
 
 module.exports = router;

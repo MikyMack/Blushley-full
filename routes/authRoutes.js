@@ -23,5 +23,9 @@ router.post('/admin-login', auth.adminLogin);
 // Salon login
 router.get('/salon-login', (req, res) => res.render('salon/login'));
 router.post('/salon-login', auth.salonLogin);
+// user login 
+router.post('/user/send-otp', auth.sendUserLoginOtp);
+router.post('/user/verify-otp', auth.verifyUserLoginOtp);
+
 
 module.exports = router;

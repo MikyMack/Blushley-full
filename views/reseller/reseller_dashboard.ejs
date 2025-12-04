@@ -1139,6 +1139,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="#" id="termsConditionsLink" style="display: flex; align-items: center; color: inherit; text-decoration: none;">
+                        <i class="fas fa-file-contract"></i>
+                        <span style="margin-left: 8px;">Terms &amp; Conditions</span>
+                    </a>
+                </li>
+
+               
+                <li class="nav-item">
                     <a href="/logout" style="display: flex; align-items: center; color: inherit; text-decoration: none;">
                         <i class="fas fa-sign-out-alt"></i>
                         <span style="margin-left: 8px;">Logout</span>
@@ -3050,5 +3058,186 @@
             }
         });
     </script>
+     <!-- Terms & Conditions Modal -->
+     <div id="termsConditionsModal" class="modal" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+        <div style="background:#fff; border-radius:10px; max-width:700px; margin:auto; padding:30px; box-shadow:0 6px 32px rgba(0,0,0,0.18); position:relative;">
+          <button id="closeTermsModal" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:1.8em; color:#888; cursor:pointer;" aria-label="Close">&times;</button>
+          <h2 style="text-align:center;margin-bottom:18px;">BLUSHLEY – PARTNER TERMS &amp; POLICIES</h2>
+          <ol style="padding-left:18px; font-size:1.1em;">
+              <li><b>Professional Conduct</b>
+                  <ul>
+                    <li>Partners must maintain professional behavior with customers at all times.</li>
+                  </ul>
+              </li>
+              <li><b>Product &amp; Service Quality</b>
+                  <ul>
+                    <li>All products must be genuine, sealed, non-expired, and safe.</li>
+                    <li>Services must follow hygiene standards.</li>
+                  </ul>
+              </li>
+              <li><b>Unauthorized Transactions (Strictly Prohibited)</b>
+                  <ul>
+                      <li>Partners cannot:
+                          <ul>
+                              <li>Accept direct payments</li>
+                              <li>Contact customers outside Blushley</li>
+                              <li>Offer off-app discounts</li>
+                              <li>Divert customers for personal gain</li>
+                          </ul>
+                      </li>
+                  </ul>
+              </li>
+              <li><b>Penalties for Violations</b>
+                  <ul>
+                      <li>If proven:
+                          <ul>
+                              <li>Payouts will be blocked</li>
+                              <li>Listing may be suspended</li>
+                              <li>Legal action may follow</li>
+                          </ul>
+                      </li>
+                  </ul>
+              </li>
+              <li><b>Legal Liability</b>
+                  <ul>
+                      <li>Partners are fully responsible for:
+                          <ul>
+                              <li>Expired or defective products</li>
+                              <li>Harm or injury caused to customers</li>
+                              <li>Unsafe services</li>
+                              <li>Fake products or fraudulent actions</li>
+                          </ul>
+                      </li>
+                  </ul>
+              </li>
+              <li><b>Cooperation During Investigation</b>
+                  <ul>
+                    <li>Partners must cooperate fully with Blushley teams during any inquiry.</li>
+                  </ul>
+              </li>
+              <li><b>Confidentiality</b>
+                  <ul>
+                    <li>Partner must not share customer data or internal Blushley information.</li>
+                  </ul>
+              </li>
+              <li><b>Compliance Declaration</b>
+                  <ul>
+                    <li>
+                      <em>“I am aware that violating these policies will lead to legal consequences and permanent removal from Blushley.”</em>
+                    </li>
+                  </ul>
+              </li>
+
+              <!-- Balance Points, without numbers, as requested -->
+              <li>
+                <b>Unauthorized Direct Payments (Strictly Prohibited)</b>
+                <ul>
+                  <li>Partners are not allowed to:</li>
+                  <ul>
+                    <li>Accept payments directly from customers outside Blushley.</li>
+                    <li>Request UPI/Bank transfer/cash outside the app.</li>
+                    <li>Offer off-platform discounts.</li>
+                  </ul>
+                  <li>If proven:</li>
+                  <ul>
+                    <li>Blushley will block payouts.</li>
+                    <li>Partner may be terminated.</li>
+                    <li>Legal penalties may apply.</li>
+                  </ul>
+                </ul>
+              </li>
+              <li>
+                <b>Unethical Activities &amp; Partner Misconduct</b>
+                <ul>
+                  <li>Illegal actions include:</li>
+                  <ul>
+                    <li>Direct contact with customers outside the platform.</li>
+                    <li>Poaching customers.</li>
+                    <li>Misbehavior or fraud.</li>
+                  </ul>
+                  <li>Penalties:</li>
+                  <ul>
+                    <li>Payout block until investigation.</li>
+                    <li>Permanent removal if confirmed.</li>
+                  </ul>
+                </ul>
+              </li>
+              <li>
+                <b>Partner Liability for Harm Caused to Customers</b>
+                <ul>
+                  <li>
+                    Partners are fully responsible for any harm caused due to expired, fake or defective products and unsafe services. Legal action and compensation may be claimed from the partner.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <b>Blushley’s Right to Take Legal Action</b>
+                <ul>
+                  <li>
+                    Blushley may proceed legally on behalf of customers in cases of:
+                    <ul>
+                      <li>Harm or injury</li>
+                      <li>Defective/expired products</li>
+                      <li>Fraud or misconduct</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <b>Customer Rights &amp; Authorization</b>
+                <ul>
+                  <li>
+                    <em>“I grant permission to Blushley to take legal action on my behalf against any onboarded partner who causes harm, misconduct, product defects, or unsafe service.”</em>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <b>Customer Age Declaration</b>
+                <ul>
+                  <li>
+                    <em>“I confirm that I am above 18 years of age and legally capable of accepting these terms.”</em>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <b>Legal Liability Acceptance</b>
+                <ul>
+                  <li>
+                    <em>“I am aware that I am fully liable for any kind of violations or breach of these terms, conditions, and policies of Blushley. I understand that any such actions from my side will lead to legal consequences accordingly.”</em>
+                  </li>
+                </ul>
+              </li>
+          </ol>
+          <div style="text-align:center; margin-top: 24px;">
+            <button id="termsModalCloseButton" style="background:#f01c38; border:none; color:white; font-size:1.1em; padding:8px 32px; border-radius:5px; cursor:pointer;">Close</button>
+          </div>
+        </div>
+      </div>
+      <script>
+          document.addEventListener("DOMContentLoaded", function() {
+              var termsLink = document.getElementById('termsConditionsLink');
+              var termsModal = document.getElementById('termsConditionsModal');
+              var closeTerms = document.getElementById('closeTermsModal');
+              var closeBtnExtra = document.getElementById('termsModalCloseButton');
+              function closeModal() {
+                  termsModal.style.display = 'none';
+                  document.body.style.overflow = "";
+              }
+              if (termsLink && termsModal && closeTerms) {
+                  termsLink.addEventListener('click', function(e) {
+                      e.preventDefault();
+                      termsModal.style.display = 'flex';
+                      document.body.style.overflow = "hidden";
+                  });
+                  closeTerms.addEventListener('click', closeModal);
+                  if (closeBtnExtra) closeBtnExtra.addEventListener('click', closeModal);
+                  termsModal.addEventListener('click', function(e) {
+                      if (e.target === termsModal) {
+                          closeModal();
+                      }
+                  });
+              }
+          });
+      </script>
 </body>
 </html>

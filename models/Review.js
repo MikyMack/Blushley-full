@@ -6,7 +6,7 @@ const ReviewSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   rating: { type: Number, min: 1, max: 5 },
   review: String,
-  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' }
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: false } 
 }, { timestamps: true });
 
 module.exports = mongoose.model('Review', ReviewSchema);

@@ -805,11 +805,13 @@ body.modal-open {
                         <div class="widget-tabs style-1">
                             <ul class="widget-menu-tab">
                                 <li class="item-title active"><span class="inner">Description</span></li>
+                                <li class="item-title"><span class="inner">Beauty Tips</span></li>
                                 <li class="item-title"><span class="inner">Customer Reviews</span></li>
                                 <li class="item-title"><span class="inner">Shipping & Returns</span></li>
                                 <li class="item-title"><span class="inner">Return Policies</span></li>
                             </ul>
                             <div class="widget-content-tab">
+                                <!-- Description Tab -->
                                 <div class="widget-content-inner active">
                                     <div class="tab-description">
                                         <div class="right">
@@ -819,7 +821,7 @@ body.modal-open {
                                             <ul class="mb_12">
                                                 <li><b>Brand:</b> <%= product.brand || "—" %></li>
                                                 <li><b>Weight:</b> <%= product.weight ? product.weight + "g" : "—" %></li>
-                                                <li><b>Dimensions:</b> 
+                                                <li><b>Dimensions:</b>
                                                     <% if(product.dimensions && (product.dimensions.length || product.dimensions.width || product.dimensions.height)){ %>
                                                         <%= product.dimensions.length || 0 %>×
                                                         <%= product.dimensions.width || 0 %>×
@@ -857,14 +859,6 @@ body.modal-open {
                                                 <div class="letter-1 text-btn-uppercase mb_12">Tags</div>
                                                 <div class="mb_12 text-secondary"><%= product.tags.join(', ') %></div>
                                             <% } %>
-                                            <% if(product.beautyTips && product.beautyTips.length) { %>
-                                                <div class="letter-1 text-btn-uppercase mb_12">Beauty Tips</div>
-                                                <ul class="list-text type-disc mb_12 gap-6">
-                                                    <% product.beautyTips.forEach(function(tip){%>
-                                                        <li class="font-2"><%= tip.title || tip._id %></li>
-                                                    <% }) %>
-                                                </ul>
-                                            <% } %>
                                             <% if (product.variants && product.variants.length) { %>
                                                 <div class="letter-1 text-btn-uppercase mb_12">Product Variants</div>
                                                 <% product.variants.forEach(function(variant) { %>
@@ -885,24 +879,119 @@ body.modal-open {
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Beauty Tips Tab (from product.beautyTips) -->
                                 <div class="widget-content-inner">
-                                    <!-- Customer Reviews area -->
+                                    <div class="tab-beauty-tips">
+                                        <h5 class="mb_16">Beauty Tips</h5>
+                                        <% if (Array.isArray(product.beautyTips) && product.beautyTips.length) { %>
+                                            <div class="row">
+                                                <% product.beautyTips.forEach(function(tip, idx) { %>
+                                                    <div class="col-md-6 col-lg-4 mb-4">
+                                                        <div class="card h-100">
+                                                            <% if(tip.image) { %>
+                                                                <img src="<%= tip.image %>" alt="<%= tip.title || 'Tip ' + (idx+1) %>" class="card-img-top" style="object-fit:cover;max-height:180px" loading="lazy" />
+                                                            <% } %>
+                                                            <div class="card-body d-flex flex-column">
+                                                                <% if (tip.title) { %>
+                                                                    <h6 class="card-title mb-2"><%= tip.title %></h6>
+                                                                <% } else { %>
+                                                                    <h6 class="card-title mb-2">Beauty Tip <%= idx+1 %></h6>
+                                                                <% } %>
+                                                                <% if (tip.shortDescription) { %>
+                                                                    <div class="mb-2 text-secondary"><%= tip.shortDescription %></div>
+                                                                <% } %>
+                                                                <% if (tip.fullDescription) { %>
+                                                                    <div class="mb-2"><%= tip.fullDescription %></div>
+                                                                <% } else if (tip.description) { %>
+                                                                    <div class="mb-2"><%= tip.description %></div>
+                                                                <% } %>
+                                                                <% if (Array.isArray(tip.tags) && tip.tags.length) { %>
+                                                                    <div class="mb_8">
+                                                                        <% tip.tags.forEach(function(tag) { %>
+                                                                            <span class="badge bg-light text-dark me-1"><%= tag %></span>
+                                                                        <% }); %>
+                                                                    </div>
+                                                                <% } %>
+                                                                <% if (tip.category && tip.category.name) { %>
+                                                                    <div class="mt-auto mb_8 small text-secondary">Category: <%= tip.category.name %></div>
+                                                                <% } %>
+                                                                <% if (Array.isArray(tip.relatedProducts) && tip.relatedProducts.length) { %>
+                                                                    <div class="small text-secondary">
+                                                                        Related Products:
+                                                                        <% tip.relatedProducts.forEach(function(prod, pidx) { %>
+                                                                            <a href="/productDetails/<%= prod.slug || prod._id %>"><%= prod.title || prod.slug || 'Product' %></a><%= pidx < tip.relatedProducts.length-1 ? ', ' : '' %>
+                                                                        <% }); %>
+                                                                    </div>
+                                                                <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="mb_12 text-secondary">No beauty tips available for this product.</div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <!-- Customer Reviews Tab -->
+                                <div class="widget-content-inner">
                                     <div class="customer-reviews-section">
                                         <h5 class="mb_16">Customer Reviews</h5>
+
+                                        <% if (user && user.role === 'user') { %>
+                                            <div class="mb_16">
+                                                <button type="button" id="toggle-review-form-btn" class="btn btn-outline-primary mb_8" style="font-weight:600;">
+                                                    <i class="fa fa-pencil-alt mr-1"></i> Post Your Review
+                                                </button>
+                                                <div id="add-review-form-wrapper" style="display:none;">
+                                                    <form id="add-review-form" class="mb_16 card card-body" style="box-shadow:0 4px 12px 0 rgba(0,0,0,.03);">
+                                                        <div class="mb-2">
+                                                            <label for="review-name" class="form-label">Your Name</label>
+                                                            <input type="text" class="form-control" id="review-name" name="name" value="<%= user.name %>" <%= user.name ? 'readonly' : '' %> >
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Your Rating</label>
+                                                            <div id="review-rating" style="font-size:20px;">
+                                                                <% for (var i = 1; i <= 5; i++) { %>
+                                                                    <span class="star-rating" data-value="<%= i %>" style="cursor:pointer; color:#ccc;">&#9733;</span>
+                                                                <% } %>
+                                                                <input type="hidden" name="rating" id="review-rating-input" value="0">
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label for="review-content" class="form-label">Your Review</label>
+                                                            <textarea id="review-content" name="content" class="form-control" rows="3" required maxlength="1500"></textarea>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="mb_16 text-secondary">
+                                                <a href="/userLogin" class="ml-2 text-link">Log in</a> to post a review.
+                                            </div>
+                                        <% } %>
+
                                         <% if (product.reviews && product.reviews.length) { %>
-                                            <ul class="list-text type-disc mb_12 gap-6">
+                                            <ul class="list-text type-disc mb_12 gap-6" id="reviews-list">
                                                 <% product.reviews.forEach(function(review) { %>
-                                                    <li class="font-2">
+                                                    <li class="font-2" data-review-id="<%= review._id %>">
                                                         <div>
-                                                            <strong><%= review.userName || "Anonymous" %></strong>
+                                                            <strong><%= review.name || review.userName || "Anonymous" %></strong>
                                                             <span class="text-secondary ml-2" style="font-size: 12px;">
                                                                 <% if (review.createdAt) { %>
                                                                     (<%= new Date(review.createdAt).toLocaleDateString() %>)
                                                                 <% } %>
                                                             </span>
+                                                            <% /* DELETE TEXT BUTTON visible only to review owner */ %>
+                                                            <% if (user && user.id && review.userId && user.id == review.userId.toString()) { %>
+                                                                <button type="button" class="delete-review-btn text-danger border-0 bg-white ml-2" data-reviewid="<%= review._id %>" data-productid="<%= product._id %>" title="Delete review" style="font-size:13px;cursor:pointer;text-decoration:underline;">
+                                                                    Delete
+                                                                </button>
+                                                            <% } %>
                                                         </div>
                                                         <div>
-                                                            Rating: 
+                                                            Rating:
                                                             <% for (var i = 1; i <= 5; i++) { %>
                                                                 <% if (i <= review.rating) { %>
                                                                     <span style="color: #FFE066;">&#9733;</span>
@@ -911,7 +1000,7 @@ body.modal-open {
                                                                 <% } %>
                                                             <% } %>
                                                         </div>
-                                                        <div><%= review.comment %></div>
+                                                        <div><%= review.content || review.comment %></div>
                                                     </li>
                                                 <% }); %>
                                             </ul>
@@ -920,19 +1009,221 @@ body.modal-open {
                                         <% } %>
                                     </div>
                                 </div>
+
+                                <!-- SweetAlert for notifications -->
+                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                <script>
+                                // Show/hide review form when button is clicked
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    var toggleBtn = document.getElementById('toggle-review-form-btn');
+                                    var formWrapper = document.getElementById('add-review-form-wrapper');
+                                    if (toggleBtn && formWrapper) {
+                                        toggleBtn.addEventListener('click', function() {
+                                            if (formWrapper.style.display === 'none' || formWrapper.style.display === '') {
+                                                formWrapper.style.display = 'block';
+                                                setTimeout(function() {
+                                                    formWrapper.scrollIntoView({ behavior: "smooth", block: "center" });
+                                                }, 100);
+                                            } else {
+                                                formWrapper.style.display = 'none';
+                                            }
+                                        });
+                                    }
+
+                                    // Star rating selection for review form
+                                    const stars = document.querySelectorAll('#review-rating .star-rating');
+                                    const ratingInput = document.getElementById('review-rating-input');
+                                    let selectedRating = 0;
+
+                                    stars.forEach(star => {
+                                        star.addEventListener('mouseenter', function() {
+                                            let val = parseInt(this.getAttribute('data-value'));
+                                            stars.forEach((s, idx) => {
+                                                s.style.color = idx < val ? "#FFE066" : "#CCCCCC";
+                                            });
+                                        });
+                                        star.addEventListener('mouseleave', function() {
+                                            stars.forEach((s, idx) => {
+                                                s.style.color = idx < selectedRating ? "#FFE066" : "#CCCCCC";
+                                            });
+                                        });
+                                        star.addEventListener('click', function() {
+                                            selectedRating = parseInt(this.getAttribute('data-value'));
+                                            ratingInput.value = selectedRating;
+                                            stars.forEach((s, idx) => {
+                                                s.style.color = idx < selectedRating ? "#FFE066" : "#CCCCCC";
+                                            });
+                                        });
+                                    });
+
+                                    // Review form submission (AJAX)
+                                    const form = document.getElementById("add-review-form");
+                                    if(form) {
+                                        form.addEventListener("submit", function(e){
+                                            e.preventDefault();
+                                            const name = form.name.value;
+                                            const rating = parseInt(form.rating.value);
+                                            const content = form.content.value;
+                                            if(!rating) {
+                                                Swal.fire({
+                                                    icon: 'warning',
+                                                    title: 'Rating required',
+                                                    text: 'Please select a rating before submitting.'
+                                                });
+                                                return;
+                                            }
+                                            fetch(`/products/<%= product._id %>/review`, {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: JSON.stringify({ name, rating, content })
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if(data.success && data.product && data.product.reviews) {
+                                                    renderReviews(data.product.reviews);
+                                                    form.reset();
+                                                    selectedRating = 0;
+                                                    stars.forEach(s => s.style.color = "#CCCCCC");
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Review submitted!',
+                                                        text: data.message || "Your review was submitted."
+                                                    }).then(() => {
+                                                        location.reload();
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Error',
+                                                        text: data.message || "There was a problem submitting your review."
+                                                    });
+                                                }
+                                            })
+                                            .catch(() => {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Network error',
+                                                    text: "Could not submit review. Please try again."
+                                                });
+                                            });
+                                        });
+                                    }
+
+                                    // Handle review deletion
+                                    document.getElementById("reviews-list")?.addEventListener("click", function(e){
+                                        if(e.target.closest(".delete-review-btn")) {
+                                            const btn = e.target.closest(".delete-review-btn");
+                                            const reviewId = btn.getAttribute("data-reviewid");
+                                            const productId = btn.getAttribute("data-productid");
+
+                                            Swal.fire({
+                                                title: 'Delete your review?',
+                                                text: "This action cannot be undone.",
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#e55347',
+                                                cancelButtonColor: '#6c757d',
+                                                confirmButtonText: 'Yes, delete it!'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    fetch(`/products/${productId}/review/${reviewId}`, {
+                                                        method: "DELETE"
+                                                    })
+                                                    .then(res => res.json())
+                                                    .then(data => {
+                                                        if(data.success && data.product && data.product.reviews) {
+                                                            renderReviews(data.product.reviews);
+                                                            Swal.fire({
+                                                                icon: 'success',
+                                                                title: 'Review deleted!',
+                                                                text: data.message || "Your review was deleted."
+                                                            }).then(() => {
+                                                                location.reload();
+                                                            });
+                                                        } else {
+                                                            Swal.fire({
+                                                                icon: 'error',
+                                                                title: 'Delete failed',
+                                                                text: data.message || "Could not delete review."
+                                                            });
+                                                        }
+                                                    })
+                                                    .catch(() => {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Network error',
+                                                            text: "Could not delete review. Please try again."
+                                                        });
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    // Render reviews utility (client-only, rerenders the reviews list)
+                                    function renderReviews(reviews) {
+                                        const userId = "<%= user && user.id ? user.id : '' %>";
+                                        const list = document.getElementById("reviews-list");
+                                        if (!list) return;
+                                        if (reviews.length === 0) {
+                                            list.innerHTML = '<div class="mb_12 text-secondary">No customer reviews yet.</div>';
+                                            return;
+                                        }
+                                        list.innerHTML = reviews.map(function(review) {
+                                            let starsHTML = "";
+                                            for (let i = 1; i <= 5; i++) {
+                                                starsHTML += `<span style="color:${i <= review.rating ? '#FFE066' : '#CCCCCC'}">&#9733;</span>`;
+                                            }
+                                            let deleteBtn = "";
+                                            if(userId && review.userId && userId === review.userId.toString()) {
+                                                // Show text delete button
+                                                deleteBtn = `<button type="button" class="delete-review-btn text-danger border-0 bg-white ml-2" data-reviewid="${review._id}" data-productid="<%= product._id %>" title="Delete review" style="font-size:13px;cursor:pointer;text-decoration:underline;">
+                                                    Delete
+                                                </button>`;
+                                            }
+                                            return `<li class="font-2" data-review-id="${review._id}">
+                                                <div>
+                                                    <strong>${review.name || review.userName || "Anonymous"}</strong>
+                                                    <span class="text-secondary ml-2" style="font-size: 12px;">
+                                                        ${review.createdAt ? '('+new Date(review.createdAt).toLocaleDateString()+')' : ''}
+                                                    </span>
+                                                    ${deleteBtn}
+                                                </div>
+                                                <div>
+                                                    Rating: ${starsHTML}
+                                                </div>
+                                                <div>${review.content || review.comment || ''}</div>
+                                            </li>`;
+                                        }).join('');
+                                    }
+                                });
+                                </script>
+                                <!-- Shipping & Returns Tab -->
                                 <div class="widget-content-inner">
                                     <div class="tab-shipping">
                                         <div class="w-100">
                                             <div class="text-btn-uppercase mb_12">We've got your back</div>
-                                            <p class="mb_12">One delivery fee to most locations (check our Orders & Delivery page)</p>
-                                            <p>Free returns within 14 days (see policy for exclusions)</p>
+                                            <p class="mb_12">Free Delivery For All products From Blushley.</p>
+                                            <div class="mt_12">
+                                                <strong>Replacement Policy:</strong>
+                                                <p class="mb_12">We offer replacements <span style="color:#e55347;font-weight:500;">only within 2 hours after order delivery</span>. Please ensure you check your items promptly upon receipt. If you notice any issues, contact our support team immediately for assistance.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Return Policies Tab -->
                                 <div class="widget-content-inner">
                                     <div class="tab-policies">
-                                        <div class="text-btn-uppercase mb_12">Return Policies</div>
-                                        <p class="mb_12 text-secondary">At Blushley, we stand behind the quality of our products. ...</p>
+                                        <div class="text-btn-uppercase mb_12">Replacement Policy Only</div>
+                                        <p class="mb_12 text-secondary">
+                                            At Blushley, we do not offer returns on any products. However, if you receive a damaged, defective, or incorrect item, you are eligible for a replacement. 
+                                            <br><br>
+                                            <strong>No Returns &mdash; Only Replacement Within 2 Hours of Delivery:</strong> 
+                                            <br>
+                                            Please inspect your order upon delivery. If there is a problem, contact our support team within 2 hours of receiving your order. We will promptly assist in providing a replacement for your item. No requests for return or replacement will be accepted after this window.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -955,7 +1246,7 @@ body.modal-open {
             let productThumbs = document.querySelectorAll('.product-thumb-img');
             let productMains = document.querySelectorAll('.product-main-img');
 
-            // Helper function for .toLocaleString fallback 
+            // Helper function for .toLocaleString fallback
             function toINR(val) {
                 try {
                   return Number(val).toLocaleString("en-IN", {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -1082,18 +1373,18 @@ body.modal-open {
                                     <div class="swiper-slide">
                                         <div class="card-product">
                                             <div class="card-product-wrapper">
-                                                <a href="/product/<%= rp.slug %>" class="product-img">
+                                                <a href="/productDetails/<%= rp.slug %>" class="product-img">
                                                     <img class="lazyload img-product" data-src="<%= (rp.images && rp.images[0]) ? rp.images[0] : '/images/products/default.png' %>" src="<%= (rp.images && rp.images[0]) ? rp.images[0] : '/images/products/default.png' %>" alt="image-product">
                                                 </a>
                                                 <% if(rpDiscount>0){ %>
                                                     <div class="on-sale-wrap"><span class="on-sale-item">-<%= rpDiscount %>%</span></div>
                                                 <% } %>
                                                 <div class="list-btn-main">
-                                                    <a href="/product/<%= rp.slug %>#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
+                                                    <a href="/productDetails/<%= rp.slug %>#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
                                                 </div> 
                                             </div>
                                             <div class="card-product-info">
-                                                <a href="/product/<%= rp.slug %>" class="title link"><%= rp.title %></a>
+                                                <a href="/productDetails/<%= rp.slug %>" class="title link"><%= rp.title %></a>
                                                 <% if(rpDiscount>0){ %>
                                                     <span class="price"><span class="old-price">₹<%= rpBase.toFixed(2) %></span> ₹<%= rpSale.toFixed(2) %></span>
                                                 <% } else { %>

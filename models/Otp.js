@@ -10,7 +10,8 @@ const OtpSchema = new mongoose.Schema({
   purpose: { 
     type: String, 
     enum: [
-      'login',              
+      'login',  
+      'user_login',            
       'reseller_verify',  
       'freelancer_verify' ,
       'freelancer_login'  ,
