@@ -200,6 +200,10 @@ router.get('/saloon', (req, res) => {
     res.render('admin/admin_saloon');
 });
 
+router.get('/coupon', (req, res) => {
+    res.render('admin/admin_coupon');
+});
+
 router.get('/testimonials', (req, res) => {
     res.render('admin/admin_testimonials');
 });

@@ -193,4 +193,13 @@ router.get('/api/search/live', productCtrl.searchLive);
 router.post("/products/:id/review", productCtrl.addReview);
 router.delete("/products/:productId/review/:reviewId", productCtrl.deleteReview);
 
+// Coupon CRUD API endpoints
+router.post("/createCoupons", productCtrl.createCoupon);
+router.put("/updateCoupons/:id", productCtrl.updateCoupon);
+router.delete("/deleteCoupons/:id", productCtrl.deleteCoupon);
+router.get("/listCoupons", productCtrl.listCoupons);
+router.get("/coupons/categoriesData", productCtrl.getCouponCategories);
+router.get("/coupons/products/search", productCtrl.searchProducts);
+
+
 module.exports = router;

@@ -4,6 +4,8 @@ const slugify = require("slugify");
 const Category = require("../models/Category");
 const SubCategory = require("../models/SubCategory");
 const ChildCategory = require("../models/ChildCategory");
+const User = require("../models/User");
+const Coupon = require("../models/Coupon");
 
 function safeParse(value, fallback = null) {
   try {
@@ -624,5 +626,119 @@ exports.deleteReview = async (req, res) => {
   } catch (err) {
     console.error("DELETE REVIEW ERROR:", err);
     return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.createCoupon = async (req, res) => {
+  try {
+    const {
+      code,
+      description,
+      type,
+      discountValue,
+      appliesTo,
+      categories,
+      products,
+      minPurchase,
+      maxDiscount,
+      startDate,
+      endDate,
+      usageLimit,
+      perUserLimit
+    } = req.body;
+
+    const coupon = await Coupon.create({
+      code: code.toUpperCase(),
+      description,
+      type,
+      discountValue,
+      appliesTo,
+      categories: categories || [],
+      products: products || [],
+      minPurchase: Number(minPurchase || 0),
+      maxDiscount: Number(maxDiscount || 0),
+      startDate,
+      endDate,
+      usageLimit,
+      perUserLimit
+    });
+
+    return res.json({ success: true, coupon });
+  } catch (err) {
+    console.error("CREATE COUPON ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.updateCoupon = async (req, res) => {
+  try {
+    const couponId = req.params.id;
+
+    const updated = await Coupon.findByIdAndUpdate(
+      couponId,
+      { ...req.body },
+      { new: true }
+    );
+
+    return res.json({ success: true, coupon: updated });
+  } catch (err) {
+    console.error("UPDATE COUPON ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.deleteCoupon = async (req, res) => {
+  try {
+    await Coupon.findByIdAndDelete(req.params.id);
+    return res.json({ success: true, message: "Coupon deleted" });
+  } catch (err) {
+    console.error("DELETE COUPON ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.listCoupons = async (req, res) => {
+  try {
+    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    return res.json({ success: true, coupons });
+  } catch (err) {
+    console.error("LIST COUPONS ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.getCouponCategories = async (req, res) => {
+  const categories = await Category.find({}).select("_id name");
+  res.json({ success: true, categories });
+};
+
+exports.searchProducts = async (req, res) => {
+  try {
+    const { q = "", page = 1, limit = 20 } = req.query;
+
+    const skip = (page - 1) * limit;
+
+    const filter = q
+      ? { title: { $regex: q, $options: "i" } }
+      : {};
+
+    const products = await Product.find(filter)
+      .select("_id title")
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Product.countDocuments(filter);
+
+    return res.json({
+      success: true,
+      products,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / limit)
+    });
+
+  } catch (err) {
+    console.error("PRODUCT SEARCH ERROR:", err);
+    res.status(500).json({ success: false });
   }
 };

@@ -244,62 +244,42 @@
                             </li>
                           
                             <!--notifications  ICON with Loyalty points -->
-                            <li class="nav-loyalty">
-                                <a href="#" class="nav-icon-item" id="loyaltyToggle">
-                                    <i class="fa-regular fa-bell"></i>
-                                    <span class="loyalty-badge"></span>
-                                </a>
+                            <% if (user && user.role === "user") { %>
+                              <li class="nav-loyalty">
+                                  <a href="#" class="nav-icon-item" id="loyaltyToggle">
+                                      <i class="fa-regular fa-bell"></i>
+                                      <span class="loyalty-badge"></span>
+                                  </a>
 
-                                <!-- Loyalty Points Panel -->
-                                <div class="loyalty-panel" id="loyaltyPanel">
-                                    <div class="loyalty-header">
-                                        <h5 class="mb-0">Notifications</h5>
+                                  <!-- Loyalty Points Panel -->
+                                  <div class="loyalty-panel" id="loyaltyPanel">
+                                      <div class="loyalty-header">
+                                          <h5 class="mb-0">Notifications</h5>
+                                          <button class="mark-all-read" id="markAllRead">Mark All</button>
+                                          <button type="button" class="btn-close" id="closeLoyalty"
+                                              aria-label="Close"></button>
+                                      </div>
 
-                                        <button class="mark-all-read" id="markAllRead">Mark All</button>
-                                        <button type="button" class="btn-close" id="closeLoyalty"
-                                            aria-label="Close"></button>
-                                    </div>
-
-                                    <div class="loyalty-points-display">
-                                        <div class="points-number">1000</div>
-                                        <div class="points-label">Loyalty Points</div>
-                                    </div>
-
-                                    <div class="loyalty-activity">
-                                        <h6 class="mb-3">Recent Notifications</h6>
-
-                                        <div class="activity-item unread">
-                                            <div>
-                                                <div class="activity-desc">New order shipped</div>
-                                                <div class="activity-date">Nov 6, 2025</div>
+                                      <div class="loyalty-points-display">
+                                          <% 
+                                            var points = (user.wallet && typeof user.wallet.loyaltyPoints !== 'undefined') ? user.wallet.loyaltyPoints : 0;
+                                          %>
+                                          <div class="points-number"><%= points %></div>
+                                          <div class="points-label">Loyalty Points</div>
+                                          <% if (!points || points === 0) { %>
+                                            <div class="loyalty-zero-msg text-muted mt-2">
+                                              Start ordering and book to get points!
                                             </div>
-                                            <button class="mark-read-btn">
-                                                <i class="fa-regular fa-circle-check"></i>
-                                            </button>
-                                        </div>
+                                          <% } %>
+                                      </div>
 
-                                        <div class="activity-item unread">
-                                            <div>
-                                                <div class="activity-desc">Appointment reminder</div>
-                                                <div class="activity-date">Nov 5, 2025</div>
-                                            </div>
-                                            <button class="mark-read-btn">
-                                                <i class="fa-regular fa-circle-check"></i>
-                                            </button>
-                                        </div>
-
-                                        <div class="activity-item unread">
-                                            <div>
-                                                <div class="activity-desc">Special offer available</div>
-                                                <div class="activity-date">Nov 4, 2025</div>
-                                            </div>
-                                            <button class="mark-read-btn">
-                                                <i class="fa-regular fa-circle-check"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
+                                      <div class="loyalty-activity">
+                                          <h6 class="mb-3">Recent Notifications</h6>
+                                          <% /* Notifications logic can go here. This section left empty or unchanged according to instructions. */ %>
+                                      </div>
+                                  </div>
+                              </li>
+                            <% } %>
                             <li class="nav-cart"><a href="#shoppingCart" data-bs-toggle="modal" class="nav-icon-item">
 
                                     <img src="/images/icons/shopping-bag.svg" alt="cart icon">
@@ -1048,80 +1028,7 @@
 
 
 
-        <!-- Gallery shop gram -->
-        <section>
-            <div class="heading-section heading-section-gallery text-center wow fadeInUp">
-                <h3 class="heading">Beauty Inspiration, One Click Away</h3>
-                <p class="subheading text-secondary">Discover premium beauty products from our collection</p>
-            </div>
-            <div dir="ltr" class="swiper tf-sw-shop-gallery" data-preview="6" data-tablet="3" data-mobile="2"
-                data-space-lg="0" data-space-md="0" data-space="0" data-pagination="2" data-pagination-md="3"
-                data-pagination-lg="1">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <div class="gallery-item rounded-0 hover-overlay hover-img wow fadeInUp" data-wow-delay=".1s">
-                            <div class="img-style">
-                                <img class="lazyload img-hover" data-src="/images/Makeup/Makeup-mock1.jpg"
-                                    src="/images/Makeup/Makeup-mock1.jpg" alt="image-gallery">
-                            </div>
-                            <a href="product-detail.html" class="box-icon hover-tooltip"><span
-                                    class="icon icon-eye"></span> <span class="tooltip">View Product</span></a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="gallery-item rounded-0 hover-overlay hover-img wow fadeInUp" data-wow-delay=".2s">
-                            <div class="img-style">
-                                <img class="lazyload img-hover" data-src="/images/Makeup/Makeup-mock2.png"
-                                    src="/images/Makeup/Makeup-mock2.png" alt="image-gallery">
-                            </div>
-                            <a href="product-detail.html" class="box-icon hover-tooltip"><span
-                                    class="icon icon-eye"></span> <span class="tooltip">View Product</span></a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="gallery-item rounded-0 hover-overlay hover-img wow fadeInUp" data-wow-delay=".3s">
-                            <div class="img-style">
-                                <img class="lazyload img-hover" data-src="/images/Makeup/Makeup-mock1.jpg"
-                                    src="/images/Makeup/Makeup-mock1.jpg" alt="image-gallery">
-                            </div>
-                            <a href="product-detail.html" class="box-icon hover-tooltip"><span
-                                    class="icon icon-eye"></span> <span class="tooltip">View Product</span></a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="gallery-item rounded-0 hover-overlay hover-img wow fadeInUp" data-wow-delay=".4s">
-                            <div class="img-style">
-                                <img class="lazyload img-hover" data-src="/images/Makeup/Makeup-mock2.png"
-                                    src="/images/Makeup/Makeup-mock2.png" alt="image-gallery">
-                            </div>
-                            <a href="product-detail.html" class="box-icon hover-tooltip"><span
-                                    class="icon icon-eye"></span> <span class="tooltip">View Product</span></a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="gallery-item rounded-0 hover-overlay hover-img wow fadeInUp" data-wow-delay=".5s">
-                            <div class="img-style">
-                                <img class="lazyload img-hover" data-src="/images/Makeup/Makeup-mock1.jpg"
-                                    src="/images/Makeup/Makeup-mock1.jpg" alt="image-gallery">
-                            </div>
-                            <a href="product-detail.html" class="box-icon hover-tooltip"><span
-                                    class="icon icon-eye"></span> <span class="tooltip">View Product</span></a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="gallery-item rounded-0 hover-overlay hover-img wow fadeInUp" data-wow-delay=".3s">
-                            <div class="img-style">
-                                <img class="lazyload img-hover" data-src="/images/Makeup/Makeup-mock2.png"
-                                    src="/images/Makeup/Makeup-mock2.png" alt="image-gallery">
-                            </div>
-                            <a href="product-detail.html" class="box-icon hover-tooltip"><span
-                                    class="icon icon-eye"></span> <span class="tooltip">View Product</span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- /Gallery shop gram -->
+
 
 
         <!-- Footer -->
