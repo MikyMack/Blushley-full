@@ -6,11 +6,14 @@ const upload = require("../middlewares/upload");
 const categoryCtrl = require('../controllers/categoryControllers')
 const productCtrl = require('../controllers/productCtrl');
 const beautyTipCtrl = require('../controllers/beautyTipController');
+const cartCtrl = require('../controllers/cartController');
 const ChildCategory = require("../models/ChildCategory");
 const SubCategory = require("../models/SubCategory");
 const blogCtrl = require("../controllers/blogController");
 const testimonialsCtrl = require('../controllers/testimonials');
 const bannerCtrl = require('../controllers/bannerController');
+const authController=require('../controllers/authController')
+const { isLoggedIn } = require("../middlewares/auth");
 
 
 
@@ -201,5 +204,33 @@ router.get("/listCoupons", productCtrl.listCoupons);
 router.get("/coupons/categoriesData", productCtrl.getCouponCategories);
 router.get("/coupons/products/search", productCtrl.searchProducts);
 
+// Remove one notification
+router.delete("/notifications/:id", isLoggedIn, authController.removeNotification);
+router.delete("/notifications", isLoggedIn, authController.removeAllNotifications);
+
+router.post("/user/update-profile", isLoggedIn, authController.updateUserProfile);
+
+// List all addresses
+router.get("/listAddresses", isLoggedIn, authController.listAddresses);
+
+// Create new address
+router.post("/createAddresses", isLoggedIn, authController.createAddress);
+
+// Update address
+router.put("/updateAddresses/:id", isLoggedIn, authController.updateAddress);
+
+// Delete address
+router.delete("/deleteAddresses/:id", isLoggedIn, authController.deleteAddress);
+
+// Mark as default
+router.put("/addresses/:id/default", isLoggedIn, authController.markDefault);
+
+
+router.post("/addCart", isLoggedIn, cartCtrl.addToCart);
+router.get("/listCart", isLoggedIn, cartCtrl.getCart);
+router.put("/updateCart", isLoggedIn, cartCtrl.updateCartQty);
+router.delete("/removeCart/:itemId", isLoggedIn, cartCtrl.removeCartItem);
+router.delete("/clearCart", isLoggedIn, cartCtrl.clearCart);
+router.post('/guest/add-to-cart', cartCtrl.guestAddToCart);
 
 module.exports = router;

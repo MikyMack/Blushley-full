@@ -206,7 +206,7 @@
                             </li>
                             <li class="nav-cart"><a href="#shoppingCart" data-bs-toggle="modal" class="nav-icon-item">
                                     <img src="/images/icons/shopping-bag.svg" alt="cart icon">
-                                    <span class="count-box">1</span></a>
+                                    <span class="count-box">0</span></a>
                             </li>
                         </ul>
                     </div>
@@ -741,8 +741,131 @@
         <!-- /Footer -->
 
     </div>
-
+    <div class="modal fullRight fade modal-shopping-cart" id="shoppingCart">
+        <div class="modal-dialog">
+            <div class="modal-content">
+    
+                <div class="d-flex flex-column flex-grow-1 h-100">
+                    <div class="header">
+                        <h5 class="title">Shopping Cart</h5>
+                        <span class="icon-close icon-close-popup" data-bs-dismiss="modal"></span>
+                    </div>
+    
+                    <div class="wrap">
+                        <div class="tf-mini-cart-wrap">
+    
+                            <!-- MAIN CART SCROLL AREA -->
+                            <div class="tf-mini-cart-main">
+                                <div class="tf-mini-cart-sroll">
+    
+                                    <!-- *********************************** -->
+                                    <!-- THIS IS THE ONLY CHANGE YOU MUST KEEP -->
+                                    <!-- *********************************** -->
+                                    <div class="tf-mini-cart-items"></div>
+                                    <!-- cart.js will dynamically append items here -->
+    
+                                </div>
+                            </div>
+    
+                            <!-- BOTTOM SECTION -->
+                            <div class="tf-mini-cart-bottom">
+                                <div class="tf-mini-cart-tool"></div>
+    
+                                <div class="tf-mini-cart-bottom-wrap">
+                                    <div class="tf-cart-totals-discounts">
+                                        <h5>Subtotal</h5>
+    
+                                        <!-- REQUIRED for JS -->
+                                        <h5 class="tf-totals-total-value">₹0</h5>
+                                    </div>
+    
+                                    <div class="tf-cart-checkbox">
+                                        <div class="tf-checkbox-wrapp">
+                                            <input type="checkbox" id="CartDrawer-Form_agree">
+                                            <div><i class="icon-check"></i></div>
+                                        </div>
+                                        <label for="CartDrawer-Form_agree">
+                                            I agree with
+                                            <a href="/terms_and_conditions">Terms & Conditions</a>
+                                        </label>
+                                    </div>
+    
+                                    <div class="tf-mini-cart-view-checkout">
+                                        <a href="/cart" class="tf-btn w-100 btn-white radius-4 has-border">
+                                            <span class="text">View cart</span>
+                                        </a>
+                                        <a href="/cart" class="tf-btn w-100 btn-fill radius-4">
+                                            <span class="text">Check Out</span>
+                                        </a>
+                                    </div>
+    
+                                    <div class="text-center">
+                                        <a class="link text-btn-uppercase" href="/shop">Or continue shopping</a>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- EXTRA FEATURES (no change) -->
+                            <div class="tf-mini-cart-tool-openable add-note">
+                                <div class="tf-mini-cart-tool-content">
+                                    <label for="Cart-note" class="tf-mini-cart-tool-text">
+                                        <span class="icon">📝</span>
+                                        <span class="text-title">Note</span>
+                                    </label>
+    
+                                    <form class="form-add-note tf-mini-cart-tool-wrap">
+                                        <fieldset>
+                                            <textarea id="Cart-note"
+                                                placeholder="Add special instructions for your order..."></textarea>
+                                        </fieldset>
+                                        <div class="tf-cart-tool-btns">
+                                            <button type="submit" class="btn-style-2 w-100">
+                                                <span class="text text-btn-uppercase">Save</span>
+                                            </button>
+                                            <div class="text-center tf-mini-cart-tool-close">Cancel</div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+    
+                            <div class="tf-mini-cart-tool-openable estimate-shipping">
+                                <div class="tf-mini-cart-tool-content">
+                                    <label class="tf-mini-cart-tool-text">
+                                        <span class="icon">🚚</span>
+                                        <span class="text-title">Estimate shipping rates</span>
+                                    </label>
+                                    <!-- Shipping form unchanged -->
+                                </div>
+                            </div>
+    
+                            <div class="tf-mini-cart-tool-openable add-gift">
+                                <form class="tf-product-form-addgift">
+                                    <!-- unchanged -->
+                                </form>
+                            </div>
+    
+                            <div class="tf-mini-cart-tool-openable add-coupon">
+                                <div class="tf-mini-cart-tool-content">
+                                    <label class="tf-mini-cart-tool-text">
+                                        <span class="icon">🎟</span>
+                                        <span class="text-title">Add A Coupon Code</span>
+                                    </label>
+                                    <form class="form-add-coupon tf-mini-cart-tool-wrap">
+                                        <!-- unchanged -->
+                                    </form>
+                                </div>
+                            </div>
+    
+                        </div>
+                    </div>
+    
+                </div>
+    
+            </div>
+        </div>
+    </div>
     <!-- Javascript -->
+    <script type="text/javascript" src="/js/cart.js"></script>
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/bootstrap-select.min.js"></script>

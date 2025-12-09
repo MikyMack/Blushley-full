@@ -87,7 +87,7 @@ window.Search = (function () {
   
       arr.forEach(p => {
         const a = document.createElement('a');
-        a.href = `/product/${p.slug}`;
+        a.href = `/productDetails/${p.slug}`;
         a.className = 'badge bg-light text-dark p-2';
         a.style.maxWidth = '180px';
         a.style.display = 'inline-flex';
