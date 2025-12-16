@@ -213,7 +213,7 @@
                 <ul class="breadcrumbs d-flex align-items-center justify-content-center">
                     <li><a class="link" href="/">Homepage</a></li>
                     <li><i class="icon-arrRight"></i></li>
-                    <li><a class="link" href="shop-default-grid.html">Shop</a></li>
+                    <li><a class="link" href="/shop">Shop</a></li>
                     <li><i class="icon-arrRight"></i></li>
                     <li>Shopping Cart</li>
                 </ul>
@@ -224,22 +224,28 @@
         <section class="flat-spacing">
             <div class="container">
                 <div class="row">
+                    <% if (user && user.role === "user") { %>
                     <div class="col-xl-8">
                         <div class="tf-cart-sold">
                             <div class="notification-sold bg-surface">
                                 <img class="icon" src="/images/logo/icon-fire.png" alt="img">
-                                <div class="count-text">Your cart will expire in <div class="js-countdown time-count" data-timer="600" data-labels=":,:,:,"></div> minutes! Please checkout now before your items sell out!</div>  
+                                <div class="count-text">
+                                    Your cart will expire in <div class="js-countdown time-count" data-timer="600" data-labels=":,:,:,"></div>
+                                    minutes! Please checkout now before your items sell out!
+                                </div>
                             </div>
                             <div class="notification-progress">
-                                <div class="text">Buy <span class="fw-semibold text-primary">₹70.00</span> more to get <span class="fw-semibold">Freeship</span></div>
+                                <div class="text">
+                                    <span class="fw-semibold text-primary">Shipping is Free on all orders!</span>
+                                </div>
                                 <div class="progress-cart">
-                                    <div class="value" style="width: 0%;" data-progress="50">
+                                    <div class="value" style="width: 100%;" data-progress="100">
                                         <span class="round"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <form>
+                        <form id="cartForm" method="POST" action="#">
                             <table class="tf-table-page-cart">
                                 <thead>
                                     <tr>
@@ -247,205 +253,22 @@
                                         <th>Price</th>
                                         <th>Quantity</th>
                                         <th>Total Price</th>
-                                        <th></th>
+                                        <th>
+                                            <button type="button" class="btn btn-link text-danger p-0 clear-all-cart" id="cart-clear-btn" style="display:none"
+                                                onclick="clearCart()">
+                                                <i class="fa fa-trash"></i> Clear All
+                                            </button>
+                                        </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr class="tf-cart-item file-delete">
-                                        <td class="tf-cart-item_product">
-                                            <a href="product-detail.html" class="img-box">
-                                                <img src="/images/products/beauty-cosmetic/beauty8.jpg" alt="product">
-                                            </a>
-                                            <div class="cart-info">
-                                                <a href="product-detail.html" class="cart-title link">V-neck cotton T-shirt</a>
-                                                <div class="variant-box">
-                                                    <div class="tf-select">
-                                                        <select>
-                                                            <option selected="selected">Blue</option>
-                                                            <option>Black</option>
-                                                            <option>White</option>
-                                                            <option>Red</option>
-                                                            <option>Beige</option>
-                                                            <option>Pink</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="tf-select">
-                                                        <select>
-                                                            <option selected="selected">XL</option>
-                                                            <option>XS</option>
-                                                            <option>S</option>
-                                                            <option>M</option>
-                                                            <option>L</option>
-                                                            <option>XL</option>
-                                                            <option>2XL</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td data-cart-title="Price" class="tf-cart-item_price text-center">
-                                            <div class="cart-price text-button price-on-sale">₹60.00</div>
-                                        </td>
-                                        <td data-cart-title="Quantity" class="tf-cart-item_quantity">
-                                            <div class="wg-quantity mx-md-auto">
-                                                <span class="btn-quantity btn-decrease">-</span>
-                                                <input type="text" class="quantity-product" name="number" value="1">
-                                                <span class="btn-quantity btn-increase">+</span>
-                                            </div>
-                                        </td>
-                                        <td data-cart-title="Total" class="tf-cart-item_total text-center">
-                                            <div class="cart-total text-button total-price">₹60.00</div>
-                                        </td>
-                                        <td data-cart-title="Remove" class="remove-cart"><span class="remove icon icon-close"></span></td>
-                                    </tr>
-                                    <tr class="tf-cart-item file-delete">
-                                        <td class="tf-cart-item_product">
-                                            <a href="product-detail.html" class="img-box">
-                                                <img src="/images/products/beauty-cosmetic/beauty8.jpg" alt="product">
-                                            </a>
-                                            <div class="cart-info">
-                                                <a href="product-detail.html" class="cart-title link">V-neck cotton T-shirt</a>
-                                                <div class="variant-box">
-                                                    <div class="tf-select">
-                                                        <select>
-                                                            <option selected="selected">Blue</option>
-                                                            <option>Black</option>
-                                                            <option>White</option>
-                                                            <option>Red</option>
-                                                            <option>Beige</option>
-                                                            <option>Pink</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="tf-select">
-                                                        <select>
-                                                            <option selected="selected">XL</option>
-                                                            <option>XS</option>
-                                                            <option>S</option>
-                                                            <option>M</option>
-                                                            <option>L</option>
-                                                            <option>XL</option>
-                                                            <option>2XL</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td data-cart-title="Price" class="tf-cart-item_price text-center">
-                                            <div class="cart-price text-button price-on-sale">₹40.00</div>
-                                        </td>
-                                        <td data-cart-title="Quantity" class="tf-cart-item_quantity">
-                                            <div class="wg-quantity mx-md-auto">
-                                                <span class="btn-quantity btn-decrease">-</span>
-                                                <input type="text" class="quantity-product" name="number" value="1">
-                                                <span class="btn-quantity btn-increase">+</span>
-                                            </div>
-                                        </td>
-                                        <td data-cart-title="Total" class="tf-cart-item_total text-center">
-                                            <div class="cart-total text-button total-price">₹40.00</div>
-                                        </td>
-                                        <td data-cart-title="Remove" class="remove-cart"><span class="remove icon icon-close"></span></td>
-                                    </tr>
-                                    <tr class="tf-cart-item file-delete">
-                                        <td class="tf-cart-item_product">
-                                            <a href="product-detail.html" class="img-box">
-                                                <img src="/images/products/beauty-cosmetic/beauty8.jpg" alt="product">
-                                            </a>
-                                            <div class="cart-info">
-                                                <a href="product-detail.html" class="cart-title link">V-neck cotton T-shirt</a>
-                                                <div class="variant-box">
-                                                    <div class="tf-select">
-                                                        <select>
-                                                            <option selected="selected">Blue</option>
-                                                            <option>Black</option>
-                                                            <option>White</option>
-                                                            <option>Red</option>
-                                                            <option>Beige</option>
-                                                            <option>Pink</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="tf-select">
-                                                        <select>
-                                                            <option selected="selected">XL</option>
-                                                            <option>XS</option>
-                                                            <option>S</option>
-                                                            <option>M</option>
-                                                            <option>L</option>
-                                                            <option>XL</option>
-                                                            <option>2XL</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td data-cart-title="Price" class="tf-cart-item_price text-center">
-                                            <div class="cart-price"><span class="old-price">₹80.00</span><span class="text-button new-price price-on-sale">₹129.00</span></div>
-                                        </td>
-                                        <td data-cart-title="Quantity" class="tf-cart-item_quantity">
-                                            <div class="wg-quantity mx-md-auto">
-                                                <span class="btn-quantity btn-decrease">-</span>
-                                                <input type="text" class="quantity-product" name="number" value="1">
-                                                <span class="btn-quantity btn-increase">+</span>
-                                            </div>
-                                        </td>
-                                        <td data-cart-title="Total" class="tf-cart-item_total text-center">
-                                            <div class="cart-total text-button total-price">₹129.00</div>
-                                        </td>
-                                        <td data-cart-title="Remove" class="remove-cart"><span class="remove icon icon-close"></span></td>
-                                    </tr>
+                                <tbody id="cart-table-rows">
                                 </tbody>
                             </table>
-                            <div class="ip-discount-code">
-                                <input type="text" placeholder="Add voucher discount">
-                                <button class="tf-btn"><span class="text">Apply Code</span></button>
-                            </div>
-                            <div class="group-discount">
-                                <div class="box-discount">
-                                    <div class="discount-top">
-                                        <div class="discount-off">
-                                            <div class="text-caption-1">Discount</div>
-                                            <span class="sale-off text-btn-uppercase">10% OFF</span>
-                                        </div>
-                                        <div class="discount-from">
-                                            <p class="text-caption-1">For all orders <br> from 200₹</p>
-                                        </div>
-                                    </div>
-                                    <div class="discount-bot">
-                                        <span class="text-btn-uppercase">Mo234231</span>
-                                        <button class="tf-btn"><span class="text">Apply Code</span></button>
-                                    </div>
-                                </div>
-                                <div class="box-discount active">
-                                    <div class="discount-top">
-                                        <div class="discount-off">
-                                            <div class="text-caption-1">Discount</div>
-                                            <span class="sale-off text-btn-uppercase">10% OFF</span>
-                                        </div>
-                                        <div class="discount-from">
-                                            <p class="text-caption-1">For all orders <br> from 200₹</p>
-                                        </div>
-                                    </div>
-                                    <div class="discount-bot">
-                                        <span class="text-btn-uppercase">Mo234231</span>
-                                        <button class="tf-btn"><span class="text">Apply Code</span></button>
-                                    </div>
-                                </div>
-                                <div class="box-discount">
-                                    <div class="discount-top">
-                                        <div class="discount-off">
-                                            <div class="text-caption-1">Discount</div>
-                                            <span class="sale-off text-btn-uppercase">10% OFF</span>
-                                        </div>
-                                        <div class="discount-from">
-                                            <p class="text-caption-1">For all orders <br> from 200₹</p>
-                                        </div>
-                                    </div>
-                                    <div class="discount-bot">
-                                        <span class="text-btn-uppercase">Mo234231</span>
-                                        <button class="tf-btn"><span class="text">Apply Code</span></button>
-                                    </div>
-                                </div>
-                            </div>
                         </form>
+                        <div class="ip-discount-code">
+                            <input type="text" placeholder="Add voucher discount" id="discountCode" readonly value="Mo234231">
+                            <button class="tf-btn" disabled><span class="text">Display Only</span></button>
+                        </div>
                     </div>
                     <div class="col-xl-4">
                         <div class="fl-sidebar-cart">
@@ -453,41 +276,27 @@
                                 <h5 class="title">Order Summary</h5>
                                 <div class="subtotal text-button d-flex justify-content-between align-items-center">
                                     <span>Subtotal</span>
-                                    <span class="total">-₹80.00</span>
+                                    <span class="total" id="cart-subtotal">₹0.00</span>
                                 </div>
                                 <div class="discount text-button d-flex justify-content-between align-items-center">
                                     <span>Discounts</span>
-                                    <span class="total">-₹80.00</span>
+                                    <span class="total" id="cart-discount">-₹0.00</span>
                                 </div>
                                 <div class="ship">
                                     <span class="text-button">Shipping</span>
                                     <div class="flex-grow-1">
                                         <fieldset class="ship-item">
-                                            <input type="radio" name="ship-check" class="tf-check-rounded" id="free" checked>
+                                            <input type="radio" name="ship-check" class="tf-check-rounded" id="free" value="0" checked disabled>
                                             <label for="free">
                                                 <span>Free Shipping</span>
                                                 <span class="price">₹0.00</span>
-                                            </label>
-                                        </fieldset>
-                                        <fieldset class="ship-item">
-                                            <input type="radio" name="ship-check" class="tf-check-rounded" id="local">
-                                            <label for="local">
-                                                <span>Local:</span>
-                                                <span class="price">₹35.00</span>
-                                            </label>
-                                        </fieldset>
-                                        <fieldset class="ship-item">
-                                            <input type="radio" name="ship-check" class="tf-check-rounded" id="rate">
-                                            <label for="rate">
-                                                <span>Flat Rate:</span>
-                                                <span class="price">₹35.00</span>
                                             </label>
                                         </fieldset>
                                     </div>
                                 </div>
                                 <h5 class="total-order d-flex justify-content-between align-items-center">
                                     <span>Total</span>
-                                    <span class="total">₹186,99</span>
+                                    <span class="total" id="cart-total">₹0.00</span>
                                 </h5>
                                 <div class="box-progress-checkout">
                                     <fieldset class="check-agree">
@@ -496,274 +305,420 @@
                                             I agree with the <a href="/terms_and_conditions">terms and conditions</a>
                                         </label>
                                     </fieldset>
-                                    <a href="/checkout" class="tf-btn btn-reset">Process To Checkout</a>
+                                    <a href="/checkout" class="tf-btn btn-reset" id="checkout-btn" style="pointer-events: none; opacity: 0.7;">Process To Checkout</a>
                                     <p class="text-button text-center">Or continue shopping</p>
                                 </div>  
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-        <!-- /Section cart -->
-        <!-- Recent product -->
-        <section class="flat-spacing pt-0"> 
-            <div class="container">
-                <div class="heading-section text-center wow fadeInUp">
-                    <h4 class="heading">You may also like</h4>
-                </div>
-                <div dir="ltr" class="swiper tf-sw-recent" data-preview="4" data-tablet="3" data-mobile="2" data-space-lg="30" data-space-md="30" data-space="15" data-pagination="1" data-pagination-md="1" data-pagination-lg="1">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="card-product wow fadeInUp" data-wow-delay="0s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    </a>
-                                    <div class="list-product-btn">
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                    <div class="list-btn-main">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                                    </div> 
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">V-neck cotton T-shirt</a>
-                                    <span class="price">₹59.99</span>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="card-product wow fadeInUp" data-wow-delay="0.1s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    </a>
-                                    <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                                    <div class="marquee-product bg-main">
-                                        <div class="marquee-wrapper">
-                                            <div class="initial-child-container">
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="marquee-wrapper">
-                                            <div class="initial-child-container">
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                                </div>
-                                                <div class="marquee-child-item">
-                                                    <span class="icon icon-lightning text-critical"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="list-product-btn">
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                    <div class="list-btn-main">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                                    </div> 
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Polarized sunglasses</a>
-                                    <span class="price"><span class="old-price">₹98.00</span> ₹79.99</span>
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active line">
-                                            <span class="swatch-value bg-light-blue"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-light-blue-2"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0.2s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    </a>
-                                    <div class="variant-wrap size-list">
-                                        <ul class="variant-box">
-                                            <li class="size-item">S</li>
-                                            <li class="size-item">M</li>
-                                            <li class="size-item">L</li>
-                                            <li class="size-item">XL</li>
-                                        </ul>
-                                    </div>
-                                    <div class="variant-wrap countdown-wrap">
-                                        <div class="variant-box">
-                                            <div class="js-countdown" data-timer="1007500" data-labels="D :,H :,M :,S"></div>
-                                        </div>
-                                    </div>
-                                    <div class="list-product-btn">
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                    <div class="list-btn-main">
-                                        <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                                    </div> 
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Ramie shirt with pockets </a>
-                                    <span class="price"><span class="old-price">₹98.00</span> ₹89.99</span>
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active line">
-                                            <span class="swatch-value bg-light-orange"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-light-grey"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="card-product wow fadeInUp" data-wow-delay="0.3s">
-                                <div class="card-product-wrapper">
-                                    <a href="product-detail.html" class="product-img">
-                                        <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                    </a>
-                                    <div class="list-product-btn">
-                                        <a href="javascript:void(0);" class="box-icon wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Wishlist</span>
-                                        </a>
-                                        <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare" class="box-icon compare btn-icon-action">
-                                            <span class="icon icon-gitDiff"></span>
-                                            <span class="tooltip">Compare</span>
-                                        </a>
-                                        <a href="#quickView" data-bs-toggle="modal" class="box-icon quickview tf-btn-loading">
-                                            <span class="icon icon-eye"></span>
-                                            <span class="tooltip">Quick View</span>
-                                        </a>
-                                    </div>
-                                    <div class="list-btn-main">
-                                        <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                                    </div> 
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="product-detail.html" class="title link">Ribbed cotton-blend top</a>
-                                    <span class="price">₹69.99</span>
-                                    <ul class="list-color-product">
-                                        <li class="list-color-item color-swatch active line">
-                                            <span class="swatch-value bg-dark-grey"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-light-pink"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                        <li class="list-color-item color-swatch">
-                                            <span class="swatch-value bg-dark-grey-2"></span>
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <% } else { %>
+                    <div class="col-12 py-5">
+                        <div class="alert alert-warning text-center">
+                            Please <a href="/userLogin" class="fw-bold text-primary">login</a> to view your cart.
                         </div>
                     </div>
-                    <div class="sw-pagination-recent sw-dots type-circle justify-content-center"></div>
+                    <% } %>
                 </div>
             </div>
         </section>
-        <!-- /Recent product -->
+        <script>
+            // Check if user is logged in (client-side check)
+            var isUserLoggedIn = <%= (user && user.role === "user") ? 'true' : 'false' %>;
+            
+            console.log('=== CART DEBUG START ===');
+            console.log('Is user logged in (EJS):', isUserLoggedIn);
+            console.log('User object from server:', <%- JSON.stringify(user || null) %>);
+            console.log('Current URL:', window.location.href);
+            console.log('=== CART DEBUG END ===');
+        
+            // Fetch cart data from API and render it
+            async function fetchCart() {
+                console.log('fetchCart() called');
+                
+                try {
+                    // Only fetch if user is logged in
+                    if (!isUserLoggedIn) {
+                        console.log('User not logged in, showing empty cart');
+                        renderCartItems([]);
+                        return;
+                    }
+        
+                    console.log('Making fetch request to /listCart');
+                    const res = await fetch('/listCart', {
+                        credentials: 'same-origin'
+                    });
+                    
+                    console.log('Response status:', res.status, 'OK:', res.ok);
+                    
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch cart: ${res.status} ${res.statusText}`);
+                    }
+                    
+                    const data = await res.json();
+                    console.log('Cart API Response data:', data);
+        
+                    let items = [];
+                    if (data && data.success && data.cart && Array.isArray(data.cart.items)) {
+                        items = data.cart.items;
+                        console.log(`Found ${items.length} cart items`);
+                    } else {
+                        console.log('No valid cart items found in response');
+                    }
+                    
+                    renderCartItems(items);
+                } catch (err) {
+                    console.error('Error fetching cart:', err);
+                    console.error('Error stack:', err.stack);
+                    renderCartItems([]);
+                }
+            }
+        
+            function formatCurrency(val) {
+                const num = Number(val) || 0;
+                return '₹' + num.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        
+            function escape(str) {
+                if (!str) return '';
+                try {
+                    const div = document.createElement('div');
+                    div.textContent = str;
+                    return div.innerHTML;
+                } catch (e) {
+                    console.error('Error escaping string:', e);
+                    return String(str).replace(/[&<>"']/g, function(m) {
+                        return {
+                            '&': '&amp;',
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#39;'
+                        }[m];
+                    });
+                }
+            }
+        
+            function renderCartItems(items) {
+                console.log('renderCartItems() called with items:', items);
+                console.log('Document readyState:', document.readyState);
+                
+                // Check if DOM is ready
+                if (document.readyState === 'loading') {
+                    console.log('DOM still loading, waiting...');
+                    document.addEventListener('DOMContentLoaded', function() {
+                        console.log('DOMContentLoaded fired, calling renderCartItems again');
+                        renderCartItems(items);
+                    });
+                    return;
+                }
+                
+        
+                var tbody = document.getElementById('cart-table-rows');
+                var clearBtn = document.getElementById('cart-clear-btn');
+                var checkoutBtn = document.getElementById('checkout-btn');
+                
+                console.log('Elements found:');
+                console.log('- tbody:', tbody ? 'Found' : 'NOT FOUND');
+                console.log('- clearBtn:', clearBtn ? 'Found' : 'NOT FOUND');
+                console.log('- checkoutBtn:', checkoutBtn ? 'Found' : 'NOT FOUND');
+                
+                if (!tbody) {
+                    console.error('CRITICAL: Cart table body not found!');
+                    console.error('Searching for alternative elements...');
+                    
+                    // Try to find any cart-related elements
+                    const allElements = document.querySelectorAll('*');
+                    console.log('All elements with IDs:');
+                    allElements.forEach(el => {
+                        if (el.id) console.log(`ID: ${el.id}, Tag: ${el.tagName}`);
+                    });
+                    
+                    return;
+                }
+        
+                let subtotal = 0;
+                tbody.innerHTML = '';
+        
+                if (!items || !items.length) {
+                    console.log('Cart is empty, showing empty message');
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Your cart is empty.</td></tr>';
+                    if (clearBtn) clearBtn.style.display = "none";
+                    if (checkoutBtn) {
+                        checkoutBtn.style.pointerEvents = "none";
+                        checkoutBtn.style.opacity = "0.5";
+                        checkoutBtn.classList.add('disabled');
+                    }
+                } else {
+                    console.log(`Rendering ${items.length} cart items`);
+                    
+                    if (clearBtn) clearBtn.style.display = "";
+                    if (checkoutBtn) {
+                        checkoutBtn.style.pointerEvents = "auto";
+                        checkoutBtn.style.opacity = "1";
+                        checkoutBtn.classList.remove('disabled');
+                    }
+                    
+                    items.forEach(function(item, index) {
+                        console.log(`Processing cart item ${index + 1}/${items.length}:`, item);
+                        
+                        let product = item.productId || {};
+                        
+                        // Get product image - check for images array
+                        let pImg = '/images/placeholder.png';
+                        if (product.images && product.images.length && product.images[0]) {
+                            pImg = product.images[0];
+                        }
+                        
+                        let pName = product.title ? product.title : 'Product';
+                        
+                        // Use correct product detail URL
+                        let productSlug = product.slug ? product.slug : product._id;
+                        let productDetailLink = productSlug ? ('/productDetails/' + productSlug) : '#';
+                        
+                        // Calculate item total
+                        let itemPrice = Number(item.price) || 0;
+                        let itemQuantity = Number(item.quantity) || 1;
+                        let itemTotal = itemPrice * itemQuantity;
+                        subtotal += itemTotal;
+                        
+                        console.log(`Item ${index + 1}: ${pName}, Price: ${itemPrice}, Qty: ${itemQuantity}, Total: ${itemTotal}`);
+                        
+                        // Create row HTML - SIMPLIFIED VERSION FOR TESTING
+                        const rowHTML = `
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <img src="${pImg}" alt="${pName}" style="width: 60px; height: 60px; object-fit: cover; margin-right: 10px; border: 1px solid #ddd;">
+                                    <div>
+                                        <strong>${pName}</strong>
+                                        ${(item.variantName || item.optionValue) ? 
+                                            `<div><small>${item.variantName || ''}: ${item.optionValue || ''}</small></div>` : 
+                                            ""}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">${formatCurrency(itemPrice)}</td>
+                            <td class="text-center">
+                                <div style="display: inline-flex; align-items: center;">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${item._id}', -1)">-</button>
+                                    <input type="text" value="${itemQuantity}" style="width: 40px; text-align: center; margin: 0 5px;" readonly>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${item._id}', 1)">+</button>
+                                </div>
+                            </td>
+                            <td class="text-center">${formatCurrency(itemTotal)}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="removeCartItem('${item._id}')">X</button>
+                            </td>
+                        </tr>`;
+                        
+                        console.log(`Adding row ${index + 1} to tbody`);
+                        tbody.innerHTML += rowHTML;
+                    });
+                    
+                    console.log(`Total subtotal: ${subtotal}`);
+                }
+        
+                // Calculate totals
+                let discount = 0;
+                let shipping = 0;
+                let total = subtotal + shipping - discount;
+        
+                console.log('Updating total displays:');
+                console.log('- Subtotal:', subtotal);
+                console.log('- Total:', total);
+        
+                // Update totals display
+                var elSubtotal = document.getElementById('cart-subtotal');
+                var elDiscount = document.getElementById('cart-discount');
+                var elTotal = document.getElementById('cart-total');
+                
+                console.log('Total elements found:');
+                console.log('- cart-subtotal:', elSubtotal ? 'Found' : 'NOT FOUND');
+                console.log('- cart-discount:', elDiscount ? 'Found' : 'NOT FOUND');
+                console.log('- cart-total:', elTotal ? 'Found' : 'NOT FOUND');
+                
+                if (elSubtotal) {
+                    elSubtotal.textContent = formatCurrency(subtotal);
+                    console.log('Updated cart-subtotal to:', formatCurrency(subtotal));
+                }
+                if (elDiscount) {
+                    elDiscount.textContent = '-' + formatCurrency(discount);
+                }
+                if (elTotal) {
+                    elTotal.textContent = formatCurrency(total);
+                    console.log('Updated cart-total to:', formatCurrency(total));
+                }
+            }
+        
+            // Quantity Update
+            function updateQuantity(itemId, delta) {
+                console.log('updateQuantity called for item:', itemId, 'delta:', delta);
+                
+                if (!isUserLoggedIn) {
+                    window.location.href = '/userLogin?redirect=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                
+                var qtyInput = document.getElementById("qty-" + itemId);
+                if (!qtyInput) {
+                    console.error('Quantity input not found for item:', itemId);
+                    return;
+                }
+                
+                var current = parseInt(qtyInput.value) || 1;
+                var updated = Math.max(current + delta, 1);
+                
+                console.log('Current:', current, 'Updated:', updated);
+                
+                if (updated !== current) {
+                    fetch('/updateCart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ 
+                            itemId: itemId, 
+                            quantity: updated 
+                        })
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Update response:', data);
+                        if (data.success) {
+                            fetchCart();
+                        } else {
+                            alert(data.message || 'Failed to update quantity');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating quantity:', error);
+                        alert('Failed to update quantity. Please try again.');
+                    });
+                }
+            }
+        
+            // Remove Cart Item
+            function removeCartItem(itemId) {
+                console.log('removeCartItem called for item:', itemId);
+                
+                if (!isUserLoggedIn) {
+                    window.location.href = '/userLogin?redirect=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                
+                if (confirm("Remove this item from cart?")) {
+                    fetch(`/removeCart/${itemId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Remove response:', data);
+                        if (data.success) {
+                            fetchCart();
+                        } else {
+                            alert(data.message || 'Failed to remove item');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error removing item:', error);
+                        alert('Failed to remove item. Please try again.');
+                    });
+                }
+            }
+        
+            // Clear Cart
+            function clearCart() {
+                console.log('clearCart called');
+                
+                if (!isUserLoggedIn) {
+                    window.location.href = '/userLogin?redirect=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                
+                if (confirm("Clear all items from cart?")) {
+                    fetch('/clearCart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Clear cart response:', data);
+                        if (data.success) {
+                            fetchCart();
+                        } else {
+                            alert(data.message || 'Failed to clear cart');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error clearing cart:', error);
+                        alert('Failed to clear cart. Please try again.');
+                    });
+                }
+            }
+        
+            // On page load
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('=== DOMContentLoaded FIRED ===');
+                console.log('isUserLoggedIn:', isUserLoggedIn);
+                
+                // Check if cart elements exist on this page
+                const cartTable = document.getElementById('cart-table-rows');
+                console.log('Cart table exists:', !!cartTable);
+                
+                if (cartTable) {
+                    if (isUserLoggedIn) {
+                        console.log('Fetching cart...');
+                        fetchCart();
+                    } else {
+                        console.log('User not logged in, showing empty cart');
+                        renderCartItems([]);
+                    }
+                } else {
+                    console.log('Cart table not found on this page');
+                }
+            });
+        
+            // Also trigger fetch if page is already loaded
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                console.log('Document already loaded, triggering fetch');
+                setTimeout(function() {
+                    const cartTable = document.getElementById('cart-table-rows');
+                    if (cartTable && isUserLoggedIn) {
+                        fetchCart();
+                    }
+                }, 100);
+            }
+        
+            // Make functions globally available
+            window.fetchCart = fetchCart;
+            window.updateQuantity = updateQuantity;
+            window.removeCartItem = removeCartItem;
+            window.clearCart = clearCart;
+            
+            console.log('Cart functions initialized');
+        </script>
+        <!-- /Section cart -->
+
        
      
       <!-- Footer -->
