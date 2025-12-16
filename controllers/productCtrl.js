@@ -19,7 +19,6 @@ function safeParse(value, fallback = null) {
 }
 
 
-
 exports.createProduct = async (req, res) => {
   try {
     let {
@@ -188,9 +187,6 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-
-
-// ---------------- UPDATE PRODUCT (FULLY FIXED) ----------------
 
 exports.updateProduct = async (req, res) => {
 
@@ -396,9 +392,6 @@ exports.updateProduct = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
-
-
-
 
 // ---------------- TOGGLE PRODUCT STATUS ----------------
 exports.toggleProductStatus = async (req, res) => {

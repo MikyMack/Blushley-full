@@ -2028,14 +2028,10 @@
                                     }
 
                                     function openEditSalonModal(salon) {
-                                     
                                         document.getElementById('edit-salon-modal').style.display = 'block';
                                         const form = document.getElementById('edit-salon-form');
-
                                         form.innerHTML = `
         <input type="hidden" id="edit-salon-id" name="id" value="${salon._id}">
-        
-        <!-- Login Credentials -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-user"></i> Login Credentials</h4>
@@ -2052,8 +2048,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Salon Basic Information -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-info"></i> Salon Information</h4>
@@ -2101,8 +2095,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Address Information -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-map-pin"></i> Address</h4>
@@ -2136,8 +2128,6 @@
                 <input type="url" id="edit-google-map-link" name="googleMapLink" value="${salon.googleMapLink || ''}" placeholder="https://maps.google.com/...">
             </div>
         </div>
-
-        <!-- Services -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-star"></i> Services</h4>
@@ -2145,12 +2135,8 @@
                     <i class="icon-plus"></i> Add Service
                 </button>
             </div>
-            <div id="edit-services-container">
-             
-            </div>
+            <div id="edit-services-container"></div>
         </div>
-
-        <!-- Staff -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-users"></i> Staff</h4>
@@ -2158,12 +2144,8 @@
                     <i class="icon-plus"></i> Add Staff
                 </button>
             </div>
-            <div id="edit-staff-container">
-            
-            </div>
+            <div id="edit-staff-container"></div>
         </div>
-
-        <!-- Availability -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-calendar"></i> Availability</h4>
@@ -2174,12 +2156,8 @@
                     <input type="number" id="edit-slot-duration" name="slotDurationMinutes" value="${salon.slotDurationMinutes || 30}" min="15" step="15" required>
                 </div>
             </div>
-            <div id="edit-availability-container">
-                <!-- Availability will be populated dynamically -->
-            </div>
+            <div id="edit-availability-container"></div>
         </div>
-
-        <!-- Closed Dates -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-calendar"></i> Closed Dates</h4>
@@ -2187,12 +2165,8 @@
                     <i class="icon-plus"></i> Add Date
                 </button>
             </div>
-            <div id="edit-closed-dates-container">
-                <!-- Closed dates will be populated dynamically -->
-            </div>
+            <div id="edit-closed-dates-container"></div>
         </div>
-
-        <!-- Description -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-file-text"></i> Description</h4>
@@ -2202,17 +2176,13 @@
                 <textarea id="edit-description" name="description" rows="4" placeholder="Describe your salon...">${salon.description || ''}</textarea>
             </div>
         </div>
-
-        <!-- Images -->
         <div class="salon-form-section">
             <div class="salon-section-header">
                 <h4><i class="icon-image"></i> Salon Images</h4>
             </div>
             <div class="salon-form-group">
                 <label>Current Images</label>
-                <div class="salon-image-preview-grid" id="edit-current-images-grid">
-                    <!-- Current images will be populated dynamically -->
-                </div>
+                <div class="salon-image-preview-grid" id="edit-current-images-grid"></div>
             </div>
             <div class="salon-form-group">
                 <label for="edit-salon-images">Add/Replace Images</label>
@@ -2224,13 +2194,9 @@
                     </div>
                     <input type="file" id="edit-salon-images" multiple accept="image/*">
                 </div>
-                <div class="salon-image-preview-grid" id="edit-salon-image-preview-grid">
-                    <!-- New image previews will appear here -->
-                </div>
+                <div class="salon-image-preview-grid" id="edit-salon-image-preview-grid"></div>
             </div>
         </div>
-
-        <!-- Form Actions -->
         <div class="salon-form-actions">
             <button type="button" class="salon-btn salon-btn-secondary" onclick="closeSalonModal('edit-salon-modal')">
                 <i class="icon-x"></i> Cancel
@@ -2241,105 +2207,142 @@
         </div>
     `;
 
-                                        // Now populate the dynamic sections
                                         populateEditServices(salon.services || []);
                                         populateEditStaff(salon.staff || []);
                                         populateEditAvailability(salon.availability || []);
                                         populateEditClosedDates(salon.closedDates || []);
                                         populateEditImages(salon.images || []);
-
-                                        // Initialize file upload for edit modal
                                         initializeEditFileUpload();
-
-                                        // Attach submit handler
                                         form.onsubmit = handleEditSalon;
                                     }
 
-                                    // Populate dynamic sections for edit modal
                                     function populateEditServices(services) {
                                         const container = document.getElementById('edit-services-container');
                                         container.innerHTML = '';
-
-                                        if (services.length === 0) {
+                                        if (!Array.isArray(services) || services.length === 0) {
                                             addServiceToEdit();
                                         } else {
-                                            services.forEach(service => {
-                                                addServiceToEdit(service);
-                                            });
+                                            services.forEach(service => addServiceToEdit(service));
                                         }
                                     }
 
                                     function populateEditStaff(staff) {
                                         const container = document.getElementById('edit-staff-container');
                                         container.innerHTML = '';
-
-                                        if (staff.length === 0) {
+                                        if (!Array.isArray(staff) || staff.length === 0) {
                                             addStaffToEdit();
                                         } else {
-                                            staff.forEach(staffMember => {
-                                                addStaffToEdit(staffMember);
-                                            });
+                                            staff.forEach(member => addStaffToEdit(member));
                                         }
                                     }
 
                                     function populateEditAvailability(availability) {
-                                        const container = document.getElementById('edit-availability-container');
-                                        container.innerHTML = '';
-
-                                        const days = [
-                                            { name: 'Sunday', value: 0 },
-                                            { name: 'Monday', value: 1 },
-                                            { name: 'Tuesday', value: 2 },
-                                            { name: 'Wednesday', value: 3 },
-                                            { name: 'Thursday', value: 4 },
-                                            { name: 'Friday', value: 5 },
-                                            { name: 'Saturday', value: 6 }
-                                        ];
-
-                                        days.forEach(day => {
-                                            const dayAvailability = availability.find(avail => avail.dayOfWeek === day.value) || {
-                                                dayOfWeek: day.value,
-                                                isOpen: true,
-                                                openingTime: '09:00',
-                                                closingTime: '18:00'
-                                            };
-
-                                            const dayHtml = `
-            <div class="salon-availability-day">
+    const container = document.getElementById('edit-availability-container');
+    container.innerHTML = '';
+    
+    const days = [
+        { name: 'Sunday', value: 0 },
+        { name: 'Monday', value: 1 },
+        { name: 'Tuesday', value: 2 },
+        { name: 'Wednesday', value: 3 },
+        { name: 'Thursday', value: 4 },
+        { name: 'Friday', value: 5 },
+        { name: 'Saturday', value: 6 }
+    ];
+    
+    for (const day of days) {
+        const dayData = Array.isArray(availability)
+            ? availability.find(avail => (avail.dayOfWeek == day.value))
+            : null;
+            
+        const isOpen = dayData ? !!dayData.isOpen : true;
+        const openingTime = dayData && dayData.openingTime ? dayData.openingTime : '09:00';
+        const closingTime = dayData && dayData.closingTime ? dayData.closingTime : '18:00';
+        
+        const dayHtml = `
+            <div class="salon-availability-day" data-day="${day.value}">
                 <div class="salon-availability-header">
                     <label class="salon-availability-day-label">
-                        <input type="checkbox" name="availability[${day.value}][isOpen]" 
-                               ${dayAvailability.isOpen ? 'checked' : ''}>
+                        <input type="checkbox" 
+                               id="availability-checkbox-${day.value}"
+                               name="availability[${day.value}][isOpen]" 
+                               ${isOpen ? "checked" : ""}
+                               value="true">
                         ${day.name}
                     </label>
                 </div>
-                <div class="salon-form-grid">
+                <div class="salon-form-grid availability-time-inputs">
                     <div class="salon-form-group">
                         <label>Opening Time</label>
-                        <input type="time" name="availability[${day.value}][openingTime]" 
-                               value="${dayAvailability.openingTime || '09:00'}">
+                        <input type="time" 
+                               id="availability-opening-${day.value}"
+                               name="availability[${day.value}][openingTime]" 
+                               value="${openingTime}">
                     </div>
                     <div class="salon-form-group">
                         <label>Closing Time</label>
-                        <input type="time" name="availability[${day.value}][closingTime]" 
-                               value="${dayAvailability.closingTime || '18:00'}">
+                        <input type="time" 
+                               id="availability-closing-${day.value}"
+                               name="availability[${day.value}][closingTime]" 
+                               value="${closingTime}">
                     </div>
                 </div>
             </div>
         `;
-                                            container.insertAdjacentHTML('beforeend', dayHtml);
-                                        });
-                                    }
+        container.insertAdjacentHTML('beforeend', dayHtml);
+    }
+}
 
+// function toggleAvailabilityDay(dayOfWeek) {
+//     const checkbox = document.querySelector(`[name="availability[${dayOfWeek}][isOpen]"]`);
+//     const openingTime = document.querySelector(`[name="availability[${dayOfWeek}][openingTime]"]`);
+//     const closingTime = document.querySelector(`[name="availability[${dayOfWeek}][closingTime]"]`);
+    
+//     if (checkbox && openingTime && closingTime) {
+//         const isChecked = checkbox.checked;
+//         openingTime.disabled = !isChecked;
+//         closingTime.disabled = !isChecked;
+        
+//         if (!isChecked) {
+//             openingTime.value = "09:00";
+//             closingTime.value = "18:00";
+//         }
+//     }
+// }
+
+
+function toggleAvailabilityTimeInputs(dayOfWeek) {
+    const checkbox = document.querySelector(`[name="availability[${dayOfWeek}][isOpen]"]`);
+    const openingTime = document.querySelector(`[name="availability[${dayOfWeek}][openingTime]"]`);
+    const closingTime = document.querySelector(`[name="availability[${dayOfWeek}][closingTime]"]`);
+    
+    if (checkbox && openingTime && closingTime) {
+        const isChecked = checkbox.checked;
+        openingTime.disabled = !isChecked;
+        closingTime.disabled = !isChecked;
+        
+        // If unchecked, you might want to clear or set default values
+        if (!isChecked) {
+            openingTime.value = "09:00";
+            closingTime.value = "18:00";
+        }
+    }
+}
                                     function populateEditClosedDates(closedDates) {
                                         const container = document.getElementById('edit-closed-dates-container');
                                         container.innerHTML = '';
-
-                                        if (closedDates.length === 0) {
+                                        if (!Array.isArray(closedDates) || closedDates.length === 0) {
                                             addClosedDateToEdit();
                                         } else {
                                             closedDates.forEach(date => {
-                                                const dateStr = typeof date === 'string' ? date.substring(0, 10) : new Date(date).toISOString().substring(0, 10);
+                                                let dateStr = '';
+                                                if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}/.test(date)) {
+                                                    dateStr = date.slice(0, 10);
+                                                } else if (typeof date === 'string' && !isNaN(Date.parse(date))) {
+                                                    dateStr = new Date(date).toISOString().slice(0, 10);
+                                                } else if (date instanceof Date) {
+                                                    dateStr = date.toISOString().slice(0, 10);
+                                                }
                                                 addClosedDateToEdit(dateStr);
                                             });
                                         }
@@ -2348,7 +2351,6 @@
                                     function populateEditImages(images) {
                                         const container = document.getElementById('edit-current-images-grid');
                                         container.innerHTML = '';
-
                                         if (images && images.length > 0) {
                                             images.forEach((imageUrl, index) => {
                                                 const imageHtml = `
@@ -2367,11 +2369,9 @@
                                         }
                                     }
 
-                                    // Dynamic section functions for edit modal
                                     function addServiceToEdit(service = {}) {
                                         const container = document.getElementById('edit-services-container');
                                         const serviceId = Date.now() + Math.floor(Math.random() * 10000);
-
                                         const serviceHtml = `
         <div class="salon-service-row" data-service-id="${serviceId}">
             <div class="salon-form-grid">
@@ -2399,14 +2399,12 @@
             </button>
         </div>
     `;
-
                                         container.insertAdjacentHTML('beforeend', serviceHtml);
                                     }
 
                                     function addStaffToEdit(staff = {}) {
                                         const container = document.getElementById('edit-staff-container');
                                         const staffId = Date.now() + Math.floor(Math.random() * 10000);
-
                                         const staffHtml = `
         <div class="salon-staff-row" data-staff-id="${staffId}">
             <div class="salon-form-grid">
@@ -2437,14 +2435,12 @@
             </button>
         </div>
     `;
-
                                         container.insertAdjacentHTML('beforeend', staffHtml);
                                     }
 
                                     function addClosedDateToEdit(date = '') {
                                         const container = document.getElementById('edit-closed-dates-container');
                                         const dateId = Date.now() + Math.floor(Math.random() * 10000);
-
                                         const dateHtml = `
         <div class="salon-closed-date-row" data-date-id="${dateId}">
             <div class="salon-form-group">
@@ -2455,24 +2451,19 @@
             </div>
         </div>
     `;
-
                                         container.insertAdjacentHTML('beforeend', dateHtml);
                                     }
 
-                                    // File upload for edit modal
                                     function initializeEditFileUpload() {
                                         const area = document.getElementById('edit-salon-file-upload-area');
                                         const fileInput = document.getElementById('edit-salon-images');
                                         const previewGrid = document.getElementById('edit-salon-image-preview-grid');
-
                                         if (!area || !fileInput) return;
-
                                         area.addEventListener('click', function (e) {
                                             if (e.target === area || e.target.classList.contains('salon-upload-content') || e.target.classList.contains('icon-upload')) {
                                                 fileInput.click();
                                             }
                                         });
-
                                         fileInput.addEventListener('change', function (e) {
                                             showEditFilePreviews(e.target.files, previewGrid);
                                         });
@@ -2480,7 +2471,6 @@
 
                                     function showEditFilePreviews(files, previewGrid) {
                                         if (!previewGrid) return;
-
                                         previewGrid.innerHTML = '';
                                         Array.from(files).forEach((file, idx) => {
                                             const reader = new FileReader();
@@ -2505,7 +2495,6 @@
                                     function removeEditImageFromFileInput(removeIdx, previewGrid) {
                                         const input = document.getElementById('edit-salon-images');
                                         if (!input) return;
-
                                         const dt = new DataTransfer();
                                         const files = Array.from(input.files).filter((file, idx) => idx !== removeIdx);
                                         files.forEach(f => dt.items.add(f));
@@ -2514,41 +2503,38 @@
                                     }
 
                                     function removeExistingImage(index) {
-                                
                                         const imageElement = document.querySelectorAll('.existing-image')[index];
                                         if (imageElement) {
                                             imageElement.style.opacity = '0.5';
                                             imageElement.style.pointerEvents = 'none';
-                                      
+                                            const removeInput = imageElement.querySelector('input[type="hidden"][name="existingImages[]"]');
+                                            if (removeInput) {
+                                                removeInput.disabled = true;
+                                            }
                                         }
                                     }
 
-                                    // Remove functions for edit modal
                                     function removeEditService(id) {
                                         const node = document.querySelector(`[data-service-id="${id}"]`);
                                         if (node) node.remove();
                                     }
-
                                     function removeEditStaff(id) {
                                         const node = document.querySelector(`[data-staff-id="${id}"]`);
                                         if (node) node.remove();
                                     }
-
                                     function removeEditClosedDate(id) {
                                         const node = document.querySelector(`[data-date-id="${id}"]`);
                                         if (node) node.remove();
                                     }
 
-                                    // Handle edit form submission
                                     async function handleEditSalon(event) {
                                         event.preventDefault();
-
                                         try {
                                             const form = event.target;
                                             const salonId = document.getElementById('edit-salon-id').value;
                                             const formData = new FormData(form);
-
-                                            // Construct salon data object
+                                            const existingImages = Array.from(form.querySelectorAll('input[name="existingImages[]"]:not([disabled])'))
+                                                .map(input => input.value);
                                             const salonData = {
                                                 name: formData.get('name'),
                                                 salonType: formData.get('salonType'),
@@ -2572,18 +2558,17 @@
                                                 staff: getEditStaffData(),
                                                 availability: getEditAvailabilityData(),
                                                 closedDates: getEditClosedDates(),
-                                                existingImages: Array.from(formData.getAll('existingImages[]'))
+                                                existingImages: existingImages
                                             };
-
+                                            if (!salonData.closedDates.length || (salonData.closedDates.length === 1 && !salonData.closedDates[0])) {
+                                                salonData.closedDates = [];
+                                            }
                                             const finalFormData = new FormData();
                                             finalFormData.append('data', JSON.stringify(salonData));
-
-                                            // Add new images
                                             const imageFiles = document.getElementById('edit-salon-images').files;
                                             for (let i = 0; i < imageFiles.length; i++) {
                                                 finalFormData.append('images', imageFiles[i]);
                                             }
-
                                             const response = await fetch(`/salon/edit/${salonId}`, {
                                                 method: 'POST',
                                                 body: finalFormData,
@@ -2591,7 +2576,6 @@
                                                     'X-Requested-With': 'XMLHttpRequest'
                                                 }
                                             });
-
                                             if (response.ok) {
                                                 showNotification('Salon updated successfully!', 'success');
                                                 closeSalonModal('edit-salon-modal');
@@ -2599,36 +2583,32 @@
                                             } else {
                                                 throw new Error('Failed to update salon');
                                             }
-
                                         } catch (error) {
                                             console.error('Error updating salon:', error);
                                             showNotification('Failed to update salon', 'error');
                                         }
                                     }
 
-                                    // Data extraction functions for edit modal
                                     function getEditServicesData() {
                                         const services = {};
                                         const inputs = document.querySelectorAll('#edit-services-container [name^="services["]');
-
                                         inputs.forEach(input => {
                                             const match = input.name.match(/services\[(\d+)\]\[(\w+)\]/);
                                             if (match) {
                                                 const [, id, field] = match;
                                                 if (!services[id]) services[id] = {};
-                                                services[id][field] = field === 'price' || field === 'adminPrice' || field === 'durationMinutes'
-                                                    ? parseFloat(input.value) || 0
-                                                    : input.value;
+                                                services[id][field] =
+                                                    ['price', 'adminPrice', 'durationMinutes'].includes(field)
+                                                        ? parseFloat(input.value) || 0
+                                                        : input.value;
                                             }
                                         });
-
                                         return Object.values(services).filter(service => service.serviceName && service.serviceName.trim() !== '');
                                     }
 
                                     function getEditStaffData() {
                                         const staff = {};
                                         const inputs = document.querySelectorAll('#edit-staff-container [name^="staff["]');
-
                                         inputs.forEach(input => {
                                             const match = input.name.match(/staff\[(\d+)\]\[(\w+)\]/);
                                             if (match) {
@@ -2637,32 +2617,56 @@
                                                 staff[id][field] = input.value;
                                             }
                                         });
-
                                         return Object.values(staff).filter(staff => staff.name && staff.name.trim() !== '');
                                     }
 
                                     function getEditAvailabilityData() {
-                                        const availability = [];
-                                        for (let i = 0; i < 7; i++) {
-                                            const isOpenCheckbox = document.querySelector(`[name="availability[${i}][isOpen]"]`);
-                                            const openingTimeInput = document.querySelector(`[name="availability[${i}][openingTime]"]`);
-                                            const closingTimeInput = document.querySelector(`[name="availability[${i}][closingTime]"]`);
+    const availability = [];
+ 
+    for (let i = 0; i < 7; i++) {
+        // Use the ID selectors we just added
+        const checkbox = document.getElementById(`availability-checkbox-${i}`);
+        const openingTime = document.getElementById(`availability-opening-${i}`);
+        const closingTime = document.getElementById(`availability-closing-${i}`);
+        
+        // Fallback to name selectors if IDs don't work
+        const checkboxByName = document.querySelector(`[name="availability[${i}][isOpen]"]`);
+        const openingTimeByName = document.querySelector(`[name="availability[${i}][openingTime]"]`);
+        const closingTimeByName = document.querySelector(`[name="availability[${i}][closingTime]"]`);
+        
+        const finalCheckbox = checkbox || checkboxByName;
+        const finalOpeningTime = openingTime || openingTimeByName;
+        const finalClosingTime = closingTime || closingTimeByName;
+        
+        if (finalCheckbox) {
+       
+            availability.push({
+                dayOfWeek: i,
+                isOpen: finalCheckbox.checked,
+                openingTime: finalOpeningTime ? finalOpeningTime.value : "09:00",
+                closingTime: finalClosingTime ? finalClosingTime.value : "18:00",
+                slots: [],
+                breakSlots: []
+            });
+        } else {
+    
+            availability.push({
+                dayOfWeek: i,
+                isOpen: false,
+                openingTime: "09:00",
+                closingTime: "18:00",
+                slots: [],
+                breakSlots: []
+            });
+        }
+    }
+    
+    // Check how many days are unchecked
+    const uncheckedDays = availability.filter(day => !day.isOpen);
 
-                                            if (isOpenCheckbox && openingTimeInput && closingTimeInput) {
-                                                availability.push({
-                                                    dayOfWeek: i,
-                                                    isOpen: isOpenCheckbox.checked,
-                                                    openingTime: openingTimeInput.value,
-                                                    closingTime: closingTimeInput.value,
-                                                    slots: [],
-                                                    breakSlots: []
-                                                });
-                                            }
-                                        }
-                                        return availability;
-                                    }
-
-                                    function getEditClosedDates() {
+    return availability;
+}
+function getEditClosedDates() {
                                         return Array.from(document.querySelectorAll('#edit-closed-dates-container [name="closedDates[]"]'))
                                             .map(input => input.value)
                                             .filter(date => date && date.trim() !== '');

@@ -190,38 +190,63 @@ exports.editSalonForm = async (req, res) => {
     }
 };
 
-exports.editSalon = async (req, res) => {
+exports.editSalon = async (req, res) => {    
     try {
-        // First, get the current salon
         const salon = await Salon.findById(req.params.id);
         if (!salon) return res.status(404).send("Salon not found");
-        let update = { ...req.body };
 
-        const parseJsonField = val => {
-            if (typeof val === "string") {
-                try { return JSON.parse(val); } catch { return val; }
+        let updateData;
+        if (req.body.data) {
+            try {
+                updateData = typeof req.body.data === 'string' 
+                    ? JSON.parse(req.body.data) 
+                    : req.body.data;
+            } catch (error) {
+                return res.status(400).send("Invalid data format");
             }
-            return val;
-        };
-      
-        if ('services' in update) update.services = parseJsonField(update.services);
-        if ('staff' in update) update.staff = parseJsonField(update.staff);
-        if ('closedDates' in update) update.closedDates = parseJsonField(update.closedDates);
-        if ('availability' in update) update.availability = parseJsonField(update.availability);
-        if ('address' in update) update.address = parseJsonField(update.address);
+        } else {
+            updateData = req.body;
+        }
 
-      
+        let passwordChanged = false;
+        let rawPassword = null;
+        let update = { ...updateData };
+
+        if (update.availability && Array.isArray(update.availability)) {         
+            update.availability = update.availability.map(avail => {
+                // Properly convert isOpen to boolean
+                let isOpen;
+                if (typeof avail.isOpen === 'boolean') {
+                    isOpen = avail.isOpen;
+                } else if (typeof avail.isOpen === 'string') {
+                    isOpen = avail.isOpen.toLowerCase() === 'true';
+                } else {
+                    isOpen = Boolean(avail.isOpen);
+                }
+                
+                return {
+                    dayOfWeek: avail.dayOfWeek,
+                    isOpen: isOpen,
+                    openingTime: avail.openingTime || "09:00",
+                    closingTime: avail.closingTime || "18:00",
+                    slots: avail.slots || [],
+                    breakSlots: avail.breakSlots || []
+                };
+            });
+        }
+
         let updatedImages = salon.images && Array.isArray(salon.images) ? [...salon.images] : [];
 
         if (req.files && req.files.images) {
             const filesArr = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
-         
             for (const file of filesArr) {
                 const uploaded = await uploadBuffer(file.buffer, {
                     KeyPrefix: "salons/",
                     contentType: file.mimetype,
                 });
-                updatedImages.push(uploaded.location || uploaded.Location);
+                if (uploaded.location || uploaded.Location) {
+                    updatedImages.push(uploaded.location || uploaded.Location);
+                }
             }
         }
 
@@ -236,25 +261,158 @@ exports.editSalon = async (req, res) => {
             } else {
                 existingImages = req.body.existingImages;
             }
-       
             updatedImages = existingImages;
         }
 
         update.images = Array.isArray(updatedImages) ? updatedImages.slice(0, 5) : [];
 
-        // Clean up undefined/null
+        if (update.password && typeof update.password === "string" && update.password.trim() !== "") {
+            passwordChanged = true;
+            rawPassword = update.password.trim();
+            update.passwordHash = await bcrypt.hash(rawPassword, 10);
+            delete update.password;
+        }
+
+        if (update.availability && Array.isArray(update.availability)) {
+            const updatedAvailability = update.availability.map(newAvail => {
+                const existingAvail = salon.availability.find(
+                    avail => avail.dayOfWeek === newAvail.dayOfWeek
+                );
+                if (existingAvail && existingAvail._id) {
+                    return {
+                        ...newAvail,
+                        _id: existingAvail._id
+                    };
+                } else {
+                    return newAvail;
+                }
+            });
+            update.availability = updatedAvailability;
+        }
+
+        if (update.services && Array.isArray(update.services)) {
+            const updatedServices = update.services.map((newService, index) => {
+                const existingService = salon.services.find(
+                    service => service.serviceName === newService.serviceName
+                );
+                if (existingService && existingService._id) {
+                    return {
+                        ...newService,
+                        _id: existingService._id
+                    };
+                } else {
+                    return newService;
+                }
+            });
+            update.services = updatedServices;
+        }
+
+        if (update.staff && Array.isArray(update.staff)) {
+            const updatedStaff = update.staff.map((newStaff, index) => {
+                const existingStaff = salon.staff.find(
+                    staff => staff.name === newStaff.name && staff.phone === newStaff.phone
+                );
+                if (existingStaff && existingStaff._id) {
+                    return {
+                        ...newStaff,
+                        _id: existingStaff._id
+                    };
+                } else {
+                    return newStaff;
+                }
+            });
+            update.staff = updatedStaff;
+        }
+
         Object.keys(update).forEach(key => {
-            if (update[key] === undefined || update[key] === null) delete update[key];
+            if (update[key] === undefined || update[key] === null) {
+                delete update[key];
+            }
         });
 
-        // Actually update
-        const updated = await Salon.findByIdAndUpdate(req.params.id, update, { new: true });
+        const updateQuery = {};
+        for (const key in update) {
+            if (key === '_id') continue; 
+            
+            if (Array.isArray(update[key])) {
+                updateQuery[key] = update[key];
+            } else if (typeof update[key] === 'object' && update[key] !== null) {
+                for (const subKey in update[key]) {
+                    updateQuery[`${key}.${subKey}`] = update[key][subKey];
+                }
+            } else {
+                updateQuery[key] = update[key];
+            }
+        }
+
+        const updated = await Salon.findByIdAndUpdate(
+            req.params.id, 
+            { $set: updateQuery }, 
+            { 
+                new: true,
+                runValidators: true
+            }
+        );
+        
         if (!updated) return res.status(404).send("Salon not found");
 
+        if (passwordChanged && updated.email) {
+            try {
+                const transporter = nodemailer.createTransport({
+                    host: process.env.SMTP_HOST,
+                    port: process.env.SMTP_PORT,
+                    secure: false,
+                    auth: {
+                        user: process.env.SMTP_USER,
+                        pass: process.env.SMTP_PASS
+                    },
+                    tls: {
+                        rejectUnauthorized: false
+                    }
+                });
+
+                await transporter.verify();
+
+                const mailOptions = {
+                    from: `"Blushley Salon Team" <${process.env.SMTP_USER}>`,
+                    to: updated.email,
+                    subject: "Salon Login Credentials Updated – Blushley",
+                    html: `
+                        <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #24234d;">
+                            <h2 style="color: #fc6ca6;">Your Blushley Salon Password Was Changed!</h2>
+                            <p>Hi <b>${updated.ownerName || updated.name || "Salon Owner"}</b>,</p>
+                            <p>Your salon account login password has been updated. Please use the details below to log in:</p>
+                            <ul style="list-style: none; padding:0;">
+                                <li><b>Username:</b> <code style="background: #f5f2fc; padding: 2px 7px;">${updated.username}</code></li>
+                                <li><b>New Password:</b> <code style="background: #f5f2fc; padding: 2px 7px;">${rawPassword}</code></li>
+                            </ul>
+                            <p>
+                              <a href="https://blushley.com/login" style="background: #fc6ca6; color: #fff; padding: 10px 22px; font-weight: bold; text-decoration: none; border-radius: 5px; display: inline-block;">Log In to Your Blushley Dashboard</a>
+                            </p>
+                            <p style="color: #b05fa3; margin-top: 14px; font-size: 0.98em;">
+                              <strong>For your security:</strong> If you did not request this change, please contact us immediately at support@blushley.com.
+                            </p>
+                            <p style="color: #787878; font-size: 0.97em;">
+                              Need help? Just reply to this email and our Blushley support crew will help you.<br><br>
+                              <em>Glam on,</em><br>
+                              The Blushley Team 💖
+                            </p>
+                        </div>
+                    `
+                };
+
+                await transporter.sendMail(mailOptions);
+                
+            } catch (mailErr) {
+            }
+        }
+
         return res.redirect('/admin/saloon');
+        
     } catch (error) {
-        console.error(error);
-        return res.status(500).send("Error updating salon");
+        console.error("Error updating salon:", error);
+        console.error("Error stack:", error.stack);
+        return res.status(500).send(`Error updating salon: ${error.message}`);
     }
 };
 
