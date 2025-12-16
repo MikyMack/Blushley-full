@@ -648,67 +648,7 @@ var productGallerySwiper = function () {
         });
     };
 
-    /* Total Price Variant
-  ------------------------------------------------------------------------------------- */
-    var totalPriceVariant = function () {
-        $(".tf-product-info-list,.tf-cart-item").each(function () {
-            var productItem = $(this);
-            var basePrice =
-                parseFloat(
-                    productItem.find(".price-on-sale").data("base-price")
-                ) ||
-                parseFloat(
-                    productItem.find(".price-on-sale").text().replace("$", "")
-                );
-            var quantityInput = productItem.find(".quantity-product");
 
-            productItem.find(".color-btn, .size-btn").on("click", function () {
-                var newPrice = parseFloat($(this).data("price")) || basePrice;
-                quantityInput.val(1);
-                productItem
-                    .find(".price-on-sale")
-                    .text(
-                        "$" +
-                            newPrice
-                                .toFixed(2)
-                                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    );
-                updateTotalPrice(newPrice, productItem);
-            });
-
-            productItem.find(".btn-increase").on("click", function () {
-                var currentQuantity = parseInt(quantityInput.val());
-                quantityInput.val(currentQuantity + 1);
-                updateTotalPrice(null, productItem);
-            });
-
-            productItem.find(".btn-decrease").on("click", function () {
-                var currentQuantity = parseInt(quantityInput.val());
-                if (currentQuantity > 1) {
-                    quantityInput.val(currentQuantity - 1);
-                    updateTotalPrice(null, productItem);
-                }
-            });
-
-            function updateTotalPrice(price, scope) {
-                var currentPrice =
-                    price ||
-                    parseFloat(
-                        scope.find(".price-on-sale").text().replace("$", "")
-                    );
-                var quantity = parseInt(scope.find(".quantity-product").val());
-                var totalPrice = currentPrice * quantity;
-                scope
-                    .find(".total-price")
-                    .text(
-                        "$" +
-                            totalPrice
-                                .toFixed(2)
-                                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    );
-            }
-        });
-    };
 
     /* Scroll Grid Product
   ------------------------------------------------------------------------------------- */
@@ -1410,7 +1350,7 @@ $(function () {
     customInput();
     chooseOption();
     withDiscount();
-    totalPriceVariant();
+
     scrollGridProduct();
     scrollQuickView();
     hoverVideo();
