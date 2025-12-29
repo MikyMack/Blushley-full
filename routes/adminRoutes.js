@@ -315,6 +315,10 @@ router.get('/products', isAdmin, async (req, res) => {
         const [products, total, categories, subcategories, childcategories] = await Promise.all([
             Product.find(query)
                 .populate("category subCategory childCategory beautyTips")
+                .populate({
+                    path:"ownerRef",
+                    select:"name email role phone"
+                })
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit)
@@ -326,9 +330,14 @@ router.get('/products', isAdmin, async (req, res) => {
         ]);
 
         const totalPages = Math.ceil(total / limit);
+const owners = await User.find({
+  role: { $in: ['salon', 'reseller'] },
+  isBlocked: false
+}).select('_id name role').lean();
 
         res.render('admin/admin_products', {
             products,
+            owners,
             page,
             totalPages,
             total,
@@ -343,6 +352,8 @@ router.get('/products', isAdmin, async (req, res) => {
         res.status(500).render('admin/admin_products', { products: [], error: 'Failed to load products', limit: 20, categories: [], subcategories: [], childcategories: [] });
     }
 });
+
+
 
 router.get('/orders', (req, res) => {
     res.render('admin/admin_orders');

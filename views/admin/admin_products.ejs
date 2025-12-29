@@ -1777,7 +1777,6 @@
                                 </div>
                                 
                                 <% 
-                                // Helper functions
                                 const getPopulatedName = (field) => {
                                     return field && (field.title || field.name) ? (field.title || field.name) : (field || "N/A");
                                 };
@@ -2297,7 +2296,6 @@
                                     });
                                 </script>
 
-                                <!-- Inline Styles for Stylish Display (These can be moved to your CSS file!) -->
                                 <style>
                                     .stylish-product-list { background: #fff; border-radius: 14px; box-shadow: 0 3px 16px #e9eaee; padding: 30px 24px 20px;}
                                     .title-box .fancy-note { font-size: 1.08rem; color: #3e70e5; font-weight: 500; letter-spacing: 0.02em;}
@@ -2483,17 +2481,20 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="product-productType">Product Type *</label>
-                                                                <select id="product-productType" name="productType" required>
-                                                                    <option value="admin">Admin</option>
-                                                                    <option value="salon">Salon</option>
-                                                                    <option value="reseller">Reseller</option>
+                                                                <select id="product-productType" name="productType" required onchange="handleOwnerTypeChange()">
+                                                                  <option value="admin">Admin</option>
+                                                                  <option value="salon">Salon</option>
+                                                                  <option value="reseller">Reseller</option>
                                                                 </select>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="product-ownerRef">Owner Reference ID</label>
-                                                                <input type="text" id="product-ownerRef" name="ownerRef" placeholder="Owner MongoDB ID" value="">
-                                                                <small class="form-help">Required if product type is salon or reseller</small>
-                                                            </div>
+                                                              </div>
+                                                              
+                                                              <div class="form-group" id="owner-select-wrapper" style="display:none;">
+                                                                <label for="product-ownerRef">Select Owner *</label>
+                                                                <select id="product-ownerRef" name="ownerRef">
+                                                                  <option value="">Select Owner</option>
+                                                                </select>
+                                                              </div>
+                                                              
                                                         </div>
                                                     </div>
 
@@ -2747,7 +2748,10 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <script>
+                                        const OWNERS = <%- JSON.stringify(owners || []) %>;
+                                      </script>
+                                      
                                     <!-- Include SweetAlert2 CDN -->
                                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                     <script>
@@ -2758,6 +2762,35 @@
                                     let imageFiles = [];
                                     let editingProductId = null;
                                     let deleteProductId = null;
+                                    function handleOwnerTypeChange() {
+  const typeSelect = document.getElementById("product-productType");
+  const ownerWrapper = document.getElementById("owner-select-wrapper");
+  const ownerSelect = document.getElementById("product-ownerRef");
+
+  const type = typeSelect.value;
+
+  // Reset
+  ownerSelect.innerHTML = '<option value="">Select Owner</option>';
+  ownerWrapper.style.display = "none";
+  ownerSelect.required = false;
+
+  if (type === "admin") {
+    ownerSelect.value = "";
+    return;
+  }
+
+  const filteredOwners = OWNERS.filter(o => o.role === type);
+
+  filteredOwners.forEach(o => {
+    const opt = document.createElement("option");
+    opt.value = o._id;
+    opt.textContent = o.name || o._id;
+    ownerSelect.appendChild(opt);
+  });
+
+  ownerWrapper.style.display = "block";
+  ownerSelect.required = true;
+}
 
                                     document.addEventListener('DOMContentLoaded', function () {
                                         initializeProductForm();
@@ -2923,6 +2956,17 @@ function fillProductForm(product) {
             get('product-childCategory').value = product.childCategory || '';
         }
     }
+    if (get('product-productType')) {
+  get('product-productType').value = product.productType || 'admin';
+  handleOwnerTypeChange();
+}
+
+if (get('product-ownerRef') && product.ownerRef) {
+  get('product-ownerRef').value =
+    typeof product.ownerRef === "object"
+      ? product.ownerRef._id
+      : product.ownerRef;
+}
 
     if(get('product-brand')) get('product-brand').value = product.brand || '';
     if(get('product-productType')) get('product-productType').value = product.productType || '';
@@ -3869,10 +3913,7 @@ async function toggleProductStatus(productId, currentStatus) {
 }
 
                                     </script>
-                                  
-                                 
 
-                                    <!-- /product-list -->
                             </div>
                             <!-- /main-content-wrap -->
                         </div>

@@ -42,7 +42,9 @@ exports.createProduct = async (req, res) => {
       dimensions,
       beautyTips,
       seo,
-      totalStock
+      totalStock,
+      productType, 
+      ownerRef
     } = req.body;
 
     if (!title || !basePrice) {
@@ -139,7 +141,18 @@ exports.createProduct = async (req, res) => {
       savedTotalStock = Number(tsString || 0);
     }
 
-    const product = await Product.create({
+    // productType defaults to "admin" if not specified or invalid
+    let safeProductType = "admin";
+    if (typeof productType === "string" && ["admin", "salon", "reseller"].includes(productType)) {
+      safeProductType = productType;
+    }
+    // ownerRef should be a string or ObjectId value if provided
+    let safeOwnerRef = undefined;
+    if (ownerRef && typeof ownerRef === "string" && ownerRef.trim() !== "") {
+      safeOwnerRef = ownerRef;
+    }
+
+    const productData = {
       title,
       slug,
       description,
@@ -176,8 +189,13 @@ exports.createProduct = async (req, res) => {
 
       totalStock: savedTotalStock,
 
-      status: req.body.status || "pending"
-    });
+      status: req.body.status || "pending",
+      productType: safeProductType
+    };
+
+    if (safeOwnerRef) productData.ownerRef = safeOwnerRef;
+
+    const product = await Product.create(productData);
 
     res.json({ success: true, product });
 
@@ -215,7 +233,9 @@ exports.updateProduct = async (req, res) => {
       beautyTips,
       seo,
       status,
-      totalStock
+      totalStock,
+      productType, // allow updating productType
+      ownerRef     // allow updating ownerRef
     } = req.body;
 
     category = (category && typeof category === "string" && category.trim() !== "")
@@ -320,7 +340,6 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    // Only include non-empty category, subCategory, and childCategory in update
     // Calculate updatedTotalStock: if variants, sum their stocks
     let updatedTotalStock = 0;
     if (finalVariants && finalVariants.length > 0) {
@@ -330,6 +349,20 @@ exports.updateProduct = async (req, res) => {
         ? totalStock
         : req.body.totalStock;
       updatedTotalStock = Number(tsString || 0);
+    }
+
+    // productType from body, fallback to old value, default to "admin"
+    let safeProductType = (typeof productType === "string" &&
+      ["admin", "salon", "reseller"].includes(productType))
+      ? productType
+      : (product.productType || "admin");
+
+    // ownerRef from body, fallback to previous, or undefined if missing
+    let safeOwnerRef = undefined;
+    if (ownerRef && typeof ownerRef === "string" && ownerRef.trim() !== "") {
+      safeOwnerRef = ownerRef;
+    } else if (product.ownerRef) {
+      safeOwnerRef = product.ownerRef;
     }
 
     const updateObj = {
@@ -367,13 +400,15 @@ exports.updateProduct = async (req, res) => {
         keywords: safeParse(parsedSeo.keywords, [])
       },
 
-      totalStock: updatedTotalStock
+      totalStock: updatedTotalStock,
+      productType: safeProductType
     };
 
     if (category && typeof category === "string" && category.trim() !== "") updateObj.category = category;
     if (subCategory !== undefined) updateObj.subCategory = subCategory;
     if (childCategory !== undefined) updateObj.childCategory = childCategory;
     if (status) updateObj.status = status;
+    if (safeOwnerRef) updateObj.ownerRef = safeOwnerRef;
 
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
@@ -762,3 +797,5 @@ exports.searchProducts = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+
+
