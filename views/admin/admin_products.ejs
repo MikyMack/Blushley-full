@@ -1869,14 +1869,78 @@
                                                                 </select>
                                                             </div>
                                                             <!-- Product Type -->
-                                                            <div class="select filter-select">
-                                                                <select name="productType" onchange="this.form.submit()">
-                                                                    <option value="all" <%= (!query.productType || query.productType == "all") ? 'selected' : '' %>>All Product Types</option>
-                                                                    <option value="admin" <%= query.productType == 'admin' ? 'selected' : '' %>>Admin</option>
-                                                                    <option value="salon" <%= query.productType == 'salon' ? 'selected' : '' %>>Salon</option>
-                                                                    <option value="reseller" <%= query.productType == 'reseller' ? 'selected' : '' %>>Reseller</option>
-                                                                </select>
+                                                            <!-- Product Type Filter -->
+                                                            <div class="select filter-select" style="min-width:150px;">
+                                                              <select name="productType" id="product-type-select" onchange="handleProductTypeFilter();">
+                                                                <option value="all" <%= (!query.productType || query.productType == "all") ? 'selected' : '' %>>All Product Types</option>
+                                                                <option value="salon" <%= query.productType == "salon" ? "selected" : "" %>>Salon</option>
+                                                                <option value="reseller" <%= query.productType == "reseller" ? "selected" : "" %>>Reseller</option>
+                                                              </select>
                                                             </div>
+                                                            <!-- Owner (Shows only if Product Type is selected as Salon or Reseller) -->
+                                                            <div class="select filter-select" id="owner-filter-wrapper" style="display:none; min-width:150px;">
+                                                              <select name="ownerRef" id="owner-filter" onchange="this.form.submit();">
+                                                                <option value="all">All Owners</option>
+                                                                <% owners.forEach(function(owner){ %>
+                                                                  <option 
+                                                                    value="<%= owner._id %>" 
+                                                                    data-role="<%= owner.role %>"
+                                                                    <%= query.ownerRef == owner._id ? 'selected' : '' %> 
+                                                                    style="display:none;">
+                                                                    <%= owner.name %> (<%= owner.role %>)
+                                                                  </option>
+                                                                <% }) %>
+                                                              </select>
+                                                            </div>
+                                                            <script>
+                                                              function handleProductTypeFilter() {
+                                                                const typeSelect = document.getElementById("product-type-select");
+                                                                const ownerWrapper = document.getElementById("owner-filter-wrapper");
+                                                                const ownerSelect = document.getElementById("owner-filter");
+                                                                if (!typeSelect || !ownerWrapper || !ownerSelect) return;
+                                                                const selectedType = typeSelect.value;
+
+                                                                if (selectedType === 'salon' || selectedType === 'reseller') {
+                                                                  ownerWrapper.style.display = 'block';
+                                                                  Array.from(ownerSelect.options).forEach(opt => {
+                                                                    // always keep 'all' option visible
+                                                                    if (opt.value === 'all') {
+                                                                      opt.style.display = 'block'; 
+                                                                      return; 
+                                                                    }
+                                                                    // Show only owners matching the role
+                                                                    opt.style.display = (opt.dataset.role === selectedType) ? 'block' : 'none';
+                                                                    // Auto-select first visible owner if currently selected is not visible
+                                                                  });
+                                                                  // If a value is set and doesn't match current type, reset to 'all'
+                                                                  if (
+                                                                    ownerSelect.value !== 'all' &&
+                                                                    ownerSelect.selectedOptions &&
+                                                                    ownerSelect.selectedOptions[0] &&
+                                                                    ownerSelect.selectedOptions[0].dataset.role !== selectedType
+                                                                  ) {
+                                                                    ownerSelect.value = 'all';
+                                                                  }
+                                                                } else {
+                                                                  ownerWrapper.style.display = 'none';
+                                                                  ownerSelect.value = 'all';
+                                                                  // Hide all except 'all'
+                                                                  Array.from(ownerSelect.options).forEach(opt => {
+                                                                    opt.style.display = (opt.value === 'all') ? 'block' : 'none';
+                                                                  });
+                                                                }
+                                                              }
+                                                              // If form is submitted with salon/reseller, show correct filter
+                                                              document.addEventListener("DOMContentLoaded", function() {
+                                                                handleProductTypeFilter();
+                                                                // Always submit form on type change
+                                                                document.getElementById("product-type-select").addEventListener("change", function() {
+                                                                  document.getElementById("product-filter-form").submit();
+                                                                });
+                                                              });
+                                                            </script>
+    
+  
                                                             <!-- Status -->
                                                             <div class="select filter-select">
                                                                 <select name="status" onchange="this.form.submit()">
@@ -2014,20 +2078,18 @@
                                                         <ul>
                                                             <li><strong>Brand:</strong> <%= product.brand || 'N/A' %></li>
                                                             <li><strong>Product Type:</strong> <%= product.productType || 'N/A' %></li>
-                                                            <li><strong>Owner Ref:</strong>
-                                                                <% if (product.ownerRef) { %>
-                                                                    <% if (typeof product.ownerRef === "object") { %>
-                                                                        <%= product.ownerRef._id || JSON.stringify(product.ownerRef) %>
-                                                                        <% if (product.ownerRef.name) { %>
-                                                                            (<%= product.ownerRef.name %>)
-                                                                        <% } %>
-                                                                    <% } else { %>
-                                                                        <%= product.ownerRef %>
-                                                                    <% } %>
-                                                                <% } else { %>
-                                                                    N/A
-                                                                <% } %>
-                                                            </li>
+                                                            <li>
+                                                                <strong>Owner:</strong>
+                                                                <% 
+                                                                  const ownerId =
+                                                                    product.ownerRef && typeof product.ownerRef === 'object'
+                                                                      ? product.ownerRef._id.toString()
+                                                                      : product.ownerRef?.toString();
+                                                                %>
+                                                              
+                                                                <%= ownerNameMap[ownerId] || 'N/A' %>
+                                                              </li>
+                                                              
                                                             <li><strong>Base Price:</strong> <span class="green-price">₹<%= product.basePrice !== undefined ? Number(product.basePrice).toFixed(2) : 'N/A' %></span></li>
                                                             <li><strong>Sale Price:</strong> <span class="red-price">₹<%= product.salePrice !== undefined ? Number(product.salePrice).toFixed(2) : 'N/A' %></span></li>
                                                             <li><strong>Admin Base Price:</strong> <span class="green-price">₹<%= product.adminBasePrice !== undefined ? Number(product.adminBasePrice).toFixed(2) : 'N/A' %></span></li>
@@ -2969,8 +3031,7 @@ if (get('product-ownerRef') && product.ownerRef) {
 }
 
     if(get('product-brand')) get('product-brand').value = product.brand || '';
-    if(get('product-productType')) get('product-productType').value = product.productType || '';
-    if(get('product-ownerRef')) get('product-ownerRef').value = product.ownerRef || '';
+ 
     if(get('product-basePrice')) get('product-basePrice').value = product.basePrice || '';
     if(get('product-salePrice')) get('product-salePrice').value = product.salePrice || '';
     if(get('product-adminBasePrice')) get('product-adminBasePrice').value = product.adminBasePrice || '';

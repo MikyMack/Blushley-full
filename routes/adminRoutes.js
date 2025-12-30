@@ -10,6 +10,7 @@ const ChildCategory = require('../models/ChildCategory');
 const SalonBooking = require('../models/SalonBooking');
 const Product = require('../models/Product');
 const Reseller = require('../models/Reseller');
+const Salon = require('../models/Salon');
 const User = require('../models/User');
 const authcntl = require('../controllers/authController');
 
@@ -270,88 +271,158 @@ router.get('/beautyTips', isAdmin, async (req, res) => {
 
 router.get('/products', isAdmin, async (req, res) => {
     try {
-        let { page = 1, search = "", status, category, subCategory, childCategory, brand, productType } = req.query;
-        let limit = req.query.limit ? parseInt(req.query.limit) : 20;
-        page = parseInt(page);
-
-        const query = {};
-
-        if (search && search.trim() !== "") {
-            const searchRegex = new RegExp(search.trim(), "i");
-            query.$or = [
-                { title: searchRegex },
-                { slug: searchRegex },
-                { description: searchRegex },
-                { shortDescription: searchRegex }
-            ];
-        }
-
-        if (status && status !== 'all') {
-            query.status = status;
-        }
-
-        if (category && category !== "all") {
-            query.category = category;
-        }
-        if (subCategory && subCategory !== "all") {
-            query.subCategory = subCategory;
-        }
-        if (childCategory && childCategory !== "all") {
-            query.childCategory = childCategory;
-        }
-
-        if (brand && brand.trim() !== "") {
-            query.brand = brand.trim();
-        }
-
-        if (productType && productType !== "all") {
-            query.productType = productType;
-        }
-
-        const Category = require('../models/Category');
-        const SubCategory = require('../models/SubCategory');
-        const ChildCategory = require('../models/ChildCategory');
-
-        const [products, total, categories, subcategories, childcategories] = await Promise.all([
-            Product.find(query)
-                .populate("category subCategory childCategory beautyTips")
-                .populate({
-                    path:"ownerRef",
-                    select:"name email role phone"
-                })
-                .sort({ createdAt: -1 })
-                .skip((page - 1) * limit)
-                .limit(limit)
-                .lean(),
-            Product.countDocuments(query),
-            Category.find({ status: { $ne: 'deleted' } }).lean(),
-            SubCategory.find({ status: { $ne: 'deleted' } }).lean(),
-            ChildCategory.find({ status: { $ne: 'deleted' } }).lean()
+      let {
+        page = 1,
+        search = "",
+        status,
+        category,
+        subCategory,
+        childCategory,
+        brand,
+        productType,
+        ownerRef        // ✅ NEW (from filter dropdown)
+      } = req.query;
+  
+      let limit = req.query.limit ? parseInt(req.query.limit) : 20;
+      page = parseInt(page);
+  
+      const query = {};
+  
+      /* ---------------- SEARCH ---------------- */
+      if (search && search.trim() !== "") {
+        const searchRegex = new RegExp(search.trim(), "i");
+        query.$or = [
+          { title: searchRegex },
+          { slug: searchRegex },
+          { description: searchRegex },
+          { shortDescription: searchRegex }
+        ];
+      }
+  
+      /* ---------------- FILTERS ---------------- */
+      if (status && status !== 'all') query.status = status;
+      if (category && category !== "all") query.category = category;
+      if (subCategory && subCategory !== "all") query.subCategory = subCategory;
+      if (childCategory && childCategory !== "all") query.childCategory = childCategory;
+      if (brand && brand.trim() !== "") query.brand = brand.trim();
+      if (productType && productType !== "all") query.productType = productType;
+  
+      /* ⭐ OWNER FILTER (IMPORTANT) */
+      if (ownerRef && ownerRef !== "all") {
+        query.ownerRef = ownerRef;
+      }
+  
+      /* ---------------- MODELS ---------------- */
+      const Category = require('../models/Category');
+      const SubCategory = require('../models/SubCategory');
+      const ChildCategory = require('../models/ChildCategory');
+      const Reseller = require('../models/Reseller');
+      const Salon = require('../models/Salon');
+  
+      /* ---------------- DATA FETCH ---------------- */
+      const [products, total, categories, subcategories, childcategories] =
+        await Promise.all([
+          Product.find(query)
+            .populate("category subCategory childCategory beautyTips")
+            .populate({
+              path: "ownerRef",
+              select: "name email role phone"
+            })
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean(),
+  
+          Product.countDocuments(query),
+          Category.find({ status: { $ne: 'deleted' } }).lean(),
+          SubCategory.find({ status: { $ne: 'deleted' } }).lean(),
+          ChildCategory.find({ status: { $ne: 'deleted' } }).lean()
         ]);
-
-        const totalPages = Math.ceil(total / limit);
-const owners = await User.find({
-  role: { $in: ['salon', 'reseller'] },
-  isBlocked: false
-}).select('_id name role').lean();
-
-        res.render('admin/admin_products', {
-            products,
-            owners,
-            page,
-            totalPages,
-            total,
-            limit,
-            query: req.query,
-            categories,
-            subcategories,
-            childcategories
-        });
+  
+      const totalPages = Math.ceil(total / limit);
+  
+      /* ---------------- FETCH OWNERS ---------------- */
+      const [resellers, salons] = await Promise.all([
+        Reseller.find({ status: 'approved' })
+          .populate('userId', 'name email phone')
+          .lean(),
+  
+        Salon.find({ status: 'active' })
+          .select('name phone email createdByAdmin')
+          .lean()
+      ]);
+  
+      /* =====================================================
+         🔒 DO NOT REMOVE – OWNER NAME MAP (AS REQUESTED)
+         ===================================================== */
+      const ownerNameMap = {};
+  
+      // Resellers → companyName
+      resellers.forEach(r => {
+        if (r.userId?._id) {
+          ownerNameMap[r.userId._id.toString()] = r.companyName;
+        }
+      });
+  
+      // Salons → salon name
+      salons.forEach(s => {
+        if (s.createdByAdmin) {
+          ownerNameMap[s.createdByAdmin.toString()] = s.name;
+        }
+      });
+  
+      /* ---------------- OWNER LIST FOR UI ---------------- */
+      const owners = [
+        ...resellers.map(r => ({
+          _id: r.userId._id,
+          name: r.companyName,
+          role: 'reseller',
+          phone: r.phone,
+          email: r.email
+        })),
+        ...salons.map(s => ({
+          _id: s.createdByAdmin || s._id,
+          name: s.name,
+          role: 'salon',
+          phone: s.phone,
+          email: s.email
+        }))
+      ];
+  
+      /* ---------------- RENDER ---------------- */
+      res.render('admin/admin_products', {
+        products,
+        owners,
+        ownerNameMap,   // ✅ still here
+        page,
+        totalPages,
+        total,
+        limit,
+        query: req.query,
+        categories,
+        subcategories,
+        childcategories
+      });
+  
     } catch (err) {
-        console.error('Error fetching products:', err);
-        res.status(500).render('admin/admin_products', { products: [], error: 'Failed to load products', limit: 20, categories: [], subcategories: [], childcategories: [] });
+      console.error('ADMIN PRODUCTS ERROR:', err);
+      res.status(500).render('admin/admin_products', {
+        products: [],
+        owners: [],
+        ownerNameMap: {},
+        page: 1,
+        totalPages: 0,
+        total: 0,
+        limit: 20,
+        query: {},
+        categories: [],
+        subcategories: [],
+        childcategories: [],
+        error: 'Failed to load products'
+      });
     }
-});
+  });
+  
 
 
 
