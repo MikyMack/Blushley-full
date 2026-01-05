@@ -1753,3 +1753,20 @@ $(document).ready(function() {
                     link.addEventListener('blur', hide);
                 });
             });
+  // Grab the contact icons container
+            const contactIcons = document.getElementById('contactIcons');
+
+            // Show or hide the icons when the user scrolls
+            function toggleContactIcons() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                // Adjust the 300 value if you want them to appear sooner/later
+                if (scrollTop > 300) {
+                    contactIcons.classList.add('visible');
+                } else {
+                    contactIcons.classList.remove('visible');
+                }
+            }
+
+            // Listen for scrolling
+            window.addEventListener('scroll', toggleContactIcons);
