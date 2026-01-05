@@ -27052,3 +27052,18 @@ footer#footer {
           .banner-content-title { font-size: 2.7rem; }
           .banner-content-subtitle { font-size: 1.17rem; }
         }
+
+        .loyalty-panel { display:none; position:absolute; right:0; top:36px; max-width:330px; z-index:50; background:#fff; box-shadow:0 5px 32px #0002; border-radius:12px; min-width:260px;}
+        .loyalty-panel.active { display:block; }
+        .notification-list { max-height:210px; overflow:auto; }
+        .notification-item { border-bottom:1px solid #eee; padding:8px 0 8px 6px; transition:background .2s;}
+        .notification-item.notif-unread { background:#f5faff; font-weight:500;}
+        .notification-actions button { color:#444;}
+        .notification-actions button:hover { color:#D16569;}
+        .loyalty-badge { position:absolute; top:-4px; right:-8px; background:#E55867;color:#fff;font-size:11px;border-radius:50%;width:21px;height:21px;display:flex;align-items:center;justify-content:center;}
+        .loyalty-header { display:flex;justify-content:space-between;align-items:center;padding:10px 15px 4px;}
+        .loyalty-points-display { padding:6px 0 0 18px;}
+        @media (max-width: 768px){
+          .loyalty-panel {left:0;right:auto; min-width:210px;}
+        }
+      

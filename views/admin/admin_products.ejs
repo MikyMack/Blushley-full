@@ -1782,7 +1782,6 @@
                                 </div>
                                 
                                 <% 
-                                // Helper functions
                                 const getPopulatedName = (field) => {
                                     return field && (field.title || field.name) ? (field.title || field.name) : (field || "N/A");
                                 };
@@ -1875,14 +1874,78 @@
                                                                 </select>
                                                             </div>
                                                             <!-- Product Type -->
-                                                            <div class="select filter-select">
-                                                                <select name="productType" onchange="this.form.submit()">
-                                                                    <option value="all" <%= (!query.productType || query.productType == "all") ? 'selected' : '' %>>All Product Types</option>
-                                                                    <option value="admin" <%= query.productType == 'admin' ? 'selected' : '' %>>Admin</option>
-                                                                    <option value="salon" <%= query.productType == 'salon' ? 'selected' : '' %>>Salon</option>
-                                                                    <option value="reseller" <%= query.productType == 'reseller' ? 'selected' : '' %>>Reseller</option>
-                                                                </select>
+                                                            <!-- Product Type Filter -->
+                                                            <div class="select filter-select" style="min-width:150px;">
+                                                              <select name="productType" id="product-type-select" onchange="handleProductTypeFilter();">
+                                                                <option value="all" <%= (!query.productType || query.productType == "all") ? 'selected' : '' %>>All Product Types</option>
+                                                                <option value="salon" <%= query.productType == "salon" ? "selected" : "" %>>Salon</option>
+                                                                <option value="reseller" <%= query.productType == "reseller" ? "selected" : "" %>>Reseller</option>
+                                                              </select>
                                                             </div>
+                                                            <!-- Owner (Shows only if Product Type is selected as Salon or Reseller) -->
+                                                            <div class="select filter-select" id="owner-filter-wrapper" style="display:none; min-width:150px;">
+                                                              <select name="ownerRef" id="owner-filter" onchange="this.form.submit();">
+                                                                <option value="all">All Owners</option>
+                                                                <% owners.forEach(function(owner){ %>
+                                                                  <option 
+                                                                    value="<%= owner._id %>" 
+                                                                    data-role="<%= owner.role %>"
+                                                                    <%= query.ownerRef == owner._id ? 'selected' : '' %> 
+                                                                    style="display:none;">
+                                                                    <%= owner.name %> (<%= owner.role %>)
+                                                                  </option>
+                                                                <% }) %>
+                                                              </select>
+                                                            </div>
+                                                            <script>
+                                                              function handleProductTypeFilter() {
+                                                                const typeSelect = document.getElementById("product-type-select");
+                                                                const ownerWrapper = document.getElementById("owner-filter-wrapper");
+                                                                const ownerSelect = document.getElementById("owner-filter");
+                                                                if (!typeSelect || !ownerWrapper || !ownerSelect) return;
+                                                                const selectedType = typeSelect.value;
+
+                                                                if (selectedType === 'salon' || selectedType === 'reseller') {
+                                                                  ownerWrapper.style.display = 'block';
+                                                                  Array.from(ownerSelect.options).forEach(opt => {
+                                                                    // always keep 'all' option visible
+                                                                    if (opt.value === 'all') {
+                                                                      opt.style.display = 'block'; 
+                                                                      return; 
+                                                                    }
+                                                                    // Show only owners matching the role
+                                                                    opt.style.display = (opt.dataset.role === selectedType) ? 'block' : 'none';
+                                                                    // Auto-select first visible owner if currently selected is not visible
+                                                                  });
+                                                                  // If a value is set and doesn't match current type, reset to 'all'
+                                                                  if (
+                                                                    ownerSelect.value !== 'all' &&
+                                                                    ownerSelect.selectedOptions &&
+                                                                    ownerSelect.selectedOptions[0] &&
+                                                                    ownerSelect.selectedOptions[0].dataset.role !== selectedType
+                                                                  ) {
+                                                                    ownerSelect.value = 'all';
+                                                                  }
+                                                                } else {
+                                                                  ownerWrapper.style.display = 'none';
+                                                                  ownerSelect.value = 'all';
+                                                                  // Hide all except 'all'
+                                                                  Array.from(ownerSelect.options).forEach(opt => {
+                                                                    opt.style.display = (opt.value === 'all') ? 'block' : 'none';
+                                                                  });
+                                                                }
+                                                              }
+                                                              // If form is submitted with salon/reseller, show correct filter
+                                                              document.addEventListener("DOMContentLoaded", function() {
+                                                                handleProductTypeFilter();
+                                                                // Always submit form on type change
+                                                                document.getElementById("product-type-select").addEventListener("change", function() {
+                                                                  document.getElementById("product-filter-form").submit();
+                                                                });
+                                                              });
+                                                            </script>
+    
+  
                                                             <!-- Status -->
                                                             <div class="select filter-select">
                                                                 <select name="status" onchange="this.form.submit()">
@@ -2020,20 +2083,18 @@
                                                         <ul>
                                                             <li><strong>Brand:</strong> <%= product.brand || 'N/A' %></li>
                                                             <li><strong>Product Type:</strong> <%= product.productType || 'N/A' %></li>
-                                                            <li><strong>Owner Ref:</strong>
-                                                                <% if (product.ownerRef) { %>
-                                                                    <% if (typeof product.ownerRef === "object") { %>
-                                                                        <%= product.ownerRef._id || JSON.stringify(product.ownerRef) %>
-                                                                        <% if (product.ownerRef.name) { %>
-                                                                            (<%= product.ownerRef.name %>)
-                                                                        <% } %>
-                                                                    <% } else { %>
-                                                                        <%= product.ownerRef %>
-                                                                    <% } %>
-                                                                <% } else { %>
-                                                                    N/A
-                                                                <% } %>
-                                                            </li>
+                                                            <li>
+                                                                <strong>Owner:</strong>
+                                                                <% 
+                                                                  const ownerId =
+                                                                    product.ownerRef && typeof product.ownerRef === 'object'
+                                                                      ? product.ownerRef._id.toString()
+                                                                      : product.ownerRef?.toString();
+                                                                %>
+                                                              
+                                                                <%= ownerNameMap[ownerId] || 'N/A' %>
+                                                              </li>
+                                                              
                                                             <li><strong>Base Price:</strong> <span class="green-price">₹<%= product.basePrice !== undefined ? Number(product.basePrice).toFixed(2) : 'N/A' %></span></li>
                                                             <li><strong>Sale Price:</strong> <span class="red-price">₹<%= product.salePrice !== undefined ? Number(product.salePrice).toFixed(2) : 'N/A' %></span></li>
                                                             <li><strong>Admin Base Price:</strong> <span class="green-price">₹<%= product.adminBasePrice !== undefined ? Number(product.adminBasePrice).toFixed(2) : 'N/A' %></span></li>
@@ -2302,7 +2363,6 @@
                                     });
                                 </script>
 
-                                <!-- Inline Styles for Stylish Display (These can be moved to your CSS file!) -->
                                 <style>
                                     .stylish-product-list { background: #fff; border-radius: 14px; box-shadow: 0 3px 16px #e9eaee; padding: 30px 24px 20px;}
                                     .title-box .fancy-note { font-size: 1.08rem; color: #3e70e5; font-weight: 500; letter-spacing: 0.02em;}
@@ -2488,17 +2548,20 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="product-productType">Product Type *</label>
-                                                                <select id="product-productType" name="productType" required>
-                                                                    <option value="admin">Admin</option>
-                                                                    <option value="salon">Salon</option>
-                                                                    <option value="reseller">Reseller</option>
+                                                                <select id="product-productType" name="productType" required onchange="handleOwnerTypeChange()">
+                                                                  <option value="admin">Admin</option>
+                                                                  <option value="salon">Salon</option>
+                                                                  <option value="reseller">Reseller</option>
                                                                 </select>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="product-ownerRef">Owner Reference ID</label>
-                                                                <input type="text" id="product-ownerRef" name="ownerRef" placeholder="Owner MongoDB ID" value="">
-                                                                <small class="form-help">Required if product type is salon or reseller</small>
-                                                            </div>
+                                                              </div>
+                                                              
+                                                              <div class="form-group" id="owner-select-wrapper" style="display:none;">
+                                                                <label for="product-ownerRef">Select Owner *</label>
+                                                                <select id="product-ownerRef" name="ownerRef">
+                                                                  <option value="">Select Owner</option>
+                                                                </select>
+                                                              </div>
+                                                              
                                                         </div>
                                                     </div>
 
@@ -2752,7 +2815,10 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <script>
+                                        const OWNERS = <%- JSON.stringify(owners || []) %>;
+                                      </script>
+                                      
                                     <!-- Include SweetAlert2 CDN -->
                                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                     <script>
@@ -2763,6 +2829,35 @@
                                     let imageFiles = [];
                                     let editingProductId = null;
                                     let deleteProductId = null;
+                                    function handleOwnerTypeChange() {
+  const typeSelect = document.getElementById("product-productType");
+  const ownerWrapper = document.getElementById("owner-select-wrapper");
+  const ownerSelect = document.getElementById("product-ownerRef");
+
+  const type = typeSelect.value;
+
+  // Reset
+  ownerSelect.innerHTML = '<option value="">Select Owner</option>';
+  ownerWrapper.style.display = "none";
+  ownerSelect.required = false;
+
+  if (type === "admin") {
+    ownerSelect.value = "";
+    return;
+  }
+
+  const filteredOwners = OWNERS.filter(o => o.role === type);
+
+  filteredOwners.forEach(o => {
+    const opt = document.createElement("option");
+    opt.value = o._id;
+    opt.textContent = o.name || o._id;
+    ownerSelect.appendChild(opt);
+  });
+
+  ownerWrapper.style.display = "block";
+  ownerSelect.required = true;
+}
 
                                     document.addEventListener('DOMContentLoaded', function () {
                                         initializeProductForm();
@@ -2928,10 +3023,20 @@ function fillProductForm(product) {
             get('product-childCategory').value = product.childCategory || '';
         }
     }
+    if (get('product-productType')) {
+  get('product-productType').value = product.productType || 'admin';
+  handleOwnerTypeChange();
+}
+
+if (get('product-ownerRef') && product.ownerRef) {
+  get('product-ownerRef').value =
+    typeof product.ownerRef === "object"
+      ? product.ownerRef._id
+      : product.ownerRef;
+}
 
     if(get('product-brand')) get('product-brand').value = product.brand || '';
-    if(get('product-productType')) get('product-productType').value = product.productType || '';
-    if(get('product-ownerRef')) get('product-ownerRef').value = product.ownerRef || '';
+ 
     if(get('product-basePrice')) get('product-basePrice').value = product.basePrice || '';
     if(get('product-salePrice')) get('product-salePrice').value = product.salePrice || '';
     if(get('product-adminBasePrice')) get('product-adminBasePrice').value = product.adminBasePrice || '';
@@ -3874,10 +3979,7 @@ async function toggleProductStatus(productId, currentStatus) {
 }
 
                                     </script>
-                                  
-                                 
 
-                                    <!-- /product-list -->
                             </div>
                             <!-- /main-content-wrap -->
                         </div>

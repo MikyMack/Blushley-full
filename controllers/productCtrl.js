@@ -19,11 +19,8 @@ function safeParse(value, fallback = null) {
 }
 
 
-
 exports.createProduct = async (req, res) => {
-
   try {
-
     let {
       title,
       description,
@@ -44,7 +41,10 @@ exports.createProduct = async (req, res) => {
       weight,
       dimensions,
       beautyTips,
-      seo
+      seo,
+      totalStock,
+      productType, 
+      ownerRef
     } = req.body;
 
     if (!title || !basePrice) {
@@ -52,7 +52,6 @@ exports.createProduct = async (req, res) => {
     }
 
     const slug = title.toLowerCase().replace(/\s+/g, "-");
-
 
     const mainImages = req.files.filter(f => f.fieldname === "images");
 
@@ -78,23 +77,19 @@ exports.createProduct = async (req, res) => {
 
     variantFiles.forEach(file => {
       const parts = file.fieldname.split("__");
-
       const variantId = parts[1];
       const optionId = parts[2];
-
       if (!variantFileMap[variantId]) variantFileMap[variantId] = {};
       if (!variantFileMap[variantId][optionId]) variantFileMap[variantId][optionId] = [];
-
       variantFileMap[variantId][optionId].push(file);
     });
 
- 
     let finalVariants = [];
+    let computedTotalStock = 0;
 
     for (let vKey in parsedVariants) {
       const variant = parsedVariants[vKey];
       const optionsArray = [];
-
       for (let optKey in variant.options) {
         const option = variant.options[optKey];
 
@@ -110,9 +105,12 @@ exports.createProduct = async (req, res) => {
           uploadedImages.push(uploaded.location);
         }
 
+        let optionStock = Number(option.stock || 0);
+        computedTotalStock += optionStock;
+
         optionsArray.push({
           value: option.value,
-          stock: Number(option.stock || 0),
+          stock: optionStock,
           sku: option.sku,
           price: Number(option.price || 0),
           adminBasePrice: Number(option.adminBasePrice || 0),
@@ -126,11 +124,35 @@ exports.createProduct = async (req, res) => {
         options: optionsArray
       });
     }
+
     category = category?.trim() ? category : undefined;
     subCategory = subCategory?.trim() ? subCategory : undefined;
     childCategory = childCategory?.trim() ? childCategory : undefined;
-    
-    const product = await Product.create({
+
+    // Calculate totalStock: if variants exist, use sum of stocks, else use provided value
+    let savedTotalStock = 0;
+    if (finalVariants && finalVariants.length > 0) {
+      savedTotalStock = computedTotalStock;
+    } else {
+      // This is the simple product (no variants: take plain input or 0)
+      const tsString = typeof totalStock !== "undefined"
+        ? totalStock
+        : req.body.totalStock;
+      savedTotalStock = Number(tsString || 0);
+    }
+
+    // productType defaults to "admin" if not specified or invalid
+    let safeProductType = "admin";
+    if (typeof productType === "string" && ["admin", "salon", "reseller"].includes(productType)) {
+      safeProductType = productType;
+    }
+    // ownerRef should be a string or ObjectId value if provided
+    let safeOwnerRef = undefined;
+    if (ownerRef && typeof ownerRef === "string" && ownerRef.trim() !== "") {
+      safeOwnerRef = ownerRef;
+    }
+
+    const productData = {
       title,
       slug,
       description,
@@ -165,8 +187,15 @@ exports.createProduct = async (req, res) => {
         keywords: safeParse(parsedSeo.keywords, [])
       },
 
-      status: req.body.status || "pending"
-    });
+      totalStock: savedTotalStock,
+
+      status: req.body.status || "pending",
+      productType: safeProductType
+    };
+
+    if (safeOwnerRef) productData.ownerRef = safeOwnerRef;
+
+    const product = await Product.create(productData);
 
     res.json({ success: true, product });
 
@@ -177,10 +206,8 @@ exports.createProduct = async (req, res) => {
 };
 
 
-
-// ---------------- UPDATE PRODUCT (FULLY FIXED) ----------------
-
 exports.updateProduct = async (req, res) => {
+
   try {
     const productId = req.params.id;
 
@@ -205,22 +232,23 @@ exports.updateProduct = async (req, res) => {
       dimensions,
       beautyTips,
       seo,
-      status
+      status,
+      totalStock,
+      productType, // allow updating productType
+      ownerRef     // allow updating ownerRef
     } = req.body;
 
+    category = (category && typeof category === "string" && category.trim() !== "")
+      ? category
+      : undefined;
 
-category = (category && typeof category === "string" && category.trim() !== "") 
-  ? category 
-  : undefined;
+    subCategory = (subCategory && typeof subCategory === "string" && subCategory.trim() !== "")
+      ? subCategory
+      : undefined;
 
-subCategory = (subCategory && typeof subCategory === "string" && subCategory.trim() !== "") 
-  ? subCategory 
-  : undefined;
-
-childCategory = (childCategory && typeof childCategory === "string" && childCategory.trim() !== "") 
-  ? childCategory 
-  : undefined;
-
+    childCategory = (childCategory && typeof childCategory === "string" && childCategory.trim() !== "")
+      ? childCategory
+      : undefined;
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -265,11 +293,11 @@ childCategory = (childCategory && typeof childCategory === "string" && childCate
     });
 
     let finalVariants = [];
+    let computedTotalStock = 0;
 
     for (let vKey in parsedVariants) {
       const variant = parsedVariants[vKey];
       const optionsArray = [];
-
       for (let optKey in variant.options) {
         const option = variant.options[optKey];
 
@@ -292,9 +320,12 @@ childCategory = (childCategory && typeof childCategory === "string" && childCate
           newImages.push(uploaded.location);
         }
 
+        let optionStock = Number(option.stock || 0);
+        computedTotalStock += optionStock;
+
         optionsArray.push({
           value: option.value,
-          stock: Number(option.stock || 0),
+          stock: optionStock,
           sku: option.sku,
           price: Number(option.price || 0),
           adminBasePrice: Number(option.adminBasePrice || 0),
@@ -309,7 +340,31 @@ childCategory = (childCategory && typeof childCategory === "string" && childCate
       });
     }
 
-    // Only include non-empty category, subCategory, and childCategory in update
+    // Calculate updatedTotalStock: if variants, sum their stocks
+    let updatedTotalStock = 0;
+    if (finalVariants && finalVariants.length > 0) {
+      updatedTotalStock = computedTotalStock;
+    } else {
+      const tsString = typeof totalStock !== "undefined"
+        ? totalStock
+        : req.body.totalStock;
+      updatedTotalStock = Number(tsString || 0);
+    }
+
+    // productType from body, fallback to old value, default to "admin"
+    let safeProductType = (typeof productType === "string" &&
+      ["admin", "salon", "reseller"].includes(productType))
+      ? productType
+      : (product.productType || "admin");
+
+    // ownerRef from body, fallback to previous, or undefined if missing
+    let safeOwnerRef = undefined;
+    if (ownerRef && typeof ownerRef === "string" && ownerRef.trim() !== "") {
+      safeOwnerRef = ownerRef;
+    } else if (product.ownerRef) {
+      safeOwnerRef = product.ownerRef;
+    }
+
     const updateObj = {
       title: title || product.title,
       slug: title
@@ -343,14 +398,17 @@ childCategory = (childCategory && typeof childCategory === "string" && childCate
         title: parsedSeo.title,
         description: parsedSeo.description,
         keywords: safeParse(parsedSeo.keywords, [])
-      }
+      },
+
+      totalStock: updatedTotalStock,
+      productType: safeProductType
     };
 
-    
     if (category && typeof category === "string" && category.trim() !== "") updateObj.category = category;
     if (subCategory !== undefined) updateObj.subCategory = subCategory;
     if (childCategory !== undefined) updateObj.childCategory = childCategory;
     if (status) updateObj.status = status;
+    if (safeOwnerRef) updateObj.ownerRef = safeOwnerRef;
 
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
@@ -369,9 +427,6 @@ childCategory = (childCategory && typeof childCategory === "string" && childCate
     return res.status(500).json({ error: err.message });
   }
 };
-
-
-
 
 // ---------------- TOGGLE PRODUCT STATUS ----------------
 exports.toggleProductStatus = async (req, res) => {
@@ -742,3 +797,5 @@ exports.searchProducts = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+
+

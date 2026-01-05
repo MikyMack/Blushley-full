@@ -11,6 +11,13 @@ const UserSchema = new mongoose.Schema({
     balance: { type: Number, default: 0 },
     loyaltyPoints: { type: Number, default: 0 }
   },
+  notifications: [
+    {
+      message: String,
+      read: { type: Boolean, default: false },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ],
   isBlocked: { type: Boolean, default: false },
 }, { timestamps: true });
 

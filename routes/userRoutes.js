@@ -9,6 +9,7 @@ const Testimonial = require('../models/Testimonials');
 const Banner = require('../models/Banner');
 const Poster = require('../models/Poster');
 const Blog = require('../models/Blog');
+const Freelancer = require('../models/Freelancer');
 
 router.get('/', async (req, res) => {
     try {
@@ -358,7 +359,7 @@ router.get('/userLogin', (req, res) => {
     res.render('user/userLogin');
 });
 // saloon at home 
-const Freelancer = require('../models/Freelancer');
+
 
 // GET: Saloon at Home - Freelancer Listing with Pagination and Filters
 router.get('/saloon-at-home', async (req, res) => {

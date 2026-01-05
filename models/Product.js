@@ -41,7 +41,6 @@ const ProductSchema = new mongoose.Schema({
     ref: "BeautyTip"
   }],
 
-  // BRAND
   brand: String,
 
   productType: {
@@ -52,33 +51,26 @@ const ProductSchema = new mongoose.Schema({
 
   ownerRef: {
     type: mongoose.Schema.Types.ObjectId,
-    refPath: "productType"
+    ref: "User"
   },
 
-  // UNIVERSAL PRICING
   basePrice: { type: Number, required: true },
   salePrice: Number,
 
-  // ADMIN PRICE CONTROL ✅
   adminBasePrice: Number,
   adminSalePrice: Number,
 
-  // TOTAL STOCK (Ignored when variants exist)
   totalStock: { type: Number, default: 0 },
 
-  // VARIANTS: Color / Size / Volume etc ✅
   variants: [VariantSchema],
 
-  // MAIN PRODUCT IMAGES
   images: [String],
 
-  // PRODUCT PROPERTIES
   tags: [String],
   ingredients: [String],
   howToUse: String,
   benefits: [String],
 
-  // SHIPPING
   weight: Number,
   dimensions: {
     length: Number,
@@ -86,11 +78,10 @@ const ProductSchema = new mongoose.Schema({
     height: Number
   },
 
-  // PRODUCT REVIEWS (all fields optional: name, rating, content)
+
   reviews: [ProductReviewSchema], 
 
-  // RATINGS
-  // These fields are updated automatically based on the product's reviews
+ 
   rating: { 
     type: Number, 
     default: 0 
