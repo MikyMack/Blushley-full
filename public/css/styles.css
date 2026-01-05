@@ -24072,7 +24072,15 @@ ul.list-text.type-number {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
+.footer-info a{
+  color:var(--secondary)!important;
+}
+.mb-info a{
+  color: black;
+}
+.contact-item p{
+  color: var(--main)!important;
+}
 .modal-search .search-clear-filters {
   padding: 6px 14px;
   background-color: var(--main, #181818);
