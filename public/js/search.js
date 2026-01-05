@@ -145,7 +145,7 @@ window.Search = (function () {
   
         payload.products.forEach(p => {
           const item = document.createElement('a');
-          item.href = `/product/${p.slug}`;
+          item.href = `/productDetails/${p.slug}`;
           item.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3';
           const img = (p.images && p.images[0]) ? p.images[0] : '/images/no-image.png';
           const price = p.salePrice || p.basePrice || '';
@@ -245,7 +245,7 @@ window.Search = (function () {
     async function onModalOpen() {
       if (initDone) return;
 
-      $id('searchFilterSection').style.display = 'block';
+      // $id('searchFilterSection').style.display = 'block';
       renderFilters({ categories: [], brands: [], recentlyViewed: readRecentlyViewed() });
       try {
         const res = await fetch(API_INIT);
@@ -299,8 +299,21 @@ window.Search = (function () {
       },
       toggleFilterSection: function () {
         const el = $id('searchFilterSection');
+        const toggleBtn = $id('searchFilterToggleBtn');
         if (!el) return;
-        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        
+        const isHidden = el.style.display === 'none' || !el.style.display;
+        
+        if (isHidden) {
+   
+          el.style.display = 'block';
+      
+          toggleBtn.classList.add('active');
+        } else {
+       
+          el.style.display = 'none';
+          toggleBtn.classList.remove('active');
+        }
       },
       clearAllFilters: clearAllFilters
     };
