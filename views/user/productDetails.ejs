@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E1XD6E8W6H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-E1XD6E8W6H');
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W4GZFHCG');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <title>Blushley</title>
 
@@ -43,7 +59,10 @@ body.modal-open {
 
 <body class="preload-wrapper">
     
-   
+   <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W4GZFHCG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <!-- Scroll Top -->
     <button id="scroll-top" class="type-1">
@@ -1600,196 +1619,7 @@ body.modal-open {
                                     </div>
                                 </div>
 
-                                <!-- SweetAlert for notifications -->
-                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                                <script>
-                                // Show/hide review form when button is clicked
-                                document.addEventListener("DOMContentLoaded", function() {
-                                    var toggleBtn = document.getElementById('toggle-review-form-btn');
-                                    var formWrapper = document.getElementById('add-review-form-wrapper');
-                                    if (toggleBtn && formWrapper) {
-                                        toggleBtn.addEventListener('click', function() {
-                                            if (formWrapper.style.display === 'none' || formWrapper.style.display === '') {
-                                                formWrapper.style.display = 'block';
-                                                setTimeout(function() {
-                                                    formWrapper.scrollIntoView({ behavior: "smooth", block: "center" });
-                                                }, 100);
-                                            } else {
-                                                formWrapper.style.display = 'none';
-                                            }
-                                        });
-                                    }
-
-                                    // Star rating selection for review form
-                                    const stars = document.querySelectorAll('#review-rating .star-rating');
-                                    const ratingInput = document.getElementById('review-rating-input');
-                                    let selectedRating = 0;
-
-                                    stars.forEach(star => {
-                                        star.addEventListener('mouseenter', function() {
-                                            let val = parseInt(this.getAttribute('data-value'));
-                                            stars.forEach((s, idx) => {
-                                                s.style.color = idx < val ? "#FFE066" : "#CCCCCC";
-                                            });
-                                        });
-                                        star.addEventListener('mouseleave', function() {
-                                            stars.forEach((s, idx) => {
-                                                s.style.color = idx < selectedRating ? "#FFE066" : "#CCCCCC";
-                                            });
-                                        });
-                                        star.addEventListener('click', function() {
-                                            selectedRating = parseInt(this.getAttribute('data-value'));
-                                            ratingInput.value = selectedRating;
-                                            stars.forEach((s, idx) => {
-                                                s.style.color = idx < selectedRating ? "#FFE066" : "#CCCCCC";
-                                            });
-                                        });
-                                    });
-
-                                    // Review form submission (AJAX)
-                                    const form = document.getElementById("add-review-form");
-                                    if(form) {
-                                        form.addEventListener("submit", function(e){
-                                            e.preventDefault();
-                                            const name = form.name.value;
-                                            const rating = parseInt(form.rating.value);
-                                            const content = form.content.value;
-                                            if(!rating) {
-                                                Swal.fire({
-                                                    icon: 'warning',
-                                                    title: 'Rating required',
-                                                    text: 'Please select a rating before submitting.'
-                                                });
-                                                return;
-                                            }
-                                            fetch(`/products/<%= product._id %>/review`, {
-                                                method: "POST",
-                                                headers: {
-                                                    "Content-Type": "application/json"
-                                                },
-                                                body: JSON.stringify({ name, rating, content })
-                                            })
-                                            .then(res => res.json())
-                                            .then(data => {
-                                                if(data.success && data.product && data.product.reviews) {
-                                                    renderReviews(data.product.reviews);
-                                                    form.reset();
-                                                    selectedRating = 0;
-                                                    stars.forEach(s => s.style.color = "#CCCCCC");
-                                                    Swal.fire({
-                                                        icon: 'success',
-                                                        title: 'Review submitted!',
-                                                        text: data.message || "Your review was submitted."
-                                                    }).then(() => {
-                                                        location.reload();
-                                                    });
-                                                } else {
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: 'Error',
-                                                        text: data.message || "There was a problem submitting your review."
-                                                    });
-                                                }
-                                            })
-                                            .catch(() => {
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Network error',
-                                                    text: "Could not submit review. Please try again."
-                                                });
-                                            });
-                                        });
-                                    }
-
-                                    // Handle review deletion
-                                    document.getElementById("reviews-list")?.addEventListener("click", function(e){
-                                        if(e.target.closest(".delete-review-btn")) {
-                                            const btn = e.target.closest(".delete-review-btn");
-                                            const reviewId = btn.getAttribute("data-reviewid");
-                                            const productId = btn.getAttribute("data-productid");
-
-                                            Swal.fire({
-                                                title: 'Delete your review?',
-                                                text: "This action cannot be undone.",
-                                                icon: 'warning',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#e55347',
-                                                cancelButtonColor: '#6c757d',
-                                                confirmButtonText: 'Yes, delete it!'
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    fetch(`/products/${productId}/review/${reviewId}`, {
-                                                        method: "DELETE"
-                                                    })
-                                                    .then(res => res.json())
-                                                    .then(data => {
-                                                        if(data.success && data.product && data.product.reviews) {
-                                                            renderReviews(data.product.reviews);
-                                                            Swal.fire({
-                                                                icon: 'success',
-                                                                title: 'Review deleted!',
-                                                                text: data.message || "Your review was deleted."
-                                                            }).then(() => {
-                                                                location.reload();
-                                                            });
-                                                        } else {
-                                                            Swal.fire({
-                                                                icon: 'error',
-                                                                title: 'Delete failed',
-                                                                text: data.message || "Could not delete review."
-                                                            });
-                                                        }
-                                                    })
-                                                    .catch(() => {
-                                                        Swal.fire({
-                                                            icon: 'error',
-                                                            title: 'Network error',
-                                                            text: "Could not delete review. Please try again."
-                                                        });
-                                                    });
-                                                }
-                                            });
-                                        }
-                                    });
-
-                                    // Render reviews utility (client-only, rerenders the reviews list)
-                                    function renderReviews(reviews) {
-                                        const userId = "<%= user && user.id ? user.id : '' %>";
-                                        const list = document.getElementById("reviews-list");
-                                        if (!list) return;
-                                        if (reviews.length === 0) {
-                                            list.innerHTML = '<div class="mb_12 text-secondary">No customer reviews yet.</div>';
-                                            return;
-                                        }
-                                        list.innerHTML = reviews.map(function(review) {
-                                            let starsHTML = "";
-                                            for (let i = 1; i <= 5; i++) {
-                                                starsHTML += `<span style="color:${i <= review.rating ? '#FFE066' : '#CCCCCC'}">&#9733;</span>`;
-                                            }
-                                            let deleteBtn = "";
-                                            if(userId && review.userId && userId === review.userId.toString()) {
-                                                // Show text delete button
-                                                deleteBtn = `<button type="button" class="delete-review-btn text-danger border-0 bg-white ml-2" data-reviewid="${review._id}" data-productid="<%= product._id %>" title="Delete review" style="font-size:13px;cursor:pointer;text-decoration:underline;">
-                                                    Delete
-                                                </button>`;
-                                            }
-                                            return `<li class="font-2" data-review-id="${review._id}">
-                                                <div>
-                                                    <strong>${review.name || review.userName || "Anonymous"}</strong>
-                                                    <span class="text-secondary ml-2" style="font-size: 12px;">
-                                                        ${review.createdAt ? '('+new Date(review.createdAt).toLocaleDateString()+')' : ''}
-                                                    </span>
-                                                    ${deleteBtn}
-                                                </div>
-                                                <div>
-                                                    Rating: ${starsHTML}
-                                                </div>
-                                                <div>${review.content || review.comment || ''}</div>
-                                            </li>`;
-                                        }).join('');
-                                    }
-                                });
-                                </script>
+                              
                                 <!-- Shipping & Returns Tab -->
                                 <div class="widget-content-inner">
                                     <div class="tab-shipping">
@@ -1822,7 +1652,196 @@ body.modal-open {
                 </div>
             </div>
         </section>
+  <!-- SweetAlert for notifications -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+  // Show/hide review form when button is clicked
+  document.addEventListener("DOMContentLoaded", function() {
+      var toggleBtn = document.getElementById('toggle-review-form-btn');
+      var formWrapper = document.getElementById('add-review-form-wrapper');
+      if (toggleBtn && formWrapper) {
+          toggleBtn.addEventListener('click', function() {
+              if (formWrapper.style.display === 'none' || formWrapper.style.display === '') {
+                  formWrapper.style.display = 'block';
+                  setTimeout(function() {
+                      formWrapper.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }, 100);
+              } else {
+                  formWrapper.style.display = 'none';
+              }
+          });
+      }
 
+      // Star rating selection for review form
+      const stars = document.querySelectorAll('#review-rating .star-rating');
+      const ratingInput = document.getElementById('review-rating-input');
+      let selectedRating = 0;
+
+      stars.forEach(star => {
+          star.addEventListener('mouseenter', function() {
+              let val = parseInt(this.getAttribute('data-value'));
+              stars.forEach((s, idx) => {
+                  s.style.color = idx < val ? "#FFE066" : "#CCCCCC";
+              });
+          });
+          star.addEventListener('mouseleave', function() {
+              stars.forEach((s, idx) => {
+                  s.style.color = idx < selectedRating ? "#FFE066" : "#CCCCCC";
+              });
+          });
+          star.addEventListener('click', function() {
+              selectedRating = parseInt(this.getAttribute('data-value'));
+              ratingInput.value = selectedRating;
+              stars.forEach((s, idx) => {
+                  s.style.color = idx < selectedRating ? "#FFE066" : "#CCCCCC";
+              });
+          });
+      });
+
+      // Review form submission (AJAX)
+      const form = document.getElementById("add-review-form");
+      if(form) {
+          form.addEventListener("submit", function(e){
+              e.preventDefault();
+              const name = form.name.value;
+              const rating = parseInt(form.rating.value);
+              const content = form.content.value;
+              if(!rating) {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Rating required',
+                      text: 'Please select a rating before submitting.'
+                  });
+                  return;
+              }
+              fetch(`/products/<%= product._id %>/review`, {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({ name, rating, content })
+              })
+              .then(res => res.json())
+              .then(data => {
+                  if(data.success && data.product && data.product.reviews) {
+                      renderReviews(data.product.reviews);
+                      form.reset();
+                      selectedRating = 0;
+                      stars.forEach(s => s.style.color = "#CCCCCC");
+                      Swal.fire({
+                          icon: 'success',
+                          title: 'Review submitted!',
+                          text: data.message || "Your review was submitted."
+                      }).then(() => {
+                          location.reload();
+                      });
+                  } else {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: data.message || "There was a problem submitting your review."
+                      });
+                  }
+              })
+              .catch(() => {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Network error',
+                      text: "Could not submit review. Please try again."
+                  });
+              });
+          });
+      }
+
+      // Handle review deletion
+      document.getElementById("reviews-list")?.addEventListener("click", function(e){
+          if(e.target.closest(".delete-review-btn")) {
+              const btn = e.target.closest(".delete-review-btn");
+              const reviewId = btn.getAttribute("data-reviewid");
+              const productId = btn.getAttribute("data-productid");
+
+              Swal.fire({
+                  title: 'Delete your review?',
+                  text: "This action cannot be undone.",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#e55347',
+                  cancelButtonColor: '#6c757d',
+                  confirmButtonText: 'Yes, delete it!'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      fetch(`/products/${productId}/review/${reviewId}`, {
+                          method: "DELETE"
+                      })
+                      .then(res => res.json())
+                      .then(data => {
+                          if(data.success && data.product && data.product.reviews) {
+                              renderReviews(data.product.reviews);
+                              Swal.fire({
+                                  icon: 'success',
+                                  title: 'Review deleted!',
+                                  text: data.message || "Your review was deleted."
+                              }).then(() => {
+                                  location.reload();
+                              });
+                          } else {
+                              Swal.fire({
+                                  icon: 'error',
+                                  title: 'Delete failed',
+                                  text: data.message || "Could not delete review."
+                              });
+                          }
+                      })
+                      .catch(() => {
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'Network error',
+                              text: "Could not delete review. Please try again."
+                          });
+                      });
+                  }
+              });
+          }
+      });
+
+      // Render reviews utility (client-only, rerenders the reviews list)
+      function renderReviews(reviews) {
+          const userId = "<%= user && user.id ? user.id : '' %>";
+          const list = document.getElementById("reviews-list");
+          if (!list) return;
+          if (reviews.length === 0) {
+              list.innerHTML = '<div class="mb_12 text-secondary">No customer reviews yet.</div>';
+              return;
+          }
+          list.innerHTML = reviews.map(function(review) {
+              let starsHTML = "";
+              for (let i = 1; i <= 5; i++) {
+                  starsHTML += `<span style="color:${i <= review.rating ? '#FFE066' : '#CCCCCC'}">&#9733;</span>`;
+              }
+              let deleteBtn = "";
+              if(userId && review.userId && userId === review.userId.toString()) {
+                  // Show text delete button
+                  deleteBtn = `<button type="button" class="delete-review-btn text-danger border-0 bg-white ml-2" data-reviewid="${review._id}" data-productid="<%= product._id %>" title="Delete review" style="font-size:13px;cursor:pointer;text-decoration:underline;">
+                      Delete
+                  </button>`;
+              }
+              return `<li class="font-2" data-review-id="${review._id}">
+                  <div>
+                      <strong>${review.name || review.userName || "Anonymous"}</strong>
+                      <span class="text-secondary ml-2" style="font-size: 12px;">
+                          ${review.createdAt ? '('+new Date(review.createdAt).toLocaleDateString()+')' : ''}
+                      </span>
+                      ${deleteBtn}
+                  </div>
+                  <div>
+                      Rating: ${starsHTML}
+                  </div>
+                  <div>${review.content || review.comment || ''}</div>
+              </li>`;
+          }).join('');
+      }
+  });
+  </script>
        
 
         <!-- Related Products & Recently Viewed Tabs -->

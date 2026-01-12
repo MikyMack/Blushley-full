@@ -272,12 +272,24 @@ router.get('/staff/beautyTips', isStaff, async (req, res) => {
 
 router.get('/staff/products', isStaff, async (req, res) => {
     try {
-        let { page = 1, search = "", status, category, subCategory, childCategory, brand, productType } = req.query;
+        let {
+            page = 1,
+            search = "",
+            status,
+            category,
+            subCategory,
+            childCategory,
+            brand,
+            productType,
+            ownerRef  // ✅ ADD THIS
+        } = req.query;
+
         let limit = req.query.limit ? parseInt(req.query.limit) : 20;
         page = parseInt(page);
 
         const query = {};
 
+        /* ---------------- SEARCH ---------------- */
         if (search && search.trim() !== "") {
             const searchRegex = new RegExp(search.trim(), "i");
             query.$or = [
@@ -288,35 +300,34 @@ router.get('/staff/products', isStaff, async (req, res) => {
             ];
         }
 
-        if (status && status !== 'all') {
-            query.status = status;
+        /* ---------------- FILTERS ---------------- */
+        if (status && status !== 'all') query.status = status;
+        if (category && category !== "all") query.category = category;
+        if (subCategory && subCategory !== "all") query.subCategory = subCategory;
+        if (childCategory && childCategory !== "all") query.childCategory = childCategory;
+        if (brand && brand.trim() !== "") query.brand = brand.trim();
+        if (productType && productType !== "all") query.productType = productType;
+
+        /* ⭐ OWNER FILTER (IMPORTANT FOR STAFF TOO) */
+        if (ownerRef && ownerRef !== "all") {
+            query.ownerRef = ownerRef;
         }
 
-        if (category && category !== "all") {
-            query.category = category;
-        }
-        if (subCategory && subCategory !== "all") {
-            query.subCategory = subCategory;
-        }
-        if (childCategory && childCategory !== "all") {
-            query.childCategory = childCategory;
-        }
-
-        if (brand && brand.trim() !== "") {
-            query.brand = brand.trim();
-        }
-
-        if (productType && productType !== "all") {
-            query.productType = productType;
-        }
-
+        /* ---------------- MODELS ---------------- */
         const Category = require('../models/Category');
         const SubCategory = require('../models/SubCategory');
         const ChildCategory = require('../models/ChildCategory');
+        const Reseller = require('../models/Reseller');      // ✅ ADD
+        const Salon = require('../models/Salon');            // ✅ ADD
 
+        /* ---------------- DATA FETCH ---------------- */
         const [products, total, categories, subcategories, childcategories] = await Promise.all([
             Product.find(query)
                 .populate("category subCategory childCategory beautyTips")
+                .populate({  // ✅ ADD THIS POPULATE
+                    path: "ownerRef",
+                    select: "name email role phone"
+                })
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit)
@@ -329,8 +340,53 @@ router.get('/staff/products', isStaff, async (req, res) => {
 
         const totalPages = Math.ceil(total / limit);
 
+        /* ---------------- FETCH OWNERS (STAFF VERSION) ---------------- */
+        // Staff might have different access - adjust as needed
+        const [resellers, salons] = await Promise.all([
+            Reseller.find({ status: 'approved' })
+                .populate('userId', 'name email phone')
+                .lean(),
+            Salon.find({ status: 'active' })
+                .select('name phone email createdByAdmin')
+                .lean()
+        ]);
+
+        /* ---------------- OWNER NAME MAP ---------------- */
+        const ownerNameMap = {};
+        resellers.forEach(r => {
+            if (r.userId?._id) {
+                ownerNameMap[r.userId._id.toString()] = r.companyName;
+            }
+        });
+        salons.forEach(s => {
+            if (s.createdByAdmin) {
+                ownerNameMap[s.createdByAdmin.toString()] = s.name;
+            }
+        });
+
+        /* ---------------- OWNER LIST FOR UI ---------------- */
+        const owners = [
+            ...resellers.map(r => ({
+                _id: r.userId._id,
+                name: r.companyName,
+                role: 'reseller',
+                phone: r.phone,
+                email: r.email
+            })),
+            ...salons.map(s => ({
+                _id: s.createdByAdmin || s._id,
+                name: s.name,
+                role: 'salon',
+                phone: s.phone,
+                email: s.email
+            }))
+        ];
+
+        /* ---------------- RENDER ---------------- */
         res.render('staff/admin_products', {
             products,
+            owners,           // ✅ ADD
+            ownerNameMap,     // ✅ ADD
             page,
             totalPages,
             total,
@@ -340,9 +396,23 @@ router.get('/staff/products', isStaff, async (req, res) => {
             subcategories,
             childcategories
         });
+
     } catch (err) {
-        console.error('Error fetching products:', err);
-        res.status(500).render('staff/admin_products', { products: [], error: 'Failed to load products', limit: 20, categories: [], subcategories: [], childcategories: [] });
+        console.error('STAFF PRODUCTS ERROR:', err);
+        res.status(500).render('staff/admin_products', {
+            products: [],
+            owners: [],       // ✅ ADD
+            ownerNameMap: {}, // ✅ ADD
+            page: 1,
+            totalPages: 0,
+            total: 0,
+            limit: 20,
+            query: {},
+            categories: [],
+            subcategories: [],
+            childcategories: [],
+            error: 'Failed to load products'
+        });
     }
 });
 
