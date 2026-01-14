@@ -39,7 +39,7 @@ function isAdmin(req, res, next) {
     return res.redirect('/admin/adminLogin');
   }
 
-  if (['admin','superadmin'].includes(req.session.user.role)) {
+  if (['admin','superadmin','staff'].includes(req.session.user.role)) {
     return next();
   }
 
