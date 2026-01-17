@@ -514,13 +514,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                     <a href="?page=<%= pagination.prevPage %>" class="pagination-item text-button"><i class="icon-arrLeft"></i></a>
                                 </li>
                             <% } %>
-                            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                            <% 
+                            // Calculate the range of page numbers to show
+                            let startPage = 1;
+                            let endPage = 4;
+
+                            // Adjust start and end page based on current page
+                            if (pagination.currentPage > 2) {
+                                startPage = pagination.currentPage - 1;
+                                endPage = pagination.currentPage + 2;
+                            }
+
+                            // Ensure we don't go beyond the total pages
+                            if (endPage > pagination.totalPages) {
+                                endPage = pagination.totalPages;
+                                if (startPage > 1) {
+                                    startPage = Math.max(1, endPage - 3);
+                                }
+                            }
+
+                            // Always show page 1
+                            if (startPage > 1) { %>
+                                <li>
+                                    <a href="?page=1" class="pagination-item text-button">1</a>
+                                </li>
+                                <% if (startPage > 2) { %>
+                                <li>
+                                    <span class="pagination-item text-button">...</span>
+                                </li>
+                                <% } %>
+                            <% }
+
+                            // Show pages in the calculated range
+                            for (let i = startPage; i <= endPage; i++) { %>
                                 <li class="<%= pagination.currentPage === i ? 'active' : '' %>">
                                     <% if (pagination.currentPage === i) { %>
                                         <div class="pagination-item text-button"><%= i %></div>
                                     <% } else { %>
                                         <a href="?page=<%= i %>" class="pagination-item text-button"><%= i %></a>
                                     <% } %>
+                                </li>
+                            <% }
+
+                            // Show ellipsis and last page if needed
+                            if (endPage < pagination.totalPages) { %>
+                                <% if (endPage < pagination.totalPages - 1) { %>
+                                <li>
+                                    <span class="pagination-item text-button">...</span>
+                                </li>
+                                <% } %>
+                                <li>
+                                    <a href="?page=<%= pagination.totalPages %>" class="pagination-item text-button"><%= pagination.totalPages %></a>
                                 </li>
                             <% } %>
                             <% if (pagination.nextPage) { %>
@@ -532,7 +576,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <% } %>
                     </div>
 
-                    <!-- Product Grid Layout -->
+                    <!-- Product Grid  -->
                     <div class="tf-grid-layout wrapper-shop tf-col-4" id="gridLayout">
                         <% if (products && products.length) { %>
                             <% products.forEach(function(product) { %>
@@ -582,13 +626,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                     <a href="?page=<%= pagination.prevPage %>" class="pagination-item text-button"><i class="icon-arrLeft"></i></a>
                                 </li>
                             <% } %>
-                            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                            <% 
+                            // Calculate the range of page numbers to show
+                            let startPage = 1;
+                            let endPage = 4;
+
+                            // Adjust start and end page based on current page
+                            if (pagination.currentPage > 2) {
+                                startPage = pagination.currentPage - 1;
+                                endPage = pagination.currentPage + 2;
+                            }
+
+                            // Ensure we don't go beyond the total pages
+                            if (endPage > pagination.totalPages) {
+                                endPage = pagination.totalPages;
+                                if (startPage > 1) {
+                                    startPage = Math.max(1, endPage - 3);
+                                }
+                            }
+
+                            // Always show page 1
+                            if (startPage > 1) { %>
+                                <li>
+                                    <a href="?page=1" class="pagination-item text-button">1</a>
+                                </li>
+                                <% if (startPage > 2) { %>
+                                <li>
+                                    <span class="pagination-item text-button">...</span>
+                                </li>
+                                <% } %>
+                            <% }
+
+                            // Show pages in the calculated range
+                            for (let i = startPage; i <= endPage; i++) { %>
                                 <li class="<%= pagination.currentPage === i ? 'active' : '' %>">
                                     <% if (pagination.currentPage === i) { %>
                                         <div class="pagination-item text-button"><%= i %></div>
                                     <% } else { %>
                                         <a href="?page=<%= i %>" class="pagination-item text-button"><%= i %></a>
                                     <% } %>
+                                </li>
+                            <% }
+
+                            // Show ellipsis and last page if needed
+                            if (endPage < pagination.totalPages) { %>
+                                <% if (endPage < pagination.totalPages - 1) { %>
+                                <li>
+                                    <span class="pagination-item text-button">...</span>
+                                </li>
+                                <% } %>
+                                <li>
+                                    <a href="?page=<%= pagination.totalPages %>" class="pagination-item text-button"><%= pagination.totalPages %></a>
                                 </li>
                             <% } %>
                             <% if (pagination.nextPage) { %>
