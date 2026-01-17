@@ -233,4 +233,6 @@ router.delete("/removeCart/:itemId", isLoggedIn, cartCtrl.removeCartItem);
 router.delete("/clearCart", isLoggedIn, cartCtrl.clearCart);
 router.post('/guest/add-to-cart', cartCtrl.guestAddToCart);
 
+
+
 module.exports = router;

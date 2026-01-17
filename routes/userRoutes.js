@@ -10,6 +10,7 @@ const Banner = require('../models/Banner');
 const Poster = require('../models/Poster');
 const Blog = require('../models/Blog');
 const Freelancer = require('../models/Freelancer');
+const Salon = require('../models/Salon');
 
 router.get('/', async (req, res) => {
     try {
@@ -466,9 +467,351 @@ router.get('/saloon-at-home', async (req, res) => {
 });
 
 // book a saloon 
-router.get('/book-a-saloon', (req, res) => {
-    res.render('user/saloon-service');
+router.get('/book-a-saloon', async (req, res) => {
+  try {
+      const {
+          page = 1,
+          limit = 6,
+          service,
+          price_min,
+          price_max,
+          availability,
+          gender,
+          location,
+          rating,
+          service_mode,
+          sort = 'top-rated'
+      } = req.query;
+
+      // Build filter query
+      let filter = { status: 'active' };
+      
+      // Service filter
+      if (service) {
+          filter['services.serviceName'] = { 
+              $regex: service, 
+              $options: 'i' 
+          };
+      }
+      
+      // Price range filter
+      if (price_min || price_max) {
+          filter['services.price'] = {};
+          if (price_min) filter['services.price'].$gte = Number(price_min);
+          if (price_max) filter['services.price'].$lte = Number(price_max);
+      }
+      
+      // Rating filter
+      if (rating) {
+          const ratingNum = Number(rating);
+          filter['reviews.rating'] = { $gte: ratingNum };
+      }
+      
+      // Location filter
+      if (location) {
+          const locationRegex = new RegExp(location, 'i');
+          filter.$or = [
+              { 'address.city': locationRegex },
+              { 'address.state': locationRegex },
+              { 'address.pincode': locationRegex }
+          ];
+      }
+      
+      // Service mode filter
+      if (service_mode) {
+          if (service_mode === 'home') {
+              filter['serviceMode.homeService'] = true;
+          } else if (service_mode === 'salon') {
+              filter['serviceMode.inSalon'] = true;
+          }
+      }
+      
+      // Gender filter (assuming from services or description)
+      if (gender) {
+          const genderRegex = new RegExp(gender, 'i');
+          filter.$or = [
+              { name: genderRegex },
+              { description: genderRegex },
+              { 'services.serviceName': genderRegex }
+          ];
+      }
+
+      // Availability filter
+      const today = new Date();
+      if (availability === 'today') {
+          const dayOfWeek = today.getDay();
+          filter['availability.dayOfWeek'] = dayOfWeek;
+          filter['availability.isOpen'] = true;
+      }
+
+      // Calculate skip for pagination
+      const skip = (page - 1) * limit;
+
+      // Build sort options
+      let sortOptions = {};
+      switch (sort) {
+          case 'price-low-high':
+              sortOptions = { 'services.price': 1 };
+              break;
+          case 'price-high-low':
+              sortOptions = { 'services.price': -1 };
+              break;
+          case 'top-rated':
+              sortOptions = { 'reviews.rating': -1 };
+              break;
+          default:
+              sortOptions = { createdAt: -1 };
+      }
+
+      // Get total count for pagination
+      const totalSalons = await Salon.countDocuments(filter);
+
+      // Fetch salons with pagination and sorting
+      const salons = await Salon.find(filter)
+          .sort(sortOptions)
+          .skip(skip)
+          .limit(Number(limit))
+          .lean();
+
+      // Enrich salon data
+      const enrichedSalons = salons.map(salon => {
+          // Calculate average rating
+          const avgRating = salon.reviews && salon.reviews.length > 0
+              ? salon.reviews.reduce((sum, review) => sum + review.rating, 0) / salon.reviews.length
+              : 0;
+
+          // Get unique services (first 4)
+          const uniqueServices = [...new Set(salon.services?.map(s => s.serviceName) || [])].slice(0, 4);
+          
+          // Check if available today
+          const dayOfWeek = today.getDay();
+          const todayAvailability = salon.availability?.find(a => a.dayOfWeek === dayOfWeek);
+          const isAvailableToday = todayAvailability?.isOpen || false;
+          
+          // Get lowest price
+          const lowestPrice = salon.services?.length > 0
+              ? Math.min(...salon.services.map(s => s.price))
+              : 0;
+
+          return {
+              ...salon,
+              avgRating: avgRating.toFixed(1),
+              reviewCount: salon.reviews?.length || 0,
+              serviceNames: uniqueServices,
+              isAvailableToday,
+              lowestPrice,
+              locationText: `${salon.address?.city || ''}, ${salon.address?.state || ''}`.trim()
+          };
+      });
+
+      // Get unique service names for filter options
+      const allServices = await Salon.distinct('services.serviceName', { status: 'active' });
+      const serviceCounts = {};
+      for (const serviceName of allServices) {
+          const count = await Salon.countDocuments({ 
+              status: 'active',
+              'services.serviceName': serviceName 
+          });
+          serviceCounts[serviceName] = count;
+      }
+
+      // Get unique locations for filter
+      const locations = await Salon.aggregate([
+          { $match: { status: 'active' } },
+          { $group: {
+              _id: '$address.city',
+              count: { $sum: 1 }
+          }},
+          { $sort: { count: -1 } },
+          { $limit: 10 }
+      ]);
+
+      res.render('user/saloon-service', {
+          title: 'Book a Salon',
+          salons: enrichedSalons,
+          currentPage: Number(page),
+          totalPages: Math.ceil(totalSalons / limit),
+          totalSalons,
+          pageSize: limit,
+          filters: {
+              service: service || '',
+              price_min: price_min || '',
+              price_max: price_max || '',
+              availability: availability || '',
+              gender: gender || '',
+              location: location || '',
+              rating: rating || '',
+              service_mode: service_mode || '',
+              sort: sort || 'top-rated'
+          },
+          filterOptions: {
+              services: Object.entries(serviceCounts)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([name, count]) => ({ name, count })),
+              locations: locations.map(loc => ({ 
+                  name: loc._id, 
+                  count: loc.count 
+              })),
+              priceRanges: [
+                  { min: 0, max: 500, label: 'Under ₹500' },
+                  { min: 500, max: 1000, label: '₹500 - ₹1000' },
+                  { min: 1000, max: 2000, label: '₹1000 - ₹2000' },
+                  { min: 2000, max: 5000, label: '₹2000+' }
+              ],
+              ratings: [
+                  { value: 4, label: '4★ & above' },
+                  { value: 3, label: '3★ & above' }
+              ],
+              serviceModes: [
+                  { value: 'salon', label: 'Salon Visit' },
+                  { value: 'home', label: 'Home Service' }
+              ],
+              availabilities: [
+                  { value: 'today', label: 'Available Today' },
+                  { value: 'weekend', label: 'Weekend Slots' }
+              ]
+          }
+      });
+
+  } catch (error) {
+      console.error('Error fetching salons:', error);
+      res.status(500).render('error', { 
+          message: 'Failed to load salons. Please try again.' 
+      });
+  }
 });
+
+// Salon details route
+router.get('/book-a-saloon/:id', async (req, res) => {
+  try {
+      const salon = await Salon.findById(req.params.id).lean();
+      
+      if (!salon) {
+          return res.status(404).json({ 
+              success: false,
+              message: 'Salon not found' 
+          });
+      }
+
+      // Calculate average rating
+      const avgRating = salon.reviews && salon.reviews.length > 0
+          ? salon.reviews.reduce((sum, review) => sum + review.rating, 0) / salon.reviews.length
+          : 0;
+
+      // Group services by category
+      const servicesByCategory = salon.services?.reduce((acc, service) => {
+          const category = service.serviceName.split(' ')[0]; // Simple categorization
+          if (!acc[category]) acc[category] = [];
+          acc[category].push(service);
+          return acc;
+      }, {});
+
+      res.json({
+          success: true,
+          salon: {
+              ...salon,
+              avgRating: avgRating.toFixed(1),
+              reviewCount: salon.reviews?.length || 0,
+              servicesByCategory,
+              locationText: `${salon.address?.line1 || ''}, ${salon.address?.city || ''}, ${salon.address?.state || ''}`
+          }
+      });
+  } catch (error) {
+      console.error('Error fetching salon details:', error);
+      res.status(500).json({ 
+          success: false,
+          message: 'Failed to load salon details' 
+      });
+  }
+});
+
+// API endpoint for AJAX filtering
+router.get('/api/salons', async (req, res) => {
+  try {
+      const { 
+          page = 1, 
+          limit = 6, 
+          ...filters 
+      } = req.query;
+
+      // Build filter query (same as above)
+      let filter = { status: 'active' };
+      
+      if (filters.service) {
+          filter['services.serviceName'] = { 
+              $regex: filters.service, 
+              $options: 'i' 
+          };
+      }
+      
+      if (filters.price_min || filters.price_max) {
+          filter['services.price'] = {};
+          if (filters.price_min) filter['services.price'].$gte = Number(filters.price_min);
+          if (filters.price_max) filter['services.price'].$lte = Number(filters.price_max);
+      }
+      
+      if (filters.rating) {
+          filter['reviews.rating'] = { $gte: Number(filters.rating) };
+      }
+      
+      if (filters.location) {
+          const locationRegex = new RegExp(filters.location, 'i');
+          filter.$or = [
+              { 'address.city': locationRegex },
+              { 'address.state': locationRegex },
+              { 'address.pincode': locationRegex }
+          ];
+      }
+
+      const skip = (page - 1) * limit;
+      const totalSalons = await Salon.countDocuments(filter);
+
+      const salons = await Salon.find(filter)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(Number(limit))
+          .lean();
+
+      // Enrich data
+      const enrichedSalons = salons.map(salon => {
+          const avgRating = salon.reviews && salon.reviews.length > 0
+              ? salon.reviews.reduce((sum, review) => sum + review.rating, 0) / salon.reviews.length
+              : 0;
+
+          return {
+              _id: salon._id,
+              name: salon.name,
+              images: salon.images,
+              description: salon.description,
+              avgRating: avgRating.toFixed(1),
+              reviewCount: salon.reviews?.length || 0,
+              services: salon.services?.slice(0, 4).map(s => s.serviceName) || [],
+              address: salon.address,
+              lowestPrice: salon.services?.length > 0
+                  ? Math.min(...salon.services.map(s => s.price))
+                  : 0,
+              isAvailableToday: true // Simplified for now
+          };
+      });
+
+      res.json({
+          success: true,
+          salons: enrichedSalons,
+          pagination: {
+              currentPage: Number(page),
+              totalPages: Math.ceil(totalSalons / limit),
+              totalSalons
+          }
+      });
+  } catch (error) {
+      console.error('API Error:', error);
+      res.status(500).json({ 
+          success: false, 
+          error: 'Failed to fetch salons' 
+      });
+  }
+});
+
 
 // Contact page
 router.get('/contact', (req, res) => {

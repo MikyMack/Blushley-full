@@ -43,7 +43,269 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16x16.png">
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+<style>
+    /* Filter styles */
+.filter-count {
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-left: 5px;
+}
 
+.applied-filter {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.remove-filter {
+    background: none;
+    border: none;
+    color: #666;
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+}
+
+.remove-filter:hover {
+    color: #ff0000;
+}
+
+.remove-all-filters {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.remove-all-filters:hover {
+    text-decoration: underline;
+}
+
+/* Salon card enhancements */
+.rating-badge {
+    color: #ffc107;
+    margin-right: 5px;
+}
+
+.price-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.availability-badge {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.availability-badge.available-today {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.availability-badge.unavailable {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.availability-badge.home-service {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.service-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+/* Filter sidebar */
+.canvas-filter {
+    width: 300px;
+}
+
+.canvas-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+}
+
+.widget-facet {
+    margin-bottom: 24px;
+}
+
+.facet-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.facet-content {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.categories-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.categories-item:hover {
+    color: var(--primary-color);
+}
+
+.count-cate {
+    color: #666;
+    font-size: 12px;
+}
+
+.box-fieldset-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fieldset-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tf-check {
+    width: 18px;
+    height: 18px;
+}
+
+.canvas-bottom {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-reset {
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #ddd;
+    flex: 1;
+}
+
+.btn-apply {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    flex: 1;
+}
+
+.btn-reset:hover {
+    background: #e0e0e0;
+}
+
+.btn-apply:hover {
+    background: var(--primary-dark);
+}
+
+/* Pagination */
+.salon-pagination {
+    margin-top: 40px;
+}
+
+.wg-pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 5px;
+}
+
+.pagination-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.pagination-item:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.wg-pagination li.active .pagination-item {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Loading state */
+.loading-skeleton {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .canvas-filter {
+        width: 100%;
+    }
+    
+    .applied-filter {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+    
+    .service-badges {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .availability-badge {
+        margin-bottom: 5px;
+    }
+}
+</style>
 </head>
 
 <body class="preload-wrapper">
@@ -252,36 +514,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- Section beautician list -->
         <section class="flat-spacing">
             <div class="container">
+                <!-- Filter Controls -->
                 <div class="tf-shop-control">
                     <div class="tf-control-filter">
-                        <a href="#filterShop" data-bs-toggle="offcanvas" aria-controls="filterShop"
-                            class="tf-btn-filter">
-                            <span class="icon icon-filter"></span><span class="text">Filters</span>
+                        <a href="#filterShop" data-bs-toggle="offcanvas" aria-controls="filterShop" class="tf-btn-filter">
+                            <span class="icon icon-filter"></span>
+                            <span class="text">Filters</span>
+                            <% if (Object.values(filters).some(f => f)) { %>
+                                <span class="filter-count"><%= Object.values(filters).filter(f => f).length %></span>
+                            <% } %>
                         </a>
                         <div class="d-none d-lg-flex shop-sale-text">
                             <i class="icon icon-checkCircle"></i>
                             <p class="text-caption-1">Exclusive salon offers today only</p>
                         </div>
                     </div>
-
+        
                     <ul class="tf-control-layout">
                         <li class="tf-view-layout-switch sw-layout-list list-layout active" data-value-layout="list">
                             <div class="item"></div>
                         </li>
                     </ul>
-
+        
                     <div class="tf-control-sorting">
                         <p class="d-none d-lg-block text-caption-1">Sort by:</p>
                         <div class="tf-dropdown-sort" data-bs-toggle="dropdown">
                             <div class="btn-select">
-                                <span class="text-sort-value">Top rated</span>
+                                <span class="text-sort-value">
+                                    <% if (filters.sort === 'top-rated') { %>Top rated<% } %>
+                                    <% if (filters.sort === 'price-low-high') { %>Price: Low to High<% } %>
+                                    <% if (filters.sort === 'price-high-low') { %>Price: High to Low<% } %>
+                                </span>
                                 <span class="icon icon-arrow-down"></span>
                             </div>
                             <div class="dropdown-menu">
                                 <div class="select-item" data-sort-value="top-rated">
                                     <span class="text-value-item">Top rated</span>
                                 </div>
-
                                 <div class="select-item" data-sort-value="price-low-high">
                                     <span class="text-value-item">Price: Low to High</span>
                                 </div>
@@ -292,145 +561,163 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                     </div>
                 </div>
-
+        
+                <!-- Applied Filters -->
                 <div class="wrapper-control-shop">
                     <div class="meta-filter-shop">
-                        <div id="salon-count" class="count-text">Showing 6 salons</div>
-                        <div id="applied-filters"></div>
-                        <button id="remove-all" class="remove-all-filters text-btn-uppercase" style="display: none;">
-                            REMOVE ALL <i class="icon icon-close"></i>
-                        </button>
-                    </div>
-
-                    <div class="tf-list-layout wrapper-shop " id="listLayout">
-
-                        <!-- Salon 1 -->
-                        <div style="display: flex!important; flex-wrap: wrap!important;" class="card-product style-list"
-                            data-rating="5" data-service="hair" data-price="100"
-                            data-location="Indiranagar, Koramangala">
-                            <div class="card-product-wrapper salon-img">
-                                <a href="salon-details.html" class="product-img">
-                                    <img class="lazyload img-product" src="/images/brand/salon-1.jpg" alt="Glam Studio">
-                                </a>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="salon-details.html" class="title link">Glam Studio Salon</a>
-                                <div class="price">
-                                    <span class="rating-badge">★★★★★</span>
-                                    <span class="review-count">(312 reviews)</span>
-                                </div>
-
-                                <div class="location-info">
-                                    <span class="icon icon-location"></span>
-                                    <span class="location-text">Indiranagar, Koramangala, Whitefield</span>
-                                </div>
-
-                                <p class="description text-secondary text-line-clamp-2">
-                                    Premium unisex salon offering haircuts, coloring, skincare, and spa services by
-                                    expert stylists.
-                                </p>
-
-                                <div class="variant-wrap-list">
-
-                                    <div class="size-box list-product-btn">
-
-
-                                        <div class="service-badges">
-                                            <span class="availability-badge">Haircut</span>
-                                            <span class="availability-badge">Facial</span>
-                                            <span class="availability-badge">Bleaching</span>
-                                            <span class="availability-badge">+ More</span>
-                                        </div>
-
-
-                                    </div>
-                                    <div class="size-box list-product-btn">
-
-
-                                        <span class="availability-badge">Available Today</span>
-                                    </div>
-
-                                    <div class="list-product-btn">
-                                        <button class="btn-main-product" onclick="openBookingModal()">Book Your
-                                            Appointment</button>
-
-                                    </div>
-                                </div>
-                            </div>
+                        <div id="salon-count" class="count-text">
+                            Showing <%= Math.min(salons.length, pageSize) %> of <%= totalSalons %> salons
                         </div>
-
-                        <!-- Salon 2 -->
-                        <div style="display: flex!important; flex-wrap: wrap!important;" class="card-product style-list"
-                            data-rating="5" data-service="hair" data-price="100"
-                            data-location="Indiranagar, Koramangala">
-                            <div class="card-product-wrapper salon-img">
-                                <a href="salon-details.html" class="product-img">
-                                    <img class="lazyload img-product" src="/images/brand/salon-1.jpg" alt="Glam Studio">
-                                </a>
-                            </div>
-                            <div class="card-product-info">
-                                <a href="salon-details.html" class="title link">Glam Studio Salon</a>
-                                <div class="price">
-                                    <span class="rating-badge">★★★★★</span>
-                                    <span class="review-count">(312 reviews)</span>
-                                </div>
-
-                                <div class="location-info">
-                                    <span class="icon icon-location"></span>
-                                    <span class="location-text">Indiranagar, Koramangala, Whitefield</span>
-                                </div>
-
-                                <p class="description text-secondary text-line-clamp-2">
-                                    Premium unisex salon offering haircuts, coloring, skincare, and spa services by
-                                    expert stylists.
-                                </p>
-
-                                <div class="variant-wrap-list">
-
-                                    <div class="size-box list-product-btn">
-
-
-                                        <div class="service-badges">
-                                            <span class="availability-badge">Haircut</span>
-                                            <span class="availability-badge">Facial</span>
-                                            <span class="availability-badge">Bleaching</span>
-                                            <span class="availability-badge">+ More</span>
-                                        </div>
-
-
-                                    </div>
-                                    <div class="size-box list-product-btn">
-
-
-                                        <span class="availability-badge">Available Today</span>
-                                    </div>
-
-                                    <div class="list-product-btn">
-                                        <button class="btn-main-product" onclick="openBookingModal()">Book Your
-                                            Appointment</button>
-
-
-                                    </div>
-                                </div>
-                            </div>
+                        <div id="applied-filters">
+                            <% if (filters.service) { %>
+                                <span class="applied-filter">
+                                    Service: <%= filters.service %>
+                                    <button class="remove-filter" data-filter="service">×</button>
+                                </span>
+                            <% } %>
+                            <% if (filters.location) { %>
+                                <span class="applied-filter">
+                                    Location: <%= filters.location %>
+                                    <button class="remove-filter" data-filter="location">×</button>
+                                </span>
+                            <% } %>
+                            <% if (filters.price_min || filters.price_max) { %>
+                                <span class="applied-filter">
+                                    Price: ₹<%= filters.price_min || 0 %> - ₹<%= filters.price_max || '5000+' %>
+                                    <button class="remove-filter" data-filter="price">×</button>
+                                </span>
+                            <% } %>
+                            <% if (filters.rating) { %>
+                                <span class="applied-filter">
+                                    Rating: <%= filters.rating %>★+
+                                    <button class="remove-filter" data-filter="rating">×</button>
+                                </span>
+                            <% } %>
                         </div>
+                        <% if (Object.values(filters).some(f => f)) { %>
+                            <button id="remove-all" class="remove-all-filters text-btn-uppercase">
+                                REMOVE ALL <i class="icon icon-close"></i>
+                            </button>
+                        <% } %>
                     </div>
-                    <!-- Pagination moved outside of list wrapper -->
-                    <ul class="wg-pagination justify-content-center salon-pagination">
-                        <li>
-                            <a href="#" class="pagination-item text-button">1</a>
-                        </li>
-                        <li class="active">
-                            <div class="pagination-item text-button">2</div>
-                        </li>
-                        <li>
-                            <a href="#" class="pagination-item text-button">3</a>
-                        </li>
-                        <li>
-                            <a href="#" class="pagination-item text-button"><i class="icon-arrRight"></i></a>
-                        </li>
-                    </ul>
-
+        
+                    <!-- Salon List -->
+                    <div class="tf-list-layout wrapper-shop" id="listLayout">
+                        <% if (salons.length === 0) { %>
+                            <div class="text-center py-5">
+                                <i class="icon icon-search fs-1 text-muted mb-3"></i>
+                                <p class="text-muted">No salons found matching your criteria</p>
+                                <button class="btn btn-outline-primary mt-3" onclick="resetFilters()">
+                                    Reset Filters
+                                </button>
+                            </div>
+                        <% } %>
+        
+                        <% salons.forEach(salon => { %>
+                            <div class="card-product style-list"
+                                 data-rating="<%= salon.avgRating %>"
+                                 data-price="<%= salon.lowestPrice %>"
+                                 data-location="<%= salon.address?.city || '' %>">
+                                <div class="card-product-wrapper salon-img">
+                                    <a href="/book-a-saloon/<%= salon._id %>" class="product-img">
+                                        <img class="lazyload img-product" 
+                                             src="<%= salon.images && salon.images[0] ? salon.images[0] : '/images/brand/salon-default.jpg' %>" 
+                                             alt="<%= salon.name %>">
+                                    </a>
+                                </div>
+                                <div class="card-product-info">
+                                    <a href="/book-a-saloon/<%= salon._id %>" class="title link"><%= salon.name %></a>
+                                    <div class="price">
+                                        <span class="rating-badge">
+                                            <%= '★'.repeat(Math.floor(salon.avgRating)) %><%= '☆'.repeat(5-Math.floor(salon.avgRating)) %>
+                                        </span>
+                                        <span class="review-count">(<%= salon.reviewCount %> reviews)</span>
+                                        <span class="price-badge ms-2">From ₹<%= salon.lowestPrice %></span>
+                                    </div>
+        
+                                    <div class="location-info">
+                                        <span class="icon icon-location"></span>
+                                        <span class="location-text">
+                                            <%= salon.address?.line1 ? salon.address.line1 + ', ' : '' %>
+                                            <%= salon.address?.city || '' %>
+                                            <%= salon.address?.state ? ', ' + salon.address.state : '' %>
+                                        </span>
+                                    </div>
+        
+                                    <p class="description text-secondary text-line-clamp-2">
+                                        <%= salon.description || 'Premium salon services by expert stylists.' %>
+                                    </p>
+        
+                                    <div class="variant-wrap-list">
+                                        <div class="size-box list-product-btn">
+                                            <div class="service-badges">
+                                                <% salon.serviceNames && salon.serviceNames.forEach((service, index) => { %>
+                                                    <% if (index < 3) { %>
+                                                        <span class="availability-badge"><%= service %></span>
+                                                    <% } %>
+                                                <% }) %>
+                                                <% if (salon.serviceNames && salon.serviceNames.length > 3) { %>
+                                                    <span class="availability-badge">+<%= salon.serviceNames.length - 3 %> More</span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+        
+                                        <div class="size-box list-product-btn">
+                                            <% if (salon.isAvailableToday) { %>
+                                                <span class="availability-badge available-today">Available Today</span>
+                                            <% } else { %>
+                                                <span class="availability-badge unavailable">Booked Out</span>
+                                            <% } %>
+                                            <% if (salon.serviceMode?.homeService) { %>
+                                                <span class="availability-badge home-service">Home Service Available</span>
+                                            <% } %>
+                                        </div>
+        
+                                        <div class="list-product-btn">
+                                            <button class="btn-main-product" onclick="openBookingModal('<%= salon._id %>')">
+                                                Book Your Appointment
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+        
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <ul class="wg-pagination justify-content-center salon-pagination">
+                            <% if (currentPage > 1) { %>
+                                <li>
+                                    <a href="<%= buildPageUrl(currentPage - 1) %>" class="pagination-item text-button">
+                                        <i class="icon-arrLeft"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+        
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <% if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) { %>
+                                    <li class="<%= currentPage === i ? 'active' : '' %>">
+                                        <% if (currentPage === i) { %>
+                                            <div class="pagination-item text-button"><%= i %></div>
+                                        <% } else { %>
+                                            <a href="<%= buildPageUrl(i) %>" class="pagination-item text-button"><%= i %></a>
+                                        <% } %>
+                                    </li>
+                                <% } else if (i === currentPage - 2 || i === currentPage + 2) { %>
+                                    <li><span class="pagination-item text-button">...</span></li>
+                                <% } %>
+                            <% } %>
+        
+                            <% if (currentPage < totalPages) { %>
+                                <li>
+                                    <a href="<%= buildPageUrl(currentPage + 1) %>" class="pagination-item text-button">
+                                        <i class="icon-arrRight"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    <% } %>
                 </div>
             </div>
         </section>
@@ -824,132 +1111,367 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <!-- /mobile-nav-wrapper -->
 
-    <!-- Filter -->
-    <div class="offcanvas offcanvas-start canvas-filter" id="filterShop">
-        <div class="canvas-wrapper">
-            <div class="canvas-header">
-                <h5>Filters</h5>
-                <span class="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close"></span>
+<!-- Filter Sidebar -->
+<div class="offcanvas offcanvas-start canvas-filter" id="filterShop">
+    <div class="canvas-wrapper">
+        <div class="canvas-header">
+            <h5>Filters</h5>
+            <span class="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close"></span>
+        </div>
+
+        <div class="canvas-body">
+            <!-- Service Categories -->
+            <div class="widget-facet facet-categories">
+                <h6 class="facet-title">Services</h6>
+                <ul class="facet-content">
+                    <% filterOptions.services.forEach(service => { %>
+                        <li>
+                            <label class="categories-item">
+                                <input type="checkbox" 
+                                       name="service" 
+                                       value="<%= service.name %>"
+                                       <%= filters.service === service.name ? 'checked' : '' %>
+                                       class="filter-checkbox">
+                                <%= service.name %>
+                                <span class="count-cate">(<%= service.count %>)</span>
+                            </label>
+                        </li>
+                    <% }) %>
+                </ul>
             </div>
 
-            <div class="canvas-body">
-
-                <!-- Service Categories -->
-                <div class="widget-facet facet-categories">
-                    <h6 class="facet-title">Services</h6>
-                    <ul class="facet-content">
-                        <li><a href="#" class="categories-item">Haircut & Styling <span
-                                    class="count-cate">(25)</span></a></li>
-                        <li><a href="#" class="categories-item">Facials & Skincare <span
-                                    class="count-cate">(18)</span></a></li>
-                        <li><a href="#" class="categories-item">Bleaching & Cleanup <span
-                                    class="count-cate">(10)</span></a></li>
-                        <li><a href="#" class="categories-item">Bridal Makeup <span class="count-cate">(8)</span></a>
-                        </li>
-                        <li><a href="#" class="categories-item">Manicure & Pedicure <span
-                                    class="count-cate">(12)</span></a></li>
-                        <li><a href="#" class="categories-item">Hair Coloring <span class="count-cate">(15)</span></a>
-                        </li>
-                    </ul>
+            <!-- Price Range -->
+            <div class="widget-facet facet-price">
+                <h6 class="facet-title">Price Range</h6>
+                <div class="price-val-range" 
+                     id="price-value-range" 
+                     data-min="100" 
+                     data-max="5000"
+                     data-current-min="<%= filters.price_min || 100 %>"
+                     data-current-max="<%= filters.price_max || 5000 %>">
                 </div>
-
-                <!-- Price Range -->
-                <div class="widget-facet facet-price">
-                    <h6 class="facet-title">Price Range</h6>
-                    <div class="price-val-range" id="price-value-range" data-min="100" data-max="5000"></div>
-                    <div class="box-price-product">
-                        <div class="box-price-item">
-                            <span class="title-price">Min price</span>
-                            <div class="price-val" id="price-min-value" data-currency="₹"></div>
-                        </div>
-                        <div class="box-price-item">
-                            <span class="title-price">Max price</span>
-                            <div class="price-val" id="price-max-value" data-currency="₹"></div>
-                        </div>
+                <div class="box-price-product">
+                    <div class="box-price-item">
+                        <span class="title-price">Min price</span>
+                        <div class="price-val" id="price-min-value">₹<%= filters.price_min || 100 %></div>
+                    </div>
+                    <div class="box-price-item">
+                        <span class="title-price">Max price</span>
+                        <div class="price-val" id="price-max-value">₹<%= filters.price_max || 5000 %></div>
                     </div>
                 </div>
-
-                <!-- Availability -->
-                <div class="widget-facet facet-fieldset">
-                    <h6 class="facet-title">Availability</h6>
-                    <div class="box-fieldset-item">
-                        <fieldset class="fieldset-item">
-                            <input type="radio" name="availability" class="tf-check" id="availableToday">
-                            <label for="availableToday">Available Today</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="radio" name="availability" class="tf-check" id="availableThisWeek">
-                            <label for="availableThisWeek">Available This Week</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="radio" name="availability" class="tf-check" id="availableWeekend">
-                            <label for="availableWeekend">Weekend Slots</label>
-                        </fieldset>
-                    </div>
-                </div>
-
-                <!-- Gender Preference -->
-                <div class="widget-facet facet-fieldset">
-                    <h6 class="facet-title">For Whom</h6>
-                    <div class="box-fieldset-item">
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" name="gender" class="tf-check" id="forWomen">
-                            <label for="forWomen">Women</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" name="gender" class="tf-check" id="forMen">
-                            <label for="forMen">Men</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" name="gender" class="tf-check" id="forUnisex">
-                            <label for="forUnisex">Unisex</label>
-                        </fieldset>
-                    </div>
-                </div>
-
-                <!-- Location -->
-                <div class="widget-facet facet-location">
-                    <h6 class="facet-title">Location</h6>
-                    <div class="box-fieldset-item">
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" name="gender" class="tf-check" id="forWomen">
-                            <label for="forWomen">HSR Layout</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" name="gender" class="tf-check" id="forMen">
-                            <label for="forMen">Indiranagar</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" name="gender" class="tf-check" id="forUnisex">
-                            <label for="forUnisex">Koramangala</label>
-                        </fieldset>
-                    </div>
-                </div>
-
-                <!-- Ratings -->
-                <div class="widget-facet facet-rating">
-                    <h6 class="facet-title">Ratings</h6>
-                    <div class="box-fieldset-item">
-                        <fieldset class="fieldset-item">
-                            <input type="radio" name="rating" class="tf-check" id="rating4plus">
-                            <label for="rating4plus">4★ & above</label>
-                        </fieldset>
-                        <fieldset class="fieldset-item">
-                            <input type="radio" name="rating" class="tf-check" id="rating3plus">
-                            <label for="rating3plus">3★ & above</label>
-                        </fieldset>
-                    </div>
-                </div>
-
+                <input type="hidden" id="price_min" name="price_min" value="<%= filters.price_min || '' %>">
+                <input type="hidden" id="price_max" name="price_max" value="<%= filters.price_max || '' %>">
             </div>
 
-            <div class="canvas-bottom">
-                <button id="reset-filter" class="tf-btn btn-reset">Reset Filters</button>
+            <!-- Availability -->
+            <div class="widget-facet facet-fieldset">
+                <h6 class="facet-title">Availability</h6>
+                <div class="box-fieldset-item">
+                    <% filterOptions.availabilities.forEach(availability => { %>
+                        <fieldset class="fieldset-item">
+                            <input type="radio" 
+                                   name="availability" 
+                                   value="<%= availability.value %>"
+                                   <%= filters.availability === availability.value ? 'checked' : '' %>
+                                   class="tf-check filter-radio" 
+                                   id="<%= availability.value %>">
+                            <label for="<%= availability.value %>"><%= availability.label %></label>
+                        </fieldset>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Service Mode -->
+            <div class="widget-facet facet-fieldset">
+                <h6 class="facet-title">Service Type</h6>
+                <div class="box-fieldset-item">
+                    <% filterOptions.serviceModes.forEach(mode => { %>
+                        <fieldset class="fieldset-item">
+                            <input type="radio" 
+                                   name="service_mode" 
+                                   value="<%= mode.value %>"
+                                   <%= filters.service_mode === mode.value ? 'checked' : '' %>
+                                   class="tf-check filter-radio" 
+                                   id="mode-<%= mode.value %>">
+                            <label for="mode-<%= mode.value %>"><%= mode.label %></label>
+                        </fieldset>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="widget-facet facet-location">
+                <h6 class="facet-title">Location</h6>
+                <div class="box-fieldset-item">
+                    <% filterOptions.locations.forEach(location => { %>
+                        <fieldset class="fieldset-item">
+                            <input type="checkbox" 
+                                   name="location" 
+                                   value="<%= location.name %>"
+                                   <%= filters.location === location.name ? 'checked' : '' %>
+                                   class="tf-check filter-checkbox" 
+                                   id="loc-<%= location.name.replace(/\s+/g, '-') %>">
+                            <label for="loc-<%= location.name.replace(/\s+/g, '-') %>">
+                                <%= location.name %>
+                                <span class="count-cate">(<%= location.count %>)</span>
+                            </label>
+                        </fieldset>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Ratings -->
+            <div class="widget-facet facet-rating">
+                <h6 class="facet-title">Ratings</h6>
+                <div class="box-fieldset-item">
+                    <% filterOptions.ratings.forEach(rating => { %>
+                        <fieldset class="fieldset-item">
+                            <input type="radio" 
+                                   name="rating" 
+                                   value="<%= rating.value %>"
+                                   <%= filters.rating == rating.value ? 'checked' : '' %>
+                                   class="tf-check filter-radio" 
+                                   id="rating<%= rating.value %>">
+                            <label for="rating<%= rating.value %>"><%= rating.label %></label>
+                        </fieldset>
+                    <% }) %>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- /Filter -->
+        <div class="canvas-bottom">
+            <button type="button" class="tf-btn btn-reset" id="reset-filter">Reset Filters</button>
+            <button type="button" class="tf-btn btn-apply" id="apply-filters">Apply Filters</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add this script section -->
+<script>
+    // Helper function to build page URL with filters
+    function buildPageUrl(page) {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', page);
+        return '/book-a-saloon?' + params.toString();
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Price range slider
+        const priceSlider = document.getElementById('price-value-range');
+        if (priceSlider) {
+            const minPrice = parseInt(priceSlider.dataset.min);
+            const maxPrice = parseInt(priceSlider.dataset.max);
+            const currentMin = parseInt(priceSlider.dataset.currentMin) || minPrice;
+            const currentMax = parseInt(priceSlider.dataset.currentMax) || maxPrice;
+            
+            // Initialize slider (you'll need a slider library like noUiSlider)
+            // This is a placeholder - implement with your preferred slider
+            initPriceSlider(minPrice, maxPrice, currentMin, currentMax);
+        }
+
+        // Filter checkbox/radio handlers
+        document.querySelectorAll('.filter-checkbox, .filter-radio').forEach(input => {
+            input.addEventListener('change', function() {
+                updateActiveFilters();
+            });
+        });
+
+        // Apply filters button
+        document.getElementById('apply-filters').addEventListener('click', function() {
+            applyFilters();
+        });
+
+        // Reset filters button
+        document.getElementById('reset-filter').addEventListener('click', function() {
+            resetFilters();
+        });
+
+        // Remove individual filters
+        document.querySelectorAll('.remove-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                const filterName = this.dataset.filter;
+                removeFilter(filterName);
+            });
+        });
+
+        // Remove all filters
+        document.getElementById('remove-all')?.addEventListener('click', function() {
+            resetFilters();
+        });
+
+        // Sort dropdown
+        document.querySelectorAll('.select-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const sortValue = this.dataset.sortValue;
+                updateSort(sortValue);
+            });
+        });
+    });
+
+    function initPriceSlider(min, max, currentMin, currentMax) {
+        // Implement your price slider here
+        // Example with noUiSlider:
+        /*
+        noUiSlider.create(priceSlider, {
+            start: [currentMin, currentMax],
+            connect: true,
+            range: {
+                'min': min,
+                'max': max
+            },
+            step: 100
+        });
+
+        priceSlider.noUiSlider.on('update', function(values) {
+            document.getElementById('price-min-value').textContent = '₹' + Math.round(values[0]);
+            document.getElementById('price-max-value').textContent = '₹' + Math.round(values[1]);
+            document.getElementById('price_min').value = Math.round(values[0]);
+            document.getElementById('price_max').value = Math.round(values[1]);
+        });
+        */
+    }
+
+    function updateActiveFilters() {
+        const activeFilters = [];
+        
+        // Check checkboxes
+        document.querySelectorAll('.filter-checkbox:checked').forEach(cb => {
+            activeFilters.push({
+                name: cb.name,
+                value: cb.value
+            });
+        });
+        
+        // Check radios
+        document.querySelectorAll('.filter-radio:checked').forEach(radio => {
+            activeFilters.push({
+                name: radio.name,
+                value: radio.value
+            });
+        });
+
+        // Update UI
+        updateFilterDisplay(activeFilters);
+    }
+
+    function updateFilterDisplay(filters) {
+        // Update the applied filters display
+        const container = document.getElementById('applied-filters');
+        if (!container) return;
+        
+        container.innerHTML = filters.map(filter => `
+            <span class="applied-filter">
+                ${filter.name}: ${filter.value}
+                <button class="remove-filter" data-filter="${filter.name}">×</button>
+            </span>
+        `).join('');
+    }
+
+    function applyFilters() {
+        const formData = new FormData();
+        
+        // Collect filter values
+        document.querySelectorAll('.filter-checkbox:checked').forEach(cb => {
+            formData.append(cb.name, cb.value);
+        });
+        
+        document.querySelectorAll('.filter-radio:checked').forEach(radio => {
+            formData.append(radio.name, radio.value);
+        });
+        
+        // Add price range
+        const priceMin = document.getElementById('price_min')?.value;
+        const priceMax = document.getElementById('price_max')?.value;
+        if (priceMin) formData.append('price_min', priceMin);
+        if (priceMax) formData.append('price_max', priceMax);
+        
+        // Add sort value
+        const sortValue = document.querySelector('.text-sort-value').dataset.sortValue;
+        if (sortValue) formData.append('sort', sortValue);
+        
+        // Build query string
+        const params = new URLSearchParams();
+        for (let [key, value] of formData.entries()) {
+            params.append(key, value);
+        }
+        
+        // Redirect with filters
+        window.location.href = '/book-a-saloon?' + params.toString();
+    }
+
+    function resetFilters() {
+        window.location.href = '/book-a-saloon';
+    }
+
+    function removeFilter(filterName) {
+        const params = new URLSearchParams(window.location.search);
+        params.delete(filterName);
+        window.location.href = '/book-a-saloon?' + params.toString();
+    }
+
+    function updateSort(sortValue) {
+        const params = new URLSearchParams(window.location.search);
+        params.set('sort', sortValue);
+        window.location.href = '/book-a-saloon?' + params.toString();
+    }
+
+    // AJAX filtering (optional)
+    function loadSalons(page = 1) {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', page);
+        
+        fetch('/api/salons?' + params.toString())
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSalonList(data.salons);
+                    updatePagination(data.pagination);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function updateSalonList(salons) {
+        const container = document.getElementById('listLayout');
+        if (!container) return;
+        
+        // Update salon list with new data
+        // Implement based on your template structure
+    }
+
+    function updatePagination(pagination) {
+        // Update pagination controls
+        // Implement based on your template structure
+    }
+
+    // Update your existing booking modal function
+    function openBookingModal(salonId) {
+        // Store salon ID for booking
+        window.currentSalonId = salonId;
+        
+        // Show modal (your existing modal code)
+        document.getElementById('bookingModal').classList.add('sbm-active');
+        document.body.style.overflow = 'hidden';
+        
+        // Load salon-specific data
+        loadSalonServices(salonId);
+    }
+
+    async function loadSalonServices(salonId) {
+        try {
+            const response = await fetch(`/api/salons/${salonId}/services`);
+            const data = await response.json();
+            
+            if (data.success) {
+                populateServices(data.services);
+            }
+        } catch (error) {
+            console.error('Error loading services:', error);
+        }
+    }
+</script>
 
         <!-- search -->
         <div class="modal fade modal-search" id="search" tabindex="-1" aria-hidden="true">
@@ -1137,176 +1659,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <!-- /mobile menu -->
-
-
-    <!-- quickView -->
-    <div class="modal fullRight fade modal-quick-view" id="quickView">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="tf-quick-view-image">
-                    <div class="wrap-quick-view wrapper-scroll-quickview">
-                        <div class="quickView-item item-scroll-quickview" data-scroll-quickview="beige">
-                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                        </div>
-                        <div class="quickView-item item-scroll-quickview" data-scroll-quickview="beige">
-                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                        </div>
-                        <div class="quickView-item item-scroll-quickview" data-scroll-quickview="gray">
-                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                        </div>
-                        <div class="quickView-item item-scroll-quickview" data-scroll-quickview="gray">
-                            <img class="lazyload" data-src="/images/products/womens/women-4.jpg"
-                                src="/images/products/womens/women-4.jpg" alt="">
-                        </div>
-                        <div class="quickView-item item-scroll-quickview" data-scroll-quickview="grey">
-                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                        </div>
-                        <div class="quickView-item item-scroll-quickview" data-scroll-quickview="grey">
-                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="wrap">
-                    <div class="header">
-                        <h5 class="title">Quick View</h5>
-                        <span class="icon-close icon-close-popup" data-bs-dismiss="modal"></span>
-                    </div>
-                    <div class="tf-product-info-list">
-                        <div class="tf-product-info-heading">
-                            <div class="tf-product-info-name">
-                                <div class="text text-btn-uppercase">Skin care</div>
-                                <h3 class="name">Vitamin B serum</h3>
-                                <div class="sub">
-                                    <div class="tf-product-info-rate">
-                                        <div class="list-star">
-                                            <i class="icon icon-star"></i>
-                                            <i class="icon icon-star"></i>
-                                            <i class="icon icon-star"></i>
-                                            <i class="icon icon-star"></i>
-                                            <i class="icon icon-star"></i>
-                                        </div>
-                                        <div class="text text-caption-1">(134 reviews)</div>
-                                    </div>
-                                    <div class="tf-product-info-sold">
-                                        <i class="icon icon-lightning"></i>
-                                        <div class="text text-caption-1">18 sold in last 32 hours</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tf-product-info-desc">
-                                <div class="tf-product-info-price">
-                                    <h5 class="price-on-sale font-2">₹79.99</h5>
-                                    <div class="compare-at-price font-2">₹98.99</div>
-                                    <div class="badges-on-sale text-btn-uppercase">
-                                        -25%
-                                    </div>
-                                </div>
-                                <p>The garments labelled as Committed are products that have been produced using
-                                    sustainable fibres or processes, reducing their environmental impact.</p>
-                                <div class="tf-product-info-liveview">
-                                    <i class="icon icon-eye"></i>
-                                    <p class="text-caption-1"><span class="liveview-count">28</span> people are viewing
-                                        this right now</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tf-product-info-choose-option">
-                            <div class="variant-picker-item">
-                                <div class="variant-picker-label mb_12">
-                                    Colors:<span class="text-title variant-picker-label-value">Beige</span>
-                                </div>
-                                <div class="variant-picker-values">
-                                    <input id="values-beige1" type="radio" name="color2" checked>
-                                    <label
-                                        class="hover-tooltip tooltip-bot radius-60 color-btn btn-scroll-quickview active"
-                                        data-slide="0" data-price="79.99" for="values-beige1" data-value="Beige"
-                                        data-scroll-quickview="beige">
-                                        <span class="btn-checkbox bg-color-beige1"></span>
-                                        <span class="tooltip">Beige</span>
-                                    </label>
-                                    <input id="values-gray1" type="radio" name="color2">
-                                    <label class="hover-tooltip tooltip-bot radius-60 color-btn btn-scroll-quickview"
-                                        data-slide="1" data-price="79.99" for="values-gray1" data-value="Gray"
-                                        data-scroll-quickview="gray">
-                                        <span class="btn-checkbox bg-color-gray"></span>
-                                        <span class="tooltip">Gray</span>
-                                    </label>
-                                    <input id="values-grey1" type="radio" name="color2">
-                                    <label class="hover-tooltip tooltip-bot radius-60 color-btn btn-scroll-quickview"
-                                        data-slide="2" data-price="89.99" for="values-grey1" data-value="Grey"
-                                        data-scroll-quickview="grey">
-                                        <span class="btn-checkbox bg-color-grey"></span>
-                                        <span class="tooltip">Grey</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="variant-picker-item">
-                                <div class="d-flex justify-content-between mb_12">
-                                    <div class="variant-picker-label">
-                                        Size:<span class="text-title variant-picker-label-value">L</span>
-                                    </div>
-                                    <a class="size-guide text-title link show-size-guide">Size Guide</a>
-                                </div>
-                                <div class="variant-picker-values gap12">
-                                    <input type="radio" name="size2" id="values-s1">
-                                    <label class="style-text size-btn" for="values-s1" data-value="S">
-                                        <span class="text-title">S</span>
-                                    </label>
-                                    <input type="radio" name="size2" id="values-m1">
-                                    <label class="style-text size-btn" for="values-m1" data-value="M">
-                                        <span class="text-title">M</span>
-                                    </label>
-                                    <input type="radio" name="size2" id="values-l1" checked>
-                                    <label class="style-text size-btn" for="values-l1" data-value="L"
-                                        data-price="89.99">
-                                        <span class="text-title">L</span>
-                                    </label>
-                                    <input type="radio" name="size2" id="values-xl1">
-                                    <label class="style-text size-btn" for="values-xl1" data-value="XL"
-                                        data-price="89.99">
-                                        <span class="text-title">XL</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="tf-product-info-quantity">
-                                <div class="title mb_12">Quantity:</div>
-                                <div class="wg-quantity">
-                                    <span class="btn-quantity btn-decrease">-</span>
-                                    <input class="quantity-product" type="text" name="number" value="1">
-                                    <span class="btn-quantity btn-increase">+</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="tf-product-info-by-btn mb_10">
-                                    <a class="btn-style-2 flex-grow-1 text-btn-uppercase fw-6 show-shopping-cart"><span>Add
-                                            to cart -&nbsp;</span><span
-                                            class="tf-qty-price total-price">₹79.99</span></a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                        class="box-icon hover-tooltip compare btn-icon-action show-compare">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip text-caption-2">Compare</span>
-                                    </a>
-                                    <a href="javascript:void(0);"
-                                        class="box-icon hover-tooltip text-caption-2 wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip text-caption-2">Wishlist</span>
-                                    </a>
-                                </div>
-                                <a href="#" class="btn-style-3 text-btn-uppercase">Buy it now</a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /quickView -->
 
     <!-- shoppingCart -->
 
@@ -1982,24 +2334,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
 
-    <script>
-        window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
-        window.LOCALE = 'en';
-        window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-        window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
-
-        window.GENERIC_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-        window.translation = {
-            common: {
-                selectedList: '{quantity} list selected',
-                selectedLists: '{quantity} lists selected'
-            }
-        };
-
-        var AUTOHIDE = Boolean(0);
-    </script>
+ 
 
     <script>// Open location modal when "+X more areas" is clicked
         document.querySelectorAll('.view-more-locations').forEach(btn => {
