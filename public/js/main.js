@@ -1701,6 +1701,7 @@ $(document).ready(function() {
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
                 // Adjust the 300 value if you want them to appear sooner/later
+                if (!contactIcons) return;
                 if (scrollTop > 300) {
                     contactIcons.classList.add('visible');
                 } else {

@@ -111,26 +111,43 @@ router.get(
         .populate("category subCategory childCategory")
         .lean();
 
-      products = products.map(p => {
-        const finalPrice =
-          p.adminSalePrice ??
-          p.adminBasePrice ??
-          p.salePrice ??
-          p.basePrice;
+        products = products.map(p => {
+            let price, oldPrice;
 
-        let priceVal = (typeof finalPrice === 'number' && !isNaN(finalPrice)) ? finalPrice : 0;
-        let oldPriceVal = (
-          typeof p.adminBasePrice === 'number'
-            ? p.adminBasePrice
-            : (typeof p.basePrice === 'number' ? p.basePrice : null)
-        );
-        return {
-          ...p,
-          finalPrice,
-          price: priceVal,
-          oldPrice: oldPriceVal
-        };
-      });
+            if (p.adminBasePrice !== undefined && p.adminBasePrice !== null) {
+
+              if (p.adminSalePrice !== undefined && p.adminSalePrice !== null && p.adminSalePrice < p.adminBasePrice) {
+           
+                price = p.adminSalePrice;
+                oldPrice = p.adminBasePrice;
+              } else {
+          
+                price = p.adminBasePrice;
+                oldPrice = null;
+              }
+            } else {
+     
+              if (p.salePrice !== undefined && p.salePrice !== null && p.salePrice < p.basePrice) {
+         
+                price = p.salePrice;
+                oldPrice = p.basePrice;
+              } else {
+      
+                price = p.basePrice;
+                oldPrice = null;
+              }
+            }
+
+            const priceVal = (typeof price === 'number' && !isNaN(price)) ? price : 0;
+            const oldPriceVal = (typeof oldPrice === 'number' && !isNaN(oldPrice)) ? oldPrice : null;
+            
+            return {
+              ...p,
+              finalPrice: priceVal,
+              price: priceVal,
+              oldPrice: oldPriceVal
+            };
+          });
 
       if (minPrice || maxPrice) {
         products = products.filter(p => {
@@ -297,63 +314,185 @@ router.get(
 
 
 router.get('/productDetails/:slug', async (req, res) => {
-  try {
-      const slug = req.params.slug;
+    try {
+        const slug = req.params.slug;
 
-      const product = await Product.findOne({ slug })
-          .populate('category')
-          .populate('subCategory')
-          .populate('childCategory')
-          .populate('beautyTips')
-          .lean();
+        const processProductPrices = (p) => {
+            let price, oldPrice;
+            
+            const useAdminPrices = p.adminBasePrice !== undefined && p.adminBasePrice !== null;
+            const basePrice = useAdminPrices ? p.adminBasePrice : p.basePrice;
+            const salePrice = useAdminPrices ? p.adminSalePrice : p.salePrice;
 
-      if (!product) return res.status(404).render("errors/404", { message: "Product Not Found" });
+            if (salePrice !== undefined && salePrice !== null && salePrice < basePrice) {
+                price = salePrice;
+                oldPrice = basePrice;
+            } else {
+                price = basePrice;
+                oldPrice = null;
+            }
 
-      // No processing of product data for frontend
+            const priceVal = (typeof price === 'number' && !isNaN(price)) ? price : 0;
+            const oldPriceVal = (typeof oldPrice === 'number' && !isNaN(oldPrice)) ? oldPrice : null;
 
-      let relatedQuery = {};
-      if (product.category) {
-          relatedQuery.category = product.category._id || product.category;
-      }
-      relatedQuery._id = { $ne: product._id }; 
+            return {
+                ...p,
+                finalPrice: priceVal,
+                price: priceVal,
+                oldPrice: oldPriceVal
+            };
+        };
 
-      const relatedProducts = await Product.find(relatedQuery)
-          .sort({ createdAt: -1 })
-          .limit(8)
-          .lean();
+        const product = await Product.findOne({ slug })
+            .populate('category')
+            .populate('subCategory')
+            .populate('childCategory')
+            .populate('beautyTips')
+            .lean();
 
-      let fbtQuery = {};
-      if (product.brand) {
-          fbtQuery.brand = product.brand;
-      } else if (product.subCategory) {
-          fbtQuery.subCategory = product.subCategory._id || product.subCategory;
-      }
-      fbtQuery._id = { $ne: product._id };
+        if (!product) return res.status(404).render("errors/404", { message: "Product Not Found" });
 
-      const frequentlyBoughtTogether = await Product.find(fbtQuery)
-          .sort({ totalSold: -1 })
-          .limit(3)
-          .lean();
+        const processedProduct = processProductPrices(product);
 
-      if (frequentlyBoughtTogether.length < 3) {
-          const supplement = await Product.find({
-              _id: { $nin: [product._id, ...frequentlyBoughtTogether.map(p => p._id)] },
-              status: "approved"
-          })
-          .limit(3 - frequentlyBoughtTogether.length)
-          .lean();
-          frequentlyBoughtTogether.push(...supplement);
-      }
+        let relatedQuery = {
+            status: "approved",
+            _id: { $ne: product._id }
+        };
 
-      return res.render('user/productDetails', {
-          product,
-          relatedProducts,
-          frequentlyBoughtTogether
-      });
-  } catch (err) {
-      console.error("Error loading product details:", err);
-      return res.status(500).render('errors/500', { message: "Failed to load product details" });
-  }
+        if (product.childCategory) {
+            relatedQuery.childCategory = product.childCategory._id || product.childCategory;
+        } else if (product.subCategory) {
+            relatedQuery.subCategory = product.subCategory._id || product.subCategory;
+        } else if (product.category) {
+            relatedQuery.category = product.category._id || product.category;
+        }
+
+        const relatedProducts = await Product.find(relatedQuery)
+            .sort({ createdAt: -1 })
+            .limit(8)
+            .lean()
+            .then(products => products.map(processProductPrices));
+
+        let fbtQueryBase = {
+            status: "approved",
+            _id: { $ne: product._id }
+        };
+
+        const matchCriteria = [];
+
+        if (product.childCategory) {
+            matchCriteria.push({
+                childCategory: product.childCategory._id || product.childCategory,
+                subCategory: product.subCategory._id || product.subCategory,
+                category: product.category._id || product.category
+            });
+        }
+    
+        if (product.subCategory) {
+            matchCriteria.push({
+                subCategory: product.subCategory._id || product.subCategory,
+                category: product.category._id || product.category
+            });
+        }
+  
+        if (product.category) {
+            matchCriteria.push({
+                category: product.category._id || product.category
+            });
+        }
+   
+        if (product.brand && product.brand.trim()) {
+            matchCriteria.push({
+                brand: product.brand
+            });
+        }
+
+        if (product.tags && product.tags.length > 0) {
+            matchCriteria.push({
+                tags: { $in: product.tags }
+            });
+        }
+
+        let frequentlyBoughtTogether = [];
+        let excludeIds = [product._id];
+
+        const pickRandomSubset = (arr, count) => {
+            // Shuffle the array and pick first N
+            if (!arr || !arr.length) return [];
+            const shuffled = arr.slice().sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, count);
+        };
+
+        for (const criteria of matchCriteria) {
+            if (frequentlyBoughtTogether.length >= 3) break;
+
+            const query = { ...fbtQueryBase, ...criteria, _id: { $nin: excludeIds } };
+            // Fetch more than needed for better random selection
+            let matchedProducts = await Product.find(query)
+                .sort({ totalSold: -1, rating: -1 })
+                .limit(10)
+                .lean();
+
+            // Exclude those that already exist in FBT (by _id)
+            matchedProducts = matchedProducts.filter(p => !excludeIds.some(id => String(id) === String(p._id)));
+
+            // Randomly pick up to remaining needed slots
+            const needed = 3 - frequentlyBoughtTogether.length;
+            const picked = pickRandomSubset(matchedProducts, needed).map(processProductPrices);
+
+            frequentlyBoughtTogether.push(...picked);
+            excludeIds.push(...picked.map(p => p._id));
+        }
+
+        // Supplement - best sellers in same main category (not already chosen)
+        if (frequentlyBoughtTogether.length < 3 && product.category) {
+            const needed = 3 - frequentlyBoughtTogether.length;
+            let more = await Product.find({
+                status: "approved",
+                category: product.category._id || product.category,
+                _id: { $nin: excludeIds }
+            })
+            .sort({ totalSold: -1, rating: -1 })
+            .limit(10)
+            .lean();
+
+            more = more.filter(p => !excludeIds.some(id => String(id) === String(p._id)));
+            const picked = pickRandomSubset(more, needed).map(processProductPrices);
+
+            frequentlyBoughtTogether.push(...picked);
+            excludeIds.push(...picked.map(p => p._id));
+        }
+
+        // Final fallback - any approved products (not already chosen)
+        if (frequentlyBoughtTogether.length < 3) {
+            const needed = 3 - frequentlyBoughtTogether.length;
+            let more = await Product.find({
+                status: "approved",
+                _id: { $nin: excludeIds }
+            })
+            .sort({ totalSold: -1, rating: -1 })
+            .limit(10)
+            .lean();
+
+            more = more.filter(p => !excludeIds.some(id => String(id) === String(p._id)));
+            const picked = pickRandomSubset(more, needed).map(processProductPrices);
+
+            frequentlyBoughtTogether.push(...picked);
+            excludeIds.push(...picked.map(p => p._id));
+        }
+
+        // Trim in case random picks overfilled (shouldn't, but be safe)
+        frequentlyBoughtTogether = frequentlyBoughtTogether.slice(0, 3);
+
+        return res.render('user/productDetails', {
+            product: processedProduct,
+            relatedProducts,
+            frequentlyBoughtTogether
+        });
+    } catch (err) {
+        console.error("Error loading product details:", err);
+        return res.status(500).render('errors/500', { message: "Failed to load product details" });
+    }
 });
 // userlogin 
 router.get('/userLogin', (req, res) => {
@@ -362,7 +501,6 @@ router.get('/userLogin', (req, res) => {
 // saloon at home 
 
 
-// GET: Saloon at Home - Freelancer Listing with Pagination and Filters
 router.get('/saloon-at-home', async (req, res) => {
     try {
         let {

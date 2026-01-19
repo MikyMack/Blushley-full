@@ -452,10 +452,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                     <div class="card-product-info">
                                         <a href="/productDetails/<%= product.slug %>" class="title link"><%= product.title %></a>
                                         <div class="price">
-                                            <% if (product.oldPrice > product.price) { %>
+                                            <% if (product.oldPrice && product.oldPrice > 0) { %>
                                                 <span class="old-price">₹<%= product.oldPrice.toFixed(2) %></span>
+                                                <span class="current-price">₹<%= product.price.toFixed(2) %></span>
+                                                <% if (product.oldPrice > product.price) { %>
+                                                    <span class="discount-percent">
+                                                        Save <%= Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) %>%
+                                                    </span>
+                                                <% } %>
+                                            <% } else { %>
+                                                <span class="current-price">₹<%= product.price.toFixed(2) %></span>
                                             <% } %>
-                                            <span class="current-price">₹<%= product.price.toFixed(2) %></span>
                                         </div>
                                         <% if (product.shortDescription) { %>
                                             <p class="description text-secondary text-line-clamp-2"><%= product.shortDescription %></p>

@@ -27066,4 +27066,24 @@ footer#footer {
         @media (max-width: 768px){
           .loyalty-panel {left:0;right:auto; min-width:210px;}
         }
+        .old-price {
+          text-decoration: line-through;
+          color: #999;
+          font-size: 0.9em;
+          margin-right: 8px;
+      }
       
+      .current-price {
+          color: #e91e63;
+          font-weight: bold;
+          font-size: 1.1em;
+      }
+      
+      .discount-percent {
+          background: #ff4081;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 0.8em;
+          margin-left: 8px;
+      }
