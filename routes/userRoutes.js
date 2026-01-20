@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
         let products = [];
         products = await Product.aggregate([
             { $match: { status: "approved" } },
-            { $sample: { size: 4 } }
+            { $sample: { size: 18 } }
         ]);
 
         res.render('user/home', { categories, subcategories, childcategories, products, testimonials, banners, posters });

@@ -1341,7 +1341,7 @@ a:hover {
 
 .flat-spacing {
   padding-top: 80px;
-  margin-bottom: 80px;
+  margin-bottom: 10px;
 }
 
 .flat-spacing-2 {
@@ -5710,9 +5710,7 @@ input.style-line-bottom::placeholder {
 .sw-dots.white-square .swiper-pagination-bullet {
   background-color: var(--white);
 }
-.sw-dots:not(.swiper-pagination-lock) {
-  margin-top: 20px;
-}
+
 
 .nav-sw {
   background-color: var(--white);
@@ -15805,7 +15803,7 @@ ul.list-text.type-number {
     gap: 12px;
   }
   .sw-dots:not(.swiper-pagination-lock) {
-    margin-top: 40px;
+    margin-top: 10px;
   }
   .nav-sw {
     width: 44px;
