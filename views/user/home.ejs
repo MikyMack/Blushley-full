@@ -509,71 +509,23 @@
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
                         <div class="wrap-slider">
-                            <img src="/images/banners/home-banner10.png" alt="fashion-slideshow">
-                            <div class="box-content">
-                                <div class="content-slider">
-                                    <div class="box-title-slider">
-                                        <p class="fade-item fade-item-1 subheading text-btn-uppercase ">
-                                            Professional beauty services in the comfort of your home
-                                        </p>
-                                        <div class="fade-item fade-item-2 heading title-display ">
-                                            Luxury Salon <br> Experience at
-                                            <br>Your Doorstep
-                                        </div>
-                                    </div>
-                                    <div class="fade-item fade-item-3 box-btn-slider">
-                                        <a href="/saloon-at-home" class="tf-btn btn-fill btn-white"><span
-                                                class="text">
-                                                Salon at Home</span><i class="icon icon-arrowUpRight"></i></a>
-                                    </div>
-                                </div>
-                            </div>
+                            <a href="/shop">
+                                <img src="/images/banner/blushley-banner1.png" alt="fashion-slideshow">
+                            </a>
                         </div>
                     </div>
                     <div class="swiper-slide">
                         <div class="wrap-slider">
-                            <img src="/images/slider/hero-img-4.png" alt="fashion-slideshow">
-                            <div class="box-content">
-                                <div class="content-slider">
-                                    <div class="box-title-slider">
-                                        <p class="fade-item fade-item-1 subheading text-btn-uppercase">
-                                            From makeup to skincare - everything you need
-                                        </p>
-                                        <div class="fade-item fade-item-2 heading title-display">
-                                            Beauty Essentials
-                                            <Br>for You
-                                        </div>
-                                    </div>
-                                    <div class="fade-item fade-item-3 box-btn-slider">
-                                        <a href="/shop" class="tf-btn btn-fill btn-white"><span class="text">Shop
-                                                Now</span><i class="icon icon-arrowUpRight"></i></a>
-                                    </div>
-                                </div>
-                            </div>
+                            <a href="/saloon-at-home">
+                                <img src="/images/banner/blushley-banner2.png" alt="fashion-slideshow">
+                            </a>
                         </div>
                     </div>
                     <div class="swiper-slide">
                         <div class="wrap-slider">
-                            <img src="/images/banners/salon-banner-1.jpg" alt="fashion-slideshow">
-                            <div class="box-content">
-                                <div class="content-slider">
-                                    <div class="box-title-slider">
-                                        <p class="fade-item fade-item-1 subheading text-btn-uppercase">
-                                            Find and book top-rated salons instantly
-                                        </p>
-                                        <div class="fade-item fade-item-2 heading title-display">
-                                            Your Perfect Salon,
-                                            <br>Just a Click Away
-                                        </div>
-                                    </div>
-                                    <div class="fade-item fade-item-3 box-btn-slider">
-                                        <a href="/book-a-saloon" class="tf-btn btn-fill btn-white"><span
-                                                class="text">Book a
-                                                salon
-                                            </span><i class="icon icon-arrowUpRight"></i></a>
-                                    </div>
-                                </div>
-                            </div>
+                            <a href="/book-a-saloon">
+                                <img src="/images/banner/blushley-banner3.png" alt="fashion-slideshow">
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -586,23 +538,23 @@
         <!-- Categories -->
         <section class="flat-spacing">
             <div class="container">
-                <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                <div class="section-header" style="text-align: center; margin-bottom: 20px;">
                     <h2 style="font-size: 42px; font-weight: 300; color: #333; margin-bottom: 15px;">Shop by Category</h2>
                     <p style="font-size: 16px; color: #999;">Categories you might like</p>
                 </div>
                 <div dir="ltr" class="swiper tf-sw-categories" data-preview="6" data-tablet="4" data-mobile-sm="3"
-                    data-mobile="2" data-space-lg="20" data-space-md="20" data-space="15" data-pagination="2"
+                    data-mobile="3" data-space-lg="20" data-space-md="20" data-space="15" data-pagination="2"
                     data-pagination-md="2" data-pagination-lg="1">
                     <div class="swiper-wrapper">
                         <% if (categories && categories.length > 0) { %>
                             <% categories.forEach(function(category) { %>
                                 <div class="swiper-slide">
-                                    <div class="collection-circle hover-img">
+                                    <div class="hover-img">
                                         <a href="/shop/<%= category.slug %>" class="img-style">
                                             <img class="lazyload"
                                                 data-src="<%= category.image ? category.image : '/images/collections/collection-circle/makeup-mockup.jpg' %>"
                                                 src="<%= category.image ? category.image : '/images/collections/collection-circle/makeup-mockup.jpg' %>"
-                                                alt="collection-img">
+                                                alt="collection-img" style="border-radius: 5px;">
                                         </a>
                                         <div class="collection-content text-center">
                                             <a href="/shop/<%= category.slug %>" class="cls-title">
