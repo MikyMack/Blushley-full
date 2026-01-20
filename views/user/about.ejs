@@ -894,40 +894,34 @@
          </div>
 
 
-        <div class="mobile-nav-wrapper show" id="mobileNavWrapper">
+         <div class="mobile-nav-wrapper" id="mobileNavWrapper">
             <!-- Floating Top Toolbar -->
-            <div class="tf-toolbar-top">
-                <div class="toolbar-item">
-                    <a href="/saloon-at-home">
-                        <div class="toolbar-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 2L7 6H2L3 8H21L22 6H17L15 2H9Z" stroke="white" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                                <path
-                                    d="M3 8L4 20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20L21 8H3Z"
-                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                        <div class="toolbar-label">Salon at Home</div>
-                    </a>
-                </div>
+            <div class="tf-toolbar-top hide" id="mobileTopToolbar">
 
                 <div class="toolbar-item">
-                    <a href="/book-a-saloon">
-                        <div class="toolbar-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2" />
-                                <path d="M21 21L16.65 16.65" stroke="white" stroke-width="2" stroke-linecap="round" />
-                            </svg>
-                        </div>
-                        <div class="toolbar-label">Book a Salon</div>
-                    </a>
+                  <a href="/saloon-at-home">
+                    <div class="toolbar-icon">
+                      <!-- svg -->
+                    </div>
+                    <div class="toolbar-label">Salon at Home</div>
+                  </a>
                 </div>
-
-            </div>
-
+       
+                <div class="toolbar-logo">
+                  <a href="/" aria-label="Home">
+                    <img src="/images/logo/Blushley-png-logo.png" alt="Logo" style="width: 30px;">
+                  </a>
+                </div>
+              
+                <div class="toolbar-item">
+                  <a href="/book-a-saloon">
+                    <!-- svg -->
+                    <div class="toolbar-label">Book a Salon</div>
+                  </a>
+                </div>
+              
+              </div>
+              
             <!-- toolbar-bottom -->
             <div class="tf-toolbar-bottom">
                 <div class="toolbar-item">
@@ -998,9 +992,52 @@
 
             </div>
             <!-- /toolbar-bottom -->
-
-
         </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              const topToolbar = document.getElementById("mobileTopToolbar");
+              if (!topToolbar) return;
+            
+              const isMobile = () => window.innerWidth <= 768;
+            
+              let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+              const scrollThreshold = 5;
+            
+              // start hidden
+              topToolbar.classList.add("hide");
+              topToolbar.classList.remove("show");
+            
+              window.addEventListener("scroll", () => {
+                if (!isMobile()) return;
+            
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+                // ✅ show only after small scroll (so not in top)
+                if (scrollTop < 150) {
+                  topToolbar.classList.add("hide");
+                  topToolbar.classList.remove("show");
+                  lastScrollTop = scrollTop;
+                  return;
+                }
+            
+                if (Math.abs(scrollTop - lastScrollTop) < scrollThreshold) return;
+            
+                // ✅ scroll down => show
+                if (scrollTop > lastScrollTop) {
+                  topToolbar.classList.remove("hide");
+                  topToolbar.classList.add("show");
+                }
+                // ✅ scroll up => hide
+                else {
+                  topToolbar.classList.add("hide");
+                  topToolbar.classList.remove("show");
+                }
+            
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+              }, { passive: true });
+            });
+            </script>
+            
 
         <!-- /wrapper -->
 
@@ -2177,26 +2214,7 @@
         <script type="text/javascript" src="/js/multiple-modal.js"></script>
         <script type="text/javascript" src="/js/main.js"></script>
 
-
-
-        <script>
-            window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
-            window.LOCALE = 'en';
-            window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-            window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
-
-            window.GENERIC_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-            window.translation = {
-                common: {
-                    selectedList: '{quantity} list selected',
-                    selectedLists: '{quantity} lists selected'
-                }
-            };
-
-            var AUTOHIDE = Boolean(0);
-        </script>
+     
 
            <script>
     document.addEventListener('DOMContentLoaded', function() {

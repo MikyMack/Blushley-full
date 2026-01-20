@@ -538,9 +538,9 @@
         <!-- Categories -->
         <section class="flat-spacing">
             <div class="container">
-                <div class="section-header" style="text-align: center; margin-bottom: 20px;">
-                    <h3 style=" color: #333; margin-bottom: 15px;">Shop by Category</h3>
-                    <p style="font-size: 16px; color: #999;">Categories you might like</p>
+                <div class="section-header" style="text-align: center; margin-bottom: 20px;">    
+                    <h3 class="heading">Shop by Category</h3>
+                    <p class="subheading text-secondary">Categories you might like</p>
                 </div>
                 <div dir="ltr" class="swiper tf-sw-categories" data-preview="6" data-tablet="4" data-mobile-sm="3"
                     data-mobile="3" data-space-lg="20" data-space-md="20" data-space="15" data-pagination="2"
@@ -581,7 +581,7 @@
         <!-- /Categories -->
 
         <!-- Banner with text -->
-        <section>
+        <section class="flat-spacing">
             <div class="container">
                 <div class="row flat-img-with-text-v3">
                     <div class="col-lg-6 col-md-5">
@@ -656,73 +656,26 @@
       
         <section class="flat-spacing">
             <div class="container">
-                <div class="heading-section text-center wow fadeInUp">
-                    <h3 class="heading">Trendy Collection</h3>
-                    <p class="subheading text-secondary">Fresh styles just in! Elevate your look.</p>
+              <div class="heading-section text-center wow fadeInUp">
+                <h3 class="heading">Trendy Collection</h3>
+                <p class="subheading text-secondary">Fresh styles just in! Elevate your look.</p>
+              </div>
+          
+              <% if (Array.isArray(products) && products.length) { %>
+                <div class="trendyGrid mt-4">
+                  <% products.forEach((product, index) => { %>
+                    <% renderProduct(product, (index % 10) * 0.1); %>
+                  <% }) %>
                 </div>
-        
-                <% if (Array.isArray(products) && products.length) { %>
-                
-                <% 
-                    // Split products into 3 rows equally
-                    const perRow = Math.ceil(products.length / 3);
-                    const row1 = products.slice(0, perRow);
-                    const row2 = products.slice(perRow, perRow * 2);
-                    const row3 = products.slice(perRow * 2);
-                    const rows = [row1, row2, row3];
-                %>
-        
-                <!-- Single Swiper Container for Grid Layout -->
-                <div class="mt-4">
-                    <div dir="ltr" 
-                         class="swiper tf-sw-grid" 
-                         id="gridSwiper"
-                         data-slides-per-view="1"
-                         data-space-lg="30"
-                         data-space-md="20"
-                         data-space="15">
-                        
-                        <div class="swiper-wrapper">
-                            <% for(let slideIndex = 0; slideIndex < perRow; slideIndex++) { %>
-                                <div class="swiper-slide">
-                                    <div class="grid-slide-wrapper">
-                                        <!-- Row 1 -->
-                                        <% if(rows[0][slideIndex]) { 
-                                            const product = rows[0][slideIndex];
-                                            renderProduct(product, slideIndex * 0.1);
-                                        } %>
-                                        
-                                        <!-- Row 2 -->
-                                        <% if(rows[1][slideIndex]) { 
-                                            const product = rows[1][slideIndex];
-                                            renderProduct(product, slideIndex * 0.1 + 0.2);
-                                        } %>
-                                        
-                                        <!-- Row 3 -->
-                                        <% if(rows[2][slideIndex]) { 
-                                            const product = rows[2][slideIndex];
-                                            renderProduct(product, slideIndex * 0.1 + 0.4);
-                                        } %>
-                                    </div>
-                                </div>
-                            <% } %>
-                        </div>
-                        
-                        <!-- Add Navigation -->
-                        <div class="swiper-button-next"></div>
-                        <div class="swiper-button-prev"></div>
-                        
-                    </div>
+              <% } else { %>
+                <div class="text-center py-5">
+                  <p class="text-secondary mb-0">No products found!</p>
                 </div>
-        
-                <% } else { %>
-                    <div class="text-center py-5">
-                        <p class="text-secondary mb-0">No products found!</p>
-                    </div>
-                <% } %>
-                
+              <% } %>
+          
             </div>
-        </section>
+          </section>
+          
         
         <% 
             // Helper function to render product card
@@ -777,78 +730,44 @@
         <% } %>
         
         <style>
-            .grid-slide-wrapper {
-                display: grid;
-                grid-template-columns: repeat(1, 1fr);
-                gap: 20px;
-            }
-            
-            @media (min-width: 768px) {
-                .grid-slide-wrapper {
-                    grid-template-columns: repeat(3, 1fr);
-                }
-            }
-            
-            /* Ensure proper swiper dimensions */
-            .tf-sw-grid {
-                overflow: hidden;
-                position: relative;
-                padding: 10px 40px;
-            }
-            
-            .tf-sw-grid .swiper-slide {
-                height: auto;
-            }
-            
-            /* Navigation buttons */
-            .tf-sw-grid .swiper-button-next,
-            .tf-sw-grid .swiper-button-prev {
-                background: white;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                color: #333;
-            }
-            
-            .tf-sw-grid .swiper-button-next:after,
-            .tf-sw-grid .swiper-button-prev:after {
-                font-size: 16px;
-                font-weight: bold;
-            }
-            
-            .tf-sw-grid .swiper-pagination {
-                position: relative;
-                margin-top: 20px;
-            }
+         /* Trendy Collection Grid */
+.trendyGrid{
+  display: grid;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+/* Mobile: 2 products per row */
+.trendyGrid{
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Tablet: 3 products per row */
+@media (min-width: 768px){
+  .trendyGrid{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+/* Desktop: 4 products per row */
+@media (min-width: 992px){
+  .trendyGrid{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+}
+
+/* Large desktop: 5 per row (optional) */
+@media (min-width: 1400px){
+  .trendyGrid{
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
         </style>
         
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const gridSwiper = new Swiper('#gridSwiper', {
-                slidesPerView: 2,
-                spaceBetween: 30,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                breakpoints: {
-                    768: {
-                        slidesPerView: 2,
-                        spaceBetween: 20
-                    },
-                    992: {
-                        slidesPerView: 3,
-                        spaceBetween: 30
-                    }
-                }
-            });
-        });
-        </script>
+
           
 
         <!-- /Banner parallax -->
@@ -1603,45 +1522,35 @@
             </div>
         </div>
 
-
-        <div class="mobile-nav-wrapper show" id="mobileNavWrapper">
+     
+        <div class="mobile-nav-wrapper" id="mobileNavWrapper">
             <!-- Floating Top Toolbar -->
-            <div class="tf-toolbar-top">
-                <div class="toolbar-item">
-                    <a href="/saloon-at-home">
-                        <div class="toolbar-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
-                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M9 22V12H15V22" stroke="white" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                        <div class="toolbar-label">Salon at Home</div>
-                    </a>
-                </div>
+            <div class="tf-toolbar-top hide" id="mobileTopToolbar">
 
                 <div class="toolbar-item">
-                    <a href="/book-a-saloon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 8L3 3H21L22 8" stroke="white" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path
-                                d="M2 8C2 9.1 2.9 10 4 10C5.1 10 6 9.1 6 8C6 9.1 6.9 10 8 10C9.1 10 10 9.1 10 8C10 9.1 10.9 10 12 10C13.1 10 14 9.1 14 8C14 9.1 14.9 10 16 10C17.1 10 18 9.1 18 8C18 9.1 18.9 10 20 10C21.1 10 22 9.1 22 8"
-                                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M4 10V21H20V10" stroke="white" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M10 21V15H14V21" stroke="white" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        <div class="toolbar-label">Book a Salon</div>
-                    </a>
+                  <a href="/saloon-at-home">
+                    <div class="toolbar-icon">
+                      <!-- svg -->
+                    </div>
+                    <div class="toolbar-label">Salon at Home</div>
+                  </a>
                 </div>
-
-            </div>
-
+       
+                <div class="toolbar-logo">
+                  <a href="/" aria-label="Home">
+                    <img src="/images/logo/Blushley-png-logo.png" alt="Logo" style="width: 30px;">
+                  </a>
+                </div>
+              
+                <div class="toolbar-item">
+                  <a href="/book-a-saloon">
+                    <!-- svg -->
+                    <div class="toolbar-label">Book a Salon</div>
+                  </a>
+                </div>
+              
+              </div>
+              
             <!-- toolbar-bottom -->
             <div class="tf-toolbar-bottom">
                 <div class="toolbar-item">
@@ -1712,10 +1621,51 @@
 
             </div>
             <!-- /toolbar-bottom -->
-
-
         </div>
-
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              const topToolbar = document.getElementById("mobileTopToolbar");
+              if (!topToolbar) return;
+            
+              const isMobile = () => window.innerWidth <= 768;
+            
+              let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+              const scrollThreshold = 5;
+            
+              // start hidden
+              topToolbar.classList.add("hide");
+              topToolbar.classList.remove("show");
+            
+              window.addEventListener("scroll", () => {
+                if (!isMobile()) return;
+            
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+                // ✅ show only after small scroll (so not in top)
+                if (scrollTop < 150) {
+                  topToolbar.classList.add("hide");
+                  topToolbar.classList.remove("show");
+                  lastScrollTop = scrollTop;
+                  return;
+                }
+            
+                if (Math.abs(scrollTop - lastScrollTop) < scrollThreshold) return;
+            
+                // ✅ scroll down => show
+                if (scrollTop > lastScrollTop) {
+                  topToolbar.classList.remove("hide");
+                  topToolbar.classList.add("show");
+                }
+                // ✅ scroll up => hide
+                else {
+                  topToolbar.classList.add("hide");
+                  topToolbar.classList.remove("show");
+                }
+            
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+              }, { passive: true });
+            });
+            </script>
 
         <!-- search -->
 <div class="modal fade modal-search" id="search" tabindex="-1" aria-hidden="true">
@@ -2798,10 +2748,6 @@
             var AUTOHIDE = Boolean(0);
         </script>
 
-
-
-
-  
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 // Destroy any existing slideshow instance
@@ -2831,59 +2777,8 @@
             });
         </script>
 
-        <script>
-            (function () {
-                let lastScrollTop = 0;
-                const mobileNav = document.getElementById('mobileNavWrapper');
-                const scrollThreshold = 5;
 
-                const heroSection = document.querySelector('.tf-slideshow') || document.querySelector('.slider-default');
-                let heroHeight = heroSection ? heroSection.offsetHeight : 400; 
-
-                
-                if (window.innerWidth <= 520) {
-                    heroHeight = heroHeight * 0.5;
-                }
-
-                let scrollTimer = null;
-
-                // Hide toolbar initially
-                mobileNav.classList.add('hide');
-                mobileNav.classList.remove('show');
-
-                window.addEventListener('scroll', function () {
-                    if (scrollTimer !== null) {
-                        clearTimeout(scrollTimer);
-                    }
-
-                    scrollTimer = setTimeout(function () {
-                        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                        if (Math.abs(scrollTop - lastScrollTop) < scrollThreshold) {
-                            return;
-                        }
-
-                        // If we're in the hero section, always hide
-                        if (scrollTop <= heroHeight) {
-                            mobileNav.classList.remove('show');
-                            mobileNav.classList.add('hide');
-                        }
-                        // If scrolling down (and past hero), hide
-                        else if (scrollTop > lastScrollTop) {
-                            mobileNav.classList.remove('show');
-                            mobileNav.classList.add('hide');
-                        }
-                        // If scrolling up (and past hero), show
-                        else {
-                            mobileNav.classList.remove('hide');
-                            mobileNav.classList.add('show');
-                        }
-
-                        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-                    }, 10);
-                }, false);
-            })();
-        </script>
+    
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const loyaltyToggle = document.getElementById('loyaltyToggle');

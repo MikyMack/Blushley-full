@@ -709,51 +709,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </div>
 
-
-    <div class="mobile-nav-wrapper show" id="mobileNavWrapper">
+    <div class="mobile-nav-wrapper" id="mobileNavWrapper">
         <!-- Floating Top Toolbar -->
-        <div class="tf-toolbar-top">
-            <div class="toolbar-item">
-                <a href="/saloon-at-home">
-                    <div class="toolbar-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
-                                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9 22V12H15V22" stroke="white" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <div class="toolbar-label">Salon at Home</div>
-                </a>
-            </div>
+        <div class="tf-toolbar-top hide" id="mobileTopToolbar">
 
             <div class="toolbar-item">
-                <a href="/book-a-saloon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 8L3 3H21L22 8" stroke="white" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                        <path
-                            d="M2 8C2 9.1 2.9 10 4 10C5.1 10 6 9.1 6 8C6 9.1 6.9 10 8 10C9.1 10 10 9.1 10 8C10 9.1 10.9 10 12 10C13.1 10 14 9.1 14 8C14 9.1 14.9 10 16 10C17.1 10 18 9.1 18 8C18 9.1 18.9 10 20 10C21.1 10 22 9.1 22 8"
-                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M4 10V21H20V10" stroke="white" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                        <path d="M10 21V15H14V21" stroke="white" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                    <div class="toolbar-label">Book a Salon</div>
-                </a>
+              <a href="/saloon-at-home">
+                <div class="toolbar-icon">
+                  <!-- svg -->
+                </div>
+                <div class="toolbar-label">Salon at Home</div>
+              </a>
             </div>
-
-        </div>
-
+   
+            <div class="toolbar-logo">
+              <a href="/" aria-label="Home">
+                <img src="/images/logo/Blushley-png-logo.png" alt="Logo" style="width: 30px;">
+              </a>
+            </div>
+          
+            <div class="toolbar-item">
+              <a href="/book-a-saloon">
+                <!-- svg -->
+                <div class="toolbar-label">Book a Salon</div>
+              </a>
+            </div>
+          
+          </div>
+          
         <!-- toolbar-bottom -->
         <div class="tf-toolbar-bottom">
             <div class="toolbar-item">
                 <a href="/">
                     <div class="toolbar-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="#4D4E4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="#4D4E4F" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-5H9v5a2 2 0 0 1-2 2H3z"></path>
                         </svg>
                     </div>
@@ -763,8 +754,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="toolbar-item">
                 <a href="/shop">
                     <div class="toolbar-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="#4D4E4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="#4D4E4F" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <path d="M6 2l1 7h10l1-7H6zM5 9h14l-1 11H6L5 9z"></path>
                         </svg>
                     </div>
@@ -774,8 +766,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="toolbar-item">
                 <a href="/userLogin">
                     <div class="toolbar-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="#4D4E4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="#4D4E4F" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-3-3.87"></path>
                             <path d="M4 21v-2a4 4 0 0 1 3-3.87"></path>
                             <circle cx="12" cy="7" r="4"></circle>
@@ -787,9 +780,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="toolbar-item">
                 <a href="/user-orders">
                     <div class="toolbar-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
                             <rect x="3" y="3" width="18" height="18" rx="2" stroke="#4D4E4F" stroke-width="2" />
-                            <path d="M9 3V6M15 3V6M3 9H21" stroke="#4D4E4F" stroke-width="2" stroke-linecap="round" />
+                            <path d="M9 3V6M15 3V6M3 9H21" stroke="#4D4E4F" stroke-width="2"
+                                stroke-linecap="round" />
                         </svg>
                     </div>
                     <div class="toolbar-label">Orders</div>
@@ -798,10 +793,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="toolbar-item">
                 <a href="#wishlist" data-bs-toggle="modal">
                     <div class="toolbar-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M20.84 4.61C20.33 4.1 19.72 3.69 19.05 3.42C18.39 3.14 17.67 3 16.95 3C16.23 3 15.51 3.14 14.84 3.42C14.18 3.69 13.57 4.1 13.06 4.61L12 5.67L10.94 4.61C9.91 3.58 8.51 3 7.05 3C5.59 3 4.19 3.58 3.16 4.61C2.13 5.64 1.55 7.04 1.55 8.5C1.55 9.96 2.13 11.36 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.35 11.88 21.76 11.27 22.03 10.61C22.31 9.94 22.45 9.22 22.45 8.5C22.45 7.78 22.31 7.06 22.03 6.39C21.76 5.73 21.35 5.12 20.84 4.61Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
                     </div>
                     <div class="toolbar-label">Wishlist</div>
@@ -810,9 +807,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         </div>
         <!-- /toolbar-bottom -->
-
-
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const topToolbar = document.getElementById("mobileTopToolbar");
+          if (!topToolbar) return;
+        
+          const isMobile = () => window.innerWidth <= 768;
+        
+          let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const scrollThreshold = 5;
+        
+          // start hidden
+          topToolbar.classList.add("hide");
+          topToolbar.classList.remove("show");
+        
+          window.addEventListener("scroll", () => {
+            if (!isMobile()) return;
+        
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+            // ✅ show only after small scroll (so not in top)
+            if (scrollTop < 150) {
+              topToolbar.classList.add("hide");
+              topToolbar.classList.remove("show");
+              lastScrollTop = scrollTop;
+              return;
+            }
+        
+            if (Math.abs(scrollTop - lastScrollTop) < scrollThreshold) return;
+        
+            // ✅ scroll down => show
+            if (scrollTop > lastScrollTop) {
+              topToolbar.classList.remove("hide");
+              topToolbar.classList.add("show");
+            }
+            // ✅ scroll up => hide
+            else {
+              topToolbar.classList.add("hide");
+              topToolbar.classList.remove("show");
+            }
+        
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+          }, { passive: true });
+        });
+        </script>
 
     <!-- search -->
     <div class="modal fade modal-search" id="search">
@@ -1972,25 +2011,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script type="text/javascript" src="/js/main.js"></script>
     <script type="text/javascript" src="/js/cart.js"></script>
 
-
-    <script>
-        window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
-        window.LOCALE = 'en';
-        window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-        window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
-
-        window.GENERIC_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
-
-        window.translation = {
-            common: {
-                selectedList: '{quantity} list selected',
-                selectedLists: '{quantity} lists selected'
-            }
-        };
-
-        var AUTOHIDE = Boolean(0);
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const navAccount = document.querySelector('.nav-account');
