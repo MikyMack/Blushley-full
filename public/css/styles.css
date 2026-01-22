@@ -4531,6 +4531,7 @@ footer.has-pb {
 }
 .btn-style-3:hover {
   background-color: var(--main);
+  color: white;
 }
 
 .btn-style-4 {

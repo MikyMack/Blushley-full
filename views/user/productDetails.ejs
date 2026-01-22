@@ -53,6 +53,79 @@ body.modal-open {
 .modal-backdrop {
     display: none !important;
 }
+/* Wishlist button styles */
+.btn-add-to-wishlist {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-add-to-wishlist:hover {
+    transform: translateY(-2px);
+}
+
+.btn-add-to-wishlist.added {
+    background-color: #ff4444;
+    color: white;
+    border-color: #ff4444;
+}
+
+.btn-add-to-wishlist.added:hover {
+    background-color: #ff6666;
+    border-color: #ff6666;
+}
+
+.btn-add-to-wishlist .spinner-border {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+}
+
+.btn-add-to-wishlist:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Heart icon animation */
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.btn-add-to-wishlist.added i {
+    animation: heartBeat 0.5s ease;
+    color: white;
+}
+
+/* Toast notification */
+.wishlist-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 4px;
+    background: #4CAF50;
+    color: white;
+    z-index: 9999;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.wishlist-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.wishlist-toast.error {
+    background: #f44336;
+}
+
+.wishlist-toast.warning {
+    background: #ff9800;
+}
 </style>
 
 </head>
@@ -392,8 +465,6 @@ body.modal-open {
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Product Variants: Checkbox Display -->
                                 <!-- Product Variants: Checkbox Display -->
 <% if (product.variants && Array.isArray(product.variants) && product.variants.length) { %>
     <div class="tf-product-variants mb_24">
@@ -586,6 +657,14 @@ body.modal-open {
                                                     <span>Add to cart</span>
                 
                                                 </a>
+                                                <button class="btn-style-3 text-btn-uppercase btn-add-to-wishlist" 
+                                                id="add-to-wishlist-btn"
+                                                data-product-id="<%= product._id %>"
+                                                style="margin-left: 10px; min-width: 120px;">
+                                            <span id="wishlist-btn-text">
+                                                <i class="icon-heart me-1"></i> Add to Wishlist
+                                            </span>
+                                        </button>
                                             </div>
                                             <a href="#" class="btn-style-3 text-btn-uppercase">Buy it now</a>
                                         </div>
@@ -614,13 +693,13 @@ body.modal-open {
                                                 <div class="icon">
                                                     <i class="icon-timer"></i>
                                                 </div>
-                                                <p class="text-caption-1">Estimated Delivery:&nbsp;&nbsp;<span>12-26 days</span> </p>
+                                                <p class="text-caption-1">Estimated Delivery:&nbsp;&nbsp;<span>2-5hrs</span> </p>
                                             </div>
                                             <div class="tf-product-info-return">
                                                 <div class="icon">
                                                     <i class="icon-arrowClockwise"></i>
                                                 </div>
-                                                <p class="text-caption-1">Return within <span>45 days</span> of purchase. Duties & taxes are non-refundable.</p>
+                                                <p class="text-caption-1">Return within <span>1 hr</span> of purchase. Duties & taxes are non-refundable.</p>
                                             </div>
                                             <div class="dropdown dropdown-store-location">
                                                 <div class="dropdown-title dropdown-backdrop" data-bs-toggle="dropdown" aria-haspopup="true">
@@ -857,14 +936,18 @@ body.modal-open {
             
             // Current active images array (combination of base + variant images)
             let activeProductImages = [...baseProductImages];
-
+            
+            // Wishlist variables
+            let isInWishlist = false;
+            let wishlistItemId = null;
+        
             // Helper function for .toLocaleString fallback
             function toINR(val) {
                 try {
                     return Number(val).toLocaleString("en-IN", {minimumFractionDigits:2, maximumFractionDigits:2});
                 } catch(e) { return val; }
             }
-
+        
             // Use SweetAlert for notifications
             function swalNotify(options) {
                 if (window.Swal) {
@@ -879,7 +962,7 @@ body.modal-open {
                     else alert(options.text || "Notification");
                 }
             }
-
+        
             // Select variant option
             function selectVariantOption(element) {
                 const variantId = element.dataset.variantId;
@@ -889,7 +972,7 @@ body.modal-open {
                 const price = parseFloat(element.dataset.price) || baseProductPrice;
                 const image = element.dataset.image;
                 const stock = parseInt(element.dataset.stock) || 0;
-
+        
                 // Check if option is available
                 if (stock <= 0) {
                     swalNotify({
@@ -901,13 +984,13 @@ body.modal-open {
                     });
                     return;
                 }
-
+        
                 const checkbox = element.querySelector('.variant-select-checkbox');
                 const checkmark = element.querySelector('.checkmark i');
-
+        
                 // Find existing selection for this variant
                 const existingIndex = selectedVariants.findIndex(function(v) { return v.variantId === variantId; });
-
+        
                 if (existingIndex !== -1) {
                     // Deselect if clicking the same option
                     if (selectedVariants[existingIndex].optionId === optionId) {
@@ -916,7 +999,7 @@ body.modal-open {
                         if (checkmark) checkmark.style.display = 'none';
                         element.style.borderColor = '#ddd';
                         element.style.backgroundColor = 'white';
-
+        
                         // Remove image from selected images
                         const imageIndex = selectedVariantImages.indexOf(image);
                         if (imageIndex !== -1) {
@@ -939,7 +1022,7 @@ body.modal-open {
                                 selectedVariantImages.splice(oldImageIndex, 1);
                             }
                         }
-
+        
                         selectedVariants[existingIndex] = {
                             variantId: variantId,
                             optionId: optionId,
@@ -949,12 +1032,12 @@ body.modal-open {
                             image: image,
                             stock: stock
                         };
-
+        
                         if (checkbox) checkbox.checked = true;
                         if (checkmark) checkmark.style.display = 'block';
                         element.style.borderColor = '#007bff';
                         element.style.backgroundColor = '#f0f8ff';
-
+        
                         // Add new variant image
                         if (image) {
                             selectedVariantImages.push(image);
@@ -971,33 +1054,33 @@ body.modal-open {
                         image: image,
                         stock: stock
                     });
-
+        
                     if (checkbox) checkbox.checked = true;
                     if (checkmark) checkmark.style.display = 'block';
                     element.style.borderColor = '#007bff';
                     element.style.backgroundColor = '#f0f8ff';
-
+        
                     // Add image if available
                     if (image) {
                         selectedVariantImages.push(image);
                     }
                 }
-
+        
                 updateVariantDisplay();
                 updatePrice();
                 updateImages();
                 updateAddToCartButton();
             }
-
+        
             // Update variant display
             function updateVariantDisplay() {
                 const displayContainer = document.getElementById('selected-variants-display');
                 const listContainer = document.getElementById('selected-variants-list');
                 const priceDisplay = document.getElementById('selected-variant-price');
-
+        
                 if (selectedVariants.length > 0) {
                     if (displayContainer) displayContainer.style.display = 'block';
-
+        
                     let html = '<div class="d-flex flex-wrap gap-2">';
                     selectedVariants.forEach(function(variant) {
                         html += (
@@ -1009,7 +1092,7 @@ body.modal-open {
                         );
                     });
                     html += '</div>';
-
+        
                     if (listContainer) listContainer.innerHTML = html;
                     
                     // Update price in the selected variants container
@@ -1030,13 +1113,13 @@ body.modal-open {
                     if (priceDisplay) priceDisplay.textContent = '₹' + toINR(baseProductPrice);
                 }
             }
-
+        
             // Remove variant
             function removeVariant(variantId) {
                 const index = selectedVariants.findIndex(function(v) { return v.variantId === variantId; });
                 if (index !== -1) {
                     const variant = selectedVariants[index];
-
+        
                     // Reset UI for the removed option
                     const optionElement = document.querySelector('[data-option-id="' + variant.optionId + '"]');
                     if (optionElement) {
@@ -1047,27 +1130,27 @@ body.modal-open {
                         optionElement.style.borderColor = '#ddd';
                         optionElement.style.backgroundColor = 'white';
                     }
-
+        
                     // Remove from arrays
                     selectedVariants.splice(index, 1);
-
+        
                     const imageIndex = selectedVariantImages.indexOf(variant.image);
                     if (imageIndex !== -1) {
                         selectedVariantImages.splice(imageIndex, 1);
                     }
-
+        
                     updateVariantDisplay();
                     updatePrice();
                     updateImages();
                     updateAddToCartButton();
                 }
             }
-
+        
             // Update price display
             function updatePrice() {
                 let finalPrice = baseProductPrice;
                 let mainPrice = baseProductPrice;
-
+        
                 if (selectedVariants.length > 0) {
                     // Use the highest price among selected variants
                     selectedVariants.forEach(function(variant) {
@@ -1077,12 +1160,12 @@ body.modal-open {
                     });
                     mainPrice = finalPrice;
                 }
-
+        
                 // Get quantity
                 const quantityInput = document.querySelector('.quantity-product');
                 const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
                 const totalPrice = finalPrice * quantity;
-
+        
                 // Update all price displays
                 const priceElements = [
                     document.getElementById('main-product-sale-price'),
@@ -1090,7 +1173,7 @@ body.modal-open {
                     document.getElementById('sticky-product-price'),
                     document.getElementById('selected-variant-price')
                 ];
-
+        
                 priceElements.forEach(function(el) {
                     if (el) {
                         if (el.id === 'selected-variant-price' || el.id === 'add-to-cart-total-price') {
@@ -1100,14 +1183,14 @@ body.modal-open {
                         }
                     }
                 });
-
+        
                 // Update hidden field if exists
                 var hiddenField = document.getElementById('selected-variant-data');
                 if (hiddenField) {
                     hiddenField.value = JSON.stringify(selectedVariants);
                 }
             }
-
+        
             // Update product images
             function updateImages() {
                 // Create combined images array: variant images first, then base images
@@ -1122,7 +1205,7 @@ body.modal-open {
                 
                 // Update activeProductImages
                 activeProductImages = imagesToShow.length > 0 ? imagesToShow : baseProductImages;
-
+        
                 // Update main gallery images
                 const mainGallery = document.querySelector('#product-gallery-swiper .swiper-wrapper');
                 const thumbGallery = document.querySelector('#product-thumbs-swiper .swiper-wrapper');
@@ -1190,14 +1273,14 @@ body.modal-open {
                         }, 100);
                     }
                 }
-
+        
                 // Update sticky image
                 const stickyImg = document.getElementById('sticky-product-img');
                 if (stickyImg && activeProductImages[0]) {
                     stickyImg.src = activeProductImages[0];
                     stickyImg.dataset.src = activeProductImages[0];
                 }
-
+        
                 // Update variant display in sticky section
                 const variantDisplay = document.getElementById('sticky-product-variants');
                 if (variantDisplay) {
@@ -1213,15 +1296,15 @@ body.modal-open {
                     }
                 }
             }
-
+        
             // Update Add to Cart button state
             function updateAddToCartButton() {
                 const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
                 var productHasVariants = <%= (product.variants && product.variants.length > 0) ? 'true' : 'false' %> === 'true';
-
+        
                 if (productHasVariants) {
                     const allVariantsSelected = selectedVariants.length === <%= product.variants ? product.variants.length : 0 %>;
-
+        
                     addToCartButtons.forEach(function(button) {
                         if (allVariantsSelected) {
                             button.classList.remove('disabled');
@@ -1235,7 +1318,7 @@ body.modal-open {
                     });
                 }
             }
-
+        
             // Initialize default variant selections (select first available option for each variant)
             function initializeDefaultVariants() {
                 <% if (product.variants && product.variants.length > 0) { %>
@@ -1255,8 +1338,314 @@ body.modal-open {
                     });
                 <% } %>
             }
-
-            // Quantity change handlers
+        
+            // ==================== WISHLIST FUNCTIONS ====================
+            
+            // Check if product is in wishlist on page load
+            function checkWishlistStatus() {
+                const isLoggedIn = <%= user && user.role === "user" ? 'true' : 'false' %>;
+                
+                if (!isLoggedIn) {
+                    // If not logged in, show default state
+                    updateWishlistButton(false);
+                    return;
+                }
+                
+                const productId = '<%= product._id %>';
+                
+                // Check if product is in wishlist
+                fetch('/check-wishlist-item/' + productId, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        isInWishlist = data.inWishlist;
+                        wishlistItemId = data.wishlistItemId;
+                        updateWishlistButton(isInWishlist);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking wishlist status:', error);
+                });
+            }
+        
+            // Update wishlist button appearance
+            function updateWishlistButton(isAdded) {
+                const wishlistBtn = document.getElementById('add-to-wishlist-btn');
+                const wishlistBtnText = document.getElementById('wishlist-btn-text');
+                
+                if (!wishlistBtn) return;
+                
+                if (isAdded) {
+                    wishlistBtn.classList.add('added');
+                    wishlistBtnText.innerHTML = '<i class="icon-heart me-1"></i> In Wishlist';
+                    wishlistBtn.title = 'Remove from wishlist';
+                } else {
+                    wishlistBtn.classList.remove('added');
+                    wishlistBtnText.innerHTML = '<i class="icon-heart-outline me-1"></i> Add to Wishlist';
+                    wishlistBtn.title = 'Add to wishlist';
+                }
+            }
+        
+            // Show toast notification
+            function showToast(message, type = 'success') {
+                // Remove existing toasts
+                const existingToasts = document.querySelectorAll('.wishlist-toast');
+                existingToasts.forEach(toast => toast.remove());
+                
+                // Create new toast
+                const toast = document.createElement('div');
+                toast.className = `wishlist-toast ${type}`;
+                toast.textContent = message;
+                
+                // Add to body
+                document.body.appendChild(toast);
+                
+                // Show toast
+                setTimeout(() => toast.classList.add('show'), 10);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        
+            // Show login required modal
+            function showLoginRequiredModal() {
+                const modalBody = document.getElementById('wishlistModalBody');
+                modalBody.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="icon-user-x" style="font-size: 48px; color: #ff9800; margin-bottom: 20px;"></i>
+                        <h5 class="mb-3">Login Required</h5>
+                        <p class="mb-4">You need to login to add items to your wishlist.</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="/userLogin?redirect=${encodeURIComponent(window.location.pathname)}" 
+                               class="btn btn-primary">
+                                Login Now
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Show modal
+                const wishlistModal = new bootstrap.Modal(document.getElementById('wishlistModal'));
+                wishlistModal.show();
+            }
+        
+            // Show variant selection modal for wishlist
+            function showVariantSelectionModal(productId) {
+                const modalBody = document.getElementById('wishlistModalBody');
+                
+                // Check if all variants are selected
+                const productHasVariants = <%= (product.variants && product.variants.length > 0) ? 'true' : 'false' %> === 'true';
+                const allVariantsSelected = selectedVariants.length === <%= product.variants ? product.variants.length : 0 %>;
+                
+                if (!productHasVariants) {
+                    // No variants, just add to wishlist
+                    addToWishlist(productId);
+                    return;
+                }
+                
+                if (!allVariantsSelected) {
+                    // Show modal asking to select variants
+                    modalBody.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="icon-alert-circle" style="font-size: 48px; color: #ff9800; margin-bottom: 20px;"></i>
+                            <h5 class="mb-3">Select Variant</h5>
+                            <p class="mb-4">Please select all variant options before adding to wishlist.</p>
+                            
+                            <div class="selected-variants-preview mb-4">
+                                <h6 class="mb-2">Currently selected:</h6>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    ${selectedVariants.length > 0 ? 
+                                        selectedVariants.map(v => 
+                                            `<span class="badge bg-primary">${v.variantName}: ${v.optionValue}</span>`
+                                        ).join('') :
+                                        '<span class="text-muted">No variants selected</span>'
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-3 justify-content-center">
+                                <button type="button" class="btn btn-primary" onclick="addToWishlistWithSelectedVariants('${productId}')">
+                                    Add with Current Selection
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const wishlistModal = new bootstrap.Modal(document.getElementById('wishlistModal'));
+                    wishlistModal.show();
+                } else {
+                    // All variants selected, proceed with adding
+                    addToWishlistWithSelectedVariants(productId);
+                }
+            }
+        
+            // Add to wishlist with selected variants
+            function addToWishlistWithSelectedVariants(productId) {
+                const productHasVariants = <%= (product.variants && product.variants.length > 0) ? 'true' : 'false' %> === 'true';
+                
+                let variantData = null;
+                if (productHasVariants && selectedVariants.length > 0) {
+                    // Get the main variant (first selected)
+                    const mainVariant = selectedVariants[0];
+                    variantData = {
+                        variantName: mainVariant.variantName,
+                        optionValue: mainVariant.optionValue,
+                        optionId: mainVariant.optionId
+                    };
+                }
+                
+                addToWishlist(productId, variantData);
+            }
+        
+            // Main add to wishlist function
+            function addToWishlist(productId, variantData = null) {
+                const wishlistBtn = document.getElementById('add-to-wishlist-btn');
+                const wishlistBtnText = document.getElementById('wishlist-btn-text');
+                
+                if (!wishlistBtn) return;
+                
+                // Disable button and show loading
+                wishlistBtn.disabled = true;
+                wishlistBtnText.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Adding...';
+                
+                // Prepare data
+                const wishlistData = {
+                    productId: productId
+                };
+                
+                // Add variant data if available
+                if (variantData) {
+                    Object.assign(wishlistData, variantData);
+                }
+                
+                // Send AJAX request
+                fetch('/addToWishlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(wishlistData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        isInWishlist = true;
+                        wishlistItemId = data.wishlistItemId;
+                        updateWishlistButton(true);
+                        showToast('Added to wishlist successfully!');
+                    } else {
+                        if (data.message === 'Product already in wishlist') {
+                            // If already in wishlist, show remove option
+                            showRemoveWishlistModal(productId);
+                        } else {
+                            showToast(data.message || 'Failed to add to wishlist', 'error');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Failed to add to wishlist. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Reset button state
+                    if (wishlistBtn) {
+                        wishlistBtn.disabled = false;
+                        updateWishlistButton(isInWishlist);
+                    }
+                });
+            }
+        
+            // Remove from wishlist function
+            function removeFromWishlist(productId) {
+                const wishlistBtn = document.getElementById('add-to-wishlist-btn');
+                const wishlistBtnText = document.getElementById('wishlist-btn-text');
+                
+                if (!wishlistBtn) return;
+                
+                // Disable button and show loading
+                wishlistBtn.disabled = true;
+                wishlistBtnText.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Removing...';
+                
+                // Send AJAX request
+                fetch('/removeWishlist/' + productId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        isInWishlist = false;
+                        wishlistItemId = null;
+                        updateWishlistButton(false);
+                        showToast('Removed from wishlist');
+                    } else {
+                        showToast(data.message || 'Failed to remove from wishlist', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Failed to remove from wishlist. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Reset button state
+                    if (wishlistBtn) {
+                        wishlistBtn.disabled = false;
+                        updateWishlistButton(isInWishlist);
+                    }
+                });
+            }
+        
+            // Show remove confirmation modal
+            function showRemoveWishlistModal(productId) {
+                const modalBody = document.getElementById('wishlistModalBody');
+                modalBody.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="icon-heart" style="font-size: 48px; color: #ff4444; margin-bottom: 20px;"></i>
+                        <h5 class="mb-3">Already in Wishlist</h5>
+                        <p class="mb-4">This product is already in your wishlist.</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <button type="button" class="btn btn-danger" onclick="removeFromWishlist('${productId}')">
+                                Remove from Wishlist
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Keep in Wishlist
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                const wishlistModal = new bootstrap.Modal(document.getElementById('wishlistModal'));
+                wishlistModal.show();
+            }
+        
+            // Add to wishlist directly from variant selection (optional)
+            function addToWishlistFromVariant(productId, variantName, optionValue) {
+                const variantData = {
+                    variantName: variantName,
+                    optionValue: optionValue
+                };
+                
+                addToWishlist(productId, variantData);
+            }
+        
+            // ==================== EVENT LISTENERS ====================
+            
             document.addEventListener('DOMContentLoaded', function() {
                 // Initialize default variants if product has variants
                 if (<%= (product.variants && product.variants.length > 0) ? 'true' : 'false' %> === 'true') {
@@ -1264,7 +1653,10 @@ body.modal-open {
                 } else {
                     updatePrice();
                 }
-
+        
+                // Check wishlist status on page load
+                checkWishlistStatus();
+        
                 // Quantity controls (down)
                 document.querySelectorAll('.btn-decrease, .minus-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
@@ -1276,7 +1668,7 @@ body.modal-open {
                         }
                     });
                 });
-
+        
                 // Quantity controls (up)
                 document.querySelectorAll('.btn-increase, .plus-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
@@ -1286,7 +1678,7 @@ body.modal-open {
                         updatePrice();
                     });
                 });
-
+        
                 // Manual quantity input
                 document.querySelectorAll('.quantity-product').forEach(function(input) {
                     input.addEventListener('change', function() {
@@ -1296,20 +1688,20 @@ body.modal-open {
                         updatePrice();
                     });
                 });
-
+        
                 // Add to cart button click handler
                 document.querySelectorAll('.btn-add-to-cart').forEach(function(button) {
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
-
+        
                         var isLoggedIn = <%= user && user.role === "user" ? 'true' : 'false' %>;
-
+        
                         if (!isLoggedIn) {
                             // Redirect to login page
                             window.location.href = '/userLogin?redirect=' + encodeURIComponent(window.location.pathname);
                             return;
                         }
-
+        
                         // Check if all variants are selected (for variant products)
                         var productHasVariants = <%= (product.variants && product.variants.length > 0) ? 'true' : 'false' %> === 'true';
                         if (productHasVariants && selectedVariants.length !== <%= product.variants ? product.variants.length : 0 %>) {
@@ -1322,17 +1714,17 @@ body.modal-open {
                             });
                             return;
                         }
-
+        
                         // Get quantity
                         const quantityInput = document.querySelector('.quantity-product');
                         const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
-
+        
                         // Prepare data
                         const cartData = {
                             productId: '<%= product._id %>',
                             quantity: quantity
                         };
-
+        
                         // Add variant data if available
                         if (selectedVariants.length > 0) {
                             cartData.variantSelections = selectedVariants.map(function(v) {
@@ -1344,7 +1736,7 @@ body.modal-open {
                                 };
                             });
                         }
-
+        
                         // Send AJAX request
                         fetch('/addCart', {
                             method: 'POST',
@@ -1355,40 +1747,47 @@ body.modal-open {
                         })
                         .then(function(response) { return response.json(); })
                         .then(function(data) {
-                            if (data.success) {
-                                // Show success message using swal
-                                swalNotify({
-                                    icon: 'success',
-                                    title: 'Added to Cart!',
-                                    text: 'Product added to cart successfully!',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
+  if (data.success) {
 
-                                // Update cart count in header if exists
-                                const cartCount = document.querySelector('.cart-count');
-                                if (cartCount) {
-                                    cartCount.textContent = data.cartCount;
-                                }
+    swalNotify({
+      icon: 'success',
+      title: 'Added to Cart!',
+      text: 'Product added to cart successfully!',
+      timer: 1500,
+      showConfirmButton: false
+    });
 
-                                // Open cart modal if needed
-                                if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
-                                    const cartModalElem = document.getElementById('shoppingCart');
-                                    if (cartModalElem) {
-                                        const cartModal = new bootstrap.Modal(cartModalElem);
-                                        cartModal.show();
-                                    }
-                                }
-                            } else {
-                                swalNotify({
-                                    icon: 'error',
-                                    title: 'Cart Error',
-                                    text: data.message || 'Failed to add product to cart.',
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                            }
-                        })
+    // ✅ update count instantly
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+      cartCount.textContent = data.cartCount;
+    }
+
+    // ✅ open cart modal
+    if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
+      const cartModalElem = document.getElementById('shoppingCart');
+      if (cartModalElem) {
+        const cartModal = new bootstrap.Modal(cartModalElem);
+        cartModal.show();
+      }
+    }
+
+    // ✅ reload after swal ends
+    setTimeout(() => {
+      window.location.reload();
+    }, 1600);
+
+  } else {
+    swalNotify({
+      icon: 'error',
+      title: 'Cart Error',
+      text: data.message || 'Failed to add product to cart.',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+})
+
                         .catch(function(error) {
                             console.error('Error:', error);
                             swalNotify({
@@ -1401,7 +1800,51 @@ body.modal-open {
                         });
                     });
                 });
-
+        
+                // Add event listener to wishlist button
+                const wishlistBtn = document.getElementById('add-to-wishlist-btn');
+                if (wishlistBtn) {
+                    wishlistBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        const productId = this.dataset.productId;
+                        const isLoggedIn = <%= user && user.role === "user" ? 'true' : 'false' %>;
+                        
+                        if (!isLoggedIn) {
+                            // Show login modal
+                            showLoginRequiredModal();
+                            return;
+                        }
+                        
+                        if (isInWishlist) {
+                            // Already in wishlist, show remove confirmation
+                            showRemoveWishlistModal(productId);
+                        } else {
+                            // Not in wishlist, add it
+                            showVariantSelectionModal(productId);
+                        }
+                    });
+                }
+        
+                // Quick add to wishlist from product card (if you have multiple wishlist buttons)
+                document.querySelectorAll('.btn-quick-wishlist').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const productId = this.dataset.productId;
+                        const isLoggedIn = <%= user && user.role === "user" ? 'true' : 'false' %>;
+                        
+                        if (!isLoggedIn) {
+                            showLoginRequiredModal();
+                            return;
+                        }
+                        
+                        // Quick add without variant selection
+                        addToWishlist(productId);
+                    });
+                });
+        
                 // Initialize variant display
                 updateAddToCartButton();
             });
@@ -1655,7 +2098,6 @@ body.modal-open {
   <!-- SweetAlert for notifications -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-  // Show/hide review form when button is clicked
   document.addEventListener("DOMContentLoaded", function() {
       var toggleBtn = document.getElementById('toggle-review-form-btn');
       var formWrapper = document.getElementById('add-review-form-wrapper');
@@ -1895,7 +2337,6 @@ body.modal-open {
                 </div>
             </div>
         </section>
-
       
         <!-- Footer -->
          <footer id="footer" class="footer">
@@ -2016,7 +2457,7 @@ body.modal-open {
             </div>
         </div>
     </div>
-</footer>
+         </footer>
 
        
 <div class="mobile-nav-wrapper" id="mobileNavWrapper">
@@ -2118,7 +2559,7 @@ body.modal-open {
     </div>
     <!-- /toolbar-bottom -->
 </div>
-<script>
+    <script>
     document.addEventListener("DOMContentLoaded", () => {
       const topToolbar = document.getElementById("mobileTopToolbar");
       if (!topToolbar) return;

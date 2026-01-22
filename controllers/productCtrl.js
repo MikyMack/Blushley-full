@@ -6,6 +6,8 @@ const SubCategory = require("../models/SubCategory");
 const ChildCategory = require("../models/ChildCategory");
 const User = require("../models/User");
 const Coupon = require("../models/Coupon");
+const Wishlist = require('../models/Wishlist');
+const Cart = require('../models/Cart');
 
 function safeParse(value, fallback = null) {
   try {
@@ -798,4 +800,370 @@ exports.searchProducts = async (req, res) => {
   }
 };
 
+// Add to wishlist
+exports.addToWishlist = async (req, res) => {
+  try {
+    const { productId, variantName, optionValue, optionId } = req.body;
+    const userId = req.session?.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login.",
+      });
+    }
+    // Check if product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found' 
+      });
+    }
+
+    // Find or create wishlist for user
+    let wishlist = await Wishlist.findOne({ userId });
+    
+    if (!wishlist) {
+      wishlist = new Wishlist({ 
+        userId, 
+        items: [] 
+      });
+    }
+
+    // Check if product already in wishlist
+    const existingItem = wishlist.items.find(
+      item => item.productId.toString() === productId
+    );
+
+    if (existingItem) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Product already in wishlist' 
+      });
+    }
+
+    // Add new item
+    wishlist.items.push({
+      productId,
+      variantName,
+      optionValue,
+      optionId
+    });
+
+    await wishlist.save();
+
+    res.json({ 
+      success: true, 
+      message: 'Added to wishlist',
+      wishlist 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+// Remove from wishlist
+exports.removeFromWishlist = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const userId = req.session?.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login.",
+      });
+    }
+    const wishlist = await Wishlist.findOne({ userId });
+    
+    if (!wishlist) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Wishlist not found' 
+      });
+    }
+
+    // Remove item from wishlist
+    wishlist.items = wishlist.items.filter(
+      item => item.productId.toString() !== productId
+    );
+
+    await wishlist.save();
+
+    res.json({ 
+      success: true, 
+      message: 'Removed from wishlist',
+      wishlist 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+// Get user wishlist with product details
+exports.getWishlist = async (req, res) => {
+  try {
+    const userId = req.session?.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login.",
+      });
+    }
+
+    const wishlist = await Wishlist.findOne({ userId })
+      .populate({
+        path: 'items.productId',
+        select: 'title images basePrice salePrice totalStock variants status slug',
+        match: { 
+          status: { $in: ['approved'] } // Only show approved products
+        }
+      });
+
+    if (!wishlist) {
+      return res.json({ 
+        success: true, 
+        wishlist: { items: [] } 
+      });
+    }
+
+    const validItems = wishlist.items.filter(item => item.productId);
+
+    res.json({ 
+      success: true, 
+      wishlist: {
+        ...wishlist.toObject(),
+        items: validItems
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+// Move from wishlist to cart
+exports.moveToCart = async (req, res) => {
+  try {
+    const { productId, variantName, optionValue, optionId, quantity = 1 } = req.body;
+    const userId = req.session?.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login.",
+      });
+    }
+    // Get product with details
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found' 
+      });
+    }
+
+    // Check product status
+    if (product.status !== 'approved') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Product is not available for purchase' 
+      });
+    }
+
+    // Check stock availability
+    let stockAvailable = false;
+    let selectedPrice = product.salePrice || product.basePrice;
+    let selectedVariantOption = null;
+
+    // If product has variants
+    if (product.variants && product.variants.length > 0) {
+      if (!variantName || !optionValue) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Please select a variant' 
+        });
+      }
+
+      // Find the specific variant option
+      for (const variant of product.variants) {
+        if (variant.name === variantName) {
+          const option = variant.options.find(opt => opt.value === optionValue);
+          if (option) {
+            selectedVariantOption = option;
+            stockAvailable = option.stock > 0;
+            selectedPrice = option.price || product.basePrice;
+            break;
+          }
+        }
+      }
+
+      if (!selectedVariantOption) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Selected variant not found' 
+        });
+      }
+    } else {
+      // Simple product without variants
+      stockAvailable = product.totalStock > 0;
+    }
+
+    if (!stockAvailable) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Product is out of stock' 
+      });
+    }
+
+    // Check if item already in cart
+    let cart = await Cart.findOne({ userId });
+    
+    if (!cart) {
+      cart = new Cart({ 
+        userId, 
+        items: [] 
+      });
+    }
+
+    // Check if same product with same variant already in cart
+    const existingCartItem = cart.items.find(item => {
+      if (item.productId.toString() !== productId) return false;
+      
+      if (product.variants && product.variants.length > 0) {
+        return item.variantName === variantName && 
+               item.optionValue === optionValue;
+      }
+      return true;
+    });
+
+    if (existingCartItem) {
+      // Update quantity if already in cart
+      existingCartItem.quantity += quantity;
+    } else {
+      // Add new item to cart
+      cart.items.push({
+        productId,
+        variantName,
+        optionValue,
+        optionId,
+        quantity,
+        price: selectedPrice
+      });
+    }
+
+    await cart.save();
+
+    // Remove from wishlist after adding to cart
+    const wishlist = await Wishlist.findOne({ userId });
+    if (wishlist) {
+      wishlist.items = wishlist.items.filter(
+        item => item.productId.toString() !== productId
+      );
+      await wishlist.save();
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Added to cart',
+      cart,
+      removedFromWishlist: true
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+
+exports.checkWishlistStock = async (req, res) => {
+  try {
+    const userId = req.session?.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login.",
+      });
+    }
+
+    const wishlist = await Wishlist.findOne({ userId }).populate({
+      path: "items.productId",
+      select: "title totalStock variants status",
+    });
+
+    if (!wishlist || wishlist.items.length === 0) {
+      return res.json({ success: true, items: [] });
+    }
+
+    const itemsWithStock = wishlist.items.map((item) => {
+      const product = item.productId;
+      let inStock = false;
+      let stockInfo = null;
+
+      if (!product) {
+        return {
+          productId: item.productId,
+          inStock: false,
+          message: "Product not found",
+        };
+      }
+
+      if (product.status !== "approved") {
+        return {
+          productId: product._id,
+          inStock: false,
+          message: "Product not available",
+        };
+      }
+
+      if (product.variants && product.variants.length > 0) {
+        const variant = product.variants.find((v) => v.name === item.variantName);
+
+        if (variant) {
+          const option = variant.options?.find((opt) => opt.value === item.optionValue);
+
+          if (option) {
+            inStock = option.stock > 0;
+            stockInfo = {
+              stock: option.stock,
+              variantName: variant.name,
+              optionValue: option.value,
+            };
+          } else {
+            stockInfo = { stock: 0, message: "Option not found" };
+          }
+        } else {
+          stockInfo = { stock: 0, message: "Variant not found" };
+        }
+      } else {
+        inStock = product.totalStock > 0;
+        stockInfo = { stock: product.totalStock };
+      }
+
+      return {
+        productId: product._id,
+        productName: product.title,
+        inStock,
+        stockInfo,
+        variantName: item.variantName,
+        optionValue: item.optionValue,
+      };
+    });
+
+    return res.json({ success: true, items: itemsWithStock });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 

@@ -233,6 +233,16 @@ router.delete("/removeCart/:itemId", isLoggedIn, cartCtrl.removeCartItem);
 router.delete("/clearCart", isLoggedIn, cartCtrl.clearCart);
 router.post('/guest/add-to-cart', cartCtrl.guestAddToCart);
 
+// Add to wishlist
+router.post('/addToWishlist', productCtrl.addToWishlist);
 
+// Remove from wishlist
+router.delete('/removeWishlist/:productId', productCtrl.removeFromWishlist);
+
+// Move item from wishlist to cart
+router.post('/move-to-cart', productCtrl.moveToCart);
+
+// Check stock for wishlist items
+router.get('/check-stock-wishlist', productCtrl.checkWishlistStock);
 
 module.exports = router;

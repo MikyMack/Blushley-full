@@ -42,7 +42,122 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16x16.png">
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/images/logo/apple-touch-icon.png">
-
+    <style>
+        .wishlist-empty {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .wishlist-empty-icon {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .wishlist-empty h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .wishlist-empty p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .remove-wishlist {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-wishlist:hover {
+            background: #ff4444;
+            color: white;
+            border-color: #ff4444;
+        }
+        
+        .stock-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        .in-stock {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .out-of-stock {
+            background: #f44336;
+            color: white;
+        }
+        
+        .variant-selection {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .variant-select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .move-to-cart-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+        
+        .move-to-cart-btn:hover:not(:disabled) {
+            background: #555;
+        }
+        
+        .move-to-cart-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .wishlist-loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .product-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .product-link:hover {
+            color: inherit;
+        }
+    </style>
 </head>
 
 <body class="preload-wrapper">
@@ -223,364 +338,418 @@
                 <ul class="breadcrumbs d-flex align-items-center justify-content-center">
                     <li><a class="link" href="/">Homepage</a></li>
                     <li><i class="icon-arrRight"></i></li>
-                    <li><a class="link" href="shop-default-grid.html">Shop</a></li>
+                    <li><a class="link" href="/shop">Shop</a></li>
                     <li><i class="icon-arrRight"></i></li>
                     <li>Wishlist</li>
                 </ul>
             </div>
         </div>
         <!-- /page-title -->
-        <!-- Section product -->
         <section class="flat-spacing">
             <div class="container">
-                <div class="tf-grid-layout tf-col-2 md-col-3 xl-col-4">
-                    <!-- card product 1 -->
-                    <div class="card-product wow fadeInUp" data-wow-delay="0s" data-availability="Out of stock" data-brand="adidas">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                           
-                            <div class="list-btn-main">
-                                <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">V-neck cotton T-shirt</a>
-                            <span class="price current-price">₹59.99</span>
-                        </div>
+                <!-- Loading State -->
+                <div id="wishlistLoading" class="wishlist-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                    <!-- card product 2 -->
-                    <div class="card-product wow fadeInUp" data-wow-delay="0.1s" data-availability="In stock" data-brand="nike">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                            <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                            <div class="marquee-product bg-main">
-                                <div class="marquee-wrapper">
-                                    <div class="initial-child-container">
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="marquee-wrapper">
-                                    <div class="initial-child-container">
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <p class="font-2 text-btn-uppercase fw-6 text-white">Hot Sale 25% OFF</p>
-                                        </div>
-                                        <div class="marquee-child-item">
-                                            <span class="icon icon-lightning text-critical"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="list-btn-main">
-                                <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">Polarized sunglasses</a>
-                            <div class="price"><span class="old-price">₹98.00</span> <span class="current-price">₹79.99</span></div>
-                            <ul class="list-color-product">
-                                <li class="list-color-item color-swatch active line">
-                                    <span class="d-none text-capitalize color-filter">Light Blue</span>
-                                    <span class="swatch-value bg-light-blue"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Light Blue</span>
-                                    <span class="swatch-value bg-light-blue-2"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                            </ul>
-                        </div>
+                    <p class="mt-3">Loading your wishlist...</p>
+                </div>
+                
+                <!-- Empty State (hidden by default) -->
+                <div id="wishlistEmpty" class="wishlist-empty" style="display: none;">
+                    <div class="wishlist-empty-icon">
+                        <i class="icon-heart"></i>
                     </div>
-                    <!-- card product 3 -->
-                    <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0.2s" data-availability="In stock" data-brand="LV">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                            <div class="variant-wrap size-list">
-                                <ul class="variant-box">
-                                    <li class="size-item">S</li>
-                                    <li class="size-item">M</li>
-                                    <li class="size-item">L</li>
-                                    <li class="size-item">XL</li>
-                                </ul>
-                            </div>
-                            <div class="variant-wrap countdown-wrap">
-                                <div class="variant-box">
-                                    <div class="js-countdown" data-timer="1007500" data-labels="D :,H :,M :,S"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="list-btn-main">
-                                <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">Ramie shirt with pockets </a>
-                            <div class="price"><span class="old-price">₹98.00</span> <span class="current-price">₹89.99</span></div>
-                            <ul class="list-color-product">
-                                <li class="list-color-item color-swatch active line">
-                                    <span class="d-none text-capitalize color-filter">Orange</span>
-                                    <span class="swatch-value bg-light-orange"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Grey</span>
-                                    <span class="swatch-value bg-light-grey"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- card product 4 -->
-                    <div class="card-product wow fadeInUp" data-wow-delay="0.3s" data-availability="Out of stock" data-brand="gucci">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                           
-                            <div class="list-btn-main">
-                                <a href="#shoppingCart" data-bs-toggle="modal" class="btn-main-product">Add To cart</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">Ribbed cotton-blend top</a>
-                            <span class="price current-price">₹69.99</span>
-                            <ul class="list-color-product">
-                                <li class="list-color-item color-swatch active line">
-                                    <span class="d-none text-capitalize color-filter">Grey</span>
-                                    <span class="swatch-value bg-dark-grey"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Pink</span>
-                                    <span class="swatch-value bg-light-pink"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Grey</span>
-                                    <span class="swatch-value bg-dark-grey-2"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- card product 5 -->
-                    <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0s" data-availability="Out of stock" data-brand="hermes">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                            <div class="variant-wrap size-list">
-                                <ul class="variant-box">
-                                    <li class="size-item">S</li>
-                                    <li class="size-item">M</li>
-                                    <li class="size-item">L</li>
-                                    <li class="size-item">XL</li>
-                                </ul>
-                            </div>
-                           
-                            <div class="list-btn-main">
-                                <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">Ribbed cotton-blend top</a>
-                            <span class="price current-price">₹39.99</span>
-                        </div>
-                    </div>
-                    <!-- card product 6 -->
-                    <div class="card-product wow fadeInUp" data-wow-delay="0.1s" data-availability="In stock" data-brand="zalando">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                            
-                            
-                            <div class="list-btn-main">
-                                <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">Faux-leather trousers</a>
-                            <span class="price current-price">₹79.99</span>
-                            <ul class="list-color-product">
-                                <li class="list-color-item color-swatch active">
-                                    <span class="d-none text-capitalize color-filter">Orange</span>
-                                    <span class="swatch-value bg-orange"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Pink</span>
-                                    <span class="swatch-value bg-dark-pink"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- card product 7 -->
-                    <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0.2s" data-availability="In stock" data-brand="nike">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                            <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                            <div class="variant-wrap size-list">
-                                <ul class="variant-box">
-                                    <li class="size-item">S</li>
-                                    <li class="size-item">M</li>
-                                    <li class="size-item">L</li>
-                                    <li class="size-item">XL</li>
-                                </ul>
-                            </div>
-                           
-                            <div class="list-btn-main">
-                                <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">mock product</a>
-                            <div class="price"><span class="old-price">₹98.00</span><span class="current-price">₹129.99</span></div>
-                            <ul class="list-color-product">
-                                <li class="list-color-item color-swatch active">
-                                    <span class="d-none text-capitalize color-filter">Green</span>
-                                    <span class="swatch-value bg-light-green"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Grey</span>
-                                    <span class="swatch-value bg-grey"></span>
-                                    <img class="lazyload" data-src="/images/products/womens/women-94.jpg" src="/images/products/womens/women-94.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch line">
-                                    <span class="d-none text-capitalize color-filter">White</span>
-                                    <span class="swatch-value bg-white"></span>
-                                    <img class="lazyload" data-src="/images/products/womens/women-87.jpg" src="/images/products/womens/women-87.jpg" alt="image-product">
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- card product 8 -->
-                    <div class="card-product card-product-size wow fadeInUp" data-wow-delay="0.3s" data-availability="In stock" data-brand="LV">
-                        <div class="card-product-wrapper">
-                            <a href="product-detail.html" class="product-img">
-                                <img class="lazyload img-product" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                <img class="lazyload img-hover" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                            </a>
-                            <div class="on-sale-wrap"><span class="on-sale-item">-25%</span></div>
-                            <div class="variant-wrap size-list">
-                                <ul class="variant-box">
-                                    <li class="size-item">S</li>
-                                    <li class="size-item">M</li>
-                                    <li class="size-item">L</li>
-                                    <li class="size-item">XL</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="list-btn-main">
-                                <a href="#quickAdd" data-bs-toggle="modal" class="btn-main-product">Quick Add</a>
-                            </div> 
-                        </div>
-                        <div class="card-product-info">
-                            <a href="product-detail.html" class="title link">Double-button trench coat</a>
-                            <div class="price"><span class="old-price">₹98.00</span><span class="current-price">₹219.99</span></div>
-                            <ul class="list-color-product">
-                                <li class="list-color-item color-swatch active">
-                                    <span class="d-none text-capitalize color-filter">Grey</span>
-                                    <span class="swatch-value bg-grey-2"></span>
-                                    <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg" src="/images/products/beauty-cosmetic/beauty8.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch">
-                                    <span class="d-none text-capitalize color-filter">Orange</span>
-                                    <span class="swatch-value bg-light-orange"></span>
-                                    <img class="lazyload" data-src="/images/products/womens/women-111.jpg" src="/images/products/womens/women-111.jpg" alt="image-product">
-                                </li>
-                                <li class="list-color-item color-swatch line">
-                                    <span class="d-none text-capitalize color-filter">White</span>
-                                    <span class="swatch-value bg-white"></span>
-                                    <img class="lazyload" data-src="/images/products/womens/women-104.jpg" src="/images/products/womens/women-104.jpg" alt="image-product">
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- pagination -->
-                    <ul class="wg-pagination justify-content-center">
-                        <li><a href="#" class="pagination-item text-button">1</a></li>
-                        <li class="active"><div class="pagination-item text-button">2</div></li>
-                        <li><a href="#" class="pagination-item text-button">3</a></li>
-                        <li><a href="#" class="pagination-item text-button"><i class="icon-arrRight"></i></a></li>
-                    </ul>
+                    <h3>Your wishlist is empty</h3>
+                    <p>Save items you like to your wishlist. Review them anytime and easily move them to the bag.</p>
+                    <a href="/products" class="btn btn-primary">Continue Shopping</a>
+                </div>
+                
+                <!-- Wishlist Products Container -->
+                <div id="wishlistContainer" class="tf-grid-layout tf-col-2 md-col-3 xl-col-4" style="display: none;">
+                    <!-- Products will be dynamically inserted here -->
                 </div>
             </div>
         </section>
-        <!-- /Section product -->
+    
+        <!-- Modal for variant selection if needed -->
+        <div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Select Variant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="variantModalBody">
+                        <!-- Variant options will be loaded here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmMoveToCart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                let currentProductToMove = null;
+                let wishlistItems = [];
+                
+                // Load wishlist items
+                function loadWishlist() {
+                    $.ajax({
+                        url: '/check-stock-wishlist',
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.success && response.items && response.items.length > 0) {
+                                wishlistItems = response.items;
+                                renderWishlist(response.items);
+                                $('#wishlistLoading').hide();
+                                $('#wishlistContainer').show();
+                                $('#wishlistEmpty').hide();
+                            } else {
+                                showEmptyWishlist();
+                            }
+                        },
+                        error: function() {
+                            showEmptyWishlist();
+                            showToast('Error loading wishlist', 'error');
+                        }
+                    });
+                }
+                
+                // Render wishlist items
+                function renderWishlist(items) {
+                    const container = $('#wishlistContainer');
+                    container.empty();
+                    
+                    items.forEach((item, index) => {
+                        const product = item.productId;
+                        if (!product) return;
+                        
+                        const productCard = createProductCard(item, index);
+                        container.append(productCard);
+                    });
+                }
+                
+                // Create product card HTML
+                function createProductCard(item, index) {
+                    const product = item.productId;
+                    const isInStock = item.inStock;
+                    const hasVariants = product.variants && product.variants.length > 0;
+                    const price = product.salePrice || product.basePrice;
+                    const hasSale = product.salePrice && product.salePrice < product.basePrice;
+                    const mainImage = product.images && product.images.length > 0 ? product.images[0] : '/images/products/default.jpg';
+                    
+                    return `
+                        <div class="card-product wow fadeInUp" data-wow-delay="${index * 0.1}s" data-product-id="${product._id}">
+                            <div class="card-product-wrapper">
+                                <!-- Stock Badge -->
+                                <div class="stock-badge ${isInStock ? 'in-stock' : 'out-of-stock'}">
+                                    ${isInStock ? 'In Stock' : 'Out of Stock'}
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <div class="remove-wishlist" onclick="removeFromWishlist('${product._id}', this)">
+                                    <i class="icon-close"></i>
+                                </div>
+                                
+                                <!-- Product Image -->
+                                <a href="/product/${product.slug}" class="product-img">
+                                    <img class="lazyload img-product" data-src="${mainImage}" src="${mainImage}" alt="${product.title}">
+                                    ${product.images && product.images.length > 1 ? 
+                                        `<img class="lazyload img-hover" data-src="${product.images[1]}" src="${product.images[1]}" alt="${product.title}">` : 
+                                        `<img class="lazyload img-hover" data-src="${mainImage}" src="${mainImage}" alt="${product.title}">`
+                                    }
+                                </a>
+                                
+                                <!-- Sale Badge -->
+                                ${hasSale ? `<div class="on-sale-wrap"><span class="on-sale-item">-${Math.round((1 - product.salePrice/product.basePrice) * 100)}%</span></div>` : ''}
+                                
+                                <!-- Variant Selection (if applicable) -->
+                                ${hasVariants ? createVariantSelection(product, item.variantName, item.optionValue) : ''}
+                                
+                                <!-- Add to Cart Button -->
+                                <div class="list-btn-main">
+                                    ${isInStock ? 
+                                        `<button class="btn-main-product move-to-cart-btn" 
+                                                onclick="moveToCart('${product._id}', ${hasVariants}, '${item.variantName || ''}', '${item.optionValue || ''}')">
+                                            Add To Cart
+                                        </button>` :
+                                        `<button class="btn-main-product move-to-cart-btn" disabled>
+                                            Out of Stock
+                                        </button>`
+                                    }
+                                </div>
+                            </div>
+                            <div class="card-product-info">
+                                <a href="/product/${product.slug}" class="title link">${product.title}</a>
+                                <div class="price">
+                                    ${hasSale ? `<span class="old-price">₹${product.basePrice.toFixed(2)}</span>` : ''}
+                                    <span class="current-price">₹${price}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Create variant selection HTML
+                function createVariantSelection(product, selectedVariantName, selectedOptionValue) {
+                    let html = '<div class="variant-selection">';
+                    
+                    product.variants.forEach(variant => {
+                        html += `
+                            <div class="variant-group">
+                                <label class="variant-label">${variant.name}:</label>
+                                <select class="variant-select" data-variant-name="${variant.name}" 
+                                        onchange="updateWishlistVariant('${product._id}', '${variant.name}', this.value)">
+                                    <option value="">Select ${variant.name}</option>
+                        `;
+                        
+                        variant.options.forEach(option => {
+                            const isSelected = selectedVariantName === variant.name && selectedOptionValue === option.value;
+                            html += `<option value="${option.value}" ${isSelected ? 'selected' : ''} 
+                                     ${option.stock <= 0 ? 'disabled' : ''}>
+                                     ${option.value} ${option.stock <= 0 ? '(Out of Stock)' : ''}
+                                     </option>`;
+                        });
+                        
+                        html += `</select></div>`;
+                    });
+                    
+                    html += '</div>';
+                    return html;
+                }
+                
+                // Show empty wishlist state
+                function showEmptyWishlist() {
+                    $('#wishlistLoading').hide();
+                    $('#wishlistContainer').hide();
+                    $('#wishlistEmpty').show();
+                }
+                
+                // Remove from wishlist
+                window.removeFromWishlist = function(productId, element) {
+                    if (!confirm('Are you sure you want to remove this item from your wishlist?')) {
+                        return;
+                    }
+                    
+                    $.ajax({
+                        url: '/removeWishlist/' + productId,
+                        method: 'DELETE',
+                        success: function(response) {
+                            if (response.success) {
+                                $(element).closest('.card-product').fadeOut(300, function() {
+                                    $(this).remove();
+                                    // Check if wishlist is now empty
+                                    if ($('#wishlistContainer .card-product').length === 0) {
+                                        showEmptyWishlist();
+                                    }
+                                });
+                                showToast('Removed from wishlist', 'success');
+                            } else {
+                                showToast(response.message || 'Error removing item', 'error');
+                            }
+                        },
+                        error: function() {
+                            showToast('Error removing item', 'error');
+                        }
+                    });
+                }
+                
+                // Update variant selection in wishlist
+                window.updateWishlistVariant = function(productId, variantName, optionValue) {
+                    // Store the selected variant in localStorage or update via API
+                    // This is a simplified version - you might want to update this on the server
+                    showToast(`Selected ${variantName}: ${optionValue}`, 'info');
+                    
+                    // You could make an API call to update the wishlist item variant
+                    // $.post('/updateWishlistVariant', { productId, variantName, optionValue });
+                }
+                
+                // Move to cart
+                window.moveToCart = function(productId, hasVariants, variantName, optionValue) {
+                    const productItem = wishlistItems.find(item => item.productId._id === productId);
+                    
+                    if (!productItem || !productItem.inStock) {
+                        showToast('Product is out of stock', 'error');
+                        return;
+                    }
+                    
+                    if (hasVariants && (!variantName || !optionValue)) {
+                        // Show variant modal if no variant selected
+                        showVariantModal(productId, productItem.productId);
+                        return;
+                    }
+                    
+                    // Proceed with moving to cart
+                    performMoveToCart(productId, variantName, optionValue);
+                }
+                
+                // Show variant selection modal
+                function showVariantModal(productId, product) {
+                    currentProductToMove = { productId, product };
+                    
+                    let modalContent = '<div class="variant-modal-content">';
+                    modalContent += `<p>Please select variant for: <strong>${product.title}</strong></p>`;
+                    
+                    product.variants.forEach(variant => {
+                        modalContent += `
+                            <div class="mb-3">
+                                <label class="form-label">${variant.name}</label>
+                                <select class="form-select variant-option-select" data-variant-name="${variant.name}">
+                                    <option value="">Select ${variant.name}</option>
+                        `;
+                        
+                        variant.options.forEach(option => {
+                            modalContent += `<option value="${option.value}" ${option.stock <= 0 ? 'disabled' : ''}>
+                                            ${option.value} ${option.stock <= 0 ? '(Out of Stock)' : ''}
+                                            </option>`;
+                        });
+                        
+                        modalContent += `</select></div>`;
+                    });
+                    
+                    modalContent += '</div>';
+                    
+                    $('#variantModalBody').html(modalContent);
+                    $('#variantModal').modal('show');
+                }
+                
+                // Confirm move to cart from modal
+                $('#confirmMoveToCart').click(function() {
+                    const variantSelects = $('.variant-option-select');
+                    let selectedVariants = {};
+                    let isValid = true;
+                    
+                    variantSelects.each(function() {
+                        const variantName = $(this).data('variant-name');
+                        const optionValue = $(this).val();
+                        
+                        if (!optionValue) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                        } else {
+                            selectedVariants[variantName] = optionValue;
+                            $(this).removeClass('is-invalid');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        showToast('Please select all variant options', 'error');
+                        return;
+                    }
+                    
+                    // Convert selected variants to format needed for API
+                    const variantNames = Object.keys(selectedVariants);
+                    const firstVariantName = variantNames[0];
+                    const firstOptionValue = selectedVariants[firstVariantName];
+                    
+                    performMoveToCart(currentProductToMove.productId, firstVariantName, firstOptionValue);
+                    $('#variantModal').modal('hide');
+                });
+                
+                // Perform the actual move to cart API call
+                function performMoveToCart(productId, variantName, optionValue) {
+                    $.ajax({
+                        url: '/move-to-cart',
+                        method: 'POST',
+                        data: {
+                            productId: productId,
+                            variantName: variantName || null,
+                            optionValue: optionValue || null,
+                            quantity: 1
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove the item from wishlist display
+                                $(`[data-product-id="${productId}"]`).fadeOut(300, function() {
+                                    $(this).remove();
+                                    // Check if wishlist is now empty
+                                    if ($('#wishlistContainer .card-product').length === 0) {
+                                        showEmptyWishlist();
+                                    }
+                                });
+                                
+                                // Update cart count in header (if you have one)
+                                updateCartCount();
+                                
+                                showToast('Added to cart successfully', 'success');
+                            } else {
+                                showToast(response.message || 'Error adding to cart', 'error');
+                            }
+                        },
+                        error: function() {
+                            showToast('Error adding to cart', 'error');
+                        }
+                    });
+                }
+                
+                // Update cart count in header
+                function updateCartCount() {
+                    // This depends on how you display cart count
+                    // Example: If you have a span with id "cartCount"
+                    $('#cartCount').each(function() {
+                        const currentCount = parseInt($(this).text()) || 0;
+                        $(this).text(currentCount + 1);
+                        $(this).addClass('updated');
+                        setTimeout(() => $(this).removeClass('updated'), 500);
+                    });
+                }
+                
+                // Toast notification function
+                function showToast(message, type = 'info') {
+                    // Create toast element
+                    const toast = $(`
+                        <div class="toast-notification toast-${type}">
+                            ${message}
+                        </div>
+                    `);
+                    
+                    // Add to body
+                    $('body').append(toast);
+                    
+                    // Show toast
+                    setTimeout(() => toast.addClass('show'), 10);
+                    
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        toast.removeClass('show');
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                }
+                
+                // Add CSS for toast
+                $('<style>').text(`
+                    .toast-notification {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        padding: 12px 20px;
+                        border-radius: 4px;
+                        color: white;
+                        z-index: 9999;
+                        transform: translateX(100%);
+                        opacity: 0;
+                        transition: all 0.3s ease;
+                    }
+                    .toast-notification.show {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    .toast-success { background: #4CAF50; }
+                    .toast-error { background: #f44336; }
+                    .toast-info { background: #2196F3; }
+                    .toast-warning { background: #ff9800; }
+                `).appendTo('head');
+                
+                // Initialize
+                loadWishlist();
+            });
+        </script>
         
        
        
