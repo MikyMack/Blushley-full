@@ -2,10 +2,17 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  phone: { type: String, unique: true },
+  phone: {
+    type: String,
+    default: undefined, 
+  },
   name: String,
   email: String,
-  role: { type: String, enum: ['user','reseller','freelancer','salon','staff','admin','superadmin'], default: 'user' },
+  role: {
+    type: String,
+    enum: ['user','reseller','freelancer','salon','staff','admin','superadmin'],
+    default: 'user'
+  },
   isVerified: { type: Boolean, default: false },
   wallet: {
     balance: { type: Number, default: 0 },
@@ -20,5 +27,15 @@ const UserSchema = new mongoose.Schema({
   ],
   isBlocked: { type: Boolean, default: false },
 }, { timestamps: true });
+
+// ✅ create UNIQUE index only when phone exists
+UserSchema.index(
+  { phone: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { phone: { $type: "string" } }
+  }
+);
+
 
 module.exports = mongoose.model('User', UserSchema);
