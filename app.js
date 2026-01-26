@@ -106,7 +106,7 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500);
   if (req.accepts('json')) return res.json({ error: err.message || 'Server error' });
-  return res.render('error', { error: err });
+  return res.render('404', { error: err });
 });
 
 module.exports = app;

@@ -105,7 +105,7 @@ exports.getFreelancerDashboard = async (req, res) => {
 
   } catch (error) {
     console.error("Freelancer Dashboard Error:", error);
-    res.status(500).render('error', { error: "Failed to load dashboard" });
+    res.status(500).render('404', { error: "Failed to load dashboard" });
   }
 };
 
