@@ -75,7 +75,7 @@ const resellerRoutes = require('./routes/resellerRoutes');
 const authRoutes = require('./routes/authRoutes');
 const staffRoutes = require('./routes/staffRoutes');
 const apiRoutes = require('./routes/apiRoutes');
-
+const bookingRoutes = require('./routes/bookingRoutes');
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
@@ -90,6 +90,7 @@ app.use('/freelance', freelancerRoutes);
 app.use('/salon', salonRoutes);
 app.use('/reseller', resellerRoutes);
 app.use('/', apiRoutes);
+app.use('/api/booking', bookingRoutes);
 
 
 

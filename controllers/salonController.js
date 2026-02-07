@@ -428,7 +428,7 @@ exports.deleteSalon = async (req, res) => {
     }
 };
 
-// Handle salon status updates (active, inactive, disabled)
+// Handle salon status updates
 exports.updateSalonStatus = async (req, res) => {
     try {
         const Salon = require('../models/Salon');

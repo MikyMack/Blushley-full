@@ -6,6 +6,7 @@ const upload = require("../middlewares/upload");
 const Salon = require('../models/Salon');
 const bcrypt = require('bcrypt');
 const SalonBooking = require("../models/SalonBooking");
+const User = require('../models/User');
 
 router.post(
   '/create',
@@ -230,132 +231,6 @@ router.post('/salonlogin', async (req, res) => {
     }
 });
 
-function generateBookingToken() {
-    return "SALON-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-  }
-  function calculateMultiServiceEarning(services) {
-    let totalAdminPrice = 0;
-    let totalCommission = 0;
-  
-    services.forEach(s => {
-      const commission = Math.round(
-        s.adminPrice * (s.adminCommissionPercent / 100)
-      );
-  
-      totalAdminPrice += s.adminPrice;
-      totalCommission += commission;
-    });
-  
-    const salonEarning = totalAdminPrice - totalCommission;
-  
-    return {
-      totalServiceAmount: totalAdminPrice,
-      customerPaid: totalAdminPrice,
-      adminCommission: totalCommission,
-      salonEarning
-    };
-  }
-  async function checkSalonAvailability(salon, date, time) {
-    const day = new Date(date).getDay();
-    const availability = salon.availability.find(d => d.dayOfWeek === day);
-  
-    if (!availability || !availability.isOpen) return false;
-  
-    const existingBooking = await SalonBooking.findOne({
-      "salon.salonId": salon._id,
-      bookingDate: date,
-      bookingTime: time,
-      status: { $in: ["pending", "confirmed"] }
-    });
-  
-    return !existingBooking;
-  }
-  
-
-  exports.createSalonBooking = async (req, res) => {
-    try {
-      const {
-        salonId,
-        selectedServiceIds,
-        bookingType,
-        bookingDate,
-        bookingTime,
-        homeAddress,
-        homeMapLink
-      } = req.body;
-  
-      const salon = await Salon.findById(salonId);
-  
-      const selectedServices = salon.services.filter(service =>
-        selectedServiceIds.includes(service._id.toString())
-      );
-  
-      // Convert service data
-      const servicesFormatted = selectedServices.map(s => ({
-        serviceId: s._id,
-        serviceName: s.serviceName,
-        basePrice: s.price,
-        adminPrice: s.adminPrice,
-        durationMinutes: s.durationMinutes,
-        adminCommissionPercent: s.adminCommissionPercent
-      }));
-  
-      const payment = calculateMultiServiceEarning(servicesFormatted);
-  
-      const bookingData = {
-        bookingToken: generateBookingToken(),
-  
-        user: {
-          userId: req.session.user._id,
-          name: req.session.user.name,
-          phone: req.session.user.phone,
-          email: req.session.user.email
-        },
-  
-        salon: {
-          salonId: salon._id,
-          salonName: salon.name,
-          salonPhone: salon.phone
-        },
-  
-        services: servicesFormatted,
-        bookingType,
-        bookingDate,
-        bookingTime,
-        paymentBreakdown: payment,
-  
-        salonLocation: {
-          address: salon.address.line1,
-          googleMapLink: salon.googleMapLink
-        }
-      };
-  
-      // If Home Service
-      if (bookingType === "home") {
-        bookingData.homeServiceLocation = {
-          fullAddress: homeAddress,
-          city: req.body.city,
-          state: req.body.state,
-          pincode: req.body.pincode,
-          googleMapLink: homeMapLink   // ✅ Use link instead of lat/lng
-        };
-      }
-  
-      const booking = await SalonBooking.create(bookingData);
-  
-      res.json({
-        success: true,
-        bookingToken: booking.bookingToken,
-        bookingId: booking._id,
-        paymentDetails: payment
-      });
-  
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Booking creation failed" });
-    }
-  };
-
   // routes/salonRoutes.js
 router.post(
     '/update-profile',
@@ -365,5 +240,6 @@ router.post(
     salonCtrl.updateProfile
   );
   
-  
+
+
 module.exports = router;

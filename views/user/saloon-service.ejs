@@ -655,33 +655,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
         
                     <!-- Pagination -->
+                    <% 
+                        function paginationUrl(pageNum) {
+                            let baseUrl = '/book-a-saloon';
+                            let params = [];
+                            if (filters.service) params.push('service=' + encodeURIComponent(filters.service));
+                            if (filters.price_min) params.push('price_min=' + encodeURIComponent(filters.price_min));
+                            if (filters.price_max) params.push('price_max=' + encodeURIComponent(filters.price_max));
+                            if (filters.availability) params.push('availability=' + encodeURIComponent(filters.availability));
+                            if (filters.gender) params.push('gender=' + encodeURIComponent(filters.gender));
+                            if (filters.location) params.push('location=' + encodeURIComponent(filters.location));
+                            if (filters.rating) params.push('rating=' + encodeURIComponent(filters.rating));
+                            if (filters.service_mode) params.push('service_mode=' + encodeURIComponent(filters.service_mode));
+                            if (filters.sort) params.push('sort=' + encodeURIComponent(filters.sort));
+                            params.push('page=' + pageNum);
+                            params.push('limit=' + pageSize);
+                            return baseUrl + (params.length ? '?' + params.join('&') : '');
+                        }
+                    %>
                     <% if (totalPages > 1) { %>
                         <ul class="wg-pagination justify-content-center salon-pagination">
                             <% if (currentPage > 1) { %>
                                 <li>
-                                    <a href="<%= buildPageUrl(currentPage - 1) %>" class="pagination-item text-button">
+                                    <a href="<%= paginationUrl(currentPage - 1) %>" class="pagination-item text-button">
                                         <i class="icon-arrLeft"></i>
                                     </a>
                                 </li>
                             <% } %>
-        
+
                             <% for (let i = 1; i <= totalPages; i++) { %>
                                 <% if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) { %>
                                     <li class="<%= currentPage === i ? 'active' : '' %>">
                                         <% if (currentPage === i) { %>
                                             <div class="pagination-item text-button"><%= i %></div>
                                         <% } else { %>
-                                            <a href="<%= buildPageUrl(i) %>" class="pagination-item text-button"><%= i %></a>
+                                            <a href="<%= paginationUrl(i) %>" class="pagination-item text-button"><%= i %></a>
                                         <% } %>
                                     </li>
                                 <% } else if (i === currentPage - 2 || i === currentPage + 2) { %>
                                     <li><span class="pagination-item text-button">...</span></li>
                                 <% } %>
                             <% } %>
-        
+
                             <% if (currentPage < totalPages) { %>
                                 <li>
-                                    <a href="<%= buildPageUrl(currentPage + 1) %>" class="pagination-item text-button">
+                                    <a href="<%= paginationUrl(currentPage + 1) %>" class="pagination-item text-button">
                                         <i class="icon-arrRight"></i>
                                     </a>
                                 </li>
@@ -842,7 +860,1078 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <!-- /Section beautician list -->
+<script>
+    // Booking Modal JavaScript
+let selectedServices = [];
+let selectedDate = null;
+let selectedTimeSlot = null;
+let selectedServiceType = 'salon'; // 'salon' or 'home'
+let homeServiceCharge = 0;
+let salonData = null;
 
+async function openBookingModal(salonId) {
+    try {
+        // Show loading state
+        document.getElementById('bookingModal').classList.add('sbm-active');
+        document.body.style.overflow = 'hidden';
+        
+        // Store salon ID
+        window.currentSalonId = salonId;
+        
+        // Reset selections
+        selectedServices = [];
+        selectedDate = null;
+        selectedTimeSlot = null;
+        selectedServiceType = 'salon';
+        homeServiceCharge = 0;
+        
+        // Load salon data
+        await loadSalonData(salonId);
+        
+        // Load services
+        await loadSalonServices(salonId);
+        
+        // Initialize date selector for next 30 days
+        initializeDateSelector();
+        
+        // Update total price
+        updateTotalPrice();
+        
+    } catch (error) {
+        console.error('Error opening booking modal:', error);
+        alert('Failed to load salon information. Please try again.');
+        closeBookingModal();
+    }
+}
+
+async function loadSalonData(salonId) {
+    try {
+        const response = await fetch(`/api/salon/${salonId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            salonData = data.salon;
+            
+            // Update modal title with salon name
+            const modalTitle = document.querySelector('.sbm-modal-subtitle');
+            if (modalTitle) {
+                modalTitle.textContent = `${salonData.name} - ${salonData.address?.city || ''}`;
+            }
+            
+            // Set home service charge
+            if (salonData.serviceMode?.homeService) {
+                homeServiceCharge = salonData.serviceMode.homeServiceExtraCharge || 0;
+            }
+            
+            // Show/hide home service option
+            const homeServiceOption = document.getElementById('homeService');
+            if (homeServiceOption) {
+                if (salonData.serviceMode?.homeService) {
+                    homeServiceOption.style.display = 'flex';
+                    homeServiceOption.onclick = () => selectServiceType('home');
+                } else {
+                    homeServiceOption.style.display = 'none';
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error loading salon data:', error);
+    }
+}
+
+async function loadSalonServices(salonId) {
+    try {
+        const response = await fetch(`/api/salon/${salonId}/services`);
+        const data = await response.json();
+        
+        const servicesGrid = document.getElementById('servicesGrid');
+        if (!servicesGrid) return;
+        
+        if (data.success && data.services && data.services.length > 0) {
+            servicesGrid.innerHTML = data.services.map(service => `
+                <div class="sbm-service-card" data-service-id="${service._id}" 
+                     onclick="toggleService('${service._id}', ${service.price})">
+                    <div class="sbm-service-checkbox">
+                        <input type="checkbox" id="service-${service._id}" 
+                               onchange="toggleService('${service._id}', ${service.price})">
+                        <label for="service-${service._id}"></label>
+                    </div>
+                    <div class="sbm-service-details">
+                        <div class="sbm-service-name">${service.serviceName}</div>
+                        <div class="sbm-service-meta">
+                            <span class="sbm-service-price">₹${service.price}</span>
+                            <span class="sbm-service-duration">${service.durationMinutes || 60} min</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            servicesGrid.innerHTML = '<p class="text-muted">No services available</p>';
+        }
+    } catch (error) {
+        console.error('Error loading services:', error);
+        servicesGrid.innerHTML = '<p class="text-danger">Failed to load services</p>';
+    }
+}
+
+function toggleService(serviceId, price) {
+    const checkbox = document.querySelector(`#service-${serviceId}`);
+    const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
+    
+    if (checkbox.checked) {
+        // Add service
+        selectedServices.push({ id: serviceId, price: price });
+        serviceCard.classList.add('selected');
+    } else {
+        // Remove service
+        selectedServices = selectedServices.filter(service => service.id !== serviceId);
+        serviceCard.classList.remove('selected');
+    }
+    
+    // Update total price
+    updateTotalPrice();
+    
+    // If date is selected, check availability
+    if (selectedDate) {
+        checkAvailability();
+    }
+}
+
+function initializeDateSelector() {
+    const dateSelector = document.getElementById('dateSelector');
+    if (!dateSelector) return;
+    
+    const today = new Date();
+    const next30Days = [];
+    
+    for (let i = 0; i < 30; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        next30Days.push(date);
+    }
+    
+    dateSelector.innerHTML = next30Days.map(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNum = date.getDate();
+        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+        
+        return `
+            <div class="sbm-date-card ${dateStr === selectedDate ? 'selected' : ''}" 
+                 onclick="selectDate('${dateStr}')">
+                <div class="sbm-date-day">${dayName}</div>
+                <div class="sbm-date-number">${dayNum}</div>
+                <div class="sbm-date-month">${monthName}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // Select today by default
+    const todayStr = today.toISOString().split('T')[0];
+    selectDate(todayStr);
+}
+
+function selectDate(dateStr) {
+    selectedDate = dateStr;
+    
+    // Update UI
+    document.querySelectorAll('.sbm-date-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`.sbm-date-card[onclick*="${dateStr}"]`)?.classList.add('selected');
+    
+    // Check availability
+    checkAvailability();
+}
+
+async function checkAvailability() {
+    const slotsContainer = document.getElementById('slotsContainer');
+    if (!slotsContainer || !currentSalonId || !selectedDate || selectedServices.length === 0) {
+        slotsContainer.innerHTML = '<p class="text-muted">Please select services and date to see available slots</p>';
+        return;
+    }
+    
+    // Show loading
+    slotsContainer.innerHTML = '<p class="text-muted">Checking availability...</p>';
+    
+    try {
+        const serviceIds = selectedServices.map(s => s.id).join(',');
+        const response = await fetch(
+            `/api/booking/available-slots?salonId=${currentSalonId}&bookingDate=${selectedDate}&serviceIds=${serviceIds}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.availableSlots.length > 0) {
+                slotsContainer.innerHTML = data.availableSlots.map(slot => `
+                    <div class="sbm-slot-card ${selectedTimeSlot === slot.startTime ? 'selected' : ''}" 
+                         onclick="selectTimeSlot('${slot.startTime}')">
+                        <div class="sbm-slot-time">${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}</div>
+                        <div class="sbm-slot-duration">${slot.duration} min</div>
+                    </div>
+                `).join('');
+            } else {
+                slotsContainer.innerHTML = '<p class="text-muted">No slots available for selected services and date</p>';
+            }
+        } else {
+            slotsContainer.innerHTML = `<p class="text-danger">${data.message || 'Failed to check availability'}</p>`;
+        }
+    } catch (error) {
+        console.error('Error checking availability:', error);
+        slotsContainer.innerHTML = '<p class="text-danger">Error checking availability</p>';
+    }
+}
+
+function formatTime(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+function selectTimeSlot(timeSlot) {
+    selectedTimeSlot = timeSlot;
+    
+    // Update UI
+    document.querySelectorAll('.sbm-slot-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`.sbm-slot-card[onclick*="${timeSlot}"]`)?.classList.add('selected');
+}
+
+function selectServiceType(type) {
+    selectedServiceType = type;
+    
+    // Update UI
+    const salonVisit = document.getElementById('salonVisit');
+    const homeService = document.getElementById('homeService');
+    const homeAddressSection = document.getElementById('homeAddressSection');
+    
+    if (type === 'salon') {
+        salonVisit.classList.add('selected');
+        homeService.classList.remove('selected');
+        homeAddressSection.style.display = 'none';
+    } else {
+        homeService.classList.add('selected');
+        salonVisit.classList.remove('selected');
+        homeAddressSection.style.display = 'block';
+        
+        // Validate home service is available
+        if (!salonData?.serviceMode?.homeService) {
+            alert('Home service is not available for this salon');
+            selectServiceType('salon');
+            return;
+        }
+    }
+    
+    // Update total price
+    updateTotalPrice();
+}
+
+function updateTotalPrice() {
+    const totalElement = document.getElementById('totalPrice');
+    if (!totalElement) return;
+    
+    let total = selectedServices.reduce((sum, service) => sum + service.price, 0);
+    
+    // Add home service charge if applicable
+    if (selectedServiceType === 'home') {
+        total += homeServiceCharge;
+    }
+    
+    totalElement.textContent = `₹${total}`;
+}
+
+async function submitBooking() {
+    try {
+        // Validate required fields
+        if (selectedServices.length === 0) {
+            alert('Please select at least one service');
+            return;
+        }
+        
+        if (!selectedDate) {
+            alert('Please select a date');
+            return;
+        }
+        
+        if (!selectedTimeSlot) {
+            alert('Please select a time slot');
+            return;
+        }
+        
+        if (!currentSalonId) {
+            alert('Salon information missing');
+            return;
+        }
+        
+        // Validate user details
+        const userName = document.getElementById('userName').value.trim();
+        const userPhone = document.getElementById('userPhone').value.trim();
+        
+        if (!userName) {
+            alert('Please enter your name');
+            return;
+        }
+        
+        if (!userPhone || userPhone.length < 10) {
+            alert('Please enter a valid phone number');
+            return;
+        }
+        
+        // Additional validation for home service
+        if (selectedServiceType === 'home') {
+            const userAddress = document.getElementById('userAddress').value.trim();
+            if (!userAddress) {
+                alert('Please enter your address for home service');
+                return;
+            }
+        }
+        
+        // Check if user is logged in
+        const isLoggedIn = document.body.getAttribute('data-user-logged-in') === 'true';
+        if (!isLoggedIn) {
+            // Store booking data and redirect to login
+            localStorage.setItem('pendingBooking', JSON.stringify({
+                salonId: currentSalonId,
+                selectedServices,
+                selectedDate,
+                selectedTimeSlot,
+                selectedServiceType,
+                userDetails: {
+                    name: userName,
+                    phone: userPhone,
+                    email: document.getElementById('userEmail').value.trim(),
+                    notes: document.getElementById('userNotes').value.trim()
+                }
+            }));
+            
+            window.location.href = '/userLogin?redirect=/book-a-saloon';
+            return;
+        }
+        
+        // Prepare booking data
+        const bookingData = {
+            salonId: currentSalonId,
+            serviceIds: selectedServices.map(s => s.id),
+            bookingDate: selectedDate,
+            bookingTime: selectedTimeSlot,
+            bookingType: selectedServiceType,
+            paymentMethod: 'online', // Default, can be changed to dropdown
+            userNotes: document.getElementById('userNotes').value.trim()
+        };
+        
+        // Add address for home service
+        if (selectedServiceType === 'home') {
+            bookingData.addressId = null; // You'll need address selection logic
+            bookingData.homeAddress = document.getElementById('userAddress').value.trim();
+            bookingData.googleMapLink = document.getElementById('customerAddress').value.trim();
+        }
+        
+        // Show loading
+        const submitBtn = document.querySelector('.sbm-submit-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processing...';
+        submitBtn.disabled = true;
+        
+        // Submit booking
+        const response = await fetch('/api/booking/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success message
+            alert('Booking confirmed! Your booking ID: ' + result.booking.token);
+            
+            // Redirect to booking confirmation page
+            window.location.href = `/booking-confirmation/${result.booking.id}`;
+        } else {
+            alert(result.message || 'Failed to create booking');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Error submitting booking:', error);
+        alert('An error occurred. Please try again.');
+        
+        const submitBtn = document.querySelector('.sbm-submit-btn');
+        submitBtn.textContent = 'Confirm Booking';
+        submitBtn.disabled = false;
+    }
+}
+
+function closeBookingModal() {
+    document.getElementById('bookingModal').classList.remove('sbm-active');
+    document.body.style.overflow = 'auto';
+    
+    // Clear selections
+    selectedServices = [];
+    selectedDate = null;
+    selectedTimeSlot = null;
+    
+    // Reset form fields
+    const inputs = document.querySelectorAll('#bookingModal input, #bookingModal textarea');
+    inputs.forEach(input => {
+        input.value = '';
+    });
+    
+    // Reset checkboxes
+    document.querySelectorAll('#bookingModal input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    // Reset UI
+    document.querySelectorAll('.sbm-service-card.selected').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    document.querySelectorAll('.sbm-date-card.selected').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    document.querySelectorAll('.sbm-slot-card.selected').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Reset service type
+    selectServiceType('salon');
+}
+
+// Add CSS for booking modal
+const bookingModalStyles = `
+.sbm-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    overflow-y: auto;
+}
+
+.sbm-modal-overlay.sbm-active {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.sbm-modal-container {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: sbmSlideIn 0.3s ease;
+}
+
+@keyframes sbmSlideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sbm-modal-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.sbm-modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.sbm-modal-subtitle {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.sbm-close-btn {
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.sbm-close-btn:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.sbm-modal-body {
+    padding: 24px 32px;
+}
+
+.sbm-section {
+    margin-bottom: 32px;
+}
+
+.sbm-section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sbm-section-icon {
+    background: #f0f0f0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.sbm-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.sbm-service-card {
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sbm-service-card:hover {
+    border-color: #ddd;
+    background: #f9f9f9;
+}
+
+.sbm-service-card.selected {
+    border-color: #ff4081;
+    background: #fff5f7;
+}
+
+.sbm-service-checkbox {
+    position: relative;
+}
+
+.sbm-service-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.sbm-service-checkbox label {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.sbm-service-checkbox input[type="checkbox"]:checked + label {
+    background: #ff4081;
+    border-color: #ff4081;
+}
+
+.sbm-service-checkbox input[type="checkbox"]:checked + label:after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.sbm-service-details {
+    flex: 1;
+}
+
+.sbm-service-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.sbm-service-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.sbm-date-selector {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.sbm-date-card {
+    min-width: 80px;
+    padding: 12px 8px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sbm-date-card:hover {
+    border-color: #ddd;
+}
+
+.sbm-date-card.selected {
+    border-color: #ff4081;
+    background: #fff5f7;
+}
+
+.sbm-date-day {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.sbm-date-number {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.sbm-date-month {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.sbm-service-type-container {
+    display: flex;
+    gap: 16px;
+}
+
+.sbm-service-type-option {
+    flex: 1;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.sbm-service-type-option:hover {
+    border-color: #ddd;
+}
+
+.sbm-service-type-option.selected {
+    border-color: #ff4081;
+    background: #fff5f7;
+}
+
+.sbm-service-type-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.sbm-service-type-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.sbm-service-type-desc {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.sbm-form-group {
+    margin-bottom: 20px;
+}
+
+.sbm-form-label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.sbm-form-input, .sbm-form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.sbm-form-input:focus, .sbm-form-textarea:focus {
+    outline: none;
+    border-color: #ff4081;
+}
+
+.sbm-form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.sbm-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.sbm-slots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.sbm-slot-card {
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sbm-slot-card:hover {
+    border-color: #ddd;
+}
+
+.sbm-slot-card.selected {
+    border-color: #ff4081;
+    background: #fff5f7;
+}
+
+.sbm-slot-time {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.sbm-slot-duration {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.sbm-modal-footer {
+    padding: 24px 32px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sbm-total-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.sbm-price-amount {
+    color: #ff4081;
+}
+
+.sbm-submit-btn {
+    background: #ff4081;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sbm-submit-btn:hover {
+    background: #e91e63;
+    transform: translateY(-2px);
+}
+
+.sbm-submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.sbm-map-container {
+    margin-top: 12px;
+}
+
+.sbm-map-wrapper {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.sbm-coordinates {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sbm-modal-overlay.sbm-active {
+        padding: 10px;
+    }
+    
+    .sbm-modal-container {
+        margin: 10px;
+    }
+    
+    .sbm-modal-header,
+    .sbm-modal-body,
+    .sbm-modal-footer {
+        padding: 16px;
+    }
+    
+    .sbm-services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sbm-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .sbm-service-type-container {
+        flex-direction: column;
+    }
+    
+    .sbm-date-selector {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .sbm-slots-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .sbm-modal-footer {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+}
+`;
+
+// Add styles to document
+const styleSheet = document.createElement('style');
+styleSheet.textContent = bookingModalStyles;
+document.head.appendChild(styleSheet);
+
+// Add event listeners for filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filter count
+    updateFilterCount();
+    
+    // Handle filter changes
+    document.querySelectorAll('.filter-checkbox, .filter-radio').forEach(input => {
+        input.addEventListener('change', updateFilterCount);
+    });
+    
+    // Handle sort selection
+    document.querySelectorAll('.select-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const sortValue = this.dataset.sortValue;
+            document.querySelector('.text-sort-value').textContent = 
+                this.querySelector('.text-value-item').textContent;
+            document.querySelector('.text-sort-value').dataset.sortValue = sortValue;
+            
+            // Update URL with sort parameter
+            const url = new URL(window.location);
+            url.searchParams.set('sort', sortValue);
+            url.searchParams.delete('page'); // Reset to page 1
+            window.location.href = url.toString();
+        });
+    });
+    
+    // Handle applied filters removal
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-filter')) {
+            const filterName = e.target.dataset.filter;
+            removeFilter(filterName);
+        }
+    });
+    
+    // Handle "Remove All" button
+    document.getElementById('remove-all')?.addEventListener('click', function() {
+        window.location.href = '/book-a-saloon';
+    });
+});
+
+function updateFilterCount() {
+    const filterCount = document.querySelectorAll('.filter-checkbox:checked, .filter-radio:checked').length;
+    const priceMin = document.getElementById('price_min')?.value;
+    const priceMax = document.getElementById('price_max')?.value;
+    
+    let count = filterCount;
+    if (priceMin || priceMax) {
+        count++;
+    }
+    
+    const filterCountElement = document.querySelector('.filter-count');
+    if (filterCountElement) {
+        filterCountElement.textContent = count;
+        filterCountElement.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+}
+
+function removeFilter(filterName) {
+    const url = new URL(window.location);
+    
+    if (filterName === 'price') {
+        url.searchParams.delete('price_min');
+        url.searchParams.delete('price_max');
+    } else {
+        url.searchParams.delete(filterName);
+    }
+    
+    url.searchParams.delete('page'); // Reset to page 1
+    window.location.href = url.toString();
+}
+
+// Handle login redirect with pending booking
+document.addEventListener('DOMContentLoaded', function() {
+    const pendingBooking = localStorage.getItem('pendingBooking');
+    if (pendingBooking && window.location.pathname.includes('book-a-saloon')) {
+        // Check if user just logged in
+        if (document.body.getAttribute('data-user-logged-in') === 'true') {
+            try {
+                const bookingData = JSON.parse(pendingBooking);
+                localStorage.removeItem('pendingBooking');
+                
+                // Auto-fill the form with saved data
+                if (bookingData.userDetails) {
+                    const { name, phone, email, notes } = bookingData.userDetails;
+                    document.getElementById('userName').value = name || '';
+                    document.getElementById('userPhone').value = phone || '';
+                    document.getElementById('userEmail').value = email || '';
+                    document.getElementById('userNotes').value = notes || '';
+                }
+                
+                // Show success message
+                alert('Welcome back! Your booking details have been restored.');
+                
+            } catch (error) {
+                console.error('Error restoring booking:', error);
+            }
+        }
+    }
+});
+
+// Price slider initialization (requires noUiSlider library)
+function initPriceSlider() {
+    const priceSlider = document.getElementById('price-value-range');
+    if (!priceSlider) return;
+    
+    const minPrice = parseInt(priceSlider.dataset.min) || 100;
+    const maxPrice = parseInt(priceSlider.dataset.max) || 5000;
+    const currentMin = parseInt(priceSlider.dataset.currentMin) || minPrice;
+    const currentMax = parseInt(priceSlider.dataset.currentMax) || maxPrice;
+    
+    // Check if noUiSlider is available
+    if (typeof noUiSlider !== 'undefined') {
+        noUiSlider.create(priceSlider, {
+            start: [currentMin, currentMax],
+            connect: true,
+            range: {
+                'min': minPrice,
+                'max': maxPrice
+            },
+            step: 100,
+            tooltips: [true, true],
+            format: {
+                to: function(value) {
+                    return '₹' + Math.round(value);
+                },
+                from: function(value) {
+                    return Number(value.replace('₹', ''));
+                }
+            }
+        });
+        
+        priceSlider.noUiSlider.on('update', function(values) {
+            const [min, max] = values;
+            document.getElementById('price-min-value').textContent = min;
+            document.getElementById('price-max-value').textContent = max;
+            document.getElementById('price_min').value = min.replace('₹', '');
+            document.getElementById('price_max').value = max.replace('₹', '');
+            updateFilterCount();
+        });
+    } else {
+        // Fallback to simple inputs if noUiSlider not available
+        priceSlider.innerHTML = `
+            <input type="number" id="price_min_input" class="form-control" 
+                   min="${minPrice}" max="${maxPrice}" value="${currentMin}" 
+                   placeholder="Min price">
+            <span>to</span>
+            <input type="number" id="price_max_input" class="form-control" 
+                   min="${minPrice}" max="${maxPrice}" value="${currentMax}" 
+                   placeholder="Max price">
+        `;
+        
+        document.getElementById('price_min_input').addEventListener('change', function() {
+            document.getElementById('price_min').value = this.value;
+            updateFilterCount();
+        });
+        
+        document.getElementById('price_max_input').addEventListener('change', function() {
+            document.getElementById('price_max').value = this.value;
+            updateFilterCount();
+        });
+    }
+}
+
+// Initialize price slider when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPriceSlider);
+} else {
+    initPriceSlider();
+}
+</script>
 
 
 
@@ -1806,532 +2895,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <!-- /shoppingCart -->
 
-    <!-- wishlist -->
-    <div class="modal fullRight fade modal-wishlist" id="wishlist">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="header">
-                    <h5 class="title">Wish List</h5>
-                    <span class="icon-close icon-close-popup" data-bs-dismiss="modal"></span>
-                </div>
-                <div class="wrap">
-                    <div class="tf-mini-cart-wrap">
-                        <div class="tf-mini-cart-main">
-                            <div class="tf-mini-cart-sroll">
-                                <div class="tf-mini-cart-items">
-                                    <div class="tf-mini-cart-item file-delete">
-                                        <div class="tf-mini-cart-image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </div>
-                                        <div class="tf-mini-cart-info flex-grow-1">
-                                            <div
-                                                class="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-title"><a href="product-detail.html"
-                                                        class="link text-line-clamp-1">Contrasting sheepskin</a></div>
-                                                <div class="text-button tf-btn-remove remove">Remove</div>
-                                            </div>
-                                            <div
-                                                class="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-secondary-2">XL/Blue</div>
-                                                <div class="text-button">1 X ₹60.00</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tf-mini-cart-item file-delete">
-                                        <div class="tf-mini-cart-image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </div>
-                                        <div class="tf-mini-cart-info flex-grow-1">
-                                            <div
-                                                class="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-title"><a href="product-detail.html"
-                                                        class="link text-line-clamp-1">Suede leggings</a></div>
-                                                <div class="text-button tf-btn-remove remove">Remove</div>
-                                            </div>
-                                            <div
-                                                class="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-secondary-2">XL/Blue</div>
-                                                <div class="text-button">1 X ₹60.00</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tf-mini-cart-item file-delete">
-                                        <div class="tf-mini-cart-image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </div>
-                                        <div class="tf-mini-cart-info flex-grow-1">
-                                            <div
-                                                class="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-title"><a href="product-detail.html"
-                                                        class="link text-line-clamp-1">Faux-leather trousers</a></div>
-                                                <div class="text-button tf-btn-remove remove">Remove</div>
-                                            </div>
-                                            <div
-                                                class="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-secondary-2">XL/Blue</div>
-                                                <div class="text-button">1 X ₹60.00</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tf-mini-cart-item file-delete">
-                                        <div class="tf-mini-cart-image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </div>
-                                        <div class="tf-mini-cart-info flex-grow-1">
-                                            <div
-                                                class="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-title"><a href="product-detail.html"
-                                                        class="link text-line-clamp-1">mock product</a></div>
-                                                <div class="text-button tf-btn-remove remove">Remove</div>
-                                            </div>
-                                            <div
-                                                class="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-secondary-2">XL/Blue</div>
-                                                <div class="text-button">1 X ₹60.00</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tf-mini-cart-item file-delete">
-                                        <div class="tf-mini-cart-image">
-                                            <img class="lazyload" data-src="/images/products/womens/women-4.jpg"
-                                                src="/images/products/womens/women-4.jpg" alt="">
-                                        </div>
-                                        <div class="tf-mini-cart-info flex-grow-1">
-                                            <div
-                                                class="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-title"><a href="product-detail.html"
-                                                        class="link text-line-clamp-1">Jacquard fluid trousers</a></div>
-                                                <div class="text-button tf-btn-remove remove">Remove</div>
-                                            </div>
-                                            <div
-                                                class="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                                <div class="text-secondary-2">XL/Blue</div>
-                                                <div class="text-button">1 X ₹60.00</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tf-mini-cart-bottom">
-                            <a href="/wishlist" class="btn-style-2 w-100 radius-4 view-all-wishlist"><span
-                                    class="text-btn-uppercase">View All Wish List</span></a>
-                            <a href="shop-default-grid.html" class="text-btn-uppercase">Or continue shopping</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /wishlist -->
-
-    <!-- size-guide -->
-    <div class="modal fade modal-size-guide" id="size-guide">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content widget-tabs style-2">
-                <div class="header">
-                    <ul class="widget-menu-tab">
-                        <li class="item-title active">
-                            <span class="inner text-button">Size </span>
-                        </li>
-                        <li class="item-title">
-                            <span class="inner text-button">Size Guide</span>
-                        </li>
-                    </ul>
-                    <span class="icon-close icon-close-popup" data-bs-dismiss="modal"></span>
-                </div>
-                <div class="wrap">
-                    <div class="widget-content-tab">
-                        <div class="widget-content-inner active">
-                            <div class="tab-size">
-                                <div>
-                                    <div class="widget-size mb_16">
-                                        <div class="box-title-size">
-                                            <div class="title-size">Height</div>
-                                            <div class="number-size">
-                                                <span class="max-size">100</span>
-                                                <span class="text-caption-1 text-secondary">Cm</span>
-                                            </div>
-                                        </div>
-                                        <div class="range-input">
-                                            <div class="tow-bar-block">
-                                                <div class="progress-size" style="width: 50%;"></div>
-                                            </div>
-                                            <input type="range" min="0" max="200" value="100" class="range-max" />
-                                        </div>
-                                    </div>
-                                    <div class="widget-size">
-                                        <div class="box-title-size">
-                                            <div class="title-size">Weight</div>
-                                            <div class="number-size">
-                                                <span class="max-size">50</span>
-                                                <span class="text-caption-1 text-secondary">Kg</span>
-                                            </div>
-                                        </div>
-                                        <div class="range-input">
-                                            <div class="tow-bar-block">
-                                                <div class="progress-size" style="width: 50%;"></div>
-                                            </div>
-                                            <input type="range" min="0" max="100" value="50" class="range-max" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="size-button-wrap choose-option-list">
-                                    <div class="size-button-item choose-option-item">
-                                        <h5>thin</h5>
-                                    </div>
-                                    <div class="size-button-item choose-option-item select-option">
-                                        <h5>Normal</h5>
-                                    </div>
-                                    <div class="size-button-item choose-option-item">
-                                        <h5>plump</h5>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h6 class="suggests-title">Modave suggests for you:</h6>
-                                    <div class="suggests-list">
-                                        <a href="#" class="suggests-item link text-button">L - shirt</a>
-                                        <a href="#" class="suggests-item link text-button">XL - Pant</a>
-                                        <a href="#" class="suggests-item link text-button">31 - Jeans</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget-content-inner">
-                            <table class="tab-sizeguide-table">
-                                <thead>
-                                    <tr>
-                                        <th>Size</th>
-                                        <th>US</th>
-                                        <th>Bust</th>
-                                        <th>Waist</th>
-                                        <th>Low Hip</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>XS</td>
-                                        <td>2</td>
-                                        <td>32</td>
-                                        <td>24 - 25</td>
-                                        <td>33 - 34</td>
-                                    </tr>
-                                    <tr>
-                                        <td>S</td>
-                                        <td>4</td>
-                                        <td>26 - 27</td>
-                                        <td>34 - 35</td>
-                                        <td>35 - 26</td>
-                                    </tr>
-                                    <tr>
-                                        <td>M</td>
-                                        <td>6</td>
-                                        <td>28 - 29</td>
-                                        <td>36 - 37</td>
-                                        <td>38 - 40</td>
-                                    </tr>
-                                    <tr>
-                                        <td>L</td>
-                                        <td>8</td>
-                                        <td>30 - 31</td>
-                                        <td>38 - 29</td>
-                                        <td>42 - 44</td>
-                                    </tr>
-                                    <tr>
-                                        <td>XL</td>
-                                        <td>10</td>
-                                        <td>32 - 33</td>
-                                        <td>40 - 41</td>
-                                        <td>45 - 47</td>
-                                    </tr>
-                                    <tr>
-                                        <td>XXL</td>
-                                        <td>12</td>
-                                        <td>34 - 35</td>
-                                        <td>42 - 43</td>
-                                        <td>48 - 50</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /size-guide -->
-
-    <!-- compare -->
-    <div class="offcanvas offcanvas-bottom offcanvas-compare" id="compare">
-        <div class="offcanvas-content">
-            <div class="header">
-                <span class="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close"></span>
-            </div>
-            <div class="wrap">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="tf-compare-list list-file-delete">
-                                <div class="tf-compare-head">
-                                    <h5 class="title">Compare <br> Products</h5>
-                                </div>
-                                <div class="tf-compare-wrap">
-                                    <div class="tf-compare-item file-delete">
-                                        <span class="btns-repeat">
-                                            <svg width="16" height="17" viewBox="0 0 16 17" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <g clip-path="url(#clip0_5628_27028)">
-                                                    <path d="M11.334 1.33301L14.0007 3.99967L11.334 6.66634"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path
-                                                        d="M2 7.99951V6.66618C2 5.95893 2.28095 5.28066 2.78105 4.78056C3.28115 4.28046 3.95942 3.99951 4.66667 3.99951H14"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path d="M4.66667 15.9996L2 13.3329L4.66667 10.6663"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path
-                                                        d="M14 9.33301V10.6663C14 11.3736 13.719 12.0519 13.219 12.552C12.7189 13.0521 12.0406 13.333 11.3333 13.333H2"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </g>
-                                                <defs>
-                                                    <clipPath id="clip0_5628_27028">
-                                                        <rect width="16" height="16" fill="white"
-                                                            transform="translate(0 0.66626)" />
-                                                    </clipPath>
-                                                </defs>
-                                            </svg>
-                                        </span>
-                                        <span class="icon-close remove"></span>
-                                        <a href="product-detail.html" class="image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </a>
-                                        <div class="content">
-                                            <div class="text-title">
-                                                <a class="link text-line-clamp-2" href="product-detail.html">V-neck
-                                                    cotton T-shirt</a>
-                                            </div>
-                                            <div class="text-button">₹59.99</div>
-                                        </div>
-                                    </div>
-                                    <div class="tf-compare-item file-delete">
-                                        <span class="btns-repeat">
-                                            <svg width="16" height="17" viewBox="0 0 16 17" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <g clip-path="url(#clip0_5628_27028)">
-                                                    <path d="M11.334 1.33301L14.0007 3.99967L11.334 6.66634"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path
-                                                        d="M2 7.99951V6.66618C2 5.95893 2.28095 5.28066 2.78105 4.78056C3.28115 4.28046 3.95942 3.99951 4.66667 3.99951H14"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path d="M4.66667 15.9996L2 13.3329L4.66667 10.6663"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path
-                                                        d="M14 9.33301V10.6663C14 11.3736 13.719 12.0519 13.219 12.552C12.7189 13.0521 12.0406 13.333 11.3333 13.333H2"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </g>
-                                                <defs>
-                                                    <clipPath id="clip0_5628_27028">
-                                                        <rect width="16" height="16" fill="white"
-                                                            transform="translate(0 0.66626)" />
-                                                    </clipPath>
-                                                </defs>
-                                            </svg>
-                                        </span>
-                                        <span class="icon-close remove"></span>
-                                        <a href="product-detail.html" class="image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </a>
-                                        <div class="content">
-                                            <div class="text-title">
-                                                <a class="link text-line-clamp-2" href="product-detail.html">Ramie shirt
-                                                    with pockets </a>
-                                            </div>
-                                            <div class="text-button">₹72.00</div>
-                                        </div>
-                                    </div>
-                                    <div class="tf-compare-item file-delete">
-                                        <span class="btns-repeat">
-                                            <svg width="16" height="17" viewBox="0 0 16 17" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <g clip-path="url(#clip0_5628_27028)">
-                                                    <path d="M11.334 1.33301L14.0007 3.99967L11.334 6.66634"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path
-                                                        d="M2 7.99951V6.66618C2 5.95893 2.28095 5.28066 2.78105 4.78056C3.28115 4.28046 3.95942 3.99951 4.66667 3.99951H14"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path d="M4.66667 15.9996L2 13.3329L4.66667 10.6663"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                    <path
-                                                        d="M14 9.33301V10.6663C14 11.3736 13.719 12.0519 13.219 12.552C12.7189 13.0521 12.0406 13.333 11.3333 13.333H2"
-                                                        stroke="#181818" stroke-width="1.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </g>
-                                                <defs>
-                                                    <clipPath id="clip0_5628_27028">
-                                                        <rect width="16" height="16" fill="white"
-                                                            transform="translate(0 0.66626)" />
-                                                    </clipPath>
-                                                </defs>
-                                            </svg>
-                                        </span>
-                                        <span class="icon-close remove"></span>
-                                        <a href="product-detail.html" class="image">
-                                            <img class="lazyload" data-src="/images/products/beauty-cosmetic/beauty8.jpg"
-                                                src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                                        </a>
-                                        <div class="content">
-                                            <div class="text-title">
-                                                <a class="link text-line-clamp-2" href="product-detail.html">Ribbed
-                                                    cotton-blend top</a>
-                                            </div>
-                                            <div class="text-button">₹65.00</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tf-compare-buttons">
-                                    <div class="tf-compare-buttons-wrap">
-                                        <a href="compare-products.html" class="tf-btn w-100 btn-fill radius-4"><span
-                                                class="text text-btn-uppercase">Compare Products</span></a>
-                                        <div
-                                            class="tf-compapre-button-clear-all clear-file-delete tf-btn w-100 btn-white radius-4 has-border">
-                                            <span class="text text-btn-uppercase">Clear All Products</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /compare -->
-
-    <!-- quickAdd -->
-    <div class="modal fade modal-quick-add" id="quickAdd">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="header">
-                    <span class="icon-close icon-close-popup" data-bs-dismiss="modal"></span>
-                </div>
-                <div>
-                    <div class="tf-product-info-list">
-                        <div class="tf-product-info-item">
-                            <div class="image">
-                                <img src="/images/products/beauty-cosmetic/beauty8.jpg" alt="">
-                            </div>
-                            <div class="content">
-                                <a href="product-detail.html">Ribbed Tank Top</a>
-                                <div class="tf-product-info-price">
-                                    <h5 class="price-on-sale font-2">₹79.99</h5>
-                                    <div class="compare-at-price font-2">₹98.99</div>
-                                    <div class="badges-on-sale text-btn-uppercase">
-                                        -25%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tf-product-info-choose-option">
-                            <div class="variant-picker-item">
-                                <div class="variant-picker-label mb_12">
-                                    Colors:<span class="text-title variant-picker-label-value">Beige</span>
-                                </div>
-                                <div class="variant-picker-values type-click">
-                                    <input id="values-beige2" type="radio" name="color3" checked>
-                                    <label class="hover-tooltip tooltip-bot radius-60" for="values-beige2"
-                                        data-value="Beige">
-                                        <span class="btn-checkbox bg-color-beige1"></span>
-                                        <span class="tooltip">Beige</span>
-                                    </label>
-                                    <input id="values-gray2" type="radio" name="color3">
-                                    <label class="hover-tooltip tooltip-bot radius-60" for="values-gray2"
-                                        data-value="Gray">
-                                        <span class="btn-checkbox bg-color-gray"></span>
-                                        <span class="tooltip">Gray</span>
-                                    </label>
-                                    <input id="values-grey3" type="radio" name="color3">
-                                    <label class="hover-tooltip tooltip-bot radius-60" for="values-grey3"
-                                        data-value="Grey">
-                                        <span class="btn-checkbox bg-color-grey"></span>
-                                        <span class="tooltip">Grey</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="variant-picker-item">
-                                <div class="variant-picker-label">
-                                    Size:<span class="text-title variant-picker-label-value">L</span>
-                                </div>
-                                <div class="variant-picker-values gap12">
-                                    <input type="radio" name="size3" id="values-s2">
-                                    <label class="style-text size-btn" for="values-s2" data-value="S">
-                                        <span class="text-title">S</span>
-                                    </label>
-                                    <input type="radio" name="size3" id="values-m2">
-                                    <label class="style-text size-btn" for="values-m2" data-value="M">
-                                        <span class="text-title">M</span>
-                                    </label>
-                                    <input type="radio" name="size3" id="values-l2" checked>
-                                    <label class="style-text size-btn" for="values-l2" data-value="L">
-                                        <span class="text-title">L</span>
-                                    </label>
-                                    <input type="radio" name="size3" id="values-xl2">
-                                    <label class="style-text size-btn" for="values-xl2" data-value="XL">
-                                        <span class="text-title">XL</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="tf-product-info-quantity">
-                                <div class="title mb_12">Quantity:</div>
-                                <div class="wg-quantity">
-                                    <span class="btn-quantity btn-decrease">-</span>
-                                    <input class="quantity-product" type="text" name="number" value="1">
-                                    <span class="btn-quantity btn-increase">+</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="tf-product-info-by-btn mb_10">
-                                    <a class="btn-style-2 flex-grow-1 text-btn-uppercase fw-6 show-shopping-cart"><span>Add
-                                            to cart -&nbsp;</span><span
-                                            class="tf-qty-price total-price">₹79.99</span></a>
-                                    <a href="#compare" data-bs-toggle="offcanvas" aria-controls="compare"
-                                        class="box-icon hover-tooltip compare btn-icon-action show-compare">
-                                        <span class="icon icon-gitDiff"></span>
-                                        <span class="tooltip text-caption-2">Compare</span>
-                                    </a>
-                                    <a href="javascript:void(0);"
-                                        class="box-icon hover-tooltip text-caption-2 wishlist btn-icon-action">
-                                        <span class="icon icon-heart"></span>
-                                        <span class="tooltip text-caption-2">Wishlist</span>
-                                    </a>
-                                </div>
-                                <a href="#" class="btn-style-3 text-btn-uppercase">Buy it now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /quickAdd -->
-
     <!-- Javascript -->
     <script type="text/javascript" src="/js/cart.js"></script>
     <script type="text/javascript" src="/js/search.js"></script>
@@ -2353,444 +2916,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
 
- 
 
-    <script>// Open location modal when "+X more areas" is clicked
-        document.querySelectorAll('.view-more-locations').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const beauticianId = this.dataset.beauticianId;
-                const modal = document.getElementById(`location-modal-₹{beauticianId}`);
-                if (modal) {
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-                }
-            });
-        });
-
-        // Close modal when close button is clicked
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const modal = this.closest('.location-modal');
-                if (modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = ''; // Re-enable scrolling
-                }
-            });
-        });
-
-        // Close modal when clicking outside the modal content
-        document.querySelectorAll('.location-modal').forEach(modal => {
-            modal.addEventListener('click', function (e) {
-                if (e.target === this) {
-                    this.style.display = 'none';
-                    document.body.style.overflow = '';
-                }
-            });
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.location-modal').forEach(modal => {
-                    if (modal.style.display === 'flex') {
-                        modal.style.display = 'none';
-                        document.body.style.overflow = '';
-                    }
-                });
-            }
-        });</script>
-
-
-    <script>
-        // Services data with home availability
-        const services = [
-            { id: 'haircut', name: "Haircut", price: 500, duration: "45 min", homeAvailable: true },
-            { id: 'hair-color', name: "Hair Color", price: 2500, duration: "2 hours", homeAvailable: true },
-            { id: 'facial', name: "Facial", price: 1500, duration: "1 hour", homeAvailable: true },
-            { id: 'bleach', name: "Bleaching", price: 1200, duration: "1.5 hours", homeAvailable: true },
-            { id: 'manicure', name: "Manicure", price: 800, duration: "45 min", homeAvailable: true },
-            { id: 'pedicure', name: "Pedicure", price: 900, duration: "1 hour", homeAvailable: true },
-            { id: 'hair-spa', name: "Hair Spa", price: 1800, duration: "1.5 hours", homeAvailable: false },
-            { id: 'massage', name: "Massage", price: 2000, duration: "1 hour", homeAvailable: true }
-        ];
-
-        const timeSlots = [
-            "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-            "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM",
-            "06:00 PM", "07:00 PM"
-        ];
-
-        // Global variables
-        let selectedServiceType = 'salon';
-        const HOME_SERVICE_FEE = 200;
-        let selectedServices = [];
-        let selectedDate = null;
-        let selectedSlot = null;
-        let map = null;
-        let marker = null;
-        let selectedCoordinates = null;
-
-        // Modal functions
-        function openBookingModal() {
-            document.getElementById('bookingModal').classList.add('sbm-active');
-            document.body.style.overflow = 'hidden';
-            initializeModal();
-        }
-
-        function closeBookingModal() {
-            document.getElementById('bookingModal').classList.remove('sbm-active');
-            document.body.style.overflow = '';
-            resetModal();
-        }
-
-        function initializeModal() {
-            populateServices();
-            populateDates();
-            populateSlots();
-            selectServiceType('salon');
-        }
-
-        // Service Type Selection
-        function selectServiceType(type) {
-            selectedServiceType = type;
-
-            // Update UI
-            document.getElementById('salonVisit').classList.remove('active');
-            document.getElementById('homeService').classList.remove('active');
-
-            if (type === 'salon') {
-                document.getElementById('salonVisit').classList.add('active');
-            } else {
-                document.getElementById('homeService').classList.add('active');
-            }
-
-            // Show/hide address section
-            const addressSection = document.getElementById('homeAddressSection');
-            const addressInput = document.getElementById('userAddress');
-
-            if (type === 'home') {
-                addressSection.style.display = 'block';
-                addressInput.setAttribute('required', 'required');
-                // Initialize map after a short delay
-                setTimeout(() => {
-                    if (!map) initMap();
-                }, 100);
-            } else {
-                addressSection.style.display = 'none';
-                addressInput.removeAttribute('required');
-            }
-
-            // Update services availability
-            updateServicesAvailability();
-            updateTotal();
-        }
-
-        // Google Maps Integration
-        function initMap() {
-            const defaultLocation = { lat: 12.9716, lng: 77.6412 }; // Indiranagar, Bangalore
-
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 13,
-                center: defaultLocation,
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: true
-            });
-
-            // Click listener
-            map.addListener('click', function (e) {
-                placeMarker(e.latLng);
-            });
-
-            // Search autocomplete
-            const searchInput = document.getElementById('mapSearch');
-            const autocomplete = new google.maps.places.Autocomplete(searchInput);
-            autocomplete.bindTo('bounds', map);
-
-            autocomplete.addListener('place_changed', function () {
-                const place = autocomplete.getPlace();
-                if (place.geometry) {
-                    map.setCenter(place.geometry.location);
-                    map.setZoom(15);
-                    placeMarker(place.geometry.location);
-                }
-            });
-        }
-
-        function placeMarker(location) {
-            if (marker) marker.setMap(null);
-
-            marker = new google.maps.Marker({
-                position: location,
-                map: map,
-                animation: google.maps.Animation.DROP
-            });
-
-            selectedCoordinates = {
-                lat: location.lat(),
-                lng: location.lng()
-            };
-
-            document.getElementById('selectedLocation').textContent =
-                `${selectedCoordinates.lat.toFixed(6)}, ${selectedCoordinates.lng.toFixed(6)}`;
-
-            // Reverse geocode
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ location: location }, function (results, status) {
-                if (status === 'OK' && results[0]) {
-                    const addressInput = document.getElementById('userAddress');
-                    if (!addressInput.value) {
-                        addressInput.value = results[0].formatted_address;
-                    }
-                }
-            });
-        }
-
-        // Services
-        function populateServices() {
-            const grid = document.getElementById('servicesGrid');
-            grid.innerHTML = services.map(service => `
-            <div class="sbm-service-card" data-service-id="${service.id}" onclick="toggleService('${service.id}')">
-                <div class="sbm-service-name">${service.name}</div>
-                <div class="sbm-service-price">₹${service.price}</div>
-                <div class="sbm-service-duration">${service.duration}</div>
-                <div class="sbm-badge-available">Available</div>
-            </div>
-        `).join('');
-        }
-
-        function toggleService(serviceId) {
-            const card = document.querySelector(`[data-service-id="${serviceId}"]`);
-
-            if (card.classList.contains('disabled')) return;
-
-            const index = selectedServices.indexOf(serviceId);
-            if (index > -1) {
-                selectedServices.splice(index, 1);
-                card.classList.remove('sbm-selected');
-            } else {
-                selectedServices.push(serviceId);
-                card.classList.add('sbm-selected');
-            }
-
-            updateTotal();
-        }
-
-        function updateServicesAvailability() {
-            const cards = document.querySelectorAll('.sbm-service-card');
-
-            cards.forEach(card => {
-                const serviceId = card.dataset.serviceId;
-                const service = services.find(s => s.id === serviceId);
-
-                if (selectedServiceType === 'home' && !service.homeAvailable) {
-                    card.classList.add('disabled');
-                    card.classList.remove('sbm-selected');
-                    const index = selectedServices.indexOf(serviceId);
-                    if (index > -1) selectedServices.splice(index, 1);
-                } else {
-                    card.classList.remove('disabled');
-                }
-            });
-        }
-
-        // Dates
-        function populateDates() {
-            const container = document.getElementById('dateSelector');
-            const dates = [];
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-            for (let i = 0; i < 7; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                dates.push({
-                    day: days[date.getDay()],
-                    date: date.getDate(),
-                    month: date.getMonth() + 1
-                });
-            }
-
-            container.innerHTML = dates.map((d, i) => `
-            <button class="sbm-date-btn ${i === 0 ? 'sbm-selected' : ''}" onclick="selectDate(${i})">
-                <div class="sbm-date-day">${d.day}</div>
-                <div class="sbm-date-num">${d.date}/${d.month}</div>
-            </button>
-        `).join('');
-
-            selectedDate = 0;
-        }
-
-        function selectDate(index) {
-            selectedDate = index;
-            const buttons = document.querySelectorAll('.sbm-date-btn');
-            buttons.forEach((btn, i) => {
-                btn.classList.toggle('sbm-selected', i === index);
-            });
-        }
-
-        // Time Slots
-        function populateSlots() {
-            const container = document.getElementById('slotsContainer');
-            const bookedSlots = [2, 5, 8]; // Demo booked slots
-
-            container.innerHTML = timeSlots.map((slot, i) => `
-            <button class="sbm-slot-btn" onclick="selectSlot(${i})" ${bookedSlots.includes(i) ? 'disabled' : ''}>
-                ${slot}
-            </button>
-        `).join('');
-        }
-
-        function selectSlot(index) {
-            selectedSlot = index;
-            const buttons = document.querySelectorAll('.sbm-slot-btn');
-            buttons.forEach((btn, i) => {
-                btn.classList.toggle('sbm-selected', i === index);
-            });
-        }
-
-        // Price Calculation
-        function updateTotal() {
-            let total = 0;
-
-            selectedServices.forEach(serviceId => {
-                const service = services.find(s => s.id === serviceId);
-                if (service) total += service.price;
-            });
-
-            if (selectedServiceType === 'home' && total > 0) {
-                total += HOME_SERVICE_FEE;
-            }
-
-            const priceElement = document.getElementById('totalPrice');
-            priceElement.textContent = `₹${total}`;
-
-            if (selectedServiceType === 'home' && total > HOME_SERVICE_FEE) {
-                const serviceTotal = total - HOME_SERVICE_FEE;
-                priceElement.title = `Services: ₹${serviceTotal} + Home Service Fee: ₹${HOME_SERVICE_FEE}`;
-            } else {
-                priceElement.title = '';
-            }
-        }
-
-        // Submit Booking
-        function submitBooking() {
-            const name = document.getElementById('userName').value.trim();
-            const phone = document.getElementById('userPhone').value.trim();
-
-            if (!name || !phone) {
-                alert('Please fill in all required fields (Name and Phone)');
-                return;
-            }
-
-            if (selectedServiceType === 'home') {
-                const address = document.getElementById('userAddress').value.trim();
-                if (!address) {
-                    alert('Please enter your service address for home service');
-                    return;
-                }
-                if (!selectedCoordinates) {
-                    alert('Please mark your location on the map');
-                    return;
-                }
-            }
-
-            if (selectedServices.length === 0) {
-                alert('Please select at least one service');
-                return;
-            }
-
-            if (selectedSlot === null) {
-                alert('Please select a time slot');
-                return;
-            }
-
-            const bookingData = {
-                serviceType: selectedServiceType,
-                name: name,
-                phone: phone,
-                email: document.getElementById('userEmail').value.trim(),
-                address: selectedServiceType === 'home' ? {
-                    street: document.getElementById('userAddress').value.trim(),
-                    details: document.getElementById('addressDetails').value.trim(),
-                    coordinates: selectedCoordinates
-                } : null,
-                services: selectedServices.map(id => {
-                    const service = services.find(s => s.id === id);
-                    return {
-                        id: service.id,
-                        name: service.name,
-                        price: service.price
-                    };
-                }),
-                date: selectedDate,
-                slot: timeSlots[selectedSlot],
-                notes: document.getElementById('userNotes').value.trim(),
-                total: document.getElementById('totalPrice').textContent
-            };
-
-            console.log('Booking submitted:', bookingData);
-            alert(`Booking confirmed!\nService Type: ${selectedServiceType === 'salon' ? 'Salon Visit' : 'Home Service'}\nTotal: ${bookingData.total}`);
-            closeBookingModal();
-        }
-
-        // Reset Modal
-        function resetModal() {
-            selectedServices = [];
-            selectedDate = null;
-            selectedSlot = null;
-            selectedCoordinates = null;
-
-            document.getElementById('userName').value = '';
-            document.getElementById('userPhone').value = '';
-            document.getElementById('userEmail').value = '';
-            document.getElementById('userAddress').value = '';
-            document.getElementById('addressDetails').value = '';
-            document.getElementById('mapSearch').value = '';
-            document.getElementById('userNotes').value = '';
-            document.getElementById('selectedLocation').textContent = 'Not selected yet';
-
-            // Remove marker
-            if (marker) {
-                marker.setMap(null);
-                marker = null;
-            }
-
-            // Reset selections
-            document.querySelectorAll('.sbm-service-card').forEach(card => {
-                card.classList.remove('sbm-selected');
-            });
-
-            updateTotal();
-        }
-
-        // Close modal on overlay click
-        document.getElementById('bookingModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeBookingModal();
-            }
-        });
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('bookingModal');
-                if (modal.classList.contains('sbm-active')) {
-                    closeBookingModal();
-                }
-            }
-        });
-
-        window.onclick = function (e) {
-            const modal = document.getElementById('bookingModal');
-            if (e.target === modal) {
-                modal.classList.remove('sbm-active');
-                document.body.style.overflow = '';
-            }
-        };
-
-
-    </script>
 
        <script>
     document.addEventListener('DOMContentLoaded', function() {
