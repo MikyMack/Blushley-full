@@ -62,8 +62,27 @@ router.get('/', async (req, res) => {
 });
 
 // About page
-router.get('/about', (req, res) => {
-    res.render('user/about');
+router.get('/about', async (req, res) => {
+    try {
+        const [
+            categories, 
+            subcategories, 
+            childcategories
+        ] = await Promise.all([
+            Category.find({ isActive: true }).lean(),
+            SubCategory.find({ isActive: true }).lean(),
+            ChildCategory.find({ isActive: true }).lean()
+        ]);
+        res.render('user/about', { categories, subcategories, childcategories });
+    } catch (err) {
+        console.error("Error loading categories/subcategories/childcategories for about page:", err);
+        res.render('user/about', {
+            categories: [],
+            subcategories: [],
+            childcategories: [],
+            error: "Could not load categories, subcategories, or childcategories"
+        });
+    }
 });
 // Shop page
 router.get(
@@ -86,20 +105,27 @@ router.get(
       page = Number(page);
       limit = Number(limit);
 
+
+      const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+      ]);
+
       let filter = { status: "approved" };
 
       if (cat) {
-        const catDoc = await Category.findOne({ slug: cat });
+        const catDoc = categories.find(c => c.slug === cat);
         if (catDoc) filter.category = catDoc._id;
       }
 
       if (sub) {
-        const subDoc = await SubCategory.findOne({ slug: sub });
+        const subDoc = subcategories.find(sc => sc.slug === sub);
         if (subDoc) filter.subCategory = subDoc._id;
       }
 
       if (child) {
-        const childDoc = await ChildCategory.findOne({ slug: child });
+        const childDoc = childcategories.find(cc => cc.slug === child);
         if (childDoc) filter.childCategory = childDoc._id;
       }
 
@@ -111,43 +137,45 @@ router.get(
         .populate("category subCategory childCategory")
         .lean();
 
-        products = products.map(p => {
-            let price, oldPrice;
+      products = products.map(p => {
+        let price, oldPrice;
 
-            if (p.adminBasePrice !== undefined && p.adminBasePrice !== null) {
+        if (p.adminBasePrice !== undefined && p.adminBasePrice !== null) {
+          if (
+            p.adminSalePrice !== undefined &&
+            p.adminSalePrice !== null &&
+            p.adminSalePrice < p.adminBasePrice
+          ) {
+            price = p.adminSalePrice;
+            oldPrice = p.adminBasePrice;
+          } else {
+            price = p.adminBasePrice;
+            oldPrice = null;
+          }
+        } else {
+          if (
+            p.salePrice !== undefined &&
+            p.salePrice !== null &&
+            p.salePrice < p.basePrice
+          ) {
+            price = p.salePrice;
+            oldPrice = p.basePrice;
+          } else {
+            price = p.basePrice;
+            oldPrice = null;
+          }
+        }
 
-              if (p.adminSalePrice !== undefined && p.adminSalePrice !== null && p.adminSalePrice < p.adminBasePrice) {
-           
-                price = p.adminSalePrice;
-                oldPrice = p.adminBasePrice;
-              } else {
-          
-                price = p.adminBasePrice;
-                oldPrice = null;
-              }
-            } else {
-     
-              if (p.salePrice !== undefined && p.salePrice !== null && p.salePrice < p.basePrice) {
-         
-                price = p.salePrice;
-                oldPrice = p.basePrice;
-              } else {
-      
-                price = p.basePrice;
-                oldPrice = null;
-              }
-            }
+        const priceVal = (typeof price === "number" && !isNaN(price)) ? price : 0;
+        const oldPriceVal = (typeof oldPrice === "number" && !isNaN(oldPrice)) ? oldPrice : null;
 
-            const priceVal = (typeof price === 'number' && !isNaN(price)) ? price : 0;
-            const oldPriceVal = (typeof oldPrice === 'number' && !isNaN(oldPrice)) ? oldPrice : null;
-            
-            return {
-              ...p,
-              finalPrice: priceVal,
-              price: priceVal,
-              oldPrice: oldPriceVal
-            };
-          });
+        return {
+          ...p,
+          finalPrice: priceVal,
+          price: priceVal,
+          oldPrice: oldPriceVal
+        };
+      });
 
       if (minPrice || maxPrice) {
         products = products.filter(p => {
@@ -171,30 +199,25 @@ router.get(
       if (stock === "in") {
         products = products.filter(p => p.totalStock > 0);
       } else if (stock === "out") {
-        products = products.filter(p => p.totalStock <= 0);
+        products = products.filter(p => (p.totalStock || 0) <= 0);
       }
 
       switch (sort) {
         case "best_selling":
-          products.sort((a, b) => b.totalSold - a.totalSold);
+          products.sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0));
           break;
-
         case "alpha_asc":
           products.sort((a, b) => a.title.localeCompare(b.title));
           break;
-
         case "alpha_desc":
           products.sort((a, b) => b.title.localeCompare(a.title));
           break;
-
         case "price_asc":
           products.sort((a, b) => a.finalPrice - b.finalPrice);
           break;
-
         case "price_desc":
           products.sort((a, b) => b.finalPrice - a.finalPrice);
           break;
-
         default:
           products.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       }
@@ -204,7 +227,7 @@ router.get(
       const paginatedProducts = products.slice(start, start + limit);
 
       const totalPages = Math.ceil(total / limit);
-      let pagination = {
+      const pagination = {
         totalPages,
         currentPage: page,
         prevPage: page > 1 ? page - 1 : null,
@@ -214,11 +237,7 @@ router.get(
         limit: limit
       };
 
-
-      const categories = await Category.find({ isActive: true });
-      const subCategories = await SubCategory.find({ isActive: true });
-      const childCategories = await ChildCategory.find({ isActive: true });
-
+      // Brands aggregation
       let brandAggResults = await Product.aggregate([
         { $match: { status: "approved", "brand.slug": { $exists: true, $ne: null } } },
         { $group: { _id: { slug: "$brand.slug", name: "$brand.name" } } },
@@ -252,18 +271,19 @@ router.get(
       };
       let sortName = sortNameMap[sort] || "Best selling";
 
+      // Applied filters (used by shop.ejs)
       const appliedFilters = [];
       if (search) appliedFilters.push({ label: 'Search', value: search });
       if (cat && categories && categories.length) {
         const foundCat = categories.find(c => c.slug === cat);
         if (foundCat) appliedFilters.push({ label: 'Category', value: foundCat.name });
       }
-      if (sub && subCategories && subCategories.length) {
-        const foundSub = subCategories.find(sc => sc.slug === sub);
+      if (sub && subcategories && subcategories.length) {
+        const foundSub = subcategories.find(sc => sc.slug === sub);
         if (foundSub) appliedFilters.push({ label: 'Subcategory', value: foundSub.name });
       }
-      if (child && childCategories && childCategories.length) {
-        const foundChild = childCategories.find(cc => cc.slug === child);
+      if (child && childcategories && childcategories.length) {
+        const foundChild = childcategories.find(cc => cc.slug === child);
         if (foundChild) appliedFilters.push({ label: 'Child Category', value: foundChild.name });
       }
       if (brand && brands && brands.length) {
@@ -283,7 +303,6 @@ router.get(
         currentPage: page,
         totalPages: totalPages,
         pagination,
-
         filters: {
           search,
           sort,
@@ -292,19 +311,15 @@ router.get(
           brand,
           stock
         },
-
         slugs: { cat, sub, child },
-
         categories,
-        subCategories,
-        childCategories,
-
+        subcategories,
+        childcategories,
         brands,
         selectedBrand,
         sortName,
         appliedFilters
       });
-
     } catch (err) {
       console.error("SHOP PAGE ERROR:", err);
       return res.status(500).send("Failed to load shop page");
@@ -316,7 +331,11 @@ router.get(
 router.get('/productDetails/:slug', async (req, res) => {
     try {
         const slug = req.params.slug;
-
+        const [categories, subcategories, childcategories] = await Promise.all([
+          Category.find({ isActive: true }).lean(),
+          SubCategory.find({ isActive: true }).lean(),
+          ChildCategory.find({ isActive: true }).lean()
+        ]);
         const processProductPrices = (p) => {
             let price, oldPrice;
             
@@ -487,7 +506,10 @@ router.get('/productDetails/:slug', async (req, res) => {
         return res.render('user/productDetails', {
             product: processedProduct,
             relatedProducts,
-            frequentlyBoughtTogether
+            frequentlyBoughtTogether,
+            categories,
+            subcategories,
+            childcategories
         });
     } catch (err) {
         console.error("Error loading product details:", err);
@@ -503,6 +525,12 @@ router.get('/userLogin', (req, res) => {
 
 router.get('/saloon-at-home', async (req, res) => {
     try {
+
+      const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+      ]);
         let {
             page = 1,
             limit = 10,
@@ -575,9 +603,6 @@ router.get('/saloon-at-home', async (req, res) => {
             .limit(limit)
             .lean();
 
-        // Helper: Expand the population with service pricing for ease of UI
-        // (Note: For each freelancer, only the matching services may be shown in frontend.)
-
         res.render('user/saloonAtHome', {
             freelancers,
             pagination: {
@@ -586,6 +611,9 @@ router.get('/saloon-at-home', async (req, res) => {
                 total: totalFreelancers,
                 totalPages: Math.ceil(totalFreelancers / limit)
             },
+            categories,
+            subcategories,
+            childcategories,
             filtersIn: { service, city, state, pincode, availableDate, minPrice, maxPrice }
         });
     } catch (err) {
@@ -607,6 +635,11 @@ router.get('/saloon-at-home', async (req, res) => {
 // book a saloon 
 router.get('/book-a-saloon', async (req, res) => {
     try {
+      const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+      ]);
       // For AJAX requests, return JSON
       if (req.headers['x-requested-with'] === 'XMLHttpRequest' || 
           req.path.includes('/api/')) {
@@ -624,7 +657,7 @@ router.get('/book-a-saloon', async (req, res) => {
   
         // Build match query
         let match = { status: 'active' };
-        
+    
         // Location filter
         if (location) {
           const locationRegex = new RegExp(location, 'i');
@@ -768,7 +801,9 @@ router.get('/book-a-saloon', async (req, res) => {
       
       // For regular page load, render the new template
       res.render("user/saloon-service", {
-        title: "Book Salon Services"
+        title: "Book Salon Services" , categories,
+        subcategories,
+        childcategories,
       });
       
     } catch (error) {
@@ -780,7 +815,6 @@ router.get('/book-a-saloon', async (req, res) => {
     }
   });
 
-// Salon details route
 // Salon details route
 router.get('/book-a-saloon/:id', async (req, res) => {
     try {
@@ -1744,12 +1778,28 @@ router.get('/salons/:id', async (req, res) => {
   });
 
 // Contact page
-router.get('/contact', (req, res) => {
-    res.render('user/contact');
+router.get('/contact', async (req, res) => {
+    try {
+        const [categories, subcategories, childcategories] = await Promise.all([
+            Category.find({ isActive: true }).lean(),
+            SubCategory.find({ isActive: true }).lean(),
+            ChildCategory.find({ isActive: true }).lean()
+        ]);
+        res.render('user/contact', { categories, subcategories, childcategories });
+    } catch (error) {
+        console.error('Error loading categories for contact page:', error);
+        res.render('user/contact', { categories: [], subcategories: [], childcategories: [] });
+    }
 });
 // blogs 
 router.get('/userblogs', async (req, res) => {
     try {
+
+      const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+      ]);
         let page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 6;
         if (limit > 24) limit = 24;
@@ -1768,6 +1818,9 @@ router.get('/userblogs', async (req, res) => {
 
         res.render('user/beauty-tips', {
             blogs,
+            categories,
+            subcategories,
+            childcategories,
             pagination: {
                 page,
                 totalPages,
@@ -1792,6 +1845,11 @@ router.get('/userblogs', async (req, res) => {
 // blogs details 
 router.get('/userblogs/:slug', async (req, res) => {
     try {
+      const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+      ]);
         const slug = req.params.slug;
         const blog = await Blog.findOne({ slug, status: 'published' }).lean();
         if (!blog) {
@@ -1829,7 +1887,10 @@ router.get('/userblogs/:slug', async (req, res) => {
 
         res.render('user/beautyDetails', {
             blog,
-            relatedblogs
+            relatedblogs,
+            categories,
+            subcategories,
+            childcategories,
         });
     } catch (err) {
         console.error("Error loading blog details for slug:", req.params.slug, err);
@@ -1841,52 +1902,112 @@ router.get('/userblogs/:slug', async (req, res) => {
     }
 });
 // account 
-router.get('/user-account', (req, res) => {
-    res.render('user/userAccount');
+router.get('/user-account', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/userAccount', { categories, subcategories, childcategories });
 });
 // orders 
-router.get('/user-orders', (req, res) => {
-    res.render('user/userOrders');
+router.get('/user-orders', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/userOrders', { categories, subcategories, childcategories });
 });
 // addresses 
-router.get('/user-addresses', (req, res) => {
-    res.render('user/userAddresses');
+router.get('/user-addresses', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/userAddresses', { categories, subcategories, childcategories });
 });
 // wishlist 
-router.get('/wishlist', (req, res) => {
-    res.render('user/wishlist');
+router.get('/wishlist', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/wishlist', { categories, subcategories, childcategories });
 });
 // cart 
-router.get('/cart', (req, res) => {
-    res.render('user/cart');
+router.get('/cart', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/cart', { categories, subcategories, childcategories });
 });
 // checkout 
-router.get('/checkout', (req, res) => {
-    res.render('user/checkout');
+router.get('/checkout', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/checkout', { categories, subcategories, childcategories });
 });
 // user bookings
-router.get('/userBookings', (req, res) => {
-    res.render('user/userBookings');
+router.get('/userBookings', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/userBookings', { categories, subcategories, childcategories });
 });
 // faq
-router.get('/faq', (req, res) => {
-    res.render('user/faq');
+router.get('/faq', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/faq', { categories, subcategories, childcategories });
 }); 
 // payment confirmation success
-router.get('/payment-confirmation', (req, res) => {
-    res.render('user/payment-confirmation');
+router.get('/payment-confirmation', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/payment-confirmation', { categories, subcategories, childcategories });
 });
 // payment confirmation failed
-router.get('/payment-failed', (req, res) => {
-    res.render('user/payment-failure');
+router.get('/payment-failed', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/payment-failure', { categories, subcategories, childcategories });
 });
 // terms and conditions
-router.get('/terms_and_conditions', (req, res) => {
-    res.render('user/terms_and_conditions');
+router.get('/terms_and_conditions', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/terms_and_conditions', { categories, subcategories, childcategories });
 });
 // privacy policy
-router.get('/privacy_policy', (req, res) => {
-    res.render('user/privacy_policy');
+router.get('/privacy_policy', async (req, res) => {
+    const [categories, subcategories, childcategories] = await Promise.all([
+        Category.find({ isActive: true }).lean(),
+        SubCategory.find({ isActive: true }).lean(),
+        ChildCategory.find({ isActive: true }).lean()
+    ]);
+    res.render('user/privacy_policy', { categories, subcategories, childcategories });
 });
 
 
