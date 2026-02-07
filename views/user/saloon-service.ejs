@@ -43,269 +43,838 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16x16.png">
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/images/logo/apple-touch-icon.png">
-<style>
-    /* Filter styles */
-.filter-count {
-    background: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    margin-left: 5px;
-}
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.applied-filter {
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 4px 12px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    display: inline-flex;
-    align-items: center;
-    font-size: 14px;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
 
-.remove-filter {
-    background: none;
-    border: none;
-    color: #666;
-    margin-left: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0 4px;
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-.remove-filter:hover {
-    color: #ff0000;
-}
+        /* Header with Search */
+        .main-header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-.remove-all-filters {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 8px;
-}
+        .header-top {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            gap: 20px;
+        }
 
-.remove-all-filters:hover {
-    text-decoration: underline;
-}
+        .location-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            min-width: 200px;
+        }
 
-/* Salon card enhancements */
-.rating-badge {
-    color: #ffc107;
-    margin-right: 5px;
-}
+        .location-selector:hover {
+            background: #e9ecef;
+        }
 
-.price-badge {
-    background: var(--primary-color);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-}
+        .location-icon {
+            color: #ff6b6b;
+        }
 
-.availability-badge {
-    background: #e8f5e9;
-    color: #2e7d32;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    margin-right: 5px;
-}
+        .location-info {
+            flex: 1;
+        }
 
-.availability-badge.available-today {
-    background: #e3f2fd;
-    color: #1565c0;
-}
+        .location-label {
+            font-size: 12px;
+            color: #666;
+        }
 
-.availability-badge.unavailable {
-    background: #ffebee;
-    color: #c62828;
-}
+        .location-name {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-.availability-badge.home-service {
-    background: #f3e5f5;
-    color: #7b1fa2;
-}
+        .header-search {
+            flex: 1;
+            position: relative;
+        }
 
-.service-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 5px;
-}
+        .search-container {
+            position: relative;
+        }
 
-/* Filter sidebar */
-.canvas-filter {
-    width: 300px;
-}
+        .search-input {
+            width: 100%;
+            padding: 14px 50px 14px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
 
-.canvas-body {
-    padding: 20px;
-    overflow-y: auto;
-    max-height: calc(100vh - 120px);
-}
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
 
-.widget-facet {
-    margin-bottom: 24px;
-}
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.facet-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #333;
-}
+        /* Main Content Layout */
+        .main-content {
+            display: flex;
+            gap: 30px;
+            padding: 20px 0;
+            min-height: calc(100vh - 70px);
+        }
 
-.facet-content {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+        /* Left Sidebar - Categories */
+        .categories-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
 
-.categories-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    cursor: pointer;
-    transition: color 0.2s;
-}
+        .categories-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
 
-.categories-item:hover {
-    color: var(--primary-color);
-}
+        .categories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-.count-cate {
-    color: #666;
-    font-size: 12px;
-}
+        .category-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #333;
+        }
 
-.box-fieldset-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+        .category-item:hover {
+            background: #f8f9fa;
+        }
 
-.fieldset-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        .category-item.active {
+            background: #ff6b6b;
+            color: white;
+        }
 
-.tf-check {
-    width: 18px;
-    height: 18px;
-}
+        .category-icon {
+            margin-right: 12px;
+            font-size: 20px;
+        }
 
-.canvas-bottom {
-    padding: 20px;
-    border-top: 1px solid #eee;
-    display: flex;
-    gap: 10px;
-}
+        .category-name {
+            flex: 1;
+            font-weight: 500;
+        }
 
-.btn-reset {
-    background: #f5f5f5;
-    color: #666;
-    border: 1px solid #ddd;
-    flex: 1;
-}
+        /* Right Content Area */
+        .content-area {
+            flex: 1;
+        }
 
-.btn-apply {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    flex: 1;
-}
+        /* Selected Services Bar */
+        .selected-services-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: none;
+        }
 
-.btn-reset:hover {
-    background: #e0e0e0;
-}
+        .selected-services-bar.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
 
-.btn-apply:hover {
-    background: var(--primary-dark);
-}
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-/* Pagination */
-.salon-pagination {
-    margin-top: 40px;
-}
+        .selected-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
 
-.wg-pagination {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    gap: 5px;
-}
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.pagination-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    color: #333;
-    transition: all 0.2s;
-}
+        .selected-tag {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.pagination-item:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
+        .remove-tag {
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
 
-.wg-pagination li.active .pagination-item {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
+        /* Services Grid */
+        .services-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
 
-/* Loading state */
-.loading-skeleton {
-    animation: pulse 1.5s ease-in-out infinite;
-}
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .canvas-filter {
-        width: 100%;
-    }
-    
-    .applied-filter {
-        font-size: 12px;
-        padding: 3px 8px;
-    }
-    
-    .service-badges {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .availability-badge {
-        margin-bottom: 5px;
-    }
-}
-</style>
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+        }
+
+        .service-card:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.1);
+        }
+
+        .service-card.selected {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeaea 100%);
+        }
+
+        .service-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #ff6b6b;
+        }
+
+        .service-card.selected .service-icon {
+            color: #ff4757;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        .service-price {
+            color: #ff6b6b;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .service-duration {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .service-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s;
+        }
+
+        .service-card.selected .service-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Salons Section */
+        .salons-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .salons-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .salons-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .salons-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .sort-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sort-filter:hover {
+            background: #e9ecef;
+        }
+
+        .salons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .salon-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .salon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .salon-image {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .salon-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .salon-card:hover .salon-image img {
+            transform: scale(1.05);
+        }
+
+        .salon-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #4cd964;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .salon-badge.closed {
+            background: #ff6b6b;
+        }
+
+        .salon-info {
+            padding: 20px;
+        }
+
+        .salon-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .salon-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .stars {
+            color: #ffd700;
+            font-size: 16px;
+        }
+
+        .rating-number {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-count {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .salon-location {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .salon-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .price-from {
+            font-weight: 600;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .home-service-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .salon-services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .salon-service-tag {
+            background: #f8f9fa;
+            color: #666;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .no-salons {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .no-salons-icon {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .no-salons-title {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .no-salons-text {
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        /* Location Modal */
+        .location-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .location-modal-container {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+
+        .location-modal-header {
+            padding: 24px;
+            background: #ff6b6b;
+            color: white;
+            position: relative;
+        }
+
+        .location-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .location-modal-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .location-modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .location-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .location-option:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .location-option-icon {
+            margin-right: 12px;
+            color: #ff6b6b;
+        }
+
+        .location-option-content {
+            flex: 1;
+        }
+
+        .location-option-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .location-option-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .location-search-container {
+            margin-bottom: 24px;
+        }
+
+        .location-search-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ff6b6b;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .popular-cities {
+            margin-top: 24px;
+        }
+
+        .popular-cities h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .city-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .city-tag {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .city-tag:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .location-modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .confirm-location-btn {
+            width: 100%;
+            padding: 16px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .confirm-location-btn:hover:not(:disabled) {
+            background: #ff4757;
+            transform: translateY(-2px);
+        }
+
+        .confirm-location-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff6b6b;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .categories-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .content-area {
+                order: 1;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .salons-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .location-selector {
+                width: 100%;
+            }
+            
+            .header-search {
+                width: 100%;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+            
+            .salons-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .salons-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .sort-filter {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .service-card {
+                padding: 15px;
+            }
+            
+            .salon-card {
+                border-radius: 10px;
+            }
+            
+            .salon-info {
+                padding: 15px;
+            }
+        }
+
+        /* Hide sections initially */
+        #servicesSection, #salonsSection {
+            display: none;
+        }
+    </style>
 </head>
 
 <body class="preload-wrapper">
@@ -457,1484 +1026,1559 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </header>
 
         <!-- /Header -->
-
-        <!-- page-title -->
-        <div class="page-title" style="background-image: url('/images/banners/beautician-services.png');">
-            <div class="container-full">
-                <div class="row">
-                    <div class="col-12">
-                        <h3 class="heading text-center">Salon Services</h3>
-                        <ul class="breadcrumbs d-flex align-items-center justify-content-center">
-                            <li>
-                                <a class="link" href="/">Home</a>
-                            </li>
-                            <li>
-                                <i class="icon-arrRight"></i>
-                            </li>
-                            <li>
-                                Salon Services
-                            </li>
-                        </ul>
-                    </div>
+  <!-- Location Modal -->
+  <div class="location-modal-overlay" id="locationModal">
+    <div class="location-modal-container">
+        <div class="location-modal-header">
+            <div>
+                <div class="location-modal-title">📍 Choose your location</div>
+                <div class="location-modal-subtitle">Set your location to find salons near you</div>
+            </div>
+            <button class="close-modal" onclick="closeLocationModal()">×</button>
+        </div>
+        
+        <div class="location-modal-body">
+            <div class="location-option" onclick="getCurrentLocation()">
+                <div class="location-option-icon">📍</div>
+                <div class="location-option-content">
+                    <div class="location-option-title">Use current location</div>
+                    <div class="location-option-desc">Allow location access for accurate results</div>
+                </div>
+            </div>
+            
+            <div class="location-search-container">
+                <input type="text" 
+                       class="location-search-input" 
+                       id="locationSearch"
+                       placeholder="Search for area, street name, city, or pincode"
+                       autocomplete="off">
+                <div class="search-results" id="searchResults">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+            
+            <div class="popular-cities">
+                <h4>Popular Cities in Kerala</h4>
+                <div class="city-tags">
+                    <span class="city-tag" onclick="selectCity('Thiruvananthapuram')">Thiruvananthapuram</span>
+                    <span class="city-tag" onclick="selectCity('Kochi')">Kochi</span>
+                    <span class="city-tag" onclick="selectCity('Kozhikode')">Kozhikode</span>
+                    <span class="city-tag" onclick="selectCity('Thrissur')">Thrissur</span>
+                    <span class="city-tag" onclick="selectCity('Kollam')">Kollam</span>
+                    <span class="city-tag" onclick="selectCity('Alappuzha')">Alappuzha</span>
+                    <span class="city-tag" onclick="selectCity('Kannur')">Kannur</span>
+                    <span class="city-tag" onclick="selectCity('Kottayam')">Kottayam</span>
                 </div>
             </div>
         </div>
-        <!-- /page-title -->
+        
+        <div class="location-modal-footer">
+            <button class="confirm-location-btn" id="confirmLocationBtn" onclick="confirmLocation()" disabled>
+                Confirm Location
+            </button>
+        </div>
+    </div>
+</div>
 
-        <!-- Section beautician list -->
-        <section class="flat-spacing">
-            <div class="container">
-                <!-- Filter Controls -->
-                <div class="tf-shop-control">
-                    <div class="tf-control-filter">
-                        <a href="#filterShop" data-bs-toggle="offcanvas" aria-controls="filterShop" class="tf-btn-filter">
-                            <span class="icon icon-filter"></span>
-                            <span class="text">Filters</span>
-                            <% if (Object.values(filters).some(f => f)) { %>
-                                <span class="filter-count"><%= Object.values(filters).filter(f => f).length %></span>
-                            <% } %>
-                        </a>
-                        <div class="d-none d-lg-flex shop-sale-text">
-                            <i class="icon icon-checkCircle"></i>
-                            <p class="text-caption-1">Exclusive salon offers today only</p>
-                        </div>
-                    </div>
-        
-                    <ul class="tf-control-layout">
-                        <li class="tf-view-layout-switch sw-layout-list list-layout active" data-value-layout="list">
-                            <div class="item"></div>
-                        </li>
-                    </ul>
-        
-                    <div class="tf-control-sorting">
-                        <p class="d-none d-lg-block text-caption-1">Sort by:</p>
-                        <div class="tf-dropdown-sort" data-bs-toggle="dropdown">
-                            <div class="btn-select">
-                                <span class="text-sort-value">
-                                    <% if (filters.sort === 'top-rated') { %>Top rated<% } %>
-                                    <% if (filters.sort === 'price-low-high') { %>Price: Low to High<% } %>
-                                    <% if (filters.sort === 'price-high-low') { %>Price: High to Low<% } %>
-                                </span>
-                                <span class="icon icon-arrow-down"></span>
-                            </div>
-                            <div class="dropdown-menu">
-                                <div class="select-item" data-sort-value="top-rated">
-                                    <span class="text-value-item">Top rated</span>
-                                </div>
-                                <div class="select-item" data-sort-value="price-low-high">
-                                    <span class="text-value-item">Price: Low to High</span>
-                                </div>
-                                <div class="select-item" data-sort-value="price-high-low">
-                                    <span class="text-value-item">Price: High to Low</span>
-                                </div>
-                            </div>
-                        </div>
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-top">
+            <div class="location-selector" onclick="openLocationModal()">
+                <div class="location-icon">📍</div>
+                <div class="location-info">
+                    <div class="location-label">Your Location</div>
+                    <div class="location-name" id="currentLocationDisplay">
+                        Select location
                     </div>
                 </div>
-        
-                <!-- Applied Filters -->
-                <div class="wrapper-control-shop">
-                    <div class="meta-filter-shop">
-                        <div id="salon-count" class="count-text">
-                            Showing <%= Math.min(salons.length, pageSize) %> of <%= totalSalons %> salons
-                        </div>
-                        <div id="applied-filters">
-                            <% if (filters.service) { %>
-                                <span class="applied-filter">
-                                    Service: <%= filters.service %>
-                                    <button class="remove-filter" data-filter="service">×</button>
-                                </span>
-                            <% } %>
-                            <% if (filters.location) { %>
-                                <span class="applied-filter">
-                                    Location: <%= filters.location %>
-                                    <button class="remove-filter" data-filter="location">×</button>
-                                </span>
-                            <% } %>
-                            <% if (filters.price_min || filters.price_max) { %>
-                                <span class="applied-filter">
-                                    Price: ₹<%= filters.price_min || 0 %> - ₹<%= filters.price_max || '5000+' %>
-                                    <button class="remove-filter" data-filter="price">×</button>
-                                </span>
-                            <% } %>
-                            <% if (filters.rating) { %>
-                                <span class="applied-filter">
-                                    Rating: <%= filters.rating %>★+
-                                    <button class="remove-filter" data-filter="rating">×</button>
-                                </span>
-                            <% } %>
-                        </div>
-                        <% if (Object.values(filters).some(f => f)) { %>
-                            <button id="remove-all" class="remove-all-filters text-btn-uppercase">
-                                REMOVE ALL <i class="icon icon-close"></i>
-                            </button>
-                        <% } %>
-                    </div>
-        
-                    <!-- Salon List -->
-                    <div class="tf-list-layout wrapper-shop" id="listLayout">
-                        <% if (salons.length === 0) { %>
-                            <div class="text-center py-5">
-                                <i class="icon icon-search fs-1 text-muted mb-3"></i>
-                                <p class="text-muted">No salons found matching your criteria</p>
-                                <button class="btn btn-outline-primary mt-3" onclick="resetFilters()">
-                                    Reset Filters
-                                </button>
-                            </div>
-                        <% } %>
-        
-                        <% salons.forEach(salon => { %>
-                            <div class="card-product style-list"
-                                 data-rating="<%= salon.avgRating %>"
-                                 data-price="<%= salon.lowestPrice %>"
-                                 data-location="<%= salon.address?.city || '' %>">
-                                <div class="card-product-wrapper salon-img">
-                                    <a href="/book-a-saloon/<%= salon._id %>" class="product-img">
-                                        <img class="lazyload img-product" 
-                                             src="<%= salon.images && salon.images[0] ? salon.images[0] : '/images/brand/salon-default.jpg' %>" 
-                                             alt="<%= salon.name %>">
-                                    </a>
-                                </div>
-                                <div class="card-product-info">
-                                    <a href="/book-a-saloon/<%= salon._id %>" class="title link"><%= salon.name %></a>
-                                    <div class="price">
-                                        <span class="rating-badge">
-                                            <%= '★'.repeat(Math.floor(salon.avgRating)) %><%= '☆'.repeat(5-Math.floor(salon.avgRating)) %>
-                                        </span>
-                                        <span class="review-count">(<%= salon.reviewCount %> reviews)</span>
-                                        <span class="price-badge ms-2">From ₹<%= salon.lowestPrice %></span>
-                                    </div>
-        
-                                    <div class="location-info">
-                                        <span class="icon icon-location"></span>
-                                        <span class="location-text">
-                                            <%= salon.address?.line1 ? salon.address.line1 + ', ' : '' %>
-                                            <%= salon.address?.city || '' %>
-                                            <%= salon.address?.state ? ', ' + salon.address.state : '' %>
-                                        </span>
-                                    </div>
-        
-                                    <p class="description text-secondary text-line-clamp-2">
-                                        <%= salon.description || 'Premium salon services by expert stylists.' %>
-                                    </p>
-        
-                                    <div class="variant-wrap-list">
-                                        <div class="size-box list-product-btn">
-                                            <div class="service-badges">
-                                                <% salon.serviceNames && salon.serviceNames.forEach((service, index) => { %>
-                                                    <% if (index < 3) { %>
-                                                        <span class="availability-badge"><%= service %></span>
-                                                    <% } %>
-                                                <% }) %>
-                                                <% if (salon.serviceNames && salon.serviceNames.length > 3) { %>
-                                                    <span class="availability-badge">+<%= salon.serviceNames.length - 3 %> More</span>
-                                                <% } %>
-                                            </div>
-                                        </div>
-        
-                                        <div class="size-box list-product-btn">
-                                            <% if (salon.isAvailableToday) { %>
-                                                <span class="availability-badge available-today">Available Today</span>
-                                            <% } else { %>
-                                                <span class="availability-badge unavailable">Booked Out</span>
-                                            <% } %>
-                                            <% if (salon.serviceMode?.homeService) { %>
-                                                <span class="availability-badge home-service">Home Service Available</span>
-                                            <% } %>
-                                        </div>
-        
-                                        <div class="list-product-btn">
-                                            <button class="btn-main-product" onclick="openBookingModal('<%= salon._id %>')">
-                                                Book Your Appointment
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-        
-                    <!-- Pagination -->
-                    <% 
-                        function paginationUrl(pageNum) {
-                            let baseUrl = '/book-a-saloon';
-                            let params = [];
-                            if (filters.service) params.push('service=' + encodeURIComponent(filters.service));
-                            if (filters.price_min) params.push('price_min=' + encodeURIComponent(filters.price_min));
-                            if (filters.price_max) params.push('price_max=' + encodeURIComponent(filters.price_max));
-                            if (filters.availability) params.push('availability=' + encodeURIComponent(filters.availability));
-                            if (filters.gender) params.push('gender=' + encodeURIComponent(filters.gender));
-                            if (filters.location) params.push('location=' + encodeURIComponent(filters.location));
-                            if (filters.rating) params.push('rating=' + encodeURIComponent(filters.rating));
-                            if (filters.service_mode) params.push('service_mode=' + encodeURIComponent(filters.service_mode));
-                            if (filters.sort) params.push('sort=' + encodeURIComponent(filters.sort));
-                            params.push('page=' + pageNum);
-                            params.push('limit=' + pageSize);
-                            return baseUrl + (params.length ? '?' + params.join('&') : '');
-                        }
-                    %>
-                    <% if (totalPages > 1) { %>
-                        <ul class="wg-pagination justify-content-center salon-pagination">
-                            <% if (currentPage > 1) { %>
-                                <li>
-                                    <a href="<%= paginationUrl(currentPage - 1) %>" class="pagination-item text-button">
-                                        <i class="icon-arrLeft"></i>
-                                    </a>
-                                </li>
-                            <% } %>
-
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <% if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) { %>
-                                    <li class="<%= currentPage === i ? 'active' : '' %>">
-                                        <% if (currentPage === i) { %>
-                                            <div class="pagination-item text-button"><%= i %></div>
-                                        <% } else { %>
-                                            <a href="<%= paginationUrl(i) %>" class="pagination-item text-button"><%= i %></a>
-                                        <% } %>
-                                    </li>
-                                <% } else if (i === currentPage - 2 || i === currentPage + 2) { %>
-                                    <li><span class="pagination-item text-button">...</span></li>
-                                <% } %>
-                            <% } %>
-
-                            <% if (currentPage < totalPages) { %>
-                                <li>
-                                    <a href="<%= paginationUrl(currentPage + 1) %>" class="pagination-item text-button">
-                                        <i class="icon-arrRight"></i>
-                                    </a>
-                                </li>
-                            <% } %>
-                        </ul>
-                    <% } %>
-                </div>
+                <div>▼</div>
             </div>
-        </section>
-
-        <!-- Booking Modal -->
-        <div class="sbm-modal-overlay" id="bookingModal">
-            <div class="sbm-modal-container">
-                <div class="sbm-modal-header">
-                    <div class="sbm-modal-title">Book Your Appointment</div>
-                    <div class="sbm-modal-subtitle">Glam Studio Salon - Indiranagar</div>
-                    <button class="sbm-close-btn" onclick="closeBookingModal()">×</button>
-                </div>
-
-                <div class="sbm-modal-body">
-                    <!-- Services Section -->
-                    <div class="sbm-section">
-                        <div class="sbm-section-title">
-                            <div class="sbm-section-icon">✂</div>
-                            Select Services
-                        </div>
-                        <div class="sbm-services-grid" id="servicesGrid">
-                            <!-- Services will be populated here -->
-                        </div>
-                    </div>
-
-                    <!-- Date Selection -->
-                    <div class="sbm-section">
-                        <div class="sbm-section-title">
-                            <div class="sbm-section-icon">📅</div>
-                            Choose Date
-                        </div>
-                        <div class="sbm-date-selector" id="dateSelector">
-                            <!-- Dates will be populated here -->
-                        </div>
-                    </div>
-
-                    <div class="sbm-modal-body">
-                        <!-- Service Type Selection -->
-                        <div class="sbm-section">
-                            <div class="sbm-section-title">
-                                <div class="sbm-section-icon">🏠</div>
-                                Service Location
-                            </div>
-                            <div class="sbm-service-type-container">
-                                <div class="sbm-service-type-option" id="salonVisit"
-                                    onclick="selectServiceType('salon')">
-                                    <div class="sbm-service-type-icon">🏢</div>
-                                    <div class="sbm-service-type-title">Visit Salon</div>
-                                    <div class="sbm-service-type-desc">Come to our salon at Indiranagar</div>
-                                </div>
-                                <div class="sbm-service-type-option" id="homeService"
-                                    onclick="selectServiceType('home')">
-                                    <div class="sbm-service-type-icon">🏡</div>
-                                    <div class="sbm-service-type-title">Home Service</div>
-                                    <div class="sbm-service-type-desc">Beautician visits your location</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Home Address Section - Add this in your HTML modal body after Service Type Selection -->
-                        <div class="sbm-section" id="homeAddressSection" style="display: none;">
-                            <div class="sbm-section-title">
-                                <div class="sbm-section-icon">📍</div>
-                                Service Address
-                            </div>
-                            <div class="sbm-form-group">
-                                <label class="sbm-form-label">Complete Address *</label>
-                                <input type="text" class="sbm-form-input" id="userAddress"
-                                    placeholder="Enter your complete address (House/Flat No, Street, Area)">
-                            </div>
-                            <div class="sbm-form-group">
-                                <label class="sbm-form-label">Landmark / Additional Details</label>
-                                <input type="text" class="sbm-form-input" id="addressDetails"
-                                    placeholder="Nearby landmark or additional directions">
-                            </div>
-                            <div class="sbm-form-group">
-                                <label for="customerAddress" class="sbm-form-label">Google Maps Link</label>
-                                <input type="text" id="customerAddress" name="customerAddress"
-                                    placeholder="Enter your address or paste Google Maps link" class="sbm-form-input" />
-                                <small style="color: #777;">
-                                    Example: https://maps.app.goo.gl/abcd1234
-                                </small>
-                            </div>
-                            <!--  <div class="sbm-form-group">
-                                <label class="sbm-form-label">Mark Location on Map</label>
-                                <div class="sbm-map-container">
-                                    <input type="text" class="sbm-form-input" id="mapSearch"
-                                        placeholder="Search location or click on map" style="margin-bottom: 12px;">
-                                    <div class="sbm-map-wrapper">
-                                        <div id="map"></div>
-                                    </div>
-                                    <div class="sbm-coordinates">
-                                        <span style="font-weight: 600;">Selected Location:</span>
-                                        <span id="selectedLocation">Not selected yet</span>
-                                    </div>
-                                </div>
-                            </div>-->
-                        </div>
-
-
-
-                        <!-- Time Slots -->
-                        <div class="sbm-section">
-                            <div class="sbm-section-title">
-                                <div class="sbm-section-icon">🕐</div>
-                                Available Time Slots
-                            </div>
-                            <div class="sbm-slots-container" id="slotsContainer">
-                                <!-- Slots will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- User Details -->
-                        <div class="sbm-section">
-                            <div class="sbm-section-title">
-                                <div class="sbm-section-icon">👤</div>
-                                Your Details
-                            </div>
-                            <div class="sbm-form-row">
-                                <div class="sbm-form-group">
-                                    <label class="sbm-form-label">Full Name *</label>
-                                    <input type="text" class="sbm-form-input" id="userName"
-                                        placeholder="Enter your name" required>
-                                </div>
-                                <div class="sbm-form-group">
-                                    <label class="sbm-form-label">Phone Number *</label>
-                                    <input type="tel" class="sbm-form-input" id="userPhone"
-                                        placeholder="+91 XXXXX XXXXX" required>
-                                </div>
-                            </div>
-                            <div class="sbm-form-group">
-                                <label class="sbm-form-label">Email Address</label>
-                                <input type="email" class="sbm-form-input" id="userEmail"
-                                    placeholder="your.email@example.com">
-                            </div>
-                            <div class="sbm-form-group">
-                                <label class="sbm-form-label">Special Requests (Optional)</label>
-                                <textarea class="sbm-form-textarea" id="userNotes"
-                                    placeholder="Any specific requirements or preferences..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sbm-modal-footer">
-                        <div class="sbm-total-price">
-                            Total: <span class="sbm-price-amount" id="totalPrice">₹0</span>
-                        </div>
-                        <button class="sbm-submit-btn" onclick="submitBooking()">Confirm Booking</button>
-                    </div>
+            
+            <div class="header-search">
+                <div class="search-container">
+                    <input type="text" 
+                           class="search-input" 
+                           id="globalSearch"
+                           placeholder="Search for services, salons, or stylists..."
+                           autocomplete="off">
+                    <button class="search-btn" onclick="globalSearch()">🔍</button>
                 </div>
             </div>
         </div>
+    </div>
+</header>
 
-        <!-- /Section beautician list -->
+<!-- Main Content -->
+<div class="container">
+    <div class="main-content">
+        <!-- Left Sidebar - Categories -->
+        <aside class="categories-sidebar" id="categoriesSidebar" style="display: none;">
+            <h3 class="categories-title">Categories</h3>
+            <div class="categories-list" id="categoriesList">
+                <!-- Categories will be populated here -->
+            </div>
+        </aside>
+
+        <!-- Right Content Area -->
+        <main class="content-area">
+            <!-- Selected Services Bar -->
+            <div class="selected-services-bar" id="selectedServicesBar">
+                <div class="selected-title">Selected Services:</div>
+                <div class="selected-tags" id="selectedTags">
+                    <!-- Selected services will appear here -->
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <section class="services-section" id="servicesSection">
+                <h2 class="section-title" id="servicesTitle">Popular Services</h2>
+                <p class="section-subtitle">Select services to find matching salons</p>
+                
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Services will be populated here -->
+                </div>
+            </section>
+
+            <!-- Salons Section -->
+            <section class="salons-section" id="salonsSection">
+                <div class="salons-header">
+                    <div>
+                        <h2 class="salons-title" id="salonsTitle">Salons Near You</h2>
+                        <div class="salons-count" id="salonsCount">Loading...</div>
+                    </div>
+                    <div class="sort-filter" onclick="openSortFilter()">
+                        <span>⚙️</span>
+                        <span>Sort & Filter</span>
+                    </div>
+                </div>
+                
+                <div class="salons-grid" id="salonsGrid">
+                    <!-- Salons will be populated here -->
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- Your existing booking modal -->
+<div class="sbm-modal-overlay" id="bookingModal">
+    <!-- Your booking modal content -->
+</div>
+
 <script>
-    // Booking Modal JavaScript
-let selectedServices = [];
-let selectedDate = null;
-let selectedTimeSlot = null;
-let selectedServiceType = 'salon'; // 'salon' or 'home'
-let homeServiceCharge = 0;
-let salonData = null;
+    // Global state
+    let userLocation = null;
+    let selectedServices = [];
+    let selectedCategory = 'all';
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = true;
+    let serviceData = {};
+    let categoriesData = {};
+    let searchTimeout = null;
 
-async function openBookingModal(salonId) {
-    try {
-        // Show loading state
-        document.getElementById('bookingModal').classList.add('sbm-active');
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show location modal by default
+        openLocationModal();
+        
+        // Check for saved location
+        const savedLocation = localStorage.getItem('lastLocation');
+        if (savedLocation) {
+            try {
+                userLocation = JSON.parse(savedLocation);
+                updateLocationDisplay();
+                initializeApp();
+            } catch (e) {
+                console.error('Error parsing saved location:', e);
+            }
+        }
+        
+        // Setup search
+        setupSearch();
+    });
+
+    // Location functions
+    function openLocationModal() {
+        document.getElementById('locationModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        
-        // Store salon ID
-        window.currentSalonId = salonId;
-        
-        // Reset selections
-        selectedServices = [];
-        selectedDate = null;
-        selectedTimeSlot = null;
-        selectedServiceType = 'salon';
-        homeServiceCharge = 0;
-        
-        // Load salon data
-        await loadSalonData(salonId);
-        
-        // Load services
-        await loadSalonServices(salonId);
-        
-        // Initialize date selector for next 30 days
-        initializeDateSelector();
-        
-        // Update total price
-        updateTotalPrice();
-        
-    } catch (error) {
-        console.error('Error opening booking modal:', error);
-        alert('Failed to load salon information. Please try again.');
-        closeBookingModal();
     }
-}
 
-async function loadSalonData(salonId) {
-    try {
-        const response = await fetch(`/api/salon/${salonId}`);
-        const data = await response.json();
-        
-        if (data.success) {
-            salonData = data.salon;
+    function closeLocationModal() {
+        document.getElementById('locationModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            const btn = document.getElementById('confirmLocationBtn');
+            btn.innerHTML = '<span class="loading"></span>';
+            btn.disabled = true;
             
-            // Update modal title with salon name
-            const modalTitle = document.querySelector('.sbm-modal-subtitle');
-            if (modalTitle) {
-                modalTitle.textContent = `${salonData.name} - ${salonData.address?.city || ''}`;
-            }
-            
-            // Set home service charge
-            if (salonData.serviceMode?.homeService) {
-                homeServiceCharge = salonData.serviceMode.homeServiceExtraCharge || 0;
-            }
-            
-            // Show/hide home service option
-            const homeServiceOption = document.getElementById('homeService');
-            if (homeServiceOption) {
-                if (salonData.serviceMode?.homeService) {
-                    homeServiceOption.style.display = 'flex';
-                    homeServiceOption.onclick = () => selectServiceType('home');
-                } else {
-                    homeServiceOption.style.display = 'none';
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    
+                    try {
+                        const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+                        );
+                        const data = await response.json();
+                        
+                        if (data.address) {
+                            userLocation = {
+                                latitude,
+                                longitude,
+                                address: data.display_name,
+                                city: data.address.city || data.address.town || data.address.village,
+                                state: data.address.state,
+                                pincode: data.address.postcode || ''
+                            };
+                            
+                            // Check if Kerala
+                            if (userLocation.state && userLocation.state.toLowerCase().includes('kerala')) {
+                                saveRecentLocation(userLocation);
+                                updateLocationDisplay();
+                                enableConfirmButton();
+                            } else {
+                                alert('Our services are currently only available in Kerala');
+                                resetLocation();
+                            }
+                        }
+                    } catch (error) {
+                        alert('Unable to get address. Please search manually.');
+                        resetLocation();
+                    }
+                    
+                    btn.innerHTML = 'Confirm Location';
+                },
+                (error) => {
+                    alert('Please enable location access or search manually.');
+                    btn.innerHTML = 'Confirm Location';
+                    btn.disabled = false;
                 }
-            }
+            );
+        } else {
+            alert('Geolocation is not supported');
         }
-    } catch (error) {
-        console.error('Error loading salon data:', error);
     }
-}
 
-async function loadSalonServices(salonId) {
-    try {
-        const response = await fetch(`/api/salon/${salonId}/services`);
-        const data = await response.json();
+    function selectCity(city) {
+        userLocation = {
+            city: city,
+            address: `${city}, Kerala, India`,
+            state: 'Kerala',
+            type: 'city'
+        };
         
-        const servicesGrid = document.getElementById('servicesGrid');
-        if (!servicesGrid) return;
+        updateLocationDisplay();
+        enableConfirmButton();
+    }
+
+    function updateLocationDisplay() {
+        const display = document.getElementById('currentLocationDisplay');
+        if (userLocation) {
+            display.textContent = userLocation.city || userLocation.address.split(',')[0];
+        }
+    }
+
+    function enableConfirmButton() {
+        document.getElementById('confirmLocationBtn').disabled = false;
+    }
+
+    function resetLocation() {
+        userLocation = null;
+        document.getElementById('confirmLocationBtn').disabled = true;
+        document.getElementById('currentLocationDisplay').textContent = 'Select location';
+    }
+
+    async function confirmLocation() {
+        if (!userLocation) return;
         
-        if (data.success && data.services && data.services.length > 0) {
-            servicesGrid.innerHTML = data.services.map(service => `
-                <div class="sbm-service-card" data-service-id="${service._id}" 
-                     onclick="toggleService('${service._id}', ${service.price})">
-                    <div class="sbm-service-checkbox">
-                        <input type="checkbox" id="service-${service._id}" 
-                               onchange="toggleService('${service._id}', ${service.price})">
-                        <label for="service-${service._id}"></label>
-                    </div>
-                    <div class="sbm-service-details">
-                        <div class="sbm-service-name">${service.serviceName}</div>
-                        <div class="sbm-service-meta">
-                            <span class="sbm-service-price">₹${service.price}</span>
-                            <span class="sbm-service-duration">${service.durationMinutes || 60} min</span>
+        localStorage.setItem('lastLocation', JSON.stringify(userLocation));
+        closeLocationModal();
+        initializeApp();
+    }
+
+    function saveRecentLocation(location) {
+        let recentLocations = JSON.parse(localStorage.getItem('recentLocations') || '[]');
+        recentLocations = recentLocations.filter(loc => loc.city !== location.city);
+        recentLocations.unshift({ city: location.city, address: location.address });
+        if (recentLocations.length > 5) recentLocations = recentLocations.slice(0, 5);
+        localStorage.setItem('recentLocations', JSON.stringify(recentLocations));
+    }
+
+    // Search setup
+    function setupSearch() {
+        const locationSearch = document.getElementById('locationSearch');
+        const globalSearch = document.getElementById('globalSearch');
+        
+        // Location search
+        locationSearch.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                document.getElementById('searchResults').classList.remove('active');
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                searchLocations(query);
+            }, 500);
+        });
+        
+        locationSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchLocations(this.value.trim());
+            }
+        });
+        
+        // Global search
+        globalSearch.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length < 2) return;
+            
+            searchTimeout = setTimeout(() => {
+                globalSearchFunc(query);
+            }, 500);
+        });
+        
+        globalSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                globalSearchFunc(this.value.trim());
+            }
+        });
+    }
+
+    async function searchLocations(query) {
+        try {
+            const response = await fetch(`/api/locations/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+            
+            if (data.success && data.locations.length > 0) {
+                data.locations.forEach(location => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `
+                        <div style="font-weight: 600;">${location.name}</div>
+                        <div style="font-size: 12px; color: #666;">${location.state} • ${location.salonCount || 0} salons</div>
+                    `;
+                    item.onclick = () => {
+                        selectCity(location.name);
+                        resultsContainer.classList.remove('active');
+                        document.getElementById('locationSearch').value = '';
+                    };
+                    resultsContainer.appendChild(item);
+                });
+                resultsContainer.classList.add('active');
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+        }
+    }
+
+    async function globalSearchFunc(query) {
+        // This would search across services, salons, and stylists
+        alert(`Searching for: ${query}`);
+        // Implement comprehensive search
+    }
+
+    // Initialize app after location selection
+    async function initializeApp() {
+        // Show all sections
+        document.getElementById('categoriesSidebar').style.display = 'block';
+        document.getElementById('servicesSection').style.display = 'block';
+        document.getElementById('salonsSection').style.display = 'block';
+        
+        // Load categories
+        await loadCategories();
+        
+        // Load all services initially
+        await loadServices('all');
+        
+        // Load salons for current location
+        await loadSalons();
+    }
+
+    // Load categories for sidebar
+    async function loadCategories() {
+        try {
+            const response = await fetch('/api/service-categories');
+            const data = await response.json();
+            
+            const container = document.getElementById('categoriesList');
+            if (data.success && data.categories) {
+                let html = '';
+                data.categories.forEach(cat => {
+                    categoriesData[cat.id] = cat;
+                    html += `
+                        <a class="category-item ${selectedCategory === cat.id ? 'active' : ''}" 
+                           href="#" onclick="selectCategory('${cat.id}', event)">
+                            <div class="category-icon">${getCategoryIcon(cat.id)}</div>
+                            <div class="category-name">${cat.name}</div>
+                            <div style="font-size: 12px; color: ${selectedCategory === cat.id ? 'rgba(255,255,255,0.8)' : '#666'};">(${cat.count})</div>
+                        </a>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+
+    function getCategoryIcon(categoryId) {
+        const icons = {
+            'all': '✨',
+            'hair': '💇',
+            'skin': '🌸',
+            'nails': '💅',
+            'other': '💈'
+        };
+        return icons[categoryId] || '💈';
+    }
+
+    async function selectCategory(categoryId, event) {
+        if (event) event.preventDefault();
+        
+        selectedCategory = categoryId;
+        
+        // Update active state in sidebar
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.target.closest('.category-item').classList.add('active');
+        
+        // Update services title
+        document.getElementById('servicesTitle').textContent = 
+            categoryId === 'all' ? 'Popular Services' : `${categoriesData[categoryId]?.name || 'Services'}`;
+        
+        // Load services for this category
+        await loadServices(categoryId);
+        
+        // If services are selected, reload salons with new category
+        if (selectedServices.length > 0) {
+            await loadSalons();
+        }
+    }
+
+    // Load services for current category
+    async function loadServices(category = 'all') {
+        try {
+            const url = category === 'all' 
+                ? '/api/services' 
+                : `/api/services?category=${category}`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            const container = document.getElementById('servicesGrid');
+            if (data.success && data.services) {
+                let html = '';
+                data.services.forEach(service => {
+                    // Create safe ID
+                    const safeId = service.id || service.name.toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/'/g, '');
+                    
+                    serviceData[safeId] = service;
+                    const isSelected = selectedServices.includes(safeId);
+                    
+                    html += `
+                        <div class="service-card ${isSelected ? 'selected' : ''}" 
+                             data-service-id="${safeId}">
+                            <div class="service-icon">${getServiceIcon(service.name)}</div>
+                            <div class="service-name">${service.name}</div>
+                            <div class="service-price">₹${service.price}</div>
+                            <div class="service-duration">${service.duration || 60} min</div>
+                            <div class="service-check">✓</div>
                         </div>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            servicesGrid.innerHTML = '<p class="text-muted">No services available</p>';
-        }
-    } catch (error) {
-        console.error('Error loading services:', error);
-        servicesGrid.innerHTML = '<p class="text-danger">Failed to load services</p>';
-    }
-}
-
-function toggleService(serviceId, price) {
-    const checkbox = document.querySelector(`#service-${serviceId}`);
-    const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
-    
-    if (checkbox.checked) {
-        // Add service
-        selectedServices.push({ id: serviceId, price: price });
-        serviceCard.classList.add('selected');
-    } else {
-        // Remove service
-        selectedServices = selectedServices.filter(service => service.id !== serviceId);
-        serviceCard.classList.remove('selected');
-    }
-    
-    // Update total price
-    updateTotalPrice();
-    
-    // If date is selected, check availability
-    if (selectedDate) {
-        checkAvailability();
-    }
-}
-
-function initializeDateSelector() {
-    const dateSelector = document.getElementById('dateSelector');
-    if (!dateSelector) return;
-    
-    const today = new Date();
-    const next30Days = [];
-    
-    for (let i = 0; i < 30; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
-        next30Days.push(date);
-    }
-    
-    dateSelector.innerHTML = next30Days.map(date => {
-        const dateStr = date.toISOString().split('T')[0];
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const dayNum = date.getDate();
-        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
-        
-        return `
-            <div class="sbm-date-card ${dateStr === selectedDate ? 'selected' : ''}" 
-                 onclick="selectDate('${dateStr}')">
-                <div class="sbm-date-day">${dayName}</div>
-                <div class="sbm-date-number">${dayNum}</div>
-                <div class="sbm-date-month">${monthName}</div>
-            </div>
-        `;
-    }).join('');
-    
-    // Select today by default
-    const todayStr = today.toISOString().split('T')[0];
-    selectDate(todayStr);
-}
-
-function selectDate(dateStr) {
-    selectedDate = dateStr;
-    
-    // Update UI
-    document.querySelectorAll('.sbm-date-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    document.querySelector(`.sbm-date-card[onclick*="${dateStr}"]`)?.classList.add('selected');
-    
-    // Check availability
-    checkAvailability();
-}
-
-async function checkAvailability() {
-    const slotsContainer = document.getElementById('slotsContainer');
-    if (!slotsContainer || !currentSalonId || !selectedDate || selectedServices.length === 0) {
-        slotsContainer.innerHTML = '<p class="text-muted">Please select services and date to see available slots</p>';
-        return;
-    }
-    
-    // Show loading
-    slotsContainer.innerHTML = '<p class="text-muted">Checking availability...</p>';
-    
-    try {
-        const serviceIds = selectedServices.map(s => s.id).join(',');
-        const response = await fetch(
-            `/api/booking/available-slots?salonId=${currentSalonId}&bookingDate=${selectedDate}&serviceIds=${serviceIds}`
-        );
-        const data = await response.json();
-        
-        if (data.success) {
-            if (data.availableSlots.length > 0) {
-                slotsContainer.innerHTML = data.availableSlots.map(slot => `
-                    <div class="sbm-slot-card ${selectedTimeSlot === slot.startTime ? 'selected' : ''}" 
-                         onclick="selectTimeSlot('${slot.startTime}')">
-                        <div class="sbm-slot-time">${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}</div>
-                        <div class="sbm-slot-duration">${slot.duration} min</div>
-                    </div>
-                `).join('');
-            } else {
-                slotsContainer.innerHTML = '<p class="text-muted">No slots available for selected services and date</p>';
+                    `;
+                });
+                container.innerHTML = html;
+                
+                // Add click event delegation
+                container.onclick = function(e) {
+                    const card = e.target.closest('.service-card');
+                    if (card) {
+                        const serviceId = card.getAttribute('data-service-id');
+                        toggleService(serviceId);
+                    }
+                };
             }
-        } else {
-            slotsContainer.innerHTML = `<p class="text-danger">${data.message || 'Failed to check availability'}</p>`;
+        } catch (error) {
+            console.error('Error loading services:', error);
         }
-    } catch (error) {
-        console.error('Error checking availability:', error);
-        slotsContainer.innerHTML = '<p class="text-danger">Error checking availability</p>';
     }
-}
 
-function formatTime(timeStr) {
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12;
-    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-}
-
-function selectTimeSlot(timeSlot) {
-    selectedTimeSlot = timeSlot;
-    
-    // Update UI
-    document.querySelectorAll('.sbm-slot-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    document.querySelector(`.sbm-slot-card[onclick*="${timeSlot}"]`)?.classList.add('selected');
-}
-
-function selectServiceType(type) {
-    selectedServiceType = type;
-    
-    // Update UI
-    const salonVisit = document.getElementById('salonVisit');
-    const homeService = document.getElementById('homeService');
-    const homeAddressSection = document.getElementById('homeAddressSection');
-    
-    if (type === 'salon') {
-        salonVisit.classList.add('selected');
-        homeService.classList.remove('selected');
-        homeAddressSection.style.display = 'none';
-    } else {
-        homeService.classList.add('selected');
-        salonVisit.classList.remove('selected');
-        homeAddressSection.style.display = 'block';
+    function getServiceIcon(serviceName) {
+        const icons = {
+            'hair': '💇',
+            'cut': '✂️',
+            'color': '🎨',
+            'facial': '🌸',
+            'skin': '✨',
+            'nail': '💅',
+            'wax': '🧴',
+            'thread': '🧵',
+            'massage': '💆',
+            'spa': '🛁'
+        };
         
-        // Validate home service is available
-        if (!salonData?.serviceMode?.homeService) {
-            alert('Home service is not available for this salon');
-            selectServiceType('salon');
+        serviceName = serviceName.toLowerCase();
+        for (const [key, icon] of Object.entries(icons)) {
+            if (serviceName.includes(key)) {
+                return icon;
+            }
+        }
+        return '💈';
+    }
+
+    function toggleService(serviceId) {
+        const index = selectedServices.indexOf(serviceId);
+        
+        if (index === -1) {
+            selectedServices.push(serviceId);
+        } else {
+            selectedServices.splice(index, 1);
+        }
+        
+        // Update UI
+        updateServiceCards();
+        updateSelectedServicesBar();
+        
+        // Load salons with selected services
+        loadSalons();
+    }
+
+    function updateServiceCards() {
+        document.querySelectorAll('.service-card').forEach(card => {
+            const serviceId = card.getAttribute('data-service-id');
+            if (selectedServices.includes(serviceId)) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+    }
+
+    function updateSelectedServicesBar() {
+        const bar = document.getElementById('selectedServicesBar');
+        const tagsContainer = document.getElementById('selectedTags');
+        
+        if (selectedServices.length === 0) {
+            bar.classList.remove('active');
             return;
         }
+        
+        let html = '';
+        selectedServices.forEach(serviceId => {
+            const service = serviceData[serviceId];
+            if (service) {
+                html += `
+                    <div class="selected-tag">
+                        ${service.name}
+                        <span class="remove-tag" onclick="removeService('${serviceId}')">×</span>
+                    </div>
+                `;
+            }
+        });
+        
+        tagsContainer.innerHTML = html;
+        bar.classList.add('active');
     }
-    
-    // Update total price
-    updateTotalPrice();
-}
 
-function updateTotalPrice() {
-    const totalElement = document.getElementById('totalPrice');
-    if (!totalElement) return;
-    
-    let total = selectedServices.reduce((sum, service) => sum + service.price, 0);
-    
-    // Add home service charge if applicable
-    if (selectedServiceType === 'home') {
-        total += homeServiceCharge;
+    function removeService(serviceId) {
+        selectedServices = selectedServices.filter(id => id !== serviceId);
+        updateSelectedServicesBar();
+        updateServiceCards();
+        loadSalons();
     }
-    
-    totalElement.textContent = `₹${total}`;
-}
 
-async function submitBooking() {
-    try {
-        // Validate required fields
+    // Load salons
+    async function loadSalons() {
+        if (isLoading) return;
+        
+        isLoading = true;
+        currentPage = 1;
+        
+        const container = document.getElementById('salonsGrid');
+        const title = document.getElementById('salonsTitle');
+        const count = document.getElementById('salonsCount');
+        
+        // Show loading
+        container.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:60px 0;">
+                <div class="loading" style="width:40px;height:40px;margin:0 auto 20px;"></div>
+                <div style="color:#666;">Finding salons for you...</div>
+            </div>
+        `;
+        
+        try {
+            const params = new URLSearchParams({
+                page: currentPage,
+                limit: 12,
+                services: selectedServices.map(id => serviceData[id]?.name).filter(Boolean).join(','),
+                location: userLocation?.city || userLocation?.address,
+                sort: 'rating'
+            });
+            
+            const response = await fetch(`/api/salons?${params}`);
+            const data = await response.json();
+            
+            container.innerHTML = '';
+            
+            if (!data.success || !data.salons || data.salons.length === 0) {
+                container.innerHTML = `
+                    <div class="no-salons">
+                        <div class="no-salons-icon">🔍</div>
+                        <h3 class="no-salons-title">No salons found</h3>
+                        <p class="no-salons-text">
+                            ${selectedServices.length > 0 
+                                ? `No salons found for selected services in ${userLocation?.city || userLocation?.address?.split(',')[0] || 'your area'}`
+                                : `Select services to find matching salons in ${userLocation?.city || userLocation?.address?.split(',')[0] || 'your area'}`}
+                        </p>
+                    </div>
+                `;
+                count.textContent = '0 salons found';
+                return;
+            }
+            
+            // Update title and count
+            title.textContent = selectedServices.length > 0 
+                ? `Salons for ${selectedServices.length} service${selectedServices.length > 1 ? 's' : ''}`
+                : 'Salons Near You';
+            
+            count.textContent = `${data.totalCount || data.salons.length} salons found`;
+            
+            // Display salons
+            data.salons.forEach(salon => {
+                const card = document.createElement('div');
+                card.className = 'salon-card';
+                card.innerHTML = `
+                    <div class="salon-image">
+                        <img src="${salon.image || '/images/default-salon.jpg'}" 
+                             alt="${salon.name}" 
+                             onerror="this.src='/images/default-salon.jpg'">
+                        <div class="salon-badge ${salon.isAvailableToday ? '' : 'closed'}">
+                            ${salon.isAvailableToday ? '✓ Open Today' : '✗ Closed Today'}
+                        </div>
+                    </div>
+                    <div class="salon-info">
+                        <h3 class="salon-name">${salon.name}</h3>
+                        <div class="salon-rating">
+                            <span class="stars">${'★'.repeat(Math.floor(salon.rating))}${'☆'.repeat(5-Math.floor(salon.rating))}</span>
+                            <span class="rating-number">${salon.rating.toFixed(1)}</span>
+                            <span class="review-count">(${salon.reviewCount} reviews)</span>
+                        </div>
+                        <div class="salon-location">
+                            <span>📍</span>
+                            <span>${salon.location || 'Location not specified'}</span>
+                        </div>
+                        <div class="salon-price">
+                            <span class="price-from">From ₹${salon.startingPrice || salon.minPrice || 0}</span>
+                            ${salon.homeService ? '<span class="home-service-badge">🏡 Home Service</span>' : ''}
+                        </div>
+                        <div class="salon-services">
+                            ${(salon.topServices || []).slice(0, 3).map(service => 
+                                `<span class="salon-service-tag">${service}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                card.onclick = () => openSalonDetail(salon._id);
+                container.appendChild(card);
+            });
+            
+            hasMore = data.hasMore || false;
+            
+        } catch (error) {
+            console.error('Error loading salons:', error);
+            container.innerHTML = `
+                <div class="no-salons">
+                    <div class="no-salons-icon">⚠️</div>
+                    <h3 class="no-salons-title">Error loading salons</h3>
+                    <p class="no-salons-text">Please try again later</p>
+                </div>
+            `;
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    function openSalonDetail(salonId) {
+        window.location.href = `/book-a-saloon/${salonId}`;
+    }
+
+    function openSortFilter() {
+        // Implement sort/filter modal
+        alert('Sort & Filter options will be implemented here');
+    }
+</script>
+  <!-- Booking Modal -->
+  <div class="sbm-modal-overlay" id="bookingModal">
+    <div class="sbm-modal-container">
+        <div class="sbm-modal-header">
+            <div class="sbm-modal-title">Book Your Appointment</div>
+            <div class="sbm-modal-subtitle">Glam Studio Salon - Indiranagar</div>
+            <button class="sbm-close-btn" onclick="closeBookingModal()">×</button>
+        </div>
+
+        <div class="sbm-modal-body">
+            <!-- Services Section -->
+            <div class="sbm-section">
+                <div class="sbm-section-title">
+                    <div class="sbm-section-icon">✂</div>
+                    Select Services
+                </div>
+                <div class="sbm-services-grid" id="servicesGrid">
+                    <!-- Services will be populated here -->
+                </div>
+            </div>
+
+            <!-- Date Selection -->
+            <div class="sbm-section">
+                <div class="sbm-section-title">
+                    <div class="sbm-section-icon">📅</div>
+                    Choose Date
+                </div>
+                <div class="sbm-date-selector" id="dateSelector">
+                    <!-- Dates will be populated here -->
+                </div>
+            </div>
+
+            <div class="sbm-modal-body">
+                <!-- Service Type Selection -->
+                <div class="sbm-section">
+                    <div class="sbm-section-title">
+                        <div class="sbm-section-icon">🏠</div>
+                        Service Location
+                    </div>
+                    <div class="sbm-service-type-container">
+                        <div class="sbm-service-type-option" id="salonVisit"
+                            onclick="selectServiceType('salon')">
+                            <div class="sbm-service-type-icon">🏢</div>
+                            <div class="sbm-service-type-title">Visit Salon</div>
+                            <div class="sbm-service-type-desc">Come to our salon at Indiranagar</div>
+                        </div>
+                        <div class="sbm-service-type-option" id="homeService"
+                            onclick="selectServiceType('home')">
+                            <div class="sbm-service-type-icon">🏡</div>
+                            <div class="sbm-service-type-title">Home Service</div>
+                            <div class="sbm-service-type-desc">Beautician visits your location</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Home Address Section - Add this in your HTML modal body after Service Type Selection -->
+                <div class="sbm-section" id="homeAddressSection" style="display: none;">
+                    <div class="sbm-section-title">
+                        <div class="sbm-section-icon">📍</div>
+                        Service Address
+                    </div>
+                    <div class="sbm-form-group">
+                        <label class="sbm-form-label">Complete Address *</label>
+                        <input type="text" class="sbm-form-input" id="userAddress"
+                            placeholder="Enter your complete address (House/Flat No, Street, Area)">
+                    </div>
+                    <div class="sbm-form-group">
+                        <label class="sbm-form-label">Landmark / Additional Details</label>
+                        <input type="text" class="sbm-form-input" id="addressDetails"
+                            placeholder="Nearby landmark or additional directions">
+                    </div>
+                    <div class="sbm-form-group">
+                        <label for="customerAddress" class="sbm-form-label">Google Maps Link</label>
+                        <input type="text" id="customerAddress" name="customerAddress"
+                            placeholder="Enter your address or paste Google Maps link" class="sbm-form-input" />
+                        <small style="color: #777;">
+                            Example: https://maps.app.goo.gl/abcd1234
+                        </small>
+                    </div>
+                    <!--  <div class="sbm-form-group">
+                        <label class="sbm-form-label">Mark Location on Map</label>
+                        <div class="sbm-map-container">
+                            <input type="text" class="sbm-form-input" id="mapSearch"
+                                placeholder="Search location or click on map" style="margin-bottom: 12px;">
+                            <div class="sbm-map-wrapper">
+                                <div id="map"></div>
+                            </div>
+                            <div class="sbm-coordinates">
+                                <span style="font-weight: 600;">Selected Location:</span>
+                                <span id="selectedLocation">Not selected yet</span>
+                            </div>
+                        </div>
+                    </div>-->
+                </div>
+
+
+
+                <!-- Time Slots -->
+                <div class="sbm-section">
+                    <div class="sbm-section-title">
+                        <div class="sbm-section-icon">🕐</div>
+                        Available Time Slots
+                    </div>
+                    <div class="sbm-slots-container" id="slotsContainer">
+                        <!-- Slots will be populated here -->
+                    </div>
+                </div>
+
+                <!-- User Details -->
+                <div class="sbm-section">
+                    <div class="sbm-section-title">
+                        <div class="sbm-section-icon">👤</div>
+                        Your Details
+                    </div>
+                    <div class="sbm-form-row">
+                        <div class="sbm-form-group">
+                            <label class="sbm-form-label">Full Name *</label>
+                            <input type="text" class="sbm-form-input" id="userName"
+                                placeholder="Enter your name" required>
+                        </div>
+                        <div class="sbm-form-group">
+                            <label class="sbm-form-label">Phone Number *</label>
+                            <input type="tel" class="sbm-form-input" id="userPhone"
+                                placeholder="+91 XXXXX XXXXX" required>
+                        </div>
+                    </div>
+                    <div class="sbm-form-group">
+                        <label class="sbm-form-label">Email Address</label>
+                        <input type="email" class="sbm-form-input" id="userEmail"
+                            placeholder="your.email@example.com">
+                    </div>
+                    <div class="sbm-form-group">
+                        <label class="sbm-form-label">Special Requests (Optional)</label>
+                        <textarea class="sbm-form-textarea" id="userNotes"
+                            placeholder="Any specific requirements or preferences..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sbm-modal-footer">
+                <div class="sbm-total-price">
+                    Total: <span class="sbm-price-amount" id="totalPrice">₹0</span>
+                </div>
+                <button class="sbm-submit-btn" onclick="submitBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global state
+    let userLocation = null;
+    let selectedServices = [];
+    let selectedCategory = 'all';
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = true;
+    let totalSalons = 0;
+    let serviceData = {};
+    let searchTimeout = null;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show location modal by default
+        openLocationModal();
+        
+        // Check for saved location
+        const savedLocation = localStorage.getItem('lastLocation');
+        if (savedLocation) {
+            try {
+                userLocation = JSON.parse(savedLocation);
+                updateLocationDisplay();
+                loadServiceCategories();
+                loadServices();
+                document.getElementById('servicesSection').classList.add('active');
+            } catch (e) {
+                console.error('Error parsing saved location:', e);
+            }
+        }
+        
+        // Setup location search
+        const searchInput = document.getElementById('locationSearch');
+        searchInput.addEventListener('input', handleLocationSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchLocation();
+            }
+        });
+        
+        // Load recent locations
+        loadRecentLocations();
+    });
+
+    // Location Functions
+    function openLocationModal() {
+        document.getElementById('locationModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLocationModal() {
+        document.getElementById('locationModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            const loadingBtn = document.getElementById('confirmLocationBtn');
+            const originalText = loadingBtn.innerHTML;
+            loadingBtn.innerHTML = '<span class="loading"></span>';
+            loadingBtn.disabled = true;
+            
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    
+                    try {
+                        // Use OpenStreetMap Nominatim API
+                        const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+                        );
+                        const data = await response.json();
+                        
+                        if (data.address) {
+                            userLocation = {
+                                latitude,
+                                longitude,
+                                address: data.display_name,
+                                city: data.address.city || data.address.town || data.address.village,
+                                state: data.address.state,
+                                pincode: data.address.postcode || ''
+                            };
+                            
+                            // Check if it's in Kerala
+                            if (userLocation.state && userLocation.state.toLowerCase().includes('kerala')) {
+                                saveRecentLocation(userLocation);
+                                updateLocationDisplay();
+                                enableConfirmButton();
+                            } else {
+                                alert('Our services are currently only available in Kerala. Please select a location in Kerala.');
+                                resetLocation();
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Geocoding error:', error);
+                        alert('Unable to get address. Please try manual search.');
+                        resetLocation();
+                    }
+                    
+                    loadingBtn.innerHTML = originalText;
+                },
+                (error) => {
+                    console.error('Geolocation error:', error);
+                    alert('Please enable location access or search manually.');
+                    loadingBtn.innerHTML = originalText;
+                    loadingBtn.disabled = false;
+                }
+            );
+        } else {
+            alert('Geolocation is not supported by your browser');
+        }
+    }
+
+    function handleLocationSearch(e) {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        
+        if (query.length < 2) {
+            document.getElementById('searchResults').classList.remove('active');
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            searchLocation(query);
+        }, 500);
+    }
+
+    async function searchLocation(query = null) {
+        const searchInput = document.getElementById('locationSearch');
+        const queryValue = query || searchInput.value.trim();
+        
+        if (queryValue.length < 2) {
+            alert('Please enter at least 2 characters');
+            return;
+        }
+        
+        try {
+            // Search in Kerala cities
+            const keralaCities = [
+                'Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Thrissur', 'Kollam',
+                'Alappuzha', 'Kannur', 'Kottayam', 'Malappuram', 'Palakkad'
+            ];
+            
+            const filteredCities = keralaCities.filter(city => 
+                city.toLowerCase().includes(queryValue.toLowerCase())
+            );
+            
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+            
+            if (filteredCities.length > 0) {
+                filteredCities.forEach(city => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.innerHTML = `
+                        <div class="search-result-name">${city}</div>
+                        <div class="search-result-details">Kerala, India</div>
+                    `;
+                    resultItem.onclick = () => {
+                        selectCity(city);
+                        resultsContainer.classList.remove('active');
+                        searchInput.value = '';
+                    };
+                    resultsContainer.appendChild(resultItem);
+                });
+                resultsContainer.classList.add('active');
+            } else {
+                // If no city match, show message
+                resultsContainer.innerHTML = `
+                    <div class="search-result-item" style="color: #666; font-style: italic;">
+                        No cities found. Try popular Kerala cities.
+                    </div>
+                `;
+                resultsContainer.classList.add('active');
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+        }
+    }
+
+    function selectCity(city) {
+        userLocation = {
+            city: city,
+            address: `${city}, Kerala, India`,
+            state: 'Kerala',
+            type: 'city'
+        };
+        
+        updateLocationDisplay();
+        enableConfirmButton();
+    }
+
+    function updateLocationDisplay() {
+        const display = document.getElementById('currentLocationDisplay');
+        if (userLocation) {
+            display.textContent = userLocation.city || userLocation.address.split(',')[0];
+        }
+    }
+
+    function enableConfirmButton() {
+        const confirmBtn = document.getElementById('confirmLocationBtn');
+        confirmBtn.disabled = false;
+    }
+
+    function resetLocation() {
+        userLocation = null;
+        const confirmBtn = document.getElementById('confirmLocationBtn');
+        confirmBtn.disabled = true;
+        document.getElementById('currentLocationDisplay').textContent = 'Select location to view salons';
+    }
+
+    async function confirmLocation() {
+        if (!userLocation) return;
+        
+        // Save to localStorage
+        localStorage.setItem('lastLocation', JSON.stringify(userLocation));
+        
+        // Close location modal
+        closeLocationModal();
+        
+        // Show services section
+        document.getElementById('servicesSection').classList.add('active');
+        
+        // Load service categories and services
+        await loadServiceCategories();
+        await loadServices();
+        
+        // Hide salons section if it's visible
+        document.getElementById('salonsSection').classList.remove('active');
+    }
+
+    function saveRecentLocation(location) {
+        let recentLocations = JSON.parse(localStorage.getItem('recentLocations') || '[]');
+        
+        // Remove if already exists
+        recentLocations = recentLocations.filter(loc => 
+            loc.city !== location.city && loc.address !== location.address
+        );
+        
+        // Add to beginning
+        recentLocations.unshift({
+            city: location.city,
+            address: location.address
+        });
+        
+        // Keep only last 5
+        if (recentLocations.length > 5) {
+            recentLocations = recentLocations.slice(0, 5);
+        }
+        
+        localStorage.setItem('recentLocations', JSON.stringify(recentLocations));
+        loadRecentLocations();
+    }
+
+    function loadRecentLocations() {
+        const container = document.getElementById('recentLocations');
+        const locations = JSON.parse(localStorage.getItem('recentLocations') || '[]');
+        
+        if (locations.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<h4>Recent Locations</h4>';
+        locations.forEach(loc => {
+            html += `
+                <div class="location-option" onclick="selectRecentLocation('${loc.city}', '${loc.address}')">
+                    <div class="location-option-icon">🕐</div>
+                    <div class="location-option-content">
+                        <div class="location-option-title">${loc.city}</div>
+                        <div class="location-option-desc">${loc.address}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    function selectRecentLocation(city, address) {
+        userLocation = {
+            city: city,
+            address: address,
+            state: 'Kerala',
+            type: 'recent'
+        };
+        
+        updateLocationDisplay();
+        enableConfirmButton();
+    }
+
+    // Service Functions
+    async function loadServiceCategories() {
+        try {
+            const response = await fetch('/api/service-categories');
+            const data = await response.json();
+            
+            const container = document.getElementById('categoryFilter');
+            if (data.success && data.categories) {
+                let html = '<div class="category-item active" onclick="selectCategory(\'all\')">All Services</div>';
+                data.categories.forEach(cat => {
+                    html += `
+                        <div class="category-item" onclick="selectCategory('${cat.id}')">
+                            ${cat.name} (${cat.count})
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+        } catch (error) {
+            console.error('Error loading categories:', error);
+            // Fallback categories
+            const container = document.getElementById('categoryFilter');
+            container.innerHTML = `
+                <div class="category-item active" onclick="selectCategory('all')">All Services</div>
+                <div class="category-item" onclick="selectCategory('hair')">Hair Services</div>
+                <div class="category-item" onclick="selectCategory('skin')">Skin & Facial</div>
+                <div class="category-item" onclick="selectCategory('nails')">Nail Services</div>
+                <div class="category-item" onclick="selectCategory('other')">Other Services</div>
+            `;
+        }
+    }
+
+    async function loadServices(category = 'all') {
+        try {
+            const url = category === 'all' 
+                ? '/api/services' 
+                : `/api/services?category=${category}`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            const container = document.getElementById('servicesGrid');
+            if (data.success && data.services) {
+                let html = '';
+                data.services.forEach(service => {
+                    serviceData[service.id] = service;
+                    const isSelected = selectedServices.includes(service.id);
+                    html += `
+                        <div class="service-card ${isSelected ? 'selected' : ''}" 
+                             onclick="toggleService('${service.id}')">
+                            <div class="service-icon">${getServiceIcon(service.name)}</div>
+                            <div class="service-name">${service.name}</div>
+                            <div class="service-price">₹${service.price}</div>
+                            <div class="service-duration">${service.duration || 60} min</div>
+                            <div class="service-check">✓</div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#666;">No services found</p>';
+            }
+        } catch (error) {
+            console.error('Error loading services:', error);
+            // Fallback services
+            const fallbackServices = [
+                { id: 'haircut', name: 'Haircut & Styling', price: 300, duration: 45, icon: '✂️' },
+                { id: 'hair-color', name: 'Hair Coloring', price: 1200, duration: 120, icon: '🎨' },
+                { id: 'facial', name: 'Basic Facial', price: 800, duration: 60, icon: '🌸' },
+                { id: 'manicure', name: 'Manicure', price: 400, duration: 45, icon: '💅' },
+                { id: 'pedicure', name: 'Pedicure', price: 500, duration: 60, icon: '🦶' },
+                { id: 'waxing', name: 'Body Waxing', price: 600, duration: 45, icon: '🧴' },
+                { id: 'threading', name: 'Face Threading', price: 150, duration: 30, icon: '🧵' },
+                { id: 'bleach', name: 'Face Bleach', price: 350, duration: 45, icon: '✨' }
+            ];
+            
+            const container = document.getElementById('servicesGrid');
+            let html = '';
+            fallbackServices.forEach(service => {
+                serviceData[service.id] = service;
+                const isSelected = selectedServices.includes(service.id);
+                html += `
+                    <div class="service-card ${isSelected ? 'selected' : ''}" 
+                         onclick="toggleService('${service.id}')">
+                        <div class="service-icon">${service.icon}</div>
+                        <div class="service-name">${service.name}</div>
+                        <div class="service-price">₹${service.price}</div>
+                        <div class="service-duration">${service.duration} min</div>
+                        <div class="service-check">✓</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+    }
+
+    function getServiceIcon(serviceName) {
+        const icons = {
+            'hair': '✂️',
+            'cut': '✂️',
+            'color': '🎨',
+            'styling': '💇',
+            'facial': '🌸',
+            'skin': '✨',
+            'cleanup': '🧼',
+            'treatment': '💆',
+            'nail': '💅',
+            'manicure': '💅',
+            'pedicure': '🦶',
+            'wax': '🧴',
+            'threading': '🧵',
+            'bleach': '✨',
+            'massage': '💆'
+        };
+        
+        serviceName = serviceName.toLowerCase();
+        for (const [key, icon] of Object.entries(icons)) {
+            if (serviceName.includes(key)) {
+                return icon;
+            }
+        }
+        return '💈';
+    }
+
+    function selectCategory(categoryId) {
+        selectedCategory = categoryId;
+        
+        // Update category buttons
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Load services for this category
+        loadServices(categoryId);
+    }
+
+    function toggleService(serviceId) {
+        const index = selectedServices.indexOf(serviceId);
+        
+        if (index === -1) {
+            selectedServices.push(serviceId);
+        } else {
+            selectedServices.splice(index, 1);
+        }
+        
+        // Update UI
+        updateServiceCards();
+        updateSelectedServices();
+        
+        // Show/hide selected services section
+        const selectedSection = document.getElementById('selectedServices');
+        if (selectedServices.length > 0) {
+            selectedSection.classList.add('active');
+            document.getElementById('findSalonsBtn').disabled = false;
+        } else {
+            selectedSection.classList.remove('active');
+            document.getElementById('findSalonsBtn').disabled = true;
+        }
+    }
+
+    function updateServiceCards() {
+        document.querySelectorAll('.service-card').forEach(card => {
+            const serviceId = card.onclick.toString().match(/'([^']+)'/)[1];
+            if (selectedServices.includes(serviceId)) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+    }
+
+    function updateSelectedServices() {
+        const container = document.getElementById('selectedTags');
+        if (selectedServices.length === 0) {
+            container.innerHTML = '<div style="color:#999; font-style:italic;">No services selected yet</div>';
+            return;
+        }
+        
+        let html = '';
+        selectedServices.forEach(serviceId => {
+            const service = serviceData[serviceId];
+            if (service) {
+                html += `
+                    <div class="selected-tag" onclick="removeService('${serviceId}')">
+                        ${service.name} (₹${service.price})
+                        <span class="remove-tag">×</span>
+                    </div>
+                `;
+            }
+        });
+        container.innerHTML = html;
+    }
+
+    function removeService(serviceId) {
+        selectedServices = selectedServices.filter(id => id !== serviceId);
+        updateSelectedServices();
+        updateServiceCards();
+        
+        if (selectedServices.length === 0) {
+            document.getElementById('selectedServices').classList.remove('active');
+            document.getElementById('findSalonsBtn').disabled = true;
+        }
+    }
+
+    // Salon Functions
+    async function findSalons() {
+        if (!userLocation) {
+            alert('Please select a location first');
+            openLocationModal();
+            return;
+        }
+        
         if (selectedServices.length === 0) {
             alert('Please select at least one service');
             return;
         }
         
-        if (!selectedDate) {
-            alert('Please select a date');
-            return;
-        }
+        // Hide services section, show salons section
+        document.getElementById('servicesSection').classList.remove('active');
+        document.getElementById('salonsSection').classList.add('active');
+        document.getElementById('changeFiltersBtn').style.display = 'inline-block';
         
-        if (!selectedTimeSlot) {
-            alert('Please select a time slot');
-            return;
-        }
+        // Reset pagination
+        currentPage = 1;
+        hasMore = true;
+        totalSalons = 0;
         
-        if (!currentSalonId) {
-            alert('Salon information missing');
-            return;
-        }
-        
-        // Validate user details
-        const userName = document.getElementById('userName').value.trim();
-        const userPhone = document.getElementById('userPhone').value.trim();
-        
-        if (!userName) {
-            alert('Please enter your name');
-            return;
-        }
-        
-        if (!userPhone || userPhone.length < 10) {
-            alert('Please enter a valid phone number');
-            return;
-        }
-        
-        // Additional validation for home service
-        if (selectedServiceType === 'home') {
-            const userAddress = document.getElementById('userAddress').value.trim();
-            if (!userAddress) {
-                alert('Please enter your address for home service');
-                return;
-            }
-        }
-        
-        // Check if user is logged in
-        const isLoggedIn = document.body.getAttribute('data-user-logged-in') === 'true';
-        if (!isLoggedIn) {
-            // Store booking data and redirect to login
-            localStorage.setItem('pendingBooking', JSON.stringify({
-                salonId: currentSalonId,
-                selectedServices,
-                selectedDate,
-                selectedTimeSlot,
-                selectedServiceType,
-                userDetails: {
-                    name: userName,
-                    phone: userPhone,
-                    email: document.getElementById('userEmail').value.trim(),
-                    notes: document.getElementById('userNotes').value.trim()
-                }
-            }));
-            
-            window.location.href = '/userLogin?redirect=/book-a-saloon';
-            return;
-        }
-        
-        // Prepare booking data
-        const bookingData = {
-            salonId: currentSalonId,
-            serviceIds: selectedServices.map(s => s.id),
-            bookingDate: selectedDate,
-            bookingTime: selectedTimeSlot,
-            bookingType: selectedServiceType,
-            paymentMethod: 'online', // Default, can be changed to dropdown
-            userNotes: document.getElementById('userNotes').value.trim()
-        };
-        
-        // Add address for home service
-        if (selectedServiceType === 'home') {
-            bookingData.addressId = null; // You'll need address selection logic
-            bookingData.homeAddress = document.getElementById('userAddress').value.trim();
-            bookingData.googleMapLink = document.getElementById('customerAddress').value.trim();
-        }
+        // Clear previous results
+        document.getElementById('salonsGrid').innerHTML = '';
+        document.getElementById('loadMoreContainer').style.display = 'none';
         
         // Show loading
-        const submitBtn = document.querySelector('.sbm-submit-btn');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Processing...';
-        submitBtn.disabled = true;
-        
-        // Submit booking
-        const response = await fetch('/api/booking/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(bookingData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            // Show success message
-            alert('Booking confirmed! Your booking ID: ' + result.booking.token);
-            
-            // Redirect to booking confirmation page
-            window.location.href = `/booking-confirmation/${result.booking.id}`;
-        } else {
-            alert(result.message || 'Failed to create booking');
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
-        
-    } catch (error) {
-        console.error('Error submitting booking:', error);
-        alert('An error occurred. Please try again.');
-        
-        const submitBtn = document.querySelector('.sbm-submit-btn');
-        submitBtn.textContent = 'Confirm Booking';
-        submitBtn.disabled = false;
-    }
-}
-
-function closeBookingModal() {
-    document.getElementById('bookingModal').classList.remove('sbm-active');
-    document.body.style.overflow = 'auto';
-    
-    // Clear selections
-    selectedServices = [];
-    selectedDate = null;
-    selectedTimeSlot = null;
-    
-    // Reset form fields
-    const inputs = document.querySelectorAll('#bookingModal input, #bookingModal textarea');
-    inputs.forEach(input => {
-        input.value = '';
-    });
-    
-    // Reset checkboxes
-    document.querySelectorAll('#bookingModal input[type="checkbox"]').forEach(cb => {
-        cb.checked = false;
-    });
-    
-    // Reset UI
-    document.querySelectorAll('.sbm-service-card.selected').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    document.querySelectorAll('.sbm-date-card.selected').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    document.querySelectorAll('.sbm-slot-card.selected').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    // Reset service type
-    selectServiceType('salon');
-}
-
-// Add CSS for booking modal
-const bookingModalStyles = `
-.sbm-modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 10000;
-    overflow-y: auto;
-}
-
-.sbm-modal-overlay.sbm-active {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-}
-
-.sbm-modal-container {
-    background: white;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 800px;
-    margin: 20px auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    animation: sbmSlideIn 0.3s ease;
-}
-
-@keyframes sbmSlideIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.sbm-modal-header {
-    padding: 24px 32px;
-    border-bottom: 1px solid #eee;
-    position: relative;
-}
-
-.sbm-modal-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 4px;
-}
-
-.sbm-modal-subtitle {
-    font-size: 0.95rem;
-    color: #666;
-}
-
-.sbm-close-btn {
-    position: absolute;
-    top: 24px;
-    right: 32px;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #999;
-    line-height: 1;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
-}
-
-.sbm-close-btn:hover {
-    background: #f5f5f5;
-    color: #333;
-}
-
-.sbm-modal-body {
-    padding: 24px 32px;
-}
-
-.sbm-section {
-    margin-bottom: 32px;
-}
-
-.sbm-section-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sbm-section-icon {
-    background: #f0f0f0;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-.sbm-services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 12px;
-}
-
-.sbm-service-card {
-    border: 2px solid #eee;
-    border-radius: 8px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sbm-service-card:hover {
-    border-color: #ddd;
-    background: #f9f9f9;
-}
-
-.sbm-service-card.selected {
-    border-color: #ff4081;
-    background: #fff5f7;
-}
-
-.sbm-service-checkbox {
-    position: relative;
-}
-
-.sbm-service-checkbox input[type="checkbox"] {
-    display: none;
-}
-
-.sbm-service-checkbox label {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    display: block;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s;
-}
-
-.sbm-service-checkbox input[type="checkbox"]:checked + label {
-    background: #ff4081;
-    border-color: #ff4081;
-}
-
-.sbm-service-checkbox input[type="checkbox"]:checked + label:after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.sbm-service-details {
-    flex: 1;
-}
-
-.sbm-service-name {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-}
-
-.sbm-service-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.sbm-date-selector {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding: 10px 0;
-}
-
-.sbm-date-card {
-    min-width: 80px;
-    padding: 12px 8px;
-    border: 2px solid #eee;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.sbm-date-card:hover {
-    border-color: #ddd;
-}
-
-.sbm-date-card.selected {
-    border-color: #ff4081;
-    background: #fff5f7;
-}
-
-.sbm-date-day {
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 4px;
-}
-
-.sbm-date-number {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 2px;
-}
-
-.sbm-date-month {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.sbm-service-type-container {
-    display: flex;
-    gap: 16px;
-}
-
-.sbm-service-type-option {
-    flex: 1;
-    border: 2px solid #eee;
-    border-radius: 8px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-
-.sbm-service-type-option:hover {
-    border-color: #ddd;
-}
-
-.sbm-service-type-option.selected {
-    border-color: #ff4081;
-    background: #fff5f7;
-}
-
-.sbm-service-type-icon {
-    font-size: 2rem;
-    margin-bottom: 8px;
-}
-
-.sbm-service-type-title {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-}
-
-.sbm-service-type-desc {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.sbm-form-group {
-    margin-bottom: 20px;
-}
-
-.sbm-form-label {
-    display: block;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
-}
-
-.sbm-form-input, .sbm-form-textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #eee;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.2s;
-}
-
-.sbm-form-input:focus, .sbm-form-textarea:focus {
-    outline: none;
-    border-color: #ff4081;
-}
-
-.sbm-form-textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.sbm-form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.sbm-slots-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-}
-
-.sbm-slot-card {
-    border: 2px solid #eee;
-    border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.sbm-slot-card:hover {
-    border-color: #ddd;
-}
-
-.sbm-slot-card.selected {
-    border-color: #ff4081;
-    background: #fff5f7;
-}
-
-.sbm-slot-time {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-}
-
-.sbm-slot-duration {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-.sbm-modal-footer {
-    padding: 24px 32px;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sbm-total-price {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #333;
-}
-
-.sbm-price-amount {
-    color: #ff4081;
-}
-
-.sbm-submit-btn {
-    background: #ff4081;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 14px 32px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.sbm-submit-btn:hover {
-    background: #e91e63;
-    transform: translateY(-2px);
-}
-
-.sbm-submit-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.sbm-map-container {
-    margin-top: 12px;
-}
-
-.sbm-map-wrapper {
-    width: 100%;
-    height: 200px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 12px;
-}
-
-#map {
-    width: 100%;
-    height: 100%;
-}
-
-.sbm-coordinates {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .sbm-modal-overlay.sbm-active {
-        padding: 10px;
-    }
-    
-    .sbm-modal-container {
-        margin: 10px;
-    }
-    
-    .sbm-modal-header,
-    .sbm-modal-body,
-    .sbm-modal-footer {
-        padding: 16px;
-    }
-    
-    .sbm-services-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .sbm-form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-    
-    .sbm-service-type-container {
-        flex-direction: column;
-    }
-    
-    .sbm-date-selector {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-    }
-}
-
-@media (max-width: 480px) {
-    .sbm-slots-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .sbm-modal-footer {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
-    }
-}
-`;
-
-// Add styles to document
-const styleSheet = document.createElement('style');
-styleSheet.textContent = bookingModalStyles;
-document.head.appendChild(styleSheet);
-
-// Add event listeners for filter functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize filter count
-    updateFilterCount();
-    
-    // Handle filter changes
-    document.querySelectorAll('.filter-checkbox, .filter-radio').forEach(input => {
-        input.addEventListener('change', updateFilterCount);
-    });
-    
-    // Handle sort selection
-    document.querySelectorAll('.select-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const sortValue = this.dataset.sortValue;
-            document.querySelector('.text-sort-value').textContent = 
-                this.querySelector('.text-value-item').textContent;
-            document.querySelector('.text-sort-value').dataset.sortValue = sortValue;
-            
-            // Update URL with sort parameter
-            const url = new URL(window.location);
-            url.searchParams.set('sort', sortValue);
-            url.searchParams.delete('page'); // Reset to page 1
-            window.location.href = url.toString();
-        });
-    });
-    
-    // Handle applied filters removal
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-filter')) {
-            const filterName = e.target.dataset.filter;
-            removeFilter(filterName);
-        }
-    });
-    
-    // Handle "Remove All" button
-    document.getElementById('remove-all')?.addEventListener('click', function() {
-        window.location.href = '/book-a-saloon';
-    });
-});
-
-function updateFilterCount() {
-    const filterCount = document.querySelectorAll('.filter-checkbox:checked, .filter-radio:checked').length;
-    const priceMin = document.getElementById('price_min')?.value;
-    const priceMax = document.getElementById('price_max')?.value;
-    
-    let count = filterCount;
-    if (priceMin || priceMax) {
-        count++;
-    }
-    
-    const filterCountElement = document.querySelector('.filter-count');
-    if (filterCountElement) {
-        filterCountElement.textContent = count;
-        filterCountElement.style.display = count > 0 ? 'inline-flex' : 'none';
-    }
-}
-
-function removeFilter(filterName) {
-    const url = new URL(window.location);
-    
-    if (filterName === 'price') {
-        url.searchParams.delete('price_min');
-        url.searchParams.delete('price_max');
-    } else {
-        url.searchParams.delete(filterName);
-    }
-    
-    url.searchParams.delete('page'); // Reset to page 1
-    window.location.href = url.toString();
-}
-
-// Handle login redirect with pending booking
-document.addEventListener('DOMContentLoaded', function() {
-    const pendingBooking = localStorage.getItem('pendingBooking');
-    if (pendingBooking && window.location.pathname.includes('book-a-saloon')) {
-        // Check if user just logged in
-        if (document.body.getAttribute('data-user-logged-in') === 'true') {
-            try {
-                const bookingData = JSON.parse(pendingBooking);
-                localStorage.removeItem('pendingBooking');
-                
-                // Auto-fill the form with saved data
-                if (bookingData.userDetails) {
-                    const { name, phone, email, notes } = bookingData.userDetails;
-                    document.getElementById('userName').value = name || '';
-                    document.getElementById('userPhone').value = phone || '';
-                    document.getElementById('userEmail').value = email || '';
-                    document.getElementById('userNotes').value = notes || '';
-                }
-                
-                // Show success message
-                alert('Welcome back! Your booking details have been restored.');
-                
-            } catch (error) {
-                console.error('Error restoring booking:', error);
-            }
-        }
-    }
-});
-
-// Price slider initialization (requires noUiSlider library)
-function initPriceSlider() {
-    const priceSlider = document.getElementById('price-value-range');
-    if (!priceSlider) return;
-    
-    const minPrice = parseInt(priceSlider.dataset.min) || 100;
-    const maxPrice = parseInt(priceSlider.dataset.max) || 5000;
-    const currentMin = parseInt(priceSlider.dataset.currentMin) || minPrice;
-    const currentMax = parseInt(priceSlider.dataset.currentMax) || maxPrice;
-    
-    // Check if noUiSlider is available
-    if (typeof noUiSlider !== 'undefined') {
-        noUiSlider.create(priceSlider, {
-            start: [currentMin, currentMax],
-            connect: true,
-            range: {
-                'min': minPrice,
-                'max': maxPrice
-            },
-            step: 100,
-            tooltips: [true, true],
-            format: {
-                to: function(value) {
-                    return '₹' + Math.round(value);
-                },
-                from: function(value) {
-                    return Number(value.replace('₹', ''));
-                }
-            }
-        });
-        
-        priceSlider.noUiSlider.on('update', function(values) {
-            const [min, max] = values;
-            document.getElementById('price-min-value').textContent = min;
-            document.getElementById('price-max-value').textContent = max;
-            document.getElementById('price_min').value = min.replace('₹', '');
-            document.getElementById('price_max').value = max.replace('₹', '');
-            updateFilterCount();
-        });
-    } else {
-        // Fallback to simple inputs if noUiSlider not available
-        priceSlider.innerHTML = `
-            <input type="number" id="price_min_input" class="form-control" 
-                   min="${minPrice}" max="${maxPrice}" value="${currentMin}" 
-                   placeholder="Min price">
-            <span>to</span>
-            <input type="number" id="price_max_input" class="form-control" 
-                   min="${minPrice}" max="${maxPrice}" value="${currentMax}" 
-                   placeholder="Max price">
+        const loadingHtml = `
+            <div style="grid-column:1/-1; text-align:center; padding:60px 0;">
+                <div class="loading" style="width:40px;height:40px;margin:0 auto 20px;"></div>
+                <div style="color:#666;">Finding salons for you...</div>
+            </div>
         `;
+        document.getElementById('salonsGrid').innerHTML = loadingHtml;
         
-        document.getElementById('price_min_input').addEventListener('change', function() {
-            document.getElementById('price_min').value = this.value;
-            updateFilterCount();
-        });
-        
-        document.getElementById('price_max_input').addEventListener('change', function() {
-            document.getElementById('price_max').value = this.value;
-            updateFilterCount();
-        });
+        // Load salons
+        await loadSalons();
     }
-}
 
-// Initialize price slider when DOM is loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPriceSlider);
-} else {
-    initPriceSlider();
-}
+    async function loadSalons() {
+        if (isLoading || !hasMore) return;
+        
+        isLoading = true;
+        
+        try {
+            const params = new URLSearchParams({
+                page: currentPage,
+                limit: 9,
+                services: selectedServices.join(','),
+                location: userLocation.city || userLocation.address,
+                lat: userLocation.latitude || '',
+                lng: userLocation.longitude || '',
+                sort: 'rating'
+            });
+            
+            const response = await fetch(`/api/salons?${params}`);
+            const data = await response.json();
+            
+            const container = document.getElementById('salonsGrid');
+            
+            if (currentPage === 1) {
+                container.innerHTML = '';
+            }
+            
+            if (!data.success || !data.salons || data.salons.length === 0) {
+                hasMore = false;
+                
+                if (currentPage === 1) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <div>🔍</div>
+                            <h3>No salons found</h3>
+                            <p>We couldn't find any salons matching your criteria in ${userLocation.city || userLocation.address.split(',')[0]}</p>
+                            <button class="btn-change-filters" onclick="changeFilters()">
+                                Change Services
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('loadMoreContainer').style.display = 'none';
+                return;
+            }
+            
+            // Update count text
+            totalSalons = data.totalCount || data.salons.length;
+            document.getElementById('salonCountText').textContent = 
+                `${totalSalons} Salons in ${userLocation.city || userLocation.address.split(',')[0]}`;
+            
+            // Update filters text
+            const filtersText = document.getElementById('salonFiltersText');
+            let filtersHtml = `Showing results for: `;
+            selectedServices.forEach(serviceId => {
+                const service = serviceData[serviceId];
+                if (service) {
+                    filtersHtml += `
+                        <span class="filter-tag">
+                            ${service.name}
+                            <span class="remove" onclick="removeServiceFromFilters('${serviceId}')">×</span>
+                        </span>
+                    `;
+                }
+            });
+            filtersText.innerHTML = filtersHtml;
+            
+            // Add salon cards
+            data.salons.forEach(salon => {
+                const salonCard = document.createElement('div');
+                salonCard.className = 'salon-card';
+                salonCard.innerHTML = `
+                    <div class="salon-image">
+                        <img src="${salon.image || '/images/default-salon.jpg'}" alt="${salon.name}" onerror="this.src='/images/default-salon.jpg'">
+                        <div class="availability-badge ${salon.isAvailableToday ? '' : 'unavailable-badge'}">
+                            ${salon.isAvailableToday ? '✓ Available Today' : '✗ Unavailable Today'}
+                        </div>
+                    </div>
+                    <div class="salon-info">
+                        <h3 class="salon-name">${salon.name}</h3>
+                        <div class="salon-rating">
+                            <span class="stars">${'★'.repeat(Math.floor(salon.rating))}${'☆'.repeat(5-Math.floor(salon.rating))}</span>
+                            <span class="rating-number">${salon.rating.toFixed(1)}</span>
+                            <span class="review-count">(${salon.reviewCount} reviews)</span>
+                        </div>
+                        <div class="salon-location">
+                            <span>📍</span>
+                            <span>${salon.location || 'Location not specified'}</span>
+                        </div>
+                        <div class="salon-price">
+                            <span>From ₹${salon.startingPrice || salon.minPrice || 0}</span>
+                            ${salon.homeService ? '<span class="home-service-badge">🏡 Home Service</span>' : ''}
+                        </div>
+                        <div class="salon-services">
+                            ${(salon.topServices || salon.services || []).slice(0, 3).map(service => 
+                                `<span class="service-tag">${service}</span>`
+                            ).join('')}
+                            ${(salon.topServices || salon.services || []).length > 3 ? 
+                                `<span class="service-tag">+${(salon.topServices || salon.services || []).length - 3} more</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                salonCard.onclick = () => openSalonDetail(salon._id);
+                container.appendChild(salonCard);
+            });
+            
+            // Show load more button if there are more results
+            hasMore = data.hasMore || data.salons.length === 9;
+            if (hasMore) {
+                document.getElementById('loadMoreContainer').style.display = 'block';
+                currentPage++;
+            } else {
+                document.getElementById('loadMoreContainer').style.display = 'none';
+            }
+            
+        } catch (error) {
+            console.error('Error loading salons:', error);
+            const container = document.getElementById('salonsGrid');
+            if (currentPage === 1) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div>⚠️</div>
+                        <h3>Error Loading Salons</h3>
+                        <p>There was an error loading salons. Please try again.</p>
+                        <button class="btn-change-filters" onclick="changeFilters()">
+                            Change Services
+                        </button>
+                    </div>
+                `;
+            }
+        } finally {
+            isLoading = false;
+            document.getElementById('loadMoreBtn').disabled = false;
+            document.getElementById('loadMoreBtn').innerHTML = 'Load More Salons';
+        }
+    }
+
+    async function loadMoreSalons() {
+        if (isLoading) return;
+        
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        loadMoreBtn.disabled = true;
+        loadMoreBtn.innerHTML = '<span class="loading"></span>';
+        
+        await loadSalons();
+    }
+
+    function removeServiceFromFilters(serviceId) {
+        removeService(serviceId);
+        
+        // Reload salons with updated filters
+        if (document.getElementById('salonsSection').classList.contains('active')) {
+            findSalons();
+        }
+    }
+
+    function changeFilters() {
+        // Go back to services section
+        document.getElementById('salonsSection').classList.remove('active');
+        document.getElementById('servicesSection').classList.add('active');
+        document.getElementById('changeFiltersBtn').style.display = 'none';
+    }
+
+    function openSalonDetail(salonId) {
+        // Redirect to salon detail page
+        window.location.href = `/book-a-saloon/${salonId}`;
+    }
+
+    function openSortFilter() {
+        // Implement sort/filter modal
+        alert('Sort & Filter functionality will be implemented here');
+    }
 </script>
-
-
-
         <!-- Footer -->
          <footer id="footer" class="footer">
     <div class="footer-wrap">
@@ -2219,367 +2863,6 @@ if (document.readyState === 'loading') {
     });
     </script>
 
-<!-- Filter Sidebar -->
-<div class="offcanvas offcanvas-start canvas-filter" id="filterShop">
-    <div class="canvas-wrapper">
-        <div class="canvas-header">
-            <h5>Filters</h5>
-            <span class="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close"></span>
-        </div>
-
-        <div class="canvas-body">
-            <!-- Service Categories -->
-            <div class="widget-facet facet-categories">
-                <h6 class="facet-title">Services</h6>
-                <ul class="facet-content">
-                    <% filterOptions.services.forEach(service => { %>
-                        <li>
-                            <label class="categories-item">
-                                <input type="checkbox" 
-                                       name="service" 
-                                       value="<%= service.name %>"
-                                       <%= filters.service === service.name ? 'checked' : '' %>
-                                       class="filter-checkbox">
-                                <%= service.name %>
-                                <span class="count-cate">(<%= service.count %>)</span>
-                            </label>
-                        </li>
-                    <% }) %>
-                </ul>
-            </div>
-
-            <!-- Price Range -->
-            <div class="widget-facet facet-price">
-                <h6 class="facet-title">Price Range</h6>
-                <div class="price-val-range" 
-                     id="price-value-range" 
-                     data-min="100" 
-                     data-max="5000"
-                     data-current-min="<%= filters.price_min || 100 %>"
-                     data-current-max="<%= filters.price_max || 5000 %>">
-                </div>
-                <div class="box-price-product">
-                    <div class="box-price-item">
-                        <span class="title-price">Min price</span>
-                        <div class="price-val" id="price-min-value">₹<%= filters.price_min || 100 %></div>
-                    </div>
-                    <div class="box-price-item">
-                        <span class="title-price">Max price</span>
-                        <div class="price-val" id="price-max-value">₹<%= filters.price_max || 5000 %></div>
-                    </div>
-                </div>
-                <input type="hidden" id="price_min" name="price_min" value="<%= filters.price_min || '' %>">
-                <input type="hidden" id="price_max" name="price_max" value="<%= filters.price_max || '' %>">
-            </div>
-
-            <!-- Availability -->
-            <div class="widget-facet facet-fieldset">
-                <h6 class="facet-title">Availability</h6>
-                <div class="box-fieldset-item">
-                    <% filterOptions.availabilities.forEach(availability => { %>
-                        <fieldset class="fieldset-item">
-                            <input type="radio" 
-                                   name="availability" 
-                                   value="<%= availability.value %>"
-                                   <%= filters.availability === availability.value ? 'checked' : '' %>
-                                   class="tf-check filter-radio" 
-                                   id="<%= availability.value %>">
-                            <label for="<%= availability.value %>"><%= availability.label %></label>
-                        </fieldset>
-                    <% }) %>
-                </div>
-            </div>
-
-            <!-- Service Mode -->
-            <div class="widget-facet facet-fieldset">
-                <h6 class="facet-title">Service Type</h6>
-                <div class="box-fieldset-item">
-                    <% filterOptions.serviceModes.forEach(mode => { %>
-                        <fieldset class="fieldset-item">
-                            <input type="radio" 
-                                   name="service_mode" 
-                                   value="<%= mode.value %>"
-                                   <%= filters.service_mode === mode.value ? 'checked' : '' %>
-                                   class="tf-check filter-radio" 
-                                   id="mode-<%= mode.value %>">
-                            <label for="mode-<%= mode.value %>"><%= mode.label %></label>
-                        </fieldset>
-                    <% }) %>
-                </div>
-            </div>
-
-            <!-- Location -->
-            <div class="widget-facet facet-location">
-                <h6 class="facet-title">Location</h6>
-                <div class="box-fieldset-item">
-                    <% filterOptions.locations.forEach(location => { %>
-                        <fieldset class="fieldset-item">
-                            <input type="checkbox" 
-                                   name="location" 
-                                   value="<%= location.name %>"
-                                   <%= filters.location === location.name ? 'checked' : '' %>
-                                   class="tf-check filter-checkbox" 
-                                   id="loc-<%= location.name.replace(/\s+/g, '-') %>">
-                            <label for="loc-<%= location.name.replace(/\s+/g, '-') %>">
-                                <%= location.name %>
-                                <span class="count-cate">(<%= location.count %>)</span>
-                            </label>
-                        </fieldset>
-                    <% }) %>
-                </div>
-            </div>
-
-            <!-- Ratings -->
-            <div class="widget-facet facet-rating">
-                <h6 class="facet-title">Ratings</h6>
-                <div class="box-fieldset-item">
-                    <% filterOptions.ratings.forEach(rating => { %>
-                        <fieldset class="fieldset-item">
-                            <input type="radio" 
-                                   name="rating" 
-                                   value="<%= rating.value %>"
-                                   <%= filters.rating == rating.value ? 'checked' : '' %>
-                                   class="tf-check filter-radio" 
-                                   id="rating<%= rating.value %>">
-                            <label for="rating<%= rating.value %>"><%= rating.label %></label>
-                        </fieldset>
-                    <% }) %>
-                </div>
-            </div>
-        </div>
-
-        <div class="canvas-bottom">
-            <button type="button" class="tf-btn btn-reset" id="reset-filter">Reset Filters</button>
-            <button type="button" class="tf-btn btn-apply" id="apply-filters">Apply Filters</button>
-        </div>
-    </div>
-</div>
-
-<!-- Add this script section -->
-<script>
-    // Helper function to build page URL with filters
-    function buildPageUrl(page) {
-        const params = new URLSearchParams(window.location.search);
-        params.set('page', page);
-        return '/book-a-saloon?' + params.toString();
-    }
-
-    // Initialize when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        // Price range slider
-        const priceSlider = document.getElementById('price-value-range');
-        if (priceSlider) {
-            const minPrice = parseInt(priceSlider.dataset.min);
-            const maxPrice = parseInt(priceSlider.dataset.max);
-            const currentMin = parseInt(priceSlider.dataset.currentMin) || minPrice;
-            const currentMax = parseInt(priceSlider.dataset.currentMax) || maxPrice;
-            
-            // Initialize slider (you'll need a slider library like noUiSlider)
-            // This is a placeholder - implement with your preferred slider
-            initPriceSlider(minPrice, maxPrice, currentMin, currentMax);
-        }
-
-        // Filter checkbox/radio handlers
-        document.querySelectorAll('.filter-checkbox, .filter-radio').forEach(input => {
-            input.addEventListener('change', function() {
-                updateActiveFilters();
-            });
-        });
-
-        // Apply filters button
-        document.getElementById('apply-filters').addEventListener('click', function() {
-            applyFilters();
-        });
-
-        // Reset filters button
-        document.getElementById('reset-filter').addEventListener('click', function() {
-            resetFilters();
-        });
-
-        // Remove individual filters
-        document.querySelectorAll('.remove-filter').forEach(button => {
-            button.addEventListener('click', function() {
-                const filterName = this.dataset.filter;
-                removeFilter(filterName);
-            });
-        });
-
-        // Remove all filters
-        document.getElementById('remove-all')?.addEventListener('click', function() {
-            resetFilters();
-        });
-
-        // Sort dropdown
-        document.querySelectorAll('.select-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const sortValue = this.dataset.sortValue;
-                updateSort(sortValue);
-            });
-        });
-    });
-
-    function initPriceSlider(min, max, currentMin, currentMax) {
-        // Implement your price slider here
-        // Example with noUiSlider:
-        /*
-        noUiSlider.create(priceSlider, {
-            start: [currentMin, currentMax],
-            connect: true,
-            range: {
-                'min': min,
-                'max': max
-            },
-            step: 100
-        });
-
-        priceSlider.noUiSlider.on('update', function(values) {
-            document.getElementById('price-min-value').textContent = '₹' + Math.round(values[0]);
-            document.getElementById('price-max-value').textContent = '₹' + Math.round(values[1]);
-            document.getElementById('price_min').value = Math.round(values[0]);
-            document.getElementById('price_max').value = Math.round(values[1]);
-        });
-        */
-    }
-
-    function updateActiveFilters() {
-        const activeFilters = [];
-        
-        // Check checkboxes
-        document.querySelectorAll('.filter-checkbox:checked').forEach(cb => {
-            activeFilters.push({
-                name: cb.name,
-                value: cb.value
-            });
-        });
-        
-        // Check radios
-        document.querySelectorAll('.filter-radio:checked').forEach(radio => {
-            activeFilters.push({
-                name: radio.name,
-                value: radio.value
-            });
-        });
-
-        // Update UI
-        updateFilterDisplay(activeFilters);
-    }
-
-    function updateFilterDisplay(filters) {
-        // Update the applied filters display
-        const container = document.getElementById('applied-filters');
-        if (!container) return;
-        
-        container.innerHTML = filters.map(filter => `
-            <span class="applied-filter">
-                ${filter.name}: ${filter.value}
-                <button class="remove-filter" data-filter="${filter.name}">×</button>
-            </span>
-        `).join('');
-    }
-
-    function applyFilters() {
-        const formData = new FormData();
-        
-        // Collect filter values
-        document.querySelectorAll('.filter-checkbox:checked').forEach(cb => {
-            formData.append(cb.name, cb.value);
-        });
-        
-        document.querySelectorAll('.filter-radio:checked').forEach(radio => {
-            formData.append(radio.name, radio.value);
-        });
-        
-        // Add price range
-        const priceMin = document.getElementById('price_min')?.value;
-        const priceMax = document.getElementById('price_max')?.value;
-        if (priceMin) formData.append('price_min', priceMin);
-        if (priceMax) formData.append('price_max', priceMax);
-        
-        // Add sort value
-        const sortValue = document.querySelector('.text-sort-value').dataset.sortValue;
-        if (sortValue) formData.append('sort', sortValue);
-        
-        // Build query string
-        const params = new URLSearchParams();
-        for (let [key, value] of formData.entries()) {
-            params.append(key, value);
-        }
-        
-        // Redirect with filters
-        window.location.href = '/book-a-saloon?' + params.toString();
-    }
-
-    function resetFilters() {
-        window.location.href = '/book-a-saloon';
-    }
-
-    function removeFilter(filterName) {
-        const params = new URLSearchParams(window.location.search);
-        params.delete(filterName);
-        window.location.href = '/book-a-saloon?' + params.toString();
-    }
-
-    function updateSort(sortValue) {
-        const params = new URLSearchParams(window.location.search);
-        params.set('sort', sortValue);
-        window.location.href = '/book-a-saloon?' + params.toString();
-    }
-
-    // AJAX filtering (optional)
-    function loadSalons(page = 1) {
-        const params = new URLSearchParams(window.location.search);
-        params.set('page', page);
-        
-        fetch('/api/salons?' + params.toString())
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateSalonList(data.salons);
-                    updatePagination(data.pagination);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    function updateSalonList(salons) {
-        const container = document.getElementById('listLayout');
-        if (!container) return;
-        
-        // Update salon list with new data
-        // Implement based on your template structure
-    }
-
-    function updatePagination(pagination) {
-        // Update pagination controls
-        // Implement based on your template structure
-    }
-
-    // Update your existing booking modal function
-    function openBookingModal(salonId) {
-        // Store salon ID for booking
-        window.currentSalonId = salonId;
-        
-        // Show modal (your existing modal code)
-        document.getElementById('bookingModal').classList.add('sbm-active');
-        document.body.style.overflow = 'hidden';
-        
-        // Load salon-specific data
-        loadSalonServices(salonId);
-    }
-
-    async function loadSalonServices(salonId) {
-        try {
-            const response = await fetch(`/api/salons/${salonId}/services`);
-            const data = await response.json();
-            
-            if (data.success) {
-                populateServices(data.services);
-            }
-        } catch (error) {
-            console.error('Error loading services:', error);
-        }
-    }
-</script>
 
         <!-- search -->
         <div class="modal fade modal-search" id="search" tabindex="-1" aria-hidden="true">

@@ -1253,10 +1253,15 @@ var productGallerySwiper = function () {
         $(window).on("scroll", function () {
             var scrollPosition = $(this).scrollTop();
             var myElement = $(".tf-sticky-btn-atc");
+            var productInfoBtn = $(".tf-product-info-by-btn");
 
-            // .tf-product-info-by-btn.offset().top
-            var height = $(".tf-product-info-by-btn").offset().top + 50;
-            // console.log(height);
+            // Safely check if .tf-product-info-by-btn exists and has offset
+            if (productInfoBtn.length === 0 || typeof productInfoBtn.offset() === "undefined") {
+                myElement.removeClass("show");
+                return;
+            }
+
+            var height = productInfoBtn.offset().top + 50;
 
             if (scrollPosition >= height) {
                 myElement.addClass("show");

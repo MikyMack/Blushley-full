@@ -606,417 +606,1048 @@ router.get('/saloon-at-home', async (req, res) => {
 
 // book a saloon 
 router.get('/book-a-saloon', async (req, res) => {
-  try {
-    const {
-      page = 1,
-      limit = 6,
-      service,
-      price_min,
-      price_max,
-      availability,
-      gender,
-      location,
-      rating,
-      service_mode,
-      sort = 'top-rated'
-    } = req.query;
-
-    // Pagination calculation
-    const pageNumber = Math.max(parseInt(page), 1);
-    const pageLimit = Math.max(parseInt(limit), 1);
-    const skip = (pageNumber - 1) * pageLimit;
-
-    // Start building the $match filter for aggregation pipeline
-    let match = { status: 'active' };
-    let orFilter = [];
-
-    // Service filter
-    if (service) {
-      match['services.serviceName'] = { $regex: service, $options: 'i' };
-    }
-
-    // Price range filter
-    if (price_min || price_max) {
-      let priceQuery = {};
-      if (price_min) priceQuery.$gte = Number(price_min);
-      if (price_max) priceQuery.$lte = Number(price_max);
-      match['services.price'] = priceQuery;
-    }
-
-    // Rating filter (average rating >= X)
-    if (rating) {
-      match['reviews.rating'] = { $gte: Number(rating) };
-    }
-
-    // Location filter (match any of city, state, pincode)
-    if (location) {
-      const locationRegex = new RegExp(location, "i");
-      orFilter.push(
-        { 'address.city': locationRegex },
-        { 'address.state': locationRegex },
-        { 'address.pincode': locationRegex }
-      );
-    }
-
-    // Service mode filter
-    if (service_mode === "home") {
-      match['serviceMode.homeService'] = true;
-    } else if (service_mode === "salon") {
-      match['serviceMode.inSalon'] = true;
-    }
-
-    // Gender filter (on name/description/services)
-    if (gender) {
-      const genderRegex = new RegExp(gender, "i");
-      orFilter.push(
-        { name: genderRegex },
-        { description: genderRegex },
-        { "services.serviceName": genderRegex }
-      );
-    }
-
-    // Availability filter
-    const today = new Date();
-    if (availability === "today") {
-      const dayOfWeek = today.getDay();
-      match['availability.dayOfWeek'] = dayOfWeek;
-      match['availability.isOpen'] = true;
-    }
-
-    // If orFilter is nonempty, add $or to match
-    if (orFilter.length > 0) {
-      match["$or"] = orFilter;
-    }
-
-    // Sort options
-    let sortOpt = {};
-    switch (sort) {
-      case "price-low-high":
-        sortOpt = { 'services.price': 1 };
-        break;
-      case "price-high-low":
-        sortOpt = { 'services.price': -1 };
-        break;
-      case "top-rated":
-        sortOpt = { 'avgRating': -1 };
-        break;
-      default:
-        sortOpt = { createdAt: -1 };
-        break;
-    }
-
-    //-------------------------------------//
-    // Aggregation Pipeline for Performance //
-    //-------------------------------------//
-    const basePipeline = [
-      { $match: match },
-      {
-        $addFields: {
-          // Calculate average rating
-          avgRating: {
-            $cond: [
-              { $gt: [{ $size: { $ifNull: ['$reviews', []] } }, 0] },
-              { $avg: '$reviews.rating' },
-              0
-            ]
-          },
-          reviewCount: { $size: { $ifNull: ['$reviews', []] } },
-          // Get up to 4 unique service names
-          uniqueServiceNames: {
-            $slice: [
-              {
-                $setUnion: [
+    try {
+      // For AJAX requests, return JSON
+      if (req.headers['x-requested-with'] === 'XMLHttpRequest' || 
+          req.path.includes('/api/')) {
+        // Continue to existing logic for API calls
+        const {
+          page = 1,
+          limit = 12,
+          services,
+          location,
+          rating,
+          price_min,
+          price_max,
+          sort = 'rating'
+        } = req.query;
+  
+        // Build match query
+        let match = { status: 'active' };
+        
+        // Location filter
+        if (location) {
+          const locationRegex = new RegExp(location, 'i');
+          match.$or = [
+            { 'address.city': locationRegex },
+            { 'address.state': locationRegex },
+            { 'address.pincode': locationRegex }
+          ];
+          match['address.state'] = { $regex: /kerala/i };
+        } else {
+          match['address.state'] = { $regex: /kerala/i };
+        }
+        
+        // Service filter
+        if (services) {
+          const serviceArray = services.split(',');
+          match['services.serviceName'] = { 
+            $in: serviceArray.map(s => new RegExp(s, 'i'))
+          };
+        }
+        
+        // Rating filter
+        if (rating) {
+          match['reviews.rating'] = { $gte: parseFloat(rating) };
+        }
+        
+        // Price filter
+        if (price_min || price_max) {
+          match['services.price'] = {};
+          if (price_min) match['services.price'].$gte = parseFloat(price_min);
+          if (price_max) match['services.price'].$lte = parseFloat(price_max);
+        }
+        
+        // Sort options
+        let sortOpt = {};
+        switch (sort) {
+          case 'price_low':
+            sortOpt = { minPrice: 1 };
+            break;
+          case 'price_high':
+            sortOpt = { minPrice: -1 };
+            break;
+          case 'rating':
+          default:
+            sortOpt = { avgRating: -1 };
+        }
+        
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+        
+        // Aggregation pipeline
+        const pipeline = [
+          { $match: match },
+          {
+            $addFields: {
+              avgRating: {
+                $cond: [
+                  { $gt: [{ $size: { $ifNull: ['$reviews', []] } }, 0] },
+                  { $avg: '$reviews.rating' },
+                  0
+                ]
+              },
+              minPrice: {
+                $cond: [
+                  { $gt: [{ $size: { $ifNull: ['$services', []] } }, 0] },
+                  { $min: '$services.price' },
+                  0
+                ]
+              },
+              topServices: {
+                $slice: [
                   {
-                    $ifNull: [
-                      {
-                        $map: {
-                          input: "$services",
-                          as: "s",
-                          in: "$$s.serviceName"
-                        }
-                      },
+                    $setUnion: [
+                      { $map: { input: '$services', as: 's', in: '$$s.serviceName' } },
                       []
                     ]
                   },
-                  []
+                  3
                 ]
               },
-              4
-            ]
-          },
-          // Today's availability check
-          isAvailableToday: {
-            $let: {
-              vars: {
-                todayAvail: {
-                  $arrayElemAt: [
-                    {
-                      $filter: {
-                        input: "$availability",
-                        as: "day",
-                        cond: { $eq: ["$$day.dayOfWeek", today.getDay()] }
+              isAvailableToday: {
+                $let: {
+                  vars: { today: new Date().getDay() },
+                  in: {
+                    $anyElementTrue: {
+                      $map: {
+                        input: { $ifNull: ['$availability', []] },
+                        as: 'avail',
+                        in: {
+                          $and: [
+                            { $eq: ['$$avail.dayOfWeek', '$$today'] },
+                            { $eq: ['$$avail.isOpen', true] }
+                          ]
+                        }
                       }
-                    },
-                    0
-                  ]
+                    }
+                  }
                 }
               },
-              in: { $ifNull: ["$$todayAvail.isOpen", false] }
+              locationText: {
+                $cond: [
+                  { $and: ['$address.city', '$address.state'] },
+                  { $concat: ['$address.city', ', ', '$address.state'] },
+                  { $ifNull: ['$address.city', '$address.state', ''] }
+                ]
+              }
             }
           },
-          // Lowest price
-          lowestPrice: {
-            $cond: [
-              { $gt: [{ $size: { $ifNull: ['$services', []] } }, 0] },
-              {
-                $min: "$services.price"
-              },
-              0
-            ]
-          },
-          locationText: {
-            $concat: [
-              { $ifNull: ["$address.city", ""] },
-              ", ",
-              { $ifNull: ["$address.state", ""] }
-            ]
-          }
-        }
-      },
-      { $sort: sortOpt },
-      {
-        $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: pageLimit }
-          ],
-          totalCount: [
-            { $count: "count" }
-          ]
-        }
+          { $sort: sortOpt },
+          { $skip: skip },
+          { $limit: limitNum }
+        ];
+        
+        const [salons, total] = await Promise.all([
+          Salon.aggregate(pipeline),
+          Salon.countDocuments(match)
+        ]);
+        
+        const formattedSalons = salons.map(salon => ({
+          _id: salon._id,
+          name: salon.name,
+          image: salon.images?.[0],
+          rating: salon.avgRating || 0,
+          reviewCount: salon.reviews?.length || 0,
+          location: salon.locationText,
+          startingPrice: salon.minPrice || 0,
+          minPrice: salon.minPrice || 0,
+          homeService: salon.serviceMode?.homeService || false,
+          topServices: salon.topServices || [],
+          isAvailableToday: salon.isAvailableToday || false
+        }));
+        
+        return res.json({
+          success: true,
+          salons: formattedSalons,
+          totalCount: total,
+          hasMore: total > (pageNum * limitNum)
+        });
       }
-    ];
-
-    const aggResult = await Salon.aggregate(basePipeline).exec();
-    const enrichedSalons = (aggResult[0]?.data || []).map(salon => ({
-      ...salon,
-      avgRating: salon.avgRating ? salon.avgRating.toFixed(1) : "0.0"
-    }));
-    const totalSalons = aggResult[0]?.totalCount?.[0]?.count || 0;
-
-    // ----------------------------
-    // Filter options computation
-    // ----------------------------
-
-    // Get unique services + counts in parallel with locations
-    // Use aggregation for both for efficiency
-    const [serviceAgg, locationAgg] = await Promise.all([
-      Salon.aggregate([
-        { $match: { status: "active" } },
-        { $unwind: "$services" },
-        { $group: { _id: "$services.serviceName", count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ]),
-      Salon.aggregate([
-        { $match: { status: "active" } },
-        { $group: { _id: "$address.city", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 }
-      ])
-    ]);
-
-    // Format serviceCounts for filter
-    const servicesForFilter = serviceAgg.map(srv => ({
-      name: srv._id,
-      count: srv.count
-    }));
-
-    // Format locations for filter
-    const locationsForFilter = locationAgg.map(loc => ({
-      name: loc._id,
-      count: loc.count
-    }));
-
-    // Now render
-    res.render("user/saloon-service", {
-      title: "Book a Salon",
-      salons: enrichedSalons,
-      currentPage: pageNumber,
-      totalPages: Math.ceil(totalSalons / pageLimit),
-      totalSalons,
-      pageSize: pageLimit,
-      filters: {
-        service: service || "",
-        price_min: price_min || "",
-        price_max: price_max || "",
-        availability: availability || "",
-        gender: gender || "",
-        location: location || "",
-        rating: rating || "",
-        service_mode: service_mode || "",
-        sort: sort || "top-rated"
-      },
-      filterOptions: {
-        services: servicesForFilter,
-        locations: locationsForFilter,
-        priceRanges: [
-          { min: 0, max: 500, label: "Under ₹500" },
-          { min: 500, max: 1000, label: "₹500 - ₹1000" },
-          { min: 1000, max: 2000, label: "₹1000 - ₹2000" },
-          { min: 2000, max: 5000, label: "₹2000+" }
-        ],
-        ratings: [
-          { value: 4, label: "4★ & above" },
-          { value: 3, label: "3★ & above" }
-        ],
-        serviceModes: [
-          { value: "salon", label: "Salon Visit" },
-          { value: "home", label: "Home Service" }
-        ],
-        availabilities: [
-          { value: "today", label: "Available Today" },
-          { value: "weekend", label: "Weekend Slots" }
-        ]
-      }
-    });
-  } catch (error) {
-    console.error("Error fetching salons:", error);
-    res.status(500).render("error", {
-      message: "Failed to load salons. Please try again."
-    });
-  }
-});
+      
+      // For regular page load, render the new template
+      res.render("user/saloon-service", {
+        title: "Book Salon Services"
+      });
+      
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to load data" 
+      });
+    }
+  });
 
 // Salon details route
+// Salon details route
 router.get('/book-a-saloon/:id', async (req, res) => {
-  try {
+    try {
       const salon = await Salon.findById(req.params.id).lean();
       
       if (!salon) {
-          return res.status(404).json({ 
-              success: false,
-              message: 'Salon not found' 
-          });
+        return res.status(404).render('error', {
+          title: 'Salon Not Found',
+          message: 'The salon you are looking for does not exist.'
+        });
       }
-
+  
       // Calculate average rating
       const avgRating = salon.reviews && salon.reviews.length > 0
-          ? salon.reviews.reduce((sum, review) => sum + review.rating, 0) / salon.reviews.length
-          : 0;
-
-      // Group services by category
-      const servicesByCategory = salon.services?.reduce((acc, service) => {
-          const category = service.serviceName.split(' ')[0]; // Simple categorization
-          if (!acc[category]) acc[category] = [];
-          acc[category].push(service);
-          return acc;
-      }, {});
-
-      res.json({
-          success: true,
-          salon: {
-              ...salon,
-              avgRating: avgRating.toFixed(1),
-              reviewCount: salon.reviews?.length || 0,
-              servicesByCategory,
-              locationText: `${salon.address?.line1 || ''}, ${salon.address?.city || ''}, ${salon.address?.state || ''}`
-          }
+        ? (salon.reviews.reduce((sum, review) => sum + review.rating, 0) / salon.reviews.length).toFixed(1)
+        : "0.0";
+  
+      // Group services by category (first word)
+      const servicesByCategory = {};
+      salon.services?.forEach(service => {
+        const firstWord = service.serviceName.split(' ')[0];
+        if (!servicesByCategory[firstWord]) {
+          servicesByCategory[firstWord] = [];
+        }
+        servicesByCategory[firstWord].push(service);
       });
-  } catch (error) {
+  
+      // Check if user is logged in
+      const isLoggedIn = req.session.userId ? true : false;
+  
+      // Get current URL for redirect
+      const currentUrl = req.originalUrl;
+  
+      // Format availability
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const today = new Date().getDay();
+      const todayAvailability = salon.availability.find(a => a.dayOfWeek === today);
+  
+      res.render('user/salon-details', {
+        title: `${salon.name} - Book Salon Services`,
+        salon: {
+          ...salon,
+          avgRating,
+          reviewCount: salon.reviews?.length || 0,
+          servicesByCategory,
+          locationText: `${salon.address?.line1 || ''}, ${salon.address?.city || ''}, ${salon.address?.state || ''}`,
+          todayAvailability: todayAvailability || { openingTime: '9:00', closingTime: '18:00', isOpen: true }
+        },
+        isLoggedIn,
+        currentUrl
+      });
+  
+    } catch (error) {
       console.error('Error fetching salon details:', error);
-      res.status(500).json({ 
-          success: false,
-          message: 'Failed to load salon details' 
+      res.status(500).render('error', {
+        title: 'Error',
+        message: 'Failed to load salon details. Please try again.'
       });
-  }
-});
-
-// API endpoint for AJAX filtering
-router.get('/api/salons', async (req, res) => {
-  try {
-      const { 
-          page = 1, 
-          limit = 6, 
-          ...filters 
-      } = req.query;
-
-      // Build filter query (same as above)
-      let filter = { status: 'active' };
+    }
+  });
+  
+  // Add new route for booking initialization
+  router.get('/api/salon/:id/booking/initialize', async (req, res) => {
+    try {
+      const salon = await Salon.findById(req.params.id).select('name services availability');
       
-      if (filters.service) {
-          filter['services.serviceName'] = { 
-              $regex: filters.service, 
-              $options: 'i' 
-          };
+      if (!salon) {
+        return res.status(404).json({ success: false, message: 'Salon not found' });
       }
+  
+      // Get next 30 days availability
+      const next30Days = [];
+      const today = new Date();
       
-      if (filters.price_min || filters.price_max) {
-          filter['services.price'] = {};
-          if (filters.price_min) filter['services.price'].$gte = Number(filters.price_min);
-          if (filters.price_max) filter['services.price'].$lte = Number(filters.price_max);
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        
+        const dayOfWeek = date.getDay();
+        const dayAvailability = salon.availability.find(a => a.dayOfWeek === dayOfWeek);
+        
+        // Check if closed on this date
+        const isClosed = salon.closedDates?.some(closedDate => 
+          new Date(closedDate).toDateString() === date.toDateString()
+        );
+        
+        next30Days.push({
+          date: date.toISOString().split('T')[0],
+          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          dayNumber: date.getDate(),
+          monthName: date.toLocaleDateString('en-US', { month: 'short' }),
+          isAvailable: dayAvailability?.isOpen && !isClosed,
+          openingTime: dayAvailability?.openingTime,
+          closingTime: dayAvailability?.closingTime
+        });
       }
-      
-      if (filters.rating) {
-          filter['reviews.rating'] = { $gte: Number(filters.rating) };
-      }
-      
-      if (filters.location) {
-          const locationRegex = new RegExp(filters.location, 'i');
-          filter.$or = [
-              { 'address.city': locationRegex },
-              { 'address.state': locationRegex },
-              { 'address.pincode': locationRegex }
-          ];
-      }
-
-      const skip = (page - 1) * limit;
-      const totalSalons = await Salon.countDocuments(filter);
-
-      const salons = await Salon.find(filter)
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(Number(limit))
-          .lean();
-
-      // Enrich data
-      const enrichedSalons = salons.map(salon => {
-          const avgRating = salon.reviews && salon.reviews.length > 0
-              ? salon.reviews.reduce((sum, review) => sum + review.rating, 0) / salon.reviews.length
-              : 0;
-
-          return {
-              _id: salon._id,
-              name: salon.name,
-              images: salon.images,
-              description: salon.description,
-              avgRating: avgRating.toFixed(1),
-              reviewCount: salon.reviews?.length || 0,
-              services: salon.services?.slice(0, 4).map(s => s.serviceName) || [],
-              address: salon.address,
-              lowestPrice: salon.services?.length > 0
-                  ? Math.min(...salon.services.map(s => s.price))
-                  : 0,
-              isAvailableToday: true // Simplified for now
-          };
-      });
-
+  
+      // Format services
+      const services = salon.services?.map(service => ({
+        id: service._id,
+        name: service.serviceName,
+        price: service.price,
+        duration: service.durationMinutes || 30
+      })) || [];
+  
       res.json({
-          success: true,
-          salons: enrichedSalons,
-          pagination: {
-              currentPage: Number(page),
-              totalPages: Math.ceil(totalSalons / limit),
-              totalSalons
-          }
+        success: true,
+        salon: {
+          name: salon.name,
+          services: services
+        },
+        availability: next30Days
       });
-  } catch (error) {
-      console.error('API Error:', error);
-      res.status(500).json({ 
+  
+    } catch (error) {
+      console.error('Error initializing booking:', error);
+      res.status(500).json({ success: false, message: 'Failed to initialize booking' });
+    }
+  });
+  
+  // Add route to create booking
+  router.post('/api/booking/create', async (req, res) => {
+    try {
+      const {
+        salonId,
+        serviceIds,
+        bookingDate,
+        bookingTime,
+        bookingType,
+        userNotes,
+        homeAddress,
+        googleMapLink
+      } = req.body;
+  
+      // Check if user is logged in
+      if (!req.session.userId) {
+        return res.status(401).json({ 
           success: false, 
-          error: 'Failed to fetch salons' 
+          message: 'Please login to book services' 
+        });
+      }
+  
+      // Get salon details
+      const salon = await Salon.findById(salonId);
+      if (!salon) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Salon not found' 
+        });
+      }
+  
+      // Get selected services
+      const selectedServices = salon.services.filter(service => 
+        serviceIds.includes(service._id.toString())
+      );
+  
+      if (selectedServices.length === 0) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'No services selected' 
+        });
+      }
+  
+      // Calculate total price
+      const totalAmount = selectedServices.reduce((sum, service) => sum + service.price, 0);
+      const totalDuration = selectedServices.reduce((sum, service) => 
+        sum + (service.durationMinutes || 30), 0
+      );
+  
+      // Generate booking token
+      const bookingToken = 'BK' + Date.now() + Math.random().toString(36).substr(2, 9).toUpperCase();
+  
+      // Create booking
+      const booking = new SalonBooking({
+        bookingToken,
+        user: {
+          userId: req.session.userId,
+          name: req.session.userName || 'Customer',
+          phone: req.session.userPhone,
+          email: req.session.userEmail
+        },
+        salon: {
+          salonId: salon._id,
+          salonName: salon.name,
+          salonPhone: salon.phone
+        },
+        services: selectedServices.map(service => ({
+          serviceId: service._id,
+          serviceName: service.serviceName,
+          basePrice: service.price,
+          adminPrice: service.adminPrice,
+          durationMinutes: service.durationMinutes
+        })),
+        bookingType,
+        bookingDate: new Date(bookingDate),
+        bookingTime,
+        paymentBreakdown: {
+          totalServiceAmount: totalAmount,
+          customerPaid: totalAmount,
+          salonEarning: totalAmount * 0.8 // Example: 80% to salon, 20% platform commission
+        },
+        payment: {
+          method: 'online',
+          status: 'pending'
+        },
+        status: 'pending',
+        userNotes
       });
-  }
+  
+      // Add home service location if applicable
+      if (bookingType === 'home' && homeAddress) {
+        booking.homeServiceLocation = {
+          fullAddress: homeAddress,
+          city: salon.address.city,
+          state: salon.address.state,
+          pincode: salon.address.pincode,
+          googleMapLink: googleMapLink || ''
+        };
+      } else {
+        booking.salonLocation = {
+          address: `${salon.address.line1}, ${salon.address.city}, ${salon.address.state} - ${salon.address.pincode}`,
+          googleMapLink: salon.googleMapLink || ''
+        };
+      }
+  
+      await booking.save();
+  
+      // Update salon stats
+      await Salon.findByIdAndUpdate(salonId, {
+        $inc: {
+          totalBookings: 1,
+          totalEarnings: totalAmount
+        }
+      });
+  
+      res.json({
+        success: true,
+        message: 'Booking created successfully',
+        booking: {
+          id: booking._id,
+          token: booking.bookingToken,
+          totalAmount,
+          bookingDate,
+          bookingTime
+        }
+      });
+  
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to create booking' 
+      });
+    }
+  });
+router.get('/api/search/global', async (req, res) => {
+    try {
+      const { q } = req.query;
+      
+      if (!q || q.length < 2) {
+        return res.json({
+          success: true,
+          results: {
+            services: [],
+            salons: [],
+            suggestions: []
+          }
+        });
+      }
+      
+      const searchRegex = new RegExp(q, 'i');
+      
+      // Search services
+      const services = await Salon.aggregate([
+        { $match: { status: 'active' } },
+        { $unwind: '$services' },
+        { $match: { 'services.serviceName': searchRegex } },
+        {
+          $group: {
+            _id: '$services.serviceName',
+            price: { $min: '$services.price' },
+            salonCount: { $sum: 1 }
+          }
+        },
+        { $limit: 10 }
+      ]);
+      
+      // Search salons
+      const salons = await Salon.aggregate([
+        { $match: { 
+          status: 'active',
+          $or: [
+            { name: searchRegex },
+            { description: searchRegex },
+            { 'address.city': searchRegex }
+          ]
+        }},
+        {
+          $project: {
+            name: 1,
+            images: 1,
+            address: 1,
+            rating: {
+              $cond: [
+                { $gt: [{ $size: { $ifNull: ['$reviews', []] } }, 0] },
+                { $avg: '$reviews.rating' },
+                0
+              ]
+            },
+            reviewCount: { $size: { $ifNull: ['$reviews', []] } }
+          }
+        },
+        { $limit: 10 }
+      ]);
+      
+      // Get popular search suggestions
+      const suggestions = [
+        'Haircut',
+        'Facial',
+        'Manicure',
+        'Pedicure',
+        'Waxing',
+        'Threading',
+        'Hair Color',
+        'Skin Treatment'
+      ].filter(s => s.toLowerCase().includes(q.toLowerCase()));
+      
+      res.json({
+        success: true,
+        results: {
+          services: services.map(s => ({
+            name: s._id,
+            price: s.price,
+            salonCount: s.salonCount
+          })),
+          salons: salons.map(s => ({
+            _id: s._id,
+            name: s.name,
+            image: s.images?.[0],
+            location: `${s.address?.city || ''}, ${s.address?.state || ''}`,
+            rating: s.rating,
+            reviewCount: s.reviewCount
+          })),
+          suggestions
+        }
+      });
+      
+    } catch (error) {
+      console.error('Search error:', error);
+      res.status(500).json({ success: false, error: 'Search failed' });
+    }
+  });
+// Location-based routes
+router.get('/api/locations/search', async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q || q.length < 2) {
+            return res.json({
+                success: true,
+                locations: []
+            });
+        }
+        
+        // Search for Kerala cities
+        const keralaCities = [
+            { name: 'Thiruvananthapuram', state: 'Kerala', type: 'city' },
+            { name: 'Kochi', state: 'Kerala', type: 'city' },
+            { name: 'Kozhikode', state: 'Kerala', type: 'city' },
+            { name: 'Thrissur', state: 'Kerala', type: 'city' },
+            { name: 'Kollam', state: 'Kerala', type: 'city' },
+            { name: 'Alappuzha', state: 'Kerala', type: 'city' },
+            { name: 'Kannur', state: 'Kerala', type: 'city' },
+            { name: 'Kottayam', state: 'Kerala', type: 'city' },
+            { name: 'Malappuram', state: 'Kerala', type: 'city' },
+            { name: 'Palakkad', state: 'Kerala', type: 'city' },
+            { name: 'Manjeri', state: 'Kerala', type: 'city' },
+            { name: 'Thalassery', state: 'Kerala', type: 'city' },
+            { name: 'Ponnani', state: 'Kerala', type: 'city' },
+            { name: 'Vatakara', state: 'Kerala', type: 'city' },
+            { name: 'Kanhangad', state: 'Kerala', type: 'city' }
+        ];
+        
+        const searchTerm = q.toLowerCase();
+        const filteredCities = keralaCities.filter(city => 
+            city.name.toLowerCase().includes(searchTerm)
+        );
+        
+        // Also search in database
+        const dbLocations = await Salon.aggregate([
+            {
+                $match: {
+                    status: 'active',
+                    $or: [
+                        { 'address.city': { $regex: q, $options: 'i' } },
+                        { 'address.state': { $regex: q, $options: 'i' } },
+                        { 'address.pincode': { $regex: q, $options: 'i' } }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: { 
+                        city: '$address.city',
+                        state: '$address.state'
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+        ]);
+        
+        const allLocations = [
+            ...filteredCities.map(city => ({
+                name: city.name,
+                state: city.state,
+                type: city.type,
+                salonCount: 0
+            })),
+            ...dbLocations.map(loc => ({
+                name: loc._id.city,
+                state: loc._id.state,
+                type: 'database',
+                salonCount: loc.count
+            }))
+        ];
+        
+        // Remove duplicates
+        const uniqueLocations = [];
+        const seen = new Set();
+        
+        allLocations.forEach(loc => {
+            const key = `${loc.name}-${loc.state}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                uniqueLocations.push(loc);
+            }
+        });
+        
+        res.json({
+            success: true,
+            locations: uniqueLocations.slice(0, 10)
+        });
+        
+    } catch (error) {
+        console.error('Location search error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to search locations' 
+        });
+    }
 });
+
+// Service categories
+router.get('/api/service-categories', async (req, res) => {
+    try {
+        // Get categories from existing salons
+        const categories = await Salon.aggregate([
+            { $match: { status: 'active' } },
+            { $unwind: '$services' },
+            {
+                $addFields: {
+                    category: {
+                        $cond: [
+                            { $regexMatch: { input: '$services.serviceName', regex: /hair|cut|trim|style|colour|color|shampoo/i } },
+                            'hair',
+                            {
+                                $cond: [
+                                    { $regexMatch: { input: '$services.serviceName', regex: /facial|skin|cleanup|treatment|bleach|threading/i } },
+                                    'skin',
+                                    {
+                                        $cond: [
+                                            { $regexMatch: { input: '$services.serviceName', regex: /nail|manicure|pedicure/i } },
+                                            'nails',
+                                            'other'
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: '$category',
+                    count: { $sum: 1 },
+                    name: {
+                        $first: {
+                            $switch: {
+                                branches: [
+                                    { case: { $eq: ['$category', 'hair'] }, then: 'Hair Services' },
+                                    { case: { $eq: ['$category', 'skin'] }, then: 'Skin & Facial' },
+                                    { case: { $eq: ['$category', 'nails'] }, then: 'Nail Services' }
+                                ],
+                                default: 'Other Services'
+                            }
+                        }
+                    }
+                }
+            },
+            { $sort: { count: -1 } }
+        ]);
+
+        // Add "All Services" as first category
+        const totalServices = await Salon.aggregate([
+            { $match: { status: 'active' } },
+            { $project: { serviceCount: { $size: '$services' } } },
+            { $group: { _id: null, total: { $sum: '$serviceCount' } } }
+        ]);
+
+        const allCategory = {
+            id: 'all',
+            name: 'All Services',
+            count: totalServices[0]?.total || 0
+        };
+
+        const allCategories = [allCategory, ...categories.map(cat => ({
+            id: cat._id,
+            name: cat.name,
+            count: cat.count
+        }))];
+
+        res.json({
+            success: true,
+            categories: allCategories
+        });
+
+    } catch (error) {
+        console.error('Error loading categories:', error);
+        // Return fallback categories
+        res.json({
+            success: true,
+            categories: [
+                { id: 'all', name: 'All Services', count: 100 },
+                { id: 'hair', name: 'Hair Services', count: 45 },
+                { id: 'skin', name: 'Skin & Facial', count: 30 },
+                { id: 'nails', name: 'Nail Services', count: 20 },
+                { id: 'other', name: 'Other Services', count: 5 }
+            ]
+        });
+    }
+});
+
+// Get all services
+router.get('/api/services', async (req, res) => {
+    try {
+        const { category } = req.query;
+        
+        let match = { status: 'active' };
+        
+        if (category && category !== 'all') {
+            // Build regex based on category
+            let categoryRegex;
+            switch(category) {
+                case 'hair':
+                    categoryRegex = /hair|cut|trim|style|styling|colour|color|shampoo|condition|keratin|straighten/i;
+                    break;
+                case 'skin':
+                    categoryRegex = /facial|skin|cleanup|treatment|bleach|threading|wax|polish|glow|whitening/i;
+                    break;
+                case 'nails':
+                    categoryRegex = /nail|manicure|pedicure|cuticle|polish|art/i;
+                    break;
+                default:
+                    categoryRegex = /./; // Match everything
+            }
+            
+            match['services.serviceName'] = { $regex: categoryRegex };
+        }
+        
+        const services = await Salon.aggregate([
+            { $match: match },
+            { $unwind: '$services' },
+            {
+                $group: {
+                    _id: '$services.serviceName',
+                    price: { $min: '$services.price' },
+                    duration: { $first: { $ifNull: ['$services.durationMinutes', 60] } },
+                    salonCount: { $sum: 1 },
+                    category: {
+                        $first: {
+                            $cond: [
+                                { $regexMatch: { input: '$services.serviceName', regex: /hair|cut|trim|style|colour|color|shampoo/i } },
+                                'hair',
+                                {
+                                    $cond: [
+                                        { $regexMatch: { input: '$services.serviceName', regex: /facial|skin|cleanup|treatment|bleach|threading/i } },
+                                        'skin',
+                                        {
+                                            $cond: [
+                                                { $regexMatch: { input: '$services.serviceName', regex: /nail|manicure|pedicure/i } },
+                                                'nails',
+                                                'other'
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            { 
+                $match: category && category !== 'all' ? { category: category } : {} 
+            },
+            { $sort: { salonCount: -1 } },
+            { $limit: 50 }
+        ]);
+
+        const formattedServices = services.map(service => ({
+            id: service._id.replace(/\s+/g, '-').toLowerCase(),
+            name: service._id,
+            price: service.price,
+            duration: service.duration,
+            salonCount: service.salonCount,
+            category: service.category
+        }));
+
+        res.json({
+            success: true,
+            services: formattedServices
+        });
+
+    } catch (error) {
+        console.error('Error loading services:', error);
+        // Return fallback services
+        res.json({
+            success: true,
+            services: [
+                { id: 'haircut', name: 'Haircut & Styling', price: 300, duration: 45, salonCount: 25 },
+                { id: 'hair-color', name: 'Hair Coloring', price: 1200, duration: 120, salonCount: 18 },
+                { id: 'facial', name: 'Basic Facial', price: 800, duration: 60, salonCount: 22 },
+                { id: 'manicure', name: 'Manicure', price: 400, duration: 45, salonCount: 20 },
+                { id: 'pedicure', name: 'Pedicure', price: 500, duration: 60, salonCount: 18 },
+                { id: 'waxing', name: 'Body Waxing', price: 600, duration: 45, salonCount: 15 },
+                { id: 'threading', name: 'Face Threading', price: 150, duration: 30, salonCount: 28 },
+                { id: 'bleach', name: 'Face Bleach', price: 350, duration: 45, salonCount: 16 }
+            ]
+        });
+    }
+});
+
+// Get salons with location and service filters
+router.get('/api/salons', async (req, res) => {
+    try {
+        const {
+            page = 1,
+            limit = 9,
+            services,
+            location,
+            lat,
+            lng,
+            sort = 'rating',
+            rating,
+            price_min,
+            price_max
+        } = req.query;
+        
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+        
+        // Build match query
+        let match = { status: 'active' };
+        
+        // Location filter - prioritize Kerala
+        if (location) {
+            const locationRegex = new RegExp(location, 'i');
+            match.$or = [
+                { 'address.city': locationRegex },
+                { 'address.state': locationRegex },
+                { 'address.pincode': locationRegex }
+            ];
+            
+            // Always filter by Kerala if state is not specified
+            if (!match['address.state']) {
+                match['address.state'] = { $regex: /kerala/i };
+            }
+        } else {
+            // Default to Kerala if no location specified
+            match['address.state'] = { $regex: /kerala/i };
+        }
+        
+        // Service filter
+        if (services) {
+            const serviceArray = services.split(',');
+            match['services.serviceName'] = { 
+                $in: serviceArray.map(s => new RegExp(s.replace('-', ' '), 'i'))
+            };
+        }
+        
+        // Rating filter
+        if (rating) {
+            match['reviews.rating'] = { $gte: parseFloat(rating) };
+        }
+        
+        // Price filter
+        if (price_min || price_max) {
+            match['services.price'] = {};
+            if (price_min) match['services.price'].$gte = parseFloat(price_min);
+            if (price_max) match['services.price'].$lte = parseFloat(price_max);
+        }
+        
+        // Sort options
+        let sortOpt = {};
+        switch (sort) {
+            case 'rating':
+                sortOpt = { avgRating: -1 };
+                break;
+            case 'price_low':
+                sortOpt = { minPrice: 1 };
+                break;
+            case 'price_high':
+                sortOpt = { minPrice: -1 };
+                break;
+            case 'distance':
+                // If we have coordinates, we could sort by distance
+                // For now, default to rating
+                sortOpt = { avgRating: -1 };
+                break;
+            default:
+                sortOpt = { createdAt: -1 };
+        }
+        
+        // Aggregation pipeline
+        const pipeline = [
+            { $match: match },
+            {
+                $addFields: {
+                    // Calculate average rating
+                    avgRating: {
+                        $cond: [
+                            { $gt: [{ $size: { $ifNull: ['$reviews', []] } }, 0] },
+                            { $avg: '$reviews.rating' },
+                            0
+                        ]
+                    },
+                    // Get minimum price
+                    minPrice: {
+                        $cond: [
+                            { $gt: [{ $size: { $ifNull: ['$services', []] } }, 0] },
+                            {
+                                $min: {
+                                    $map: {
+                                        input: '$services',
+                                        as: 'service',
+                                        in: '$$service.price'
+                                    }
+                                }
+                            },
+                            0
+                        ]
+                    },
+                    // Get top services
+                    topServices: {
+                        $slice: [
+                            {
+                                $setUnion: [
+                                    {
+                                        $map: {
+                                            input: '$services',
+                                            as: 'service',
+                                            in: '$$service.serviceName'
+                                        }
+                                    },
+                                    []
+                                ]
+                            },
+                            4
+                        ]
+                    },
+                    // Check if open today
+                    isAvailableToday: {
+                        $let: {
+                            vars: {
+                                today: new Date().getDay()
+                            },
+                            in: {
+                                $anyElementTrue: {
+                                    $map: {
+                                        input: { $ifNull: ['$availability', []] },
+                                        as: 'avail',
+                                        in: {
+                                            $and: [
+                                                { $eq: ['$$avail.dayOfWeek', '$$today'] },
+                                                { $eq: ['$$avail.isOpen', true] }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    // Location text
+                    locationText: {
+                        $cond: [
+                            { $and: ['$address.city', '$address.state'] },
+                            { $concat: ['$address.city', ', ', '$address.state'] },
+                            { $ifNull: ['$address.city', '$address.state', 'Location not specified'] }
+                        ]
+                    }
+                }
+            },
+            { $sort: sortOpt },
+            { $skip: skip },
+            { $limit: limitNum + 1 } // Get one extra to check if there's more
+        ];
+        
+        const salons = await Salon.aggregate(pipeline);
+        
+        // Check if there are more results
+        const hasMore = salons.length > limitNum;
+        const results = hasMore ? salons.slice(0, -1) : salons;
+        
+        // Format response
+        const formattedSalons = results.map(salon => ({
+            _id: salon._id,
+            name: salon.name,
+            image: salon.images && salon.images[0] ? salon.images[0] : null,
+            rating: salon.avgRating || 0,
+            reviewCount: salon.reviews ? salon.reviews.length : 0,
+            location: salon.locationText,
+            startingPrice: salon.minPrice || 0,
+            minPrice: salon.minPrice || 0,
+            homeService: salon.serviceMode?.homeService || false,
+            topServices: salon.topServices || [],
+            services: salon.services?.map(s => s.serviceName) || [],
+            isAvailableToday: salon.isAvailableToday || false,
+            description: salon.description || ''
+        }));
+        
+        // Get total count for the first page
+        let totalCount = formattedSalons.length;
+        if (pageNum === 1) {
+            const countResult = await Salon.countDocuments(match);
+            totalCount = countResult;
+        }
+        
+        res.json({
+            success: true,
+            salons: formattedSalons,
+            hasMore,
+            currentPage: pageNum,
+            totalCount: totalCount
+        });
+        
+    } catch (error) {
+        console.error('Error fetching salons:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+// Helper function for category regex
+function getCategoryRegex(category) {
+    const categoryMap = {
+        'hair': 'Hair|Cut|Trim|Styling|Colour|Color',
+        'skin': 'Facial|Skin|Cleanup|Treatment',
+        'nails': 'Nail|Manicure|Pedicure',
+        'other': '.*'
+    };
+    
+    return categoryMap[category] || '.*';
+}
 // Get salon by ID
 router.get('/salons/:id', async (req, res) => {
     try {
