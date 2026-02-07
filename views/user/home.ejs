@@ -47,9 +47,7 @@
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/images/logo/apple-touch-icon.png">
     <!-- Add Lineicons CSS -->
     <link rel="stylesheet" href="https://cdn.lineicons.com/4.0/lineicons.css" />
-    <style>
-       
-    </style>
+  
 
 </head>
 
@@ -122,50 +120,72 @@
                                 <li class="menu-item dropdown">
                                     <a href="/shop" class="item-link">Shop</a>
                                     <div class="mega-menu-panel">
+                                        <!-- Search Bar -->
+                                        <div class="mega-menu-search">
+                                            <input type="text" 
+                                                   id="categorySearch" 
+                                                   placeholder="Search categories..."
+                                                   class="search-input">
+                                            <div class="search-results" id="searchResults"></div>
+                                        </div>
+                                        
                                         <div class="mega-menu-inner">
-                                            <% if (categories && categories.length > 0) { %>
-                                                <% categories.forEach(function(category) { %>
-                                                    <div class="mega-category">
-                                                        <div class="mega-category-title">
-                                                            <a href="/shop/<%= category.slug %>"><%= category.name %></a>
-                                                        </div>
-                                                        <% 
-                                                            var subs = subcategories.filter(function(sub) { 
-                                                                return sub.categoryId && sub.categoryId.toString() === category._id.toString(); 
-                                                            }); 
-                                                        %>
-                                                        <% if (subs.length > 0) { %>
-                                                            <% subs.forEach(function(sub) { %>
-                                                                <div class="mega-subcategory">
-                                                                    <div class="mega-subcategory-title">
-                                                                        <a href="/shop/<%= category.slug %>/<%= sub.slug %>"><%= sub.name %></a>
-                                                                    </div>
-                                                                    <ul class="mega-subcategory-list">
-                                                                        <%
-                                                                            var childs = childcategories.filter(function(child) {
-                                                                                return child.subCategoryId && child.subCategoryId.toString() === sub._id.toString();
-                                                                            });
-                                                                        %>
-                                                                        <% if (childs.length > 0) { %>
-                                                                            <% childs.forEach(function(child) { %>
-                                                                                <li>
-                                                                                    <a href="/shop/<%= category.slug %>/<%= sub.slug %>/<%= child.slug %>">
-                                                                                        <%= child.name %>
-                                                                                    </a>
-                                                                                </li>
-                                                                            <% }); %>
-                                                                        <% } %>
-                                                                    </ul>
+                                            <!-- Categories Container with Scroll -->
+                                            <div class="categories-container" id="categoriesContainer">
+                                                <div class="categories-grid" id="categoriesGrid">
+                                                    <% if (categories && categories.length > 0) { %>
+                                                        <% categories.forEach(function(category) { %>
+                                                            <div class="mega-category" 
+                                                                 data-category-id="<%= category._id %>"
+                                                                 data-category-name="<%= category.name.toLowerCase() %>">
+                                                                <div class="mega-category-title">
+                                                                    <a href="/shop/<%= category.slug %>"><%= category.name %></a>
+                                                                    <span class="toggle-subcategories">+</span>
                                                                 </div>
-                                                            <% }); %>
-                                                        <% } %>
-                                                    </div>
-                                                <% }); %>
-                                            <% } else { %>
-                                                <div class="mega-category">
-                                                    <div class="mega-category-title">No categories found.</div>
+                                                                
+                                                                <div class="subcategories-wrapper">
+                                                                    <% 
+                                                                        var subs = subcategories.filter(function(sub) { 
+                                                                            return sub.categoryId && sub.categoryId.toString() === category._id.toString(); 
+                                                                        }); 
+                                                                    %>
+                                                                    <% if (subs.length > 0) { %>
+                                                                        <% subs.forEach(function(sub) { %>
+                                                                            <div class="mega-subcategory">
+                                                                                <div class="mega-subcategory-title">
+                                                                                    <a href="/shop/<%= category.slug %>/<%= sub.slug %>"><%= sub.name %></a>
+                                                                                </div>
+                                                                                <ul class="mega-subcategory-list">
+                                                                                    <%
+                                                                                        var childs = childcategories.filter(function(child) {
+                                                                                            return child.subCategoryId && child.subCategoryId.toString() === sub._id.toString();
+                                                                                        });
+                                                                                    %>
+                                                                                    <% if (childs.length > 0) { %>
+                                                                                        <% childs.forEach(function(child) { %>
+                                                                                            <li>
+                                                                                                <a href="/shop/<%= category.slug %>/<%= sub.slug %>/<%= child.slug %>">
+                                                                                                    <%= child.name %>
+                                                                                                </a>
+                                                                                            </li>
+                                                                                        <% }); %>
+                                                                                    <% } %>
+                                                                                </ul>
+                                                                            </div>
+                                                                        <% }); %>
+                                                                    <% } %>
+                                                                </div>
+                                                            </div>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <div class="mega-category">
+                                                            <div class="mega-category-title">No categories found.</div>
+                                                        </div>
+                                                    <% } %>
                                                 </div>
-                                            <% } %>
+                                            </div>
+                                            
+                                            <!-- Featured Section -->
                                             <div class="mega-featured">
                                                 <h6>Exclusive Offers</h6>
                                                 <p>Limited edition kits & expert curated bundles for every routine.</p>
@@ -550,79 +570,7 @@
         </section>
         <!-- /Categories -->
 
-        <!-- Banner with text -->
-        <section class="flat-spacing">
-            <div class="container">
-                <div class="row flat-img-with-text-v3">
-                    <div class="col-lg-6 col-md-5">
-                        <div class="banner-left">
-                            <div class="collection-position style-lg hover-img">
-                                <a class="img-style">
-                                    <img class="lazyload" data-src="/images/banner/bridal-collection2.png"
-                                        src="/images/banner/bridal-collection2.png" alt="banner">
-                                </a>
-                                <div class="content">
-                                    <h3 class="title wow fadeInUp">
-                                        <a href="/shop" class="link text-white">Bridal Beauty
-                                            Services</a>
-                                    </h3>
-                                    <p class="desc text-white wow fadeInUp">Expert bridal makeup and hair styling - book
-                                        salon or at-home services</p>
-                                    <div class="wow fadeInUp">
-                                        <a href="/saloon-at-home" class="btn btn-golden">Book Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-7">
-                        <div class="banner-right">
-                            <div class="box-title">
-                                <div class="sub-title text-btn-uppercase wow fadeInUp">Premium Services</div>
-                                <h3 class="title wow fadeInUp">Glow & Glamour</h3>
-                                <p class="desc text-secondary wow fadeInUp">Professional beauty treatments and expert
-                                    services. Save time with at-home or in-salon bookings</p>
-                            </div>
-                            <div dir="ltr" class="swiper tf-sw-collection" data-preview="2" data-tablet="2"
-                                data-mobile="2" data-space-lg="30" data-space-md="20" data-space="10"
-                                data-pagination="1" data-pagination-md="1" data-pagination-lg="1">
-                                <div class="swiper-wrapper">
-                                    <div class="swiper-slide">
-                                        <div class="collection-default hover-img wow fadeInUp" data-wow-delay="0s">
-                                            <a class="img-style" href="/saloon-at-home">
-                                                <img class="lazyload" data-src="/images/collections/radiant-skin.png"
-                                                    src="/images/collections/radiant-skin.png" alt="banner-cls">
-                                            </a>
-                                            <div class="content text-center">
-                                                <h6 class="title"><a href="/book-a-saloon" class="link">Radiant
-                                                        Skin</a></h6>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="swiper-slide">
-                                        <div class="collection-default hover-img wow fadeInUp" data-wow-delay="0.1s">
-                                            <a class="img-style" href="/saloon-at-home">
-                                                <img class="lazyload" data-src="/images/collections/glamorous-look.png"
-                                                    src="/images/collections/glamorous-look.png" alt="banner-cls">
-                                            </a>
-                                            <div class="content text-center">
-                                                <h6 class="title"><a href="/book-a-saloon" class="link">Glamorous
-                                                        Looks</a></h6>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="sw-pagination-collection sw-dots type-circle justify-content-center"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- /Banner with text -->
-
+       
       
         <section class="flat-spacing">
             <div class="container">
@@ -764,6 +712,78 @@
             </div>
         </section>
         <!-- /Banner parallax -->
+ <!-- Banner with text -->
+ <section class="flat-spacing">
+    <div class="container">
+        <div class="row flat-img-with-text-v3">
+            <div class="col-lg-6 col-md-5">
+                <div class="banner-left">
+                    <div class="collection-position style-lg hover-img">
+                        <a class="img-style">
+                            <img class="lazyload" data-src="/images/banner/bridal-collection2.png"
+                                src="/images/banner/bridal-collection2.png" alt="banner">
+                        </a>
+                        <div class="content">
+                            <h3 class="title wow fadeInUp">
+                                <a href="/shop" class="link text-white">Bridal Beauty
+                                    Services</a>
+                            </h3>
+                            <p class="desc text-white wow fadeInUp">Expert bridal makeup and hair styling - book
+                                salon or at-home services</p>
+                            <div class="wow fadeInUp">
+                                <a href="/saloon-at-home" class="btn btn-golden">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-7">
+                <div class="banner-right">
+                    <div class="box-title">
+                        <div class="sub-title text-btn-uppercase wow fadeInUp">Premium Services</div>
+                        <h3 class="title wow fadeInUp">Glow & Glamour</h3>
+                        <p class="desc text-secondary wow fadeInUp">Professional beauty treatments and expert
+                            services. Save time with at-home or in-salon bookings</p>
+                    </div>
+                    <div dir="ltr" class="swiper tf-sw-collection" data-preview="2" data-tablet="2"
+                        data-mobile="2" data-space-lg="30" data-space-md="20" data-space="10"
+                        data-pagination="1" data-pagination-md="1" data-pagination-lg="1">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="collection-default hover-img wow fadeInUp" data-wow-delay="0s">
+                                    <a class="img-style" href="/saloon-at-home">
+                                        <img class="lazyload" data-src="/images/collections/radiant-skin.png"
+                                            src="/images/collections/radiant-skin.png" alt="banner-cls">
+                                    </a>
+                                    <div class="content text-center">
+                                        <h6 class="title"><a href="/book-a-saloon" class="link">Radiant
+                                                Skin</a></h6>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="collection-default hover-img wow fadeInUp" data-wow-delay="0.1s">
+                                    <a class="img-style" href="/saloon-at-home">
+                                        <img class="lazyload" data-src="/images/collections/glamorous-look.png"
+                                            src="/images/collections/glamorous-look.png" alt="banner-cls">
+                                    </a>
+                                    <div class="content text-center">
+                                        <h6 class="title"><a href="/book-a-saloon" class="link">Glamorous
+                                                Looks</a></h6>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sw-pagination-collection sw-dots type-circle justify-content-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /Banner with text -->
 
         <!-- Beautician CTA Banner - Enhanced Version -->
         <section class="beautician-banner">
@@ -1725,76 +1745,150 @@
             <div class="mb-canvas-content">
                 <div class="mb-body">
                     <div class="mb-content-top">
-                        <form class="form-search">
-                            <fieldset class="text">
-                                <input type="text" placeholder="What are you looking for?" class="" name="text"
-                                    tabindex="0" value="" aria-required="true" required="">
-                            </fieldset>
-                            <button class="" type="submit">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-                                        stroke="#181818" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M20.9984 20.9999L16.6484 16.6499" stroke="#181818" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </button>
-                        </form>
+                        <!-- Mobile Category Search -->
+                        <div class="mobile-category-search">
+                            <input type="text" 
+                                   id="mobileCategorySearch" 
+                                   placeholder="Search categories..."
+                                   class="mobile-search-input">
+                            <div class="mobile-search-results" id="mobileSearchResults"></div>
+                        </div>
+                        
                         <ul class="nav-ul-mb" id="wrapper-menu-navigation">
                             <li class="nav-mb-item active">
                                 <a href="/" class="mb-menu-link">
                                     <span>Home</span>
-
                                 </a>
-
                             </li>
-
+        
                             <li class="nav-mb-item active">
                                 <a href="/about" class="mb-menu-link">
                                     <span>About</span>
                                 </a>
                             </li>
-                            <li class="nav-mb-item active">
-                                <a href="/shop" class="mb-menu-link">
-                                    <span>Shop</span>
-
-                                </a>
-
-                            </li>
+                            
+                          <!-- Mobile Shop with Categories -->
+<li class="nav-mb-item dropdown-mb">
+    <a href="/shop" class="mb-menu-link has-submenu">
+        <span>Shop</span>
+        <span class="menu-toggle">+</span>
+    </a>
+    
+    <!-- Mobile Categories Panel -->
+    <div class="mobile-categories-panel" id="mobileCategoriesPanel">
+        <div class="mobile-categories-header">
+            <h5>Shop Categories</h5>
+            <button class="mobile-categories-back">
+                <i class="icon icon-close"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-categories-container">
+            <div class="mobile-categories-list">
+                <% if (categories && categories.length > 0) { %>
+                    <% categories.forEach(function(category) { %>
+                        <div class="mobile-category-item" 
+                             data-category-id="<%= category._id %>"
+                             data-category-name="<%= category.name.toLowerCase() %>">
+                            <a href="/shop/<%= category.slug %>" class="mobile-category-link">
+                                <%= category.name %>
+                                <% 
+                                    var subs = subcategories.filter(function(sub) { 
+                                        return sub.categoryId && sub.categoryId.toString() === category._id.toString(); 
+                                    }); 
+                                %>
+                                <% if (subs.length > 0) { %>
+                                    <span class="category-arrow">›</span>
+                                <% } %>
+                            </a>
+                            
+                            <% if (subs.length > 0) { %>
+                                <div class="mobile-subcategories-panel">
+                                    <div class="mobile-subcategories-header">
+                                        <h6><%= category.name %></h6>
+                                        <button class="mobile-subcategories-back">
+                                            <i class="icon icon-arrow-left"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="mobile-subcategories-container">
+                                        <div class="mobile-subcategories-list">
+                                            <% subs.forEach(function(sub) { %>
+                                                <div class="mobile-subcategory-item">
+                                                    <a href="/shop/<%= category.slug %>/<%= sub.slug %>" class="mobile-subcategory-link">
+                                                        <%= sub.name %>
+                                                        <%
+                                                            var childs = childcategories.filter(function(child) {
+                                                                return child.subCategoryId && child.subCategoryId.toString() === sub._id.toString();
+                                                            });
+                                                        %>
+                                                        <% if (childs.length > 0) { %>
+                                                            <span class="subcategory-arrow">›</span>
+                                                        <% } %>
+                                                    </a>
+                                                    
+                                                    <% if (childs.length > 0) { %>
+                                                        <div class="mobile-childcategories-panel">
+                                                            <div class="mobile-childcategories-header">
+                                                                <h6><%= sub.name %></h6>
+                                                                <button class="mobile-childcategories-back">
+                                                                    <i class="icon icon-arrow-left"></i>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            <div class="mobile-childcategories-container">
+                                                                <div class="mobile-childcategories-list">
+                                                                    <% childs.forEach(function(child) { %>
+                                                                        <a href="/shop/<%= category.slug %>/<%= sub.slug %>/<%= child.slug %>" 
+                                                                           class="mobile-childcategory-link">
+                                                                            <%= child.name %>
+                                                                        </a>
+                                                                    <% }); %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="mobile-no-categories">
+                        No categories found.
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</li>
+                            
                             <li class="nav-mb-item active">
                                 <a href="/saloon-at-home" class="mb-menu-link">
                                     <span>Salon at Home</span>
-
                                 </a>
-
                             </li>
                             <li class="nav-mb-item active">
                                 <a href="/book-a-saloon" class="mb-menu-link">
                                     <span>Book a Salon</span>
-
                                 </a>
-
                             </li>
-
                             <li class="nav-mb-item active">
                                 <a href="/userblogs" class="mb-menu-link">
                                     <span>Blogs</span>
-
                                 </a>
-
                             </li>
                             <li class="nav-mb-item active">
                                 <a href="/contact" class="mb-menu-link">
                                     <span>Contact</span>
-
                                 </a>
-
                             </li>
-
-
                         </ul>
                     </div>
+                    
                     <div class="mb-other-content">
                         <div class="group-icon">
                             <a href="/wishlist" class="site-nav-icon">
@@ -1807,7 +1901,7 @@
                                 </svg>
                                 Wishlist
                             </a>
-
+        
                             <a href="/userLogin" class="site-nav-icon">
                                 <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -1822,19 +1916,20 @@
                                 </svg>
                                 Login
                             </a>
-
                         </div>
+                        
                         <div class="mb-notice">
                             <a href="/contact" class="text-need">Need Help?</a>
                         </div>
+                        
                         <div class="mb-contact">
                             <p class="text-caption-1">Trivandrum, Kerala</p>
-
                         </div>
+                        
                         <ul class="mb-info">
                             <li>
                                 <i class="icon icon-mail"></i>
-                                <p><a  href="mailto:blushleyoffice@gmail.com">blushleyoffice@gmail.com</a></p>
+                                <p><a href="mailto:blushleyoffice@gmail.com">blushleyoffice@gmail.com</a></p>
                             </li>
                             <li>
                                 <i class="icon icon-phone"></i>
@@ -1843,7 +1938,6 @@
                         </ul>
                     </div>
                 </div>
-
             </div>
         </div>
         <!-- /mobile menu -->
